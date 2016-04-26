@@ -1,7 +1,0 @@
-= HDLC
-
-== Concepts
-
-== Configuration
-
-

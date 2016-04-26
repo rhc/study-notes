@@ -1,9 +1,0 @@
-= VRRP
-
-menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html[VRRP] ] 
-
-== Concepts
-
-== Configurations
-
-

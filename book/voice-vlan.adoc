@@ -1,3 +1,0 @@
-= Voice VLAN
-
-http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swvoip.html

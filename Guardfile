@@ -5,6 +5,7 @@
 Bundler.require(:default)
 guard :shell do
   watch(/(.*)\.adoc$/) do |m|
+ 
     # Asciidoctor.convert_file(m[0], :in_place => true)
     `asciidoctor -n -r asciidoctor-diagram #{m[0]} `
     `asciidoctor -n -r asciidoctor-diagram -a theme=volnitsky book/book.adoc  `

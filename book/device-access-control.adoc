@@ -1,7 +1,0 @@
-= Device Access control
-
-
-== Concepts
-
-== Commands
-
