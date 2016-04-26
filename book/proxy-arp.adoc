@@ -1,0 +1,22 @@
+= Proxy ARP
+
+
+== Information 
+
+- help hosts with no knowledge of routing determine the MAC addresss of hosts on other subnets
+- RFC 1027
+
+
+== Configuration 
+
+=== disable Proxy ARP globally
+
+----
+ip arp proxy disable
+----
+
+=== Disable Proxy ARP on an interface
+
+----
+(config-if)# no ip proxy-arp
+----

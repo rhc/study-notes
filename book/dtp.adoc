@@ -1,0 +1,85 @@
+= DTP
+
+
+== Dynamic trunk protocol
+
+- negotiate trunk status 
+- default to *dynamic auto*
+
+.Trunking configuration options that lead to a working trunk
+[cols="20,10,40,20", format="dsv", options="header", grid="rows"]
+|===
+Configuration Command : Short name : Meaning : To trunk other side must be
+switchport mode trunk : Trunk:  Always trunks on this end; sends DTP to help other side choose to trunk: On, desirable, auto
+switchport mode trunk ; switchport nonegotiate: Nonegotiate: Always trunks on this end; does not send DTP messages (good when other switch is a non-Cisco switch): On
+switchport mode dynamic desirable:  Desirable: Sends DTP messages, and trunks if negotiation succeeds: On, desirable, auto
+switchport mode dynamic auto: Auto: Replies to DTP messages, and trunks if negotiation succeeds: On, desirable
+switchport mode access: Access: Never trunks; sends DTP to help other side reach same conclusion : Never trunks
+switchport mode access; switchport nonegotiate : Access (with nonegotiate): Never trunks; does not send DTP messages: (Never trunks)
+|===
+
+.Task: Configure an inter-switch links to be in dynamic desirable state  
+----
+(config-if)# switchport mode dynamic desirable
+----
+
+.Task: Disable DTP for a port administratively configured as a trunk
+----
+(config-if)# switchport mode trunk
+(config-if)# switchport nonegotiate
+----
+
+.Task: Put the interface into permanent nontrunking mode 
+----
+(config-if)# switchport mode access
+----
+
+.Task: Display a summary of trunk-related information
+----
+show interface trunk: Summary of trunk-related information
+----
+
+.Task: List trunking details for a specified interface
+----
+show interface <type number> trunk 
+----
+
+.Task: List nontrunking details for a particular interface
+----
+show interface <type number> switchport
+----
+
+.Task: Display DTP information for the switch
+----
+# show dtp 
+----
+
+.Task: Display DTP information for a specific interface
+
+----
+# show dtp interface <type slot/number>
+----
+
+.Task: Enable trunking but disable DTP for routers
+----
+! SW1
+conf t
+int e0/0
+  switchport trunk enc dot1q
+  switchport mode trunk
+  switchport nonegotiate
+
+! R1
+conf t
+int e0/0.1
+  enc dot1q 123
+----
+
+== Verify
+
+What is TOS/TAT in 
+
+----
+sh dtp interface fa 0/19
+----
+

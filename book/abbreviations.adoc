@@ -1,0 +1,1 @@
+:nlri: (NLRI) [Network Layer Reachability Information]

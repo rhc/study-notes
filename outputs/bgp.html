@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<meta name="author" content="Christian Kyony">
+<title>BGP</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400">
+<link rel="stylesheet" href="./asciidoctor.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>BGP</h1>
+<div class="details">
+<span id="author" class="author">Christian Kyony</span><br>
+<span id="email" class="email"><a href="mailto:ckyony@changamuka.com">ckyony@changamuka.com</a></span><br>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_concepts">Concepts</a>
+<ul class="sectlevel2">
+<li><a href="#_when_to_use_bgp">When to use BGP</a></li>
+<li><a href="#_autonomous_systems">Autonomous systems</a></li>
+<li><a href="#_bgp_peers">BGP peers</a></li>
+<li><a href="#_bgp_message_format">BGP message format</a></li>
+<li><a href="#_bgp_session_reset">BGP session reset</a></li>
+<li><a href="#_bgp_route_aggregation">BGP route aggregation</a></li>
+<li><a href="#_routing_policy_change_management">Routing policy change management</a></li>
+<li><a href="#_bgp_peer_groups">BGP peer groups</a></li>
+<li><a href="#_bgp_backdoor_routes">BGP backdoor routes</a></li>
+<li><a href="#_best_path_selection_algorithm">Best path selection algorithm</a></li>
+<li><a href="#_community_attributes">community attributes</a></li>
+</ul>
+</li>
+<li><a href="#_configuration_tasks">Configuration tasks</a>
+<ul class="sectlevel2">
+<li><a href="#_configuring_a_bgp_routing_process">Configuring a BGP Routing Process</a></li>
+<li><a href="#_configuring_a_bgp_peer">Configuring a BGP Peer</a></li>
+<li><a href="#_configuring_a_bgp_peer_for_the_ipv4_vrf_address_family">Configuring a BGP Peer for the IPv4 VRF Address Family</a></li>
+<li><a href="#_customizing_a_bgp_peer">Customizing a BGP Peer</a></li>
+<li><a href="#_monitoring_and_maintaining_basic_bgp">Monitoring and Maintaining Basic BGP</a></li>
+<li><a href="#_aggregating_route_prefixes_using_bgp">Aggregating Route Prefixes Using BGP</a></li>
+<li><a href="#_originating_bgp_routes">Originating BGP Routes</a></li>
+<li><a href="#_configuring_a_bgp_peer_group">Configuring a BGP Peer Group</a></li>
+<li><a href="#_modify_the_default_output_and_regex_match_format_for_4_byte_asn">Modify the default output and regex match format for 4-byte ASN</a></li>
+<li><a href="#_suppress_inactive_route_advertisement_using_bgp">Suppress inactive route advertisement using BGP</a></li>
+<li><a href="#_configure_basic_peer_session_template">Configure basic peer session template</a></li>
+<li><a href="#_configure_basic_peer_policy_template">configure basic peer policy template</a></li>
+</ul>
+</li>
+<li><a href="#_verify">Verify</a></li>
+<li><a href="#_troubleshoot">Troubleshoot</a></li>
+<li><a href="#_todos">todos</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_concepts">Concepts</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>exterior gateway protocol</p>
+</li>
+<li>
+<p>create loop-free inter-domain routing between AS.</p>
+</li>
+<li>
+<p>path vector algorithm = (distance vector + AS-path loop detection)</p>
+</li>
+<li>
+<p>TCP 179</p>
+</li>
+<li>
+<p>AD: external 20 , internal and local 200</p>
+</li>
+<li>
+<p>RFC 1771</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_when_to_use_bgp">When to use BGP</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>multiple connections to Internet via different providers</p>
+</li>
+<li>
+<p>multiple connections to external ASs via the same provider but different routing policy</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_autonomous_systems">Autonomous systems</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>AS: set of routers under a single technical administration</p>
+</li>
+<li>
+<p>AS can be:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>stub : only one exit</p>
+</li>
+<li>
+<p>multihomed: multiple connections with the one or multiple providers</p>
+<div class="ulist">
+<ul>
+<li>
+<p>transit: allows traffic with origin and destination outside the AS</p>
+</li>
+<li>
+<p>non-transit:</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_asn_format">ASN format</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>2-byte (RFC 4271)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>0 - 65535</p>
+</li>
+<li>
+<p>reserved: 0, 65535</p>
+</li>
+<li>
+<p>public use: 1 - 64495</p>
+</li>
+<li>
+<p>documentation: 64496-64511 (RFC 5398)</p>
+</li>
+<li>
+<p>private use: 64512 - 65534</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>4-byte (RFC 5396)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Asplain: decimal value notation for 2-byte and 4-byte ASNs</p>
+</li>
+<li>
+<p>Asdot: decimal value notation for 2-byte and dot notation for 4-byte ASN</p>
+</li>
+<li>
+<p>Documentation: 65536-65551 (RFC 5398)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>AS 23456: reserved for gradual transition from 2-byte to 4-byte (RFC 4893)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bgp_peers">BGP peers</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>manually configured and not automatically discovered</p>
+</li>
+<li>
+<p>formed over a TCP connection</p>
+</li>
+<li>
+<p>exchanges {nlri}</p>
+</li>
+<li>
+<p>initially exchange full BGP routing table then incremental updates</p>
+</li>
+<li>
+<p>keep table version number</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">iBPG peers </dt>
+</dl>
+</div>
+</li>
+<li>
+<p>same AS</p>
+</li>
+<li>
+<p>must be fully meshed within AS</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">eBGP peers </dt>
+</dl>
+</div>
+</li>
+<li>
+<p>different AS</p>
+</li>
+<li>
+<p>by default, one hop away but you can change that with <strong>ebgp-multihop</strong></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bgp_message_format">BGP message format</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>minimum size: 19 bytes</p>
+</li>
+<li>
+<p>maximum size: 4096 bytes (why?)</p>
+</li>
+<li>
+<p>bonjour</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/bgp-message-header.png" alt="bgp message header">
+</div>
+<div class="title">Figure 1. header format</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Marker:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>16 bytes</p>
+</li>
+<li>
+<p>set to all 1s for OPEN message or if OPEN message without authentication</p>
+</li>
+<li>
+<p>computed by the authentication process</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Length:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>2 bytes</p>
+</li>
+<li>
+<p>total length in bytes of the message including the header</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Type:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>1 byte</p>
+</li>
+<li>
+<p>indicates message type (1: Open, 2: Update, 3: Notification, 4: Keepalive)</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_open">OPEN</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>initiates the session</p>
+</li>
+<li>
+<p>contains BGP version , local AS number, BGP router Id</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/bgp-open-message-format.png" alt="bgp open message format">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Version: 1 octet</p>
+</li>
+<li>
+<p>My autonomous system:</p>
+</li>
+<li>
+<p>Hold time:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>maximum interval in seconds between successive Keepalive  or Update messages.</p>
+</li>
+<li>
+<p>A receiver compares the value of the Hold Time and the value of its configured hold time
+and accepts the smaller value or rejects the connection.</p>
+</li>
+<li>
+<p>Can be set to zero to indicates that the connection is always up //find a better formulation</p>
+</li>
+<li>
+<p>if not set to zero, the minimum recommended hold time is 3 seconds</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>BGP identifier:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>router ID</p>
+</li>
+<li>
+<p>determined by these rules in order of preference at boot or bgp process restart:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>manually configured router id</p>
+</li>
+<li>
+<p>highest IP address of an up/up loopback</p>
+</li>
+<li>
+<p>highest IP address of an up/up non-loopack</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Optional parameters length:</p>
+</li>
+<li>
+<p>total length in octects of the following Optional Parameters field</p>
+</li>
+<li>
+<p>Optional Parameters:</p>
+</li>
+<li>
+<p>Variable length field containing a triplet &lt;Type: 1 octet,Length: 1 octet,Value&gt;</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_keepalive">KEEPALIVE</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>every 60 seconds</p>
+</li>
+<li>
+<p>hold-time: 180 seconds</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_update">UPDATE</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>advertises a single feasible route to a peer and/or withdraws multiple unfeasible routes</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/bgp-update-message-format.png" alt="bgp update message format">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Unfeasible Routes Length</p>
+<div class="ulist">
+<ul>
+<li>
+<p>2-octet field</p>
+</li>
+<li>
+<p>total length of the following Withdrawn Routes field, in octets.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Withdrawn Routes</p>
+<div class="ulist">
+<ul>
+<li>
+<p>variable-length</p>
+</li>
+<li>
+<p>lists routes to be withdrawn from service.</p>
+</li>
+<li>
+<p>Each route in the list is described with a (Length, Prefix) tuple in which the Length is
+the length of the prefix and the Prefix is the IP address prefix of the withdrawn route.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Total Path Attribute Length</p>
+<div class="ulist">
+<ul>
+<li>
+<p>2-octet</p>
+</li>
+<li>
+<p>total length of the following Path Attribute field, in octets.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Path Attributes</p>
+<div class="ulist">
+<ul>
+<li>
+<p>variable-length</p>
+</li>
+<li>
+<p>lists the attributes associated with the NLRI in the following field.
+  Each path attribute is a variable-length triple of (Attribute Type, Attribute
+Length, Attribute Value). The Attribute Type part of the triple is a 2-octet field consisting of
+four flag bits, four unused bits, and an Attribute Type code (see <a href="#AttributeTypeCode">Attribute Type Code</a>).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/bgp-path-attribute-type-format.png" alt="bgp path attribute type format">
+</div>
+<div class="title">Figure 2. Attribute Type part of the Path Attributes field</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Flag bits (1/0)</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>O: Optional / Well-known</p>
+</li>
+<li>
+<p>T: Transitive / Non-transitive</p>
+</li>
+<li>
+<p>P: Partial / Complete</p>
+</li>
+<li>
+<p>E: Extended length / Regular length ( 2-bytes/ 1-bytes)</p>
+</li>
+<li>
+<p>U: Unused</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+<table id="AttributeTypeCode" class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Attribute Type Code</caption>
+<colgroup>
+<col style="width: 11%;">
+<col style="width: 44%;">
+<col style="width: 44%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Attribute</th>
+<th class="tableblock halign-left valign-top">Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ORIGIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Well-known mandatory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AS_PATH</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Well-known mandatory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NEXT_HOP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Well-known mandatory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MULTI_EXIT_DISC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional nontransitive</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LOCAL_REF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional transitive</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ATOMIC_AGGREGATE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Well-known discretionary</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AGGREGATOR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional transitive</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">COMMUNITY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional transitive</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">9</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ORIGINATOR_ID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional nontransitive</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CLUSTER_LIST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional nontransitive</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_notification">NOTIFICATION</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>go out in response to error, fatal condition</p>
+</li>
+<li>
+<p>torn down or reset the BGP peer session</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_bgp_fsm_states">BGP FSM States</h4>
+<div class="imageblock">
+<div class="content">
+<img src="diag-a8cc1fd2f27a8495a8fc321818feb234.png" alt="BGP neighbor negotiation finite state machines" width="1073" height="323">
+</div>
+<div class="title">Figure 3. BGP neighbor negotiation finite state machines</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Idle</strong> – initial BGP state after enabling BGP process or resetting device.</p>
+</li>
+<li>
+<p><strong>Connect</strong> - waits for a TCP connection with the remote peer. If
+successful, sends OPEN message. If not, resets the ConnectRetry timer and transitions to Active state.</p>
+</li>
+<li>
+<p><strong>Active</strong> – attempts to initiate a TCP connection with the remote
+peer. If successful, sends OPEN message. If not, resets ConnectRetry timer and transitions back to Connect state</p>
+</li>
+<li>
+<p><strong>OpenSent</strong> – TCP connection up and OPEN message sent,  transition to OpenReceive state and wait for initial
+keepalive to move into OpenConfirm state.
+If TCP session disconnect, terminate BGP session, reset ConnectRetry timer, move back to Active State.</p>
+</li>
+<li>
+<p><strong>OpenConfirm</strong> – OPEN messages sent and received. Wait for KEEPALIVE</p>
+</li>
+<li>
+<p><strong>Established</strong> – KEEPALIVE received, neighbor parameters match. the BGP peer session is fully established. UPDATE
+messages containing routing information will now be sent.</p>
+</li>
+<li>
+<p>if peer stuck in <strong>Active</strong> state, potential problems can include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>no IP connectivity</p>
+</li>
+<li>
+<p>incorrect <strong>neighbor</strong> statement</p>
+</li>
+<li>
+<p>access-list filtering TCP port 179</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bgp_session_reset">BGP session reset</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Whenever the routing policy changes due to a configuration change</p>
+</li>
+<li>
+<p>reset with <strong>clear ip bgp</strong></p>
+</li>
+<li>
+<p>can be hard reset, soft reset or dynamic inbound soft reset</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_hard_reset">Hard reset</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>tears down the peering sessions including the TCP connections</p>
+</li>
+<li>
+<p>deletes prefixes learned from the peers.</p>
+</li>
+<li>
+<p>pros: no memory overhead</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_soft_reset">Soft reset</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>stores prefix information</p>
+</li>
+<li>
+<p>do not tearn down existing peering sessions</p>
+</li>
+<li>
+<p>can be configured for inbound or outbound sessions</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_dynamic_inbound_soft_reset">Dynamic inbound soft reset</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>do not store update information locally</p>
+</li>
+<li>
+<p>relies on dynamic exchanges with supporting peers</p>
+</li>
+<li>
+<p>the peers supports the capability if  <strong>show ip bgp neighbors</strong> displays
+<em>Received route refresh capability from peer</em> .</p>
+</li>
+<li>
+<p>Use <strong>bgp soft-reconfig-backup</strong> to store updates for peers who do not support the refresh route capability</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bgp_route_aggregation">BGP route aggregation</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>2 methods</p>
+<div class="ulist">
+<ul>
+<li>
+<p>basic route redistribution: creates an aggregate route, then redistributes the routes in BGP</p>
+</li>
+<li>
+<p>conditional aggregation: creates an aggregate route , then advertises or not certain routes
+based on route maps, AS-SET, or summary information</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>bgp suppress-inactive</strong> stops BGP to advertise inactive routes (not installed
+into the RIB) to any peer.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_bgp_route_aggregation_generating_as_set_information">BGP route aggregation generating AS_SET information</h4>
+<div class="paragraph">
+<p>#TODO: improve this part</p>
+</div>
+<div class="paragraph">
+<p>AS_SET information can be generated when BGP routes are aggregated using the
+aggregate-address command. The path advertised for such a route is an AS_SET
+consisting of all the elements, including the communities, contained in all the
+paths that are being summarized. If the AS_PATHs to be aggregated are
+identical, only the AS_PATH is advertised. The ATOMIC-AGGREGATE attribute, set
+by default for the aggregate-address command, is not added to the AS_SET.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_routing_policy_change_management">Routing policy change management</h3>
+<div class="paragraph">
+<p>#TODO: add this part under bgp reset</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bgp_peer_groups">BGP peer groups</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>group of peers with the same update policies ( outbound route maps, distribute lists, filter lists, update source ,)</p>
+</li>
+<li>
+<p>benefits:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>simplify configuration</p>
+</li>
+<li>
+<p>make configuration updates more efficient</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>restrictions for eBGP peers:</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bgp_backdoor_routes">BGP backdoor routes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>use <strong>network backdoor</strong> to cause BGP to prefer EIGRP</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/bgp-backdoor-route-topology.png" alt="bgp backdoor route topology">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_best_path_selection_algorithm">Best path selection algorithm</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>highest weight</p>
+</li>
+<li>
+<p>highest local pref</p>
+</li>
+<li>
+<p>locally originated paths over externally originated paths</p>
+</li>
+<li>
+<p>shortest AS path</p>
+</li>
+<li>
+<p>lowest origin type ( internal over external over incomplete)</p>
+</li>
+<li>
+<p>lowest MED</p>
+</li>
+<li>
+<p>eBGP paths over iBGP paths</p>
+</li>
+<li>
+<p>lowest IGP cost</p>
+</li>
+<li>
+<p>oldest path</p>
+</li>
+<li>
+<p>lowest BGP router id</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_community_attributes">community attributes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>no-advertise: prevents advertisements to any BGP peer</p>
+</li>
+<li>
+<p>no-export: prevents advertisements to any eBGP peer</p>
+</li>
+<li>
+<p>no-advertise: prevents advertisements outside the AS, or in confederation scenarios, outside the sub-AS</p>
+</li>
+<li>
+<p>internet:  advertises routes to any route</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration_tasks">Configuration tasks</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_configuring_a_bgp_routing_process">Configuring a BGP Routing Process</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>configure a bgp routing process</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>router bgp &lt;asn&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>specify a network as  local to the BGP routing table</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>network &lt;prefix&gt; [mask  &lt;a.b.c.d&gt;] [route-map &lt;name&gt;]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>configure the bgp router id</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>bgp router-id &lt;ip-address&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>set the bgp network timers</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# timers bgp &lt;keepalive-seconds&gt; &lt;holdtime-seconds&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuring_a_bgp_peer">Configuring a BGP Peer</h3>
+<div class="listingblock">
+<div class="content">
+<pre>neighbor &lt;ip-address&gt; remote-as &lt;asn&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Specify the IPv4 address family</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# address-family ipv4 [unicast | multicast | vrf &lt;name&gt;]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>enable the neighbor to exchange prefixes for the ipv4 unicast address family with the local device</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; activate</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuring_a_bgp_peer_for_the_ipv4_vrf_address_family">Configuring a BGP Peer for the IPv4 VRF Address Family</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>associate a vpn vrf instance with an interface</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-if)# interface &lt;type&gt; &lt;number&gt;
+(config-if)# vrf forwarding &lt;name&gt;
+(config-if)# ip address &lt;prefix&gt; &lt;mask&gt; [secondary [vrf &lt;name&gt;]]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>configure a VRF routing table with the same name assigned to the VRF
+and enters the VRF configuration mode</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config)# ip vrf &lt;name&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>create routing and forwarding tables and specify the default route distinguisher for a vpn</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-vrf)# rd &lt;route-distinguisher&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>create a route target extended community for a VRF</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-vrf)# route-target [import | export | both] &lt;community&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_customizing_a_bgp_peer">Customizing a BGP Peer</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>disable the IPv4 unicast address family for the BGP routing process</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>no bgp default ipv4-unicast</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>add a neighbor</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; remote-as &lt;asn&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Add a text description with a specified neighbor</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; description &lt;text&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Add a text description with a specified peer group</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;peer-group-name&gt; description &lt;text&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>exit address family configuration mode</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router-af)# exit-address-family</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>disable a BGP peer or peer group</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; shutdown</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_monitoring_and_maintaining_basic_bgp">Monitoring and Maintaining Basic BGP</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>enable logging of BGP neighbor resets</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# bgp log-neighbor-changes</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>configure a BGP speaker to perform inbound soft reconfiguration
+for peers that do not support the route refresh capability.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# bgp soft-reconfig-backup</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>start storing updates for each neighbor that do not support route refresh</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address|peer-group-name&gt; soft-reconfiguration [inbound]</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>All the updates received from this neighbor will be stored unmodified,
+regardless of the inbound policy. When inbound soft reconfiguration is done
+later, the stored information will be used to generate a new set of inbound
+updates.</p>
+</li>
+<li>
+<p>Memory requirements can increased.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Apply a route map to incoming or outgoing routes</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address|peer-group-name&gt; route-map &lt;name&gt; [in | out]</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_aggregating_route_prefixes_using_bgp">Aggregating Route Prefixes Using BGP</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>redistribute static routes into the BGP routing table</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# redistribute static</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>create an aggregate entry in a BGP routing table</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# aggregate-address &lt;prefix&gt; &lt;mask&gt; [as-set]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>create an aggregate route and suppress advertisements of more-specific routes to all peers</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# aggregate-address &lt;prefix&gt; &lt;mask&gt; [summary-only]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>create an aggregate route but suppress advertisement of specified routes</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# aggregate-address &lt;prefix&gt; &lt;mask&gt; [suppress-map &lt;map-name&gt;]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>selectively advertises routes previously suppressed by the <strong>aggregate-address</strong> command</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address | peer-group-name&gt; unsuppress-map &lt;map-name&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>conditionally advertise BGP routes</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The routes or prefixes that will be conditionally advertised are defined in two
+route maps: an advertise map and either an exist map or nonexist map. The route
+map associated with the exist map or nonexist map specifies the prefix that the
+BGP speaker will track. The route map associated with the advertise map
+specifies the prefix that will be advertised to the specified neighbor when the
+condition is met.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If a prefix is found to be present in the exist map by the BGP speaker, the
+prefix specified by the advertise map is advertised.</p>
+</li>
+<li>
+<p>If a prefix is found not to be present in the nonexist map by the BGP
+speaker, the prefix specified by the advertise map is advertised.</p>
+</li>
+<li>
+<p>If the condition is not met, the route is withdrawn and conditional
+advertisement does not occur. All routes that may be dynamically advertised
+or not advertised must exist in the BGP routing table in order for
+conditional advertisement to occur. These routes are referenced from an
+access list or an IP prefix list.</p>
+</li>
+<li>
+<p>advertise selectively some BGP routes to neighbor</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; advertise-map &lt;name-1&gt; { exist-map &lt;name&gt; | non-exist-map &lt;name&gt;}</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>inject more specific prefixes into a BGP routing table over less specific prefixes</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# bgp inject-map &lt;name&gt; exist-map &lt;name&gt; [copy-attributes]</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_originating_bgp_routes">Originating BGP Routes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>advertise a default route to BGP peers</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; default-originate  [route-map &lt;name&gt;]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>indicate a network reachable through a backdoor route</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# network &lt;ip-address&gt; backdoor</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuring_a_bgp_peer_group">Configuring a BGP Peer Group</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>create a BGP peer group</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;peer-group-name&gt; peer-group</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Assign a neighbor to a peer group</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; peer-group &lt;name&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modify_the_default_output_and_regex_match_format_for_4_byte_asn">Modify the default output and regex match format for 4-byte ASN</h3>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# bgp asnotation dot</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_suppress_inactive_route_advertisement_using_bgp">Suppress inactive route advertisement using BGP</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>suppress inactive route advertisement</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router-af)# bgp suppress-inactive</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_basic_peer_session_template">Configure basic peer session template</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>create a peer session template</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# template peer-session &lt;name&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>inherit the configuration of another peer session template</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router-stmp)# inherit peer-session &lt;template-name&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>send a peer session template to a neighbor so that the neighbor can inherit the configuration</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# neighbor &lt;ip-address&gt; inherit peer-session &lt;template-name&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_basic_peer_policy_template">configure basic peer policy template</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>create a peer policy template</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router)# template peer-policy &lt;name&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>configure the maximum number of prefixes that a neighbor will accept from this peer</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-router-ptmp)# maximum-prefix &lt;limit&gt; [&lt;threshold&gt;] [restart &lt;interval&gt; | warning-only]</pre>
+</div>
+</div>
+<div class="ulist NOTE">
+<ul class="NOTE">
+<li>
+<p>A peer policy template can directly or indirectly inherit up to 8 peer
+policy templates.</p>
+</li>
+<li>
+<p>A BGP neighbor cannot be configured to work with both peer groups and peer
+templates. A BGP neighbor can be configured to belong only to a peer group or
+to inherit policies only from peer templates.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verify">Verify</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Display the entries in the bgp routing table</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip bgp [prefix] [mask]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Display info about the TCP and BGP connection to neighbors</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>#  show ip bgp neigbors &lt;ip-address&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Verify that the VRF instance has been created</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># show ip vrf</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Display information about all the BGP paths in the database</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># show ip bgp paths</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Display the status of all BGP connections</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># show ip bgp summary</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Display IPv4 multicast database-related information</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip bgp ipv4 multicast &lt;command&gt;</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Display injected paths</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># show ip bgp injected-paths
+
+BGP table version is 11, local router ID is 10.0.0.1
+Status codes:s suppressed, d damped, h history, * valid, &gt; best, i -
+internal
+Origin codes:i - IGP, e - EGP, ? - incomplete
+   Network          Next Hop            Metric LocPrf Weight Path
+*&gt; 172.16.0.0       10.0.0.2                               0 ?
+*&gt; 172.17.0.0/16    10.0.0.2                               0 ?</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Display update replication stats for BGP update groups</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># show ip bgp replication [&lt;index-group&gt; | &lt;ip-address&gt;] [summary]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>display BGP routes that are not installed in the RIB</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># show ip bgp rib-failure
+
+Network            Next Hop                      RIB-failure   RIB-NH Matches
+10.1.15.0/24       10.1.35.5           Higher admin distance              n/a
+10.1.16.0/24       10.1.15.1           Higher admin distance              n/a</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>display locally configured peer session template</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip bgp template peer-session</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_troubleshoot">Troubleshoot</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Verify basic network connectivity between BGP devices</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ping vrf</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>clear and reset BGP neighbor sessions</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># clear ip bgp *</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>clear BGP update group membership and recalcultar BGP update groups</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># clear ip bgp update-group [ &lt;index-group&gt; | &lt;ip-address&gt; ]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Display info about the processing of BGP update groups.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># debug ip bgp groups</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_todos">todos</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>concept: bgp route aggregation generating AS_SET information</p>
+</li>
+<li>
+<p>multiprotocol bgp concepts</p>
+</li>
+<li>
+<p>multiprotocol bgp extensions for IP multicast concepts</p>
+</li>
+<li>
+<p>AFI bgp address family identifier model : ipv4, ipv6,clns, vpnv4</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>iencoretoiiciavectoi
+kdfkasdfasfsjadf:w</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-06-04 17:17:35 SAST
+</div>
+</div>
+</body>
+</html>

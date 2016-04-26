@@ -1,0 +1,68 @@
+= PPPoE
+
+
+ - used for digital subscriber line (DSL) Internet access 
+ because the public telephone network uses ATM for its transport protocol;
+ therefore, Ethernet frames must be encapsulated in a protocol supported over both Ethernet and ATM.  
+
+-  The PPP Client feature permits a Cisco IOS router, rather than an endpoint host, to serve as the client
+ in a network. This permits multiple hosts to connect over a single PPPoE connection.
+
+ - In a DSL environment, PPP interface IP addresses are derived from an upstream DHCP server
+ using IP Configuration Protocol (IPCP). Therefore, IP address negotiation must be enabled on the
+ router’s dialer interface. This is done using the ip address negotiated command in the dialer
+ interface configuration.
+
+ - Because of the 8-byte PPP header, the MTU for PPPoE is usually set to 1492 bytes so that the
+ entire encapsulated frame fits within the 1500-byte Ethernet frame. A maximum transmission unit
+ (MTU) mismatch prevents a PPPoE connection from coming up. Checking the MTU setting is a
+ good first step when troubleshooting PPPoE connections.
+
+
+== Configuration tasks
+
+Example
+
+image::images/pppoe-topology-example.png[height=150]
+
+
+Example of config on the Edge router
+
+----
+# conf t
+(config)# interface fa0/1
+(config-if)# ip address 192.168.100.1 255.255.255.0
+(config-if)# ip nat inside
+(config)# interface fa0/1
+(config-if)# pppoe-client dial-pool-number 1
+(config-if)# exit
+(config)# interface dialer1
+(config-if)# mtu 1492
+(config-if)# encapsulation ppp
+(config-if)# ip address negotiated
+(config-if)# ppp authentication chap
+
+!The remaining CHAP commands have been omitted for brevity.
+
+(config-if)# ip nat outside
+(config-if)# dialer pool 1
+(config-if)# dialer-group 1
+(config-if)# exit
+(config)# dialer-list 1 protocol ip permit
+(config)# ip nat inside source list 1 interface dialier1 overload
+(config)# access-list 1 permit 192.168.100.0 0.0.0.255
+(config)# ip route 0.0.0.0 0.0.0.0 dialer1
+----
+
+Verify PPPoE connectivity 
+
+----
+show pppoe session
+----
+
+Debug 
+
+----
+debug pppoe [data | errors | events | packets]
+----
+

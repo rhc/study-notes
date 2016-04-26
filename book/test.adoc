@@ -1,0 +1,58 @@
+Wendell, study guide 4th edition
+
+2014-01-02 Thu 18:06
+
+chap 1 check pg 994
+
+1ec
+2 a
+3 c
+4 bc
+5 d 0.5
+6 
+7 b
+8 abd
+9  span
+0 span
+
+score: 6.5 / 10 = 65% 
+
+Read the span and rspan notes 
+
+
+2014-01-16 Thu 19:05
+
+1 ce 
+2 a 
+3 c
+4 bc
+5 ad x
+6 b 0.5 
+7 b
+8 abd
+9 ca x
+0 abd x
+
+6.5/10 with more strict rules
+
+when a question have n correct answers, 
+give +1/n for each good answer and - 1/n for each bad answer
+
+65% 
+
+
+IP multicast routing  
+
+1 bc x
+2 c x
+3 c x
+4 d x
+5 a 0.5
+7 d
+8 
+
+Shame .5/ 8.
+this is a wake up call
+
+
+

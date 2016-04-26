@@ -1,0 +1,232 @@
+= LLDP
+
+menu:Catalyst Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swlldp.html[LLDP] ]
+
+== Overview
+
+- IEEE 802.1AB link layer discovery protocol
+- neighbor discovery protocol 
+- advertises TLV(type length,value) for each attribute
+* basic mandatory
+  ** port description
+  ** system name
+  ** system description
+  ** system capabilities 
+  ** management address
+* optional
+  ** port vlan ID for ieee 802.1
+  ** MAC/PHY configuration/status for ieee 802.3
+
+== LLDP global state                    
+
+- Disabled by default
+
+.Task: Enable LLDP globally on the switch
+----
+(config)# lldp run
+----
+
+.Task: Display global information, such as frequency of transmissions, the holdtime for packets being sent, and the delay time before LLDP initializes on an interface.
+----
+show lldp
+----
+
+.Task: Display LLDP counters, including the number of packets sent and received, number of packets discarded, and number of unrecognized TLVs.
+----
+show lldp traffic
+----
+
+.Task: Reset the traffic counters to zero.
+----
+clear lldp counters
+----
+
+.Task: Delete the LLDP neighbor information table.
+----
+clear lldp table
+----
+	
+
+.Task: Clear the NMSP statistic counters.
+
+----
+clear nmsp statistics
+----
+
+
+== LLDP interfaces                 
+
+- Disabled by default
+
+.Task: Enable an interface to send LLDP packets
+----
+(config-if)# lldp transmit
+----
+
+.Task: Enable an interface to receive LLDP packets
+----
+(config-if)# lldp receive
+----
+
+.Task: Display information about interfaces with LLDP enabled.
+----
+show lldp interface [<interface-id>]
+----
+
+== Neighbors
+
+.Task: Display information about a specific neighbor.
+----
+show lldp entry <entry-name>
+----
+
+.Task: Display information about all neighbors.
+----
+show lldp entry *
+----
+
+.Task: Display information about neighbors, including device type, interface type and number, holdtime settings, capabilities, and port ID.
+----
+show lldp neighbors [<interface-id>] [detail]
+----
+
+== Timers
+
+.Task: Specify the amount of time a receiving device should hold the information from your device
+- default: 120 s, range: 0 - 65535
+----
+(config)# lldp holdtime <seconds>
+----
+
+.Task: Specify the delay time in seconds for LLDP to initialize on an interface.
+The range is 2 to 5 seconds; the default is 2 seconds.
+----
+(config)# lldp reinit delay 
+----
+
+.Task: Set the sending frequency of LLDP updates in seconds.
+The range is 5 to 65534 seconds; the default is 30 seconds.
+----
+(config)# lldp timer rate
+----
+
+== TLV 
+
+
+.Task: Specify the LLDP TLVs to send or receive.
+----
+(config)# lldp tlv-select
+----
+
+.Task: Specify the LLDP-MED TLVs to send or receive.
+----
+(config)# lldp med-tlv-select
+----
+
+.Task: Specify the LLDP-MED TLV to send 
+----
+(config-if)# lldp med-tlv-select {inventory-management | location | network-policy | power-management }
+----
+
+.Task: Configure network policy TLV 
+----
+(config)# network-policy profile <profile-number>
+(config)#  {voice | voice-signaling} vlan [<id>  {cos <cvalue> | dscp <dvalue>}] 
+            | [[dot1p {cos <cvalue> | dscp <dvalue>}] | none | untagged] 
+(config-if)# network-policy <profile-number>
+(config-if)# lldp med-tlv select network-policy
+----
+
+[TIP]
+====
+- if the interface is configured as a tunnel port, LLDP is automatically disabled.
+- If you first configure a network-policy profile on an interface, you cannot apply the switchport voice vlan command on the interface. If the switchport voice vlan vlan-id is already configured on an interface, you can apply a network-policy profile on the interface. This way the interface has the voice or voice-signaling VLAN network-policy profile applied on the interface.
+- You cannot configure static secure MAC addresses on an interface that has a network-policy profile.
+- You cannot configure a network-policy profile on a private-VLAN port.
+- For wired location to function, you must first enter the ip device tracking global configuration command.  
+====
+
+.Task: Display the location information for an endpoint.
+----
+show location
+----
+
+== Network-policy profiles
+
+.Task: Display the configured network-policy profiles.
+----
+show network-policy profile
+----
+
+.Task: Display the NMSP information.
+----
+show nmsp
+----
+
+== LLDP-MED
+
+- LLDP for Media Endpoint Devices
+- operates between endpoint devices (ip phones) and network devices (switches)
+- supports VoIP applications 
+- TLVs enabled by default:
+
+* LLDP-MED capabilities TLV
+* network policy TLV
+* Power management TLV
+* Inventory management TLV
+* Location TLV
+
+== Wired location service
+
+- The switch uses the wired location service feature to send location and
+attachment tracking information for its connected devices to a Cisco Mobility
+Services Engine (MSE). The tracked device can be a wireless endpoint, a wired
+endpoint, or a wired switch or controller. The switch notifies the MSE of
+device link up and link down events through the Network Mobility Services
+Protocol (NMSP) location and attachment notifications.
+
+The MSE starts the NMSP connection to the switch, which opens a server port.
+When the MSE connects to the switch there are a set of message exchanges to
+establish version compatibility and service exchange information followed by
+location information synchronization. After connection, the switch periodically
+sends location and attachment notifications to the MSE. Any link up or link
+down events detected during an interval are aggregated and sent at the end of
+the interval.
+
+When the switch determines the presence or absence of a device on a link-up or
+link-down event, it obtains the client-specific information such as the MAC
+address, IP address, and username. If the client is LLDP-MED- or CDP-capable,
+the switch obtains the serial number and UDI through the LLDP-MED location TLV
+or CDP.
+
+Depending on the device capabilities, the switch obtains this client information at link up:
+
+- Slot and port specified in port connection
+- MAC address specified in the client MAC address
+- IP address specified in port connection
+- 802.1X username if applicable
+- Device category is specified as a wired station
+- State is specified as new
+- Serial number, UDI
+- Model number
+- Time in seconds since the switch detected the association
+
+Depending on the device capabilities, the switch obtains this client information at link down:
+
+- Slot and port that was disconnected
+- MAC address
+- IP address
+- 802.1X username if applicable
+- Device category is specified as a wired station
+- State is specified as delete
+- Serial number, UDI
+- Time in seconds since the switch detected the disassociation
+
+When the switch shuts down, it sends an attachment notification with the state
+delete and the IP address before closing the NMSP connection to the MSE. The
+MSE interprets this notification as disassociation for all the wired clients
+associated with the switch.
+
+If you change a location address on the switch, the switch sends an NMSP
+location notification message that identifies the affected ports and the
+changed address information. 

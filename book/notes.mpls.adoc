@@ -1,0 +1,11 @@
+mpls 
+
+- label switching instead of layer 2/3 logic
+
+
+- require cef 
+  type of entries 
+
+- understand cef => process, fast switching 
+
+

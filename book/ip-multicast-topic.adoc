@@ -1,0 +1,34 @@
+= IP multicast routing
+
+
+== Cisco Implementation of IP multicast routing
+
+The Cisco IOS software supports these protocols to implement IP multicast routing:
+
+- Internet Group Management Protocol (IGMP) is used among hosts on a LAN and
+  the routers  on that LAN to track the multicast
+  groups of which hosts are members.
+
+- Protocol-Independent Multicast (PIM) protocol is used among routers and
+  multilayer switches to track which multicast packets to forward to each other
+  and to their directly connected LANs.
+
+- Distance Vector Multicast Routing Protocol (DVMRP) is used on the multicast
+  backbone of the Internet (MBONE). 
+  The Cisco IOS software supports PIM-to-DVMRP interaction.
+
+- Cisco Group Management Protocol (CGMP) is used on Cisco routers and multilayer switches 
+connected to Layer 2 Catalyst switches to perform tasks similar to those performed by IGMP. 
+
+
+.Multicast routing protocols
+image::images/ip-multicast-routing-protocols.png[]
+
+include::ip-multicast-introduction.adoc[]
+include::igmp.adoc[]
+include::pim.adoc[]
+include::cgmp.adoc[]
+include::ip-multicast-routing.adoc[]
+
+
+

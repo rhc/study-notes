@@ -1,0 +1,7 @@
+! basic.ospf.routing
+
+! R1-10
+conf t
+int f0/0
+  no shut
+end

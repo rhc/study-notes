@@ -1,0 +1,258 @@
+= Ethernet
+
+
+== Concepts 
+
+=== Introduction
+
+- IEEE 802.3 standards 
+- CSMA/CD protocol. 
+- medium: coaxial, twisted-pair, optical fiber
+- Four data rates: 10/100/1000/10000 Mbps
+
+=== Ethernet Frame Formats
+
+image::images/ethernet-framing-options.png["Ethernet framing options", height=250]
+
+Preamble (DIX)::
+-  Provides synchronization and signal transitions to allow proper clocking of the transmitted signal. 
+-  Consists of 62 alternating 1s and 0s, and ends with a pair of 1s.
+
+Preamble and Start of Frame Delimiter(802.3)::
+- Same purpose and binary value as DIX preamble
+
+Type(or Protocol Type) DIX ::
+- Identifies the type of protocol or protocol header that follows the header. 
+- Allows the receiver of the frame to know how to process a received frame.
+
+Length(802.3)::
+- Describes the length in bytes of the data following the Length field, up to the Ethernet trailer. 
+- Allows an Ethernet receiver to predict the end of the received frame.
+
+Destination address(DA)::
+- Can be an individual or group address
+
+Source address::
+- Always individual address
+
+Destination Service Access Protocol DSAP::
+- The size limitations, along with other Point (802.2) uses of the low-order bits, required the later addition of SNAP headers.
+
+Source Service Access Protocol SSAP::
+- Describes the upper-layer protocol Point (802.2) that created the frame.
+
+Control(802.2)::
+- enables both connectionless and connection-oriented operation. 
+- Generally used only for connectionless operation by modern protocols, with a 1-byte value of 0x03.
+
+Organizationally Unique Identifier(SNAP)::
+- Generally unused today, 
+- providing a place for the sender of the frame to code the OUI representing the manufacturer of the Ethernet NIC.
+
+Type(SNAP)::
+- using same values as the DIX Type field, overcoming deficiencies with size and use of the DSAP field.
+
+Data: ::
+- n bytes where 46 <= n <= 1500 
+- if n < 46, use padding
+
+FCS: Frame check sequence::
+- contains a 32-bit cyclic redundancy check (CRC) value
+- calculated by the sending MAC
+- re-calculated by the receiving MAC to check for damaged frames.
+- generated from the DA, SA, Length/Type, and Data fields
+
+=== Ethernet MAC Addresses
+
+- 48 bits represented in hexadecimal
+- Canonical transmission (little endian)= MSO to LSO with LSB to MSB for each octet
+- Most significant octet first, but for each octect, the LSB is transmitted first
+
+----
+Example: AC-10-7b-3a-92-3c
+
+convert to hexa: 10101100 00010000 01101011 00111010 01010010 00111100
+transmission: 00110101 00001000 11010110 01011100 01001010 00111100
+----
+
+image::images/ethernet-mac-address.png["Ethernet mac address", height="240"]
+
+- Fields:
+[horizontal]
+** OUI: first 3 bytes,  Organizational Unique Identifier
+** I/G: (0/1) individual or Group address, first bit to be transmitted
+** U/L: (0/1) universally  or Locally administrated 
+
+==== Types of MAC addresses
+
+- Unicast : I/G bit = 0
+- Multicast: I/G bit = 1
+- Broadcast: all devices in the segment 
+
+
+=== RJ-45 pinouts and Cat5 wiring
+
+- defined by http://www.eia.org[EIA] / http://www.tiaonline.org[TIA]
+
+image::images/ethernet-pinouts.png["Ehernet and ISO", height=100]
+
+.Ethernet cabling types
+[options="header", cols="20,50,40"]
+|===
+| Type of cable | Pinouts | Key pins connected
+| Straight-through | T568A or T568B both ends | 1-1; 2-2; 3-3; 6-6
+| Cross-over | T568A on one end,  T568B on the other | 1-3; 2-6; 3-1; 6-2
+|===
+
+NOTE: Cisco also supports a switch feature that lets the switch figure out if the wrong cable is installed:
+Auto-MDIX (automatic medium-dependent interface crossover) detects the wrong cable and
+causes the switch to swap the pair it uses for transmitting and receiving, which solves the cabling
+problem. This feature is not supported on all Cisco switch models.
+
+
+=== Auto-negotiation
+
+By default, each Cisco switch port uses Ethernet auto-negotiation to determine the speed and
+duplex setting (half or full). The switches can also set their duplex setting with the duplex
+interface subcommand, and their speed with—you guessed it—the speed interface subcommand.
+Switches can dynamically detect the speed setting on a particular Ethernet segment by using a few
+different methods. Cisco switches (and many other devices) can sense the speed using the Fast
+Link Pulses (FLP) of the auto-negotiation process. However, if auto-negotiation is disabled on
+either end of the cable, the switch detects the speed anyway based on the incoming electrical
+signal. You can force a speed mismatch by statically configuring different speeds on either end of
+the cable, causing the link to no longer function.
+
+Switches detect duplex settings through auto-negotiation only. If both ends have auto-
+negotiation enabled, the duplex is negotiated. However, if either device on the cable disables
+auto-negotiation, the devices without a configured duplex setting must assume a default. Cisco
+switches use a default duplex setting of half duplex (HDX) (for 10-Mbps and 100-Mbps
+interfaces) or full duplex (FDX) (for 1000-Mbps interfaces). To disable auto-negotiation on a
+Cisco switch port, you simply need to statically configure the speed and the duplex settings.
+Ethernet devices can use FDX only when collisions cannot occur on the attached cable; a
+collision-free link can be guaranteed only when a shared hub is not in use. The next few topics
+review how Ethernet deals with collisions when they do occur, as well as what is different with
+Ethernet logic in cases where collisions cannot occur and FDX is allowed.
+
+
+=== Switch  internal processing
+
+Switches forward frames when necessary, and do not forward when there is no need to do so, thus
+reducing overhead. 
+
+To accomplish this, switches perform three actions:
+
+- Learn MAC addresses by examining the source MAC address of each received frame
+- Decide when to forward a frame or when to filter (not forward) a frame, based on the destination MAC address
+- Create a loop-free environment with other bridges by using the Spanning Tree Protocol
+
+Store-and-forward::
+
+The switch fully receives all bits in the frame (store) before forwarding
+the frame (forward). This allows the switch to check the FCS before
+forwarding the frame, thus ensuring that errored frames are not forwarded.
+
+Cut-through::
+
+The switch performs the address table lookup as soon as the Destination
+Address field in the header is received. The first bits in the frame can be sent out
+the outbound port before the final bits in the incoming frame are received. This
+does not allow the switch to discard frames that fail the FCS check, but the
+forwarding action is faster, resulting in lower latency.
+
+Fragment-free::
+
+This performs like cut-through switching, but the switch waits for 64 bytes to be
+received before forwarding the first bytes of the outgoing frame. According to
+Ethernet specifications, collisions should be detected during the first 64 bytes of
+the frame, so frames that are in error because of a collision will not be forwarded.
+
+  
+== Switching and bridging logic
+
+[format="dsv", options="header", cols="20,60"]
+|===
+Type of Address: Switch Action
+Known unicast: Forwards frame out the single interface associated with the destination address
+Unknown unicast: Floods frame out all interfaces, except the interface on which the frame was received
+Broadcast: Floods frame identically to unknown unicasts
+Multicast: Floods frame identically to unknown unicasts, unless multicast optimizations are configured
+|===
+
+== Configuration tasks
+
+Puts user in interface configuration mode for that interface
+
+----
+interface fastethernet 0/x             
+----
+
+Set duplex mode for the interface
+
+----
+duplex {auto | full | half}            
+----
+
+Set speed for the interface
+
+----
+speed {10 | 100 | 1000 | auto |        nonegotiate}
+----
+
+Show configuration
+
+----
+Router# show controllers fastethernet1
+!
+Interface FastEthernet1   MARVELL 88E6052
+Link is DOWN
+Port is undergoing Negotiation or Link down
+Speed :Not set, Duplex :Not set
+!
+Switch PHY Registers:
+~~~~~~~~~~~~~~~~~~~~~
+00 : 3100   01 : 7849   02 : 0141   03 : 0C1F   04 : 01E1
+05 : 0000   06 : 0004   07 : 2001   08 : 0000   16 : 0130
+17 : 0002   18 : 0000   19 : 0040   20 : 0000   21 : 0000
+!
+Switch Port Registers:
+~~~~~~~~~~~~~~~~~~~~~~
+Port Status Register       [00] : 0800
+Switch Identifier Register [03] : 0520
+Port Control Register      [04] : 007F
+Rx Counter Register        [16] : 000A
+Tx Counter Register        [17] : 0008
+----
+
+Show MAC address table 
+
+----
+Switch1# show mac-address-table dynamic
+  Mac Address Table
+  ------------------
+  Vlan Mac Address Type Ports
+  ---- ----------- ---- -----
+  1 000f.2343.87cd DYNAMIC Fa0/13
+  1 0200.3333.3333 DYNAMIC Fa0/3
+  1 0200.4444.4444 DYNAMIC Fa0/13
+----
+
+== Standards
+
+[format="csv", cols="10,90", grid="none"]
+|====
+802.1Q, dot1q trunking
+802.1d , STP
+802.1s , MST
+802.1w , Rapid STP
+802.1ax, LACP (formerly 802.3ad)
+
+802.2 , Logical Link Control 
+802.3u, Fast ethernet over copper and optical cable
+802.3z, Gigabit ethernet over optical cable
+802.3ab, Gigabit ethernet over copper cable
+|====
+
+== Troubleshooting
+
+- Add something about excessive collisions, late collisions, runts, re: duplex mismatches
+

@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>PIM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400">
+<style>
+/* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
+/* Remove the comments around the @import statement below when using this as a custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+[hidden],template{display:none}
+script{display:none!important}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
+a{background:transparent}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+#map_canvas img,#map_canvas embed,#map_canvas object,.map_canvas img,.map_canvas embed,.map_canvas object{max-width:none!important}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+.antialiased,body{-webkit-font-smoothing:antialiased}
+img{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+p.lead,.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{font-size:1.21875em;line-height:1.6}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:none}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #ddddd8;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol,ul.no-bullet,ol.no-bullet{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.no-bullet{list-style:none}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite:before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media only screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7;font-weight:bold}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
+.clearfix:after,.float-group:after{clear:both}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{display:inline-block;color:rgba(0,0,0,.8);font-size:.75em;line-height:1.4;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:-.15em .15em 0 .15em;padding:.2em .6em .2em .5em;vertical-align:middle;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menu{color:rgba(0,0,0,.8)}
+b.button:before,b.button:after{position:relative;top:-1px;font-weight:400}
+b.button:before{content:"[";padding:0 3px 0 2px}
+b.button:after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header:before,#header:after,#content:before,#content:after,#footnotes:before,#footnotes:after,#footer:before,#footer:after{content:" ";display:table}
+#header:after,#content:after,#footnotes:after,#footer:after{clear:both}
+#content{margin-top:1.25em}
+#content:before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #ddddd8}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #ddddd8;padding-bottom:8px}
+#header .details{border-bottom:1px solid #ddddd8;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span:before{content:"\00a0\2013\00a0"}
+#header .details br+span.author:before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark:before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber:after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #ddddd8;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #efefed;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media only screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background-color:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #efefed;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #efefed;left:auto;right:0}}@media only screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background-color:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+.sect1{padding-bottom:.625em}
+@media only screen and (min-width:768px){.sect1{padding-bottom:1.25em}}.sect1+.sect1{border-top:1px solid #efefed}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor:before,h2>a.anchor:before,h3>a.anchor:before,#toctitle>a.anchor:before,.sidebarblock>.content>.title>a.anchor:before,h4>a.anchor:before,h5>a.anchor:before,h6>a.anchor:before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock>caption.title{white-space:nowrap;overflow:visible;max-width:0}
+.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #ddddd8;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock pre:not(.highlight),.listingblock pre[class="highlight"],.listingblock pre[class^="highlight "],.listingblock pre.CodeRay,.listingblock pre.prettyprint{background:#f7f7f8}
+.sidebarblock .literalblock pre,.sidebarblock .listingblock pre:not(.highlight),.sidebarblock .listingblock pre[class="highlight"],.sidebarblock .listingblock pre[class^="highlight "],.sidebarblock .listingblock pre.CodeRay,.sidebarblock .listingblock pre.prettyprint{background:#f2f1f1}
+.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;padding:1em;font-size:.8125em}
+.literalblock pre.nowrap,.literalblock pre[class].nowrap,.listingblock pre.nowrap,.listingblock pre[class].nowrap{overflow-x:auto;white-space:pre;word-wrap:normal}
+@media only screen and (min-width:768px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:.90625em}}@media only screen and (min-width:1280px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:1em}}.literalblock.output pre{color:#f7f7f8;background-color:rgba(0,0,0,.9)}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]:before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:#999}
+.listingblock:hover code[data-lang]:before{display:block}
+.listingblock.terminal pre .command:before{content:attr(data-prompt);padding-right:.5em;color:#999}
+.listingblock.terminal pre .command:not([data-prompt]):before{content:"$"}
+table.pyhltable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.pyhltable td{vertical-align:top;padding-top:0;padding-bottom:0}
+table.pyhltable td.code{padding-left:.75em;padding-right:0}
+pre.pygments .lineno,table.pyhltable td:not(.code){color:#999;padding-left:0;padding-right:.5em;border-right:1px solid #ddddd8}
+pre.pygments .lineno{display:inline-block;margin-right:.25em}
+table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock blockquote p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote:before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.5em;margin-right:.5ex;text-align:right}
+.quoteblock .quoteblock{margin-left:0;margin-right:0;padding:.5em 0;border-left:3px solid rgba(0,0,0,.6)}
+.quoteblock .quoteblock blockquote{padding:0 0 0 .75em}
+.quoteblock .quoteblock blockquote:before{display:none}
+.verseblock{margin:0 1em 1.25em 1em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.05em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract{margin:0 0 1.25em 0;display:block}
+.quoteblock.abstract blockquote,.quoteblock.abstract blockquote p{text-align:left;word-spacing:0}
+.quoteblock.abstract blockquote:before,.quoteblock.abstract blockquote p:first-of-type:before{display:none}
+table.tableblock{max-width:100%;border-collapse:separate}
+table.tableblock td>.paragraph:last-child p>p:last-child,table.tableblock th>p:last-child,table.tableblock td>p:last-child{margin-bottom:0}
+table.spread{width:100%}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all th.tableblock,table.grid-all td.tableblock{border-width:0 1px 1px 0}
+table.grid-all tfoot>tr>th.tableblock,table.grid-all tfoot>tr>td.tableblock{border-width:1px 1px 0 0}
+table.grid-cols th.tableblock,table.grid-cols td.tableblock{border-width:0 1px 0 0}
+table.grid-all *>tr>.tableblock:last-child,table.grid-cols *>tr>.tableblock:last-child{border-right-width:0}
+table.grid-rows th.tableblock,table.grid-rows td.tableblock{border-width:0 0 1px 0}
+table.grid-all tbody>tr:last-child>th.tableblock,table.grid-all tbody>tr:last-child>td.tableblock,table.grid-all thead:last-child>tr>th.tableblock,table.grid-rows tbody>tr:last-child>th.tableblock,table.grid-rows tbody>tr:last-child>td.tableblock,table.grid-rows thead:last-child>tr>th.tableblock{border-bottom-width:0}
+table.grid-rows tfoot>tr>th.tableblock,table.grid-rows tfoot>tr>td.tableblock{border-width:1px 0 0 0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot{border-width:1px 0}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+td>div.verse{white-space:pre}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.unstyled,ol.unnumbered,ul.checklist,ul.none{list-style-type:none}
+ul.unstyled,ol.unnumbered,ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1em;font-size:.85em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{width:1em;position:relative;top:1px}
+ul.inline{margin:0 auto .625em auto;margin-left:-1.375em;margin-right:0;padding:0;list-style:none;overflow:hidden}
+ul.inline>li{list-style:none;float:left;margin-left:1.375em;display:block}
+ul.inline>li>*{display:block}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1{padding-right:.75em;font-weight:bold}
+td.hdlist1,td.hdlist2{vertical-align:top}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist>table tr>td:first-of-type{padding:0 .75em;line-height:1}
+.colist>table tr>td:last-of-type{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left,.imageblock[style*="float: left"]{margin:.25em .625em 1.25em 0}
+.imageblock.right,.imageblock[style*="float: right"]{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none}
+span.footnote,span.footnoteref{vertical-align:super;font-size:.875em}
+span.footnote a,span.footnoteref a{text-decoration:none}
+span.footnote a:active,span.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em 0;border-width:1px 0 0 0}
+#footnotes .footnote{padding:0 .375em;line-height:1.3;font-size:.875em;margin-left:1.2em;text-indent:-1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background-color:#00fafa}
+.black{color:#000}
+.black-background{background-color:#000}
+.blue{color:#0000bf}
+.blue-background{background-color:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background-color:#fa00fa}
+.gray{color:#606060}
+.gray-background{background-color:#7d7d7d}
+.green{color:#006000}
+.green-background{background-color:#007d00}
+.lime{color:#00bf00}
+.lime-background{background-color:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background-color:#7d0000}
+.navy{color:#000060}
+.navy-background{background-color:#00007d}
+.olive{color:#606000}
+.olive-background{background-color:#7d7d00}
+.purple{color:#600060}
+.purple-background{background-color:#7d007d}
+.red{color:#bf0000}
+.red-background{background-color:#fa0000}
+.silver{color:#909090}
+.silver-background{background-color:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background-color:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background-color:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background-color:#fafa00}
+span.icon>.fa{cursor:default}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning:before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution:before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important:before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background-color:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]:after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+h1,h2{letter-spacing:-.01em}
+dt,th.tableblock,td.content{text-rendering:optimizeLegibility}
+p,td.content{letter-spacing:-.01em}
+p strong,td.content strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background-color:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@media print{@page{margin:1.25cm .75cm}
+*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare):after,a[href^="https:"]:not(.bare):after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]:after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img{page-break-inside:avoid}
+thead{display:table-header-group}
+img{max-width:100%!important}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #ddddd8!important;padding-bottom:0!important}
+.sect1{padding-bottom:0!important}
+.sect1+.sect1{border:0!important}
+#header>h1:first-child{margin-top:1.25rem}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em 0}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span:before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]:before{display:block}
+#footer{background:none!important;padding:0 .9375em}
+#footer-text{color:rgba(0,0,0,.6)!important;font-size:.9em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+</style>
+</head>
+<body class="article">
+<div id="header">
+<h1>PIM</h1>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_understanding">1. Understanding</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">PIM is called protocol-independent</dt>
+<dd>
+<p>Regardless of the unicast routing protocols used to populate the unicast routing table,
+PIM uses this information to perform multicast forwarding instead of maintaining a separate multicast
+routing table.</p>
+</dd>
+</dl>
+</div>
+<div class="sect2">
+<h3 id="_versions">1.1. Versions</h3>
+<div class="sect3">
+<h4 id="_pimv1">1.1.1. PIMv1</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>introduced in IOS 11.1(6)</p>
+</li>
+<li>
+<p>support Auto-RP : eliminates the need to manually configure the rendezvous point in every router.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_pimv2">1.1.2. PIMv2</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>default version since IOS 11.3</p>
+</li>
+<li>
+<p>support BSR (boot strap router) capability.</p>
+</li>
+<li>
+<p>A single, active RP exists per multicast group, with multiple backup RPs. This single RP compares to multiple active RPs for the same group in PIMv1.</p>
+</li>
+<li>
+<p>A BSR provides a fault-tolerant, automated RP discovery and distribution mechanism that enables routers and multilayer switches to dynamically learn the group-to-RP mappings.</p>
+</li>
+<li>
+<p>Sparse mode and dense mode are properties of a group, as opposed to an interface. We strongly recommend sparse-dense mode, as opposed to either sparse mode or dense mode only.</p>
+</li>
+<li>
+<p>PIM join and prune messages have more flexible encoding for multiple address families.</p>
+</li>
+<li>
+<p>A more flexible hello packet format replaces the query packet to encode current and future capability options.</p>
+</li>
+<li>
+<p>Register messages to an RP specify whether they are sent by a border router or a designated router.</p>
+</li>
+<li>
+<p>PIM packets are no longer inside IGMP packets; they are standalone packets.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modes">1.2. Modes</h3>
+<div class="paragraph">
+<p>PIM can operate in dense mode (DM), sparse mode (SM), or in sparse-dense mode
+(PIM DM-SM), which handles both sparse groups and dense groups at the same
+time.</p>
+</div>
+<div class="sect3">
+<h4 id="_pim_dm">1.2.1. PIM DM</h4>
+<div class="paragraph">
+<p>In dense mode, a PIM DM router or multilayer switch assumes that all other
+routers or multilayer switches forward multicast packets for a group. If a PIM
+DM device receives a multicast packet and has no directly connected members or
+PIM neighbors present, a prune message is sent back to the source. Subsequent
+multicast packets are not flooded to this router or switch on this pruned
+branch. PIM DM builds source-based multicast distribution trees.</p>
+</div>
+<div class="paragraph">
+<p>The simplest form of a multicast distribution tree is a source tree whose root
+is the source of the multicast traffic and whose branches form a spanning tree
+through the network to the receivers. Because this tree uses the shortest path
+through the network, it is also referred to as a shortest-path tree (SPT). A
+separate SPT exists for every individual source sending to each group. The
+special notation of (S,G) (pronounced S comma G) identifies an SPT where S is
+the IP address of the source and G is the multicast group address.</p>
+</div>
+<div class="paragraph">
+<p><a href="#x1">Host A Shortest-Path Tree</a> shows an example of SPT for group 224.1.1.1 rooted at the source,
+Host A, and connecting two receivers, Hosts B and C. The SPT notation for this
+group would be (194.1.1.1, 224.1.1.1).</p>
+</div>
+<div id="x1" class="imageblock">
+<div class="content">
+<img src="images/pim-shortest-path-tree.png" alt="pim shortest path tree">
+</div>
+<div class="title">Figure 1. Host A Shortest-Path Tree</div>
+</div>
+<div class="paragraph">
+<p>If Host B is also sending traffic to group 224.1.1.1 and Hosts A and C are
+receivers, then a separate (S,G) SPT would exist with the notation of
+(194.2.2.2, 224.1.1.1).</p>
+</div>
+<div class="paragraph">
+<p>PIM DM employs only SPTs to deliver (S,G) multicast traffic by using a flood
+and prune method. It assumes that every subnet in the network has at least one
+receiver of the (S,G) multicast traffic, and therefore the traffic is flooded
+to all points in the network.</p>
+</div>
+<div class="paragraph">
+<p>To avoid unnecessary consumption of network resources, PIM DM devices send
+prune messages up the source distribution tree to stop unwanted multicast
+traffic. Branches without receivers are pruned from the distribution tree,
+leaving only branches that contain receivers. Prunes have a timeout value
+associated with them, after which the PIM DM device puts the interface into the
+forwarding state and floods multicast traffic out the interface. When a new
+receiver on a previously pruned branch of the tree joins a multicast group, the
+PIM DM device detects the new receiver and immediately sends a graft message up
+the distribution tree toward the source. When the upstream PIM DM device
+receives the graft message, it immediately puts the interface on which the
+graft was received into the forwarding state so that the multicast traffic
+begins flowing to the receiver.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_pim_sm">1.2.2. PIM SM</h4>
+<div class="paragraph">
+<p>PIM SM uses shared trees and SPTs to distribute multicast traffic to multicast receivers in the network.</p>
+</div>
+<div class="paragraph">
+<p>In PIM SM, a router or multilayer switch assumes that other routers or switches
+do not forward multicast packets for a group, unless there is an explicit
+request for the traffic (join message). When a host joins a multicast group
+using IGMP, its directly connected PIM SM device sends PIM join messages toward
+the root, also known as the RP. This join message travels router-by-router
+toward the root, constructing a branch of the shared tree as it goes. The RP
+keeps track of multicast receivers; it also registers sources through register
+messages received from the source&#8217;s first-hop router (designated router [DR])
+to complete the shared tree path from the source to the receiver. The branches
+of the shared tree are maintained by periodic join refresh messages that the
+PIM SM devices send along the branch.</p>
+</div>
+<div class="paragraph">
+<p>When using a shared tree, sources must send their traffic to the RP so that the
+traffic reaches all receivers. The special notation *,G, (pronounced star comma
+G) is used to represent the tree, where * means all sources and G represents
+the multicast group. Figure <a href="#pim-shared-distribution-tree">Shared Distribution Tree</a> shows a shared tree for group 224.2.2.2 with
+the RP located at Router 3. Multicast group traffic from source Hosts A and D
+travels to the RP (Router 3) and then down the shared tree to two receivers,
+Hosts B and C. Because all sources in the multicast group use a common shared
+tree, the special notation (*, 224.2.2.2) describes this shared tree.</p>
+</div>
+<div id="pim-shared-distribution-tree" class="imageblock">
+<div class="content">
+<img src="images/pim-shared-distribution-tree.png" alt="pim shared distribution tree">
+</div>
+<div class="title">Figure 2. Shared Distribution Tree</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+In addition to using the shared distribution tree, PIM SM can also use
+SPTs. By joining an SPT, multicast traffic is routed directly to the receivers
+without having to go through the RP, thereby reducing network latency and
+possible congestion at the RP. The disadvantage is that PIM SM devices must
+create and maintain (S,G) state entries in their routing tables along with the
+(S,G) SPT. This action consumes router resources.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Prune messages are sent up the distribution tree to prune multicast group
+traffic. This action permits branches of the shared tree or SPT that were
+created with explicit join messages to be torn down when they are no longer
+needed. For example, if a leaf router (a router without any downstream
+connections) detects that it no longer has any directly connected hosts (or
+downstream multicast routers) for a particular multicast group, it sends a
+prune message up the distribution tree to stop the flow of unwanted multicast
+traffic.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_shared_tree_vs_source_tree">1.3. Shared tree vs Source tree</h3>
+<div class="paragraph">
+<p>By default, members of a group receive data from senders to the group across a
+single data-distribution tree rooted at the RP. Figure <a href="#pim_tree">PIM trees</a> shows this type of
+shared-distribution tree. Data from senders is delivered to the RP for
+distribution to group members joined to the shared tree.</p>
+</div>
+<div id="pim_tree" class="imageblock">
+<div class="content">
+<img src="images/pim-trees.png" alt="pim trees">
+</div>
+<div class="title">Figure 3. PIM trees</div>
+</div>
+<div class="paragraph">
+<p>If the data rate warrants, leaf routers (routers without any downstream
+connections) on the shared tree can use the data distribution tree rooted at
+the source. This type of distribution tree is called a shortest-path tree or
+source tree. By default, the IOS software switches to a source tree upon
+receiving the first data packet from a source.</p>
+</div>
+<div class="paragraph">
+<p>This process describes the move from a shared tree to a source tree:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A receiver joins a group; leaf Router C sends a join message toward the RP.</p>
+</li>
+<li>
+<p>The RP puts a link to Router C in its outgoing interface list.</p>
+</li>
+<li>
+<p>A source sends data; Router A encapsulates the data in a register message
+and sends it to the RP.</p>
+</li>
+<li>
+<p>The RP forwards the data down the shared tree to Router C and sends a join
+message toward the source. At this point, data might arrive twice at Router C,
+once encapsulated and once natively.</p>
+</li>
+<li>
+<p>When data arrives natively (unencapsulated) at the RP, it sends a
+register-stop message to Router A.</p>
+</li>
+<li>
+<p>By default, reception of the first data packet prompts Router C to send a
+join message toward the source.</p>
+</li>
+<li>
+<p>When Router C receives data on (S,G), it sends a prune message for the
+source up the shared tree.</p>
+</li>
+<li>
+<p>The RP deletes the link to Router C from the outgoing interface of (S,G).
+The RP triggers a prune message toward the source.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Join and prune messages are sent for sources and RPs. They are sent hop-by-hop
+and are processed by each PIM device along the path to the source or RP.
+Register and register-stop messages are not sent hop-by-hop. They are sent by
+the designated router that is directly connected to a source and are received
+by the RP for the group.</p>
+</div>
+<div class="paragraph">
+<p>Multiple sources sending to groups use the shared tree.</p>
+</div>
+<div class="paragraph">
+<p>You can configure the PIM device to stay on the shared tree.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_auto_rp">1.4. Auto-RP</h3>
+<div class="paragraph">
+<p>This proprietary feature eliminates the need to manually configure the
+rendezvous point (RP) information in every router and multilayer switch in the
+network.  Auto-RP uses IP multicast to automate the distribution of group-to-RP mappings
+to all Cisco routers and multilayer switches in a PIM network.</p>
+</div>
+<div class="paragraph">
+<p>It has these benefits:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It is easy to use multiple RPs within a network to serve different group
+ranges.</p>
+</li>
+<li>
+<p>It allows load splitting among different RPs and arrangement of RPs according
+to the location of group participants.</p>
+</li>
+<li>
+<p>It avoids inconsistent, manual RP configurations on every router and
+multilayer switch in a PIM network, which can cause connectivity problems.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For Auto-RP to work, you configure a Cisco router or multilayer switch
+as the <strong>mapping agent</strong>. It uses IP multicast to learn which routers or switches
+in the network are possible candidate RPs by joining the well-known
+Cisco-RP-announce multicast group (224.0.1.39) to receive candidate RP
+announcements. Candidate RPs send multicast RP-announce messages to a
+particular group or group range every 60 seconds (default) to announce their
+availability. Each RP-announce message contains a holdtime that tells the
+mapping agent how long the candidate RP announcement is valid. The default is
+180 seconds.</p>
+</div>
+<div class="paragraph">
+<p>Mapping agents listen to these candidate RP announcements and use the
+information to create entries in their Group-to-RP mapping caches. Only one
+mapping cache entry is created for any Group-to-RP range received, even if
+multiple candidate RPs are sending RP announcements for the same range. As the
+RP-announce messages arrive, the mapping agent selects the router or switch
+with the highest IP address as the active RP and stores this RP address in the
+Group-to-RP mapping cache.</p>
+</div>
+<div class="paragraph">
+<p>Mapping agents multicast the contents of their Group-to-RP mapping cache in
+RP-discovery messages every 60 seconds (default) to the Cisco-RP-discovery
+multicast group (224.0.1.40), which all Cisco PIM routers and multilayer
+switches join to receive Group-to-RP mapping information. Thus, all routers and
+switches automatically discover which RP to use for the groups they support.
+The discovery messages also contain a holdtime, which defines how long the
+Group-to-RP mapping is valid. If a router or switch fails to receive
+RP-discovery messages and the Group-to-RP mapping information expires, it
+switches to a statically configured RP that was defined with the <strong>ip pim
+rp-address</strong> global configuration command. If no statically configured RP exists,
+the router or switch changes the group to dense-mode operation.</p>
+</div>
+<div class="paragraph">
+<p>Multiple RPs serve different group ranges or serve as hot backups of each
+other.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bootstrap_router">1.5. Bootstrap Router</h3>
+<div class="paragraph">
+<p>PIMv2 BSR is another method to distribute group-to-RP mapping information to
+all PIM routers and multilayer switches in the network. It eliminates the need
+to manually configure RP information in every router and switch in the network.
+However, instead of using IP multicast to distribute group-to-RP mapping
+information, BSR uses hop-by-hop flooding of special BSR messages to distribute
+the mapping information.</p>
+</div>
+<div class="paragraph">
+<p>The BSR is elected from a set of candidate routers and switches in the domain
+that have been configured to function as BSRs. The election mechanism is
+similar to the root-bridge election mechanism used in bridged LANs. The BSR
+election is based on the BSR priority of the device contained in the BSR
+messages that are sent hop-by-hop through the network. Each BSR device examines
+the message and forwards out all interfaces only the message that has either a
+higher BSR priority than its BSR priority or the same BSR priority, but with a
+higher BSR IP address. Using this method, the BSR is elected.</p>
+</div>
+<div class="paragraph">
+<p>The elected BSR sends BSR messages to the all-PIM-routers multicast group
+(224.0.0.13) with a TTL of 1. Neighboring PIMv2 routers or multilayer switches
+receive the BSR message and multicast it out all other interfaces (except the
+one on which it was received) with a TTL of 1. In this way, BSR messages travel
+hop-by-hop throughout the PIM domain. Because BSR messages contain the IP
+address of the current BSR, the flooding mechanism allows candidate RPs to
+automatically learn which device is the elected BSR.</p>
+</div>
+<div class="paragraph">
+<p>Candidate RPs send candidate RP advertisements showing the group range for
+which they are responsible directly to the BSR, which stores this information
+in its local candidate-RP cache. The BSR periodically advertises the contents
+of this cache in BSR messages to all other PIM devices in the domain. These
+messages travel hop-by-hop through the network to all routers and switches,
+which store the RP information in the BSR message in their local RP cache. The
+routers and switches select the same RP for a given group because they all use
+a common RP hashing algorithm.</p>
+</div>
+<div class="sect3">
+<h4 id="_multicast_forwarding_and_reverse_path_check">1.5.1. Multicast Forwarding and Reverse Path Check</h4>
+<div class="paragraph">
+<p>With unicast routing, routers and multilayer switches forward traffic through
+the network along a single path from the source to the destination host whose
+IP address appears in the destination address field of the IP packet. Each
+router and switch along the way makes a unicast forwarding decision, using the
+destination IP address in the packet, by looking up the destination address in
+the unicast routing table and forwarding the packet through the specified
+interface to the next hop toward the destination.</p>
+</div>
+<div class="paragraph">
+<p>With multicasting, the source is sending traffic to an arbitrary group of hosts
+represented by a multicast group address in the destination address field of
+the IP packet. To determine whether to forward or drop an incoming multicast
+packet, the router or multilayer switch uses a <strong>reverse path forwarding</strong> (RPF)
+check on the packet as follows and shown in Figure <a href="#rpf">RPF Check</a>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The router or multilayer switch examines the source address of the arriving
+multicast packet to determine whether the packet arrived on an interface that
+is on the reverse path back to the source.</p>
+</li>
+<li>
+<p>If the packet arrives on the interface leading back to the source, the RPF
+check is successful and the packet is forwarded to all interfaces in the
+outgoing interface list (which might not be all interfaces on the router).</p>
+</li>
+<li>
+<p>If the RPF check fails, the packet is discarded.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Some multicast routing protocols, such as DVMRP, maintain a separate multicast
+routing table and use it for the RPF check. However, PIM uses the unicast
+routing table to perform the RPF check.</p>
+</div>
+<div class="paragraph">
+<p>Figure <a href="#rpf">RPF Check</a> shows Gigabit Ethernet interface 0/2 receiving a multicast packet from source 151.10.3.21. A check of the routing table shows that the interface on the reverse path to the source is Gigabit Ethernet interface 0/1, not interface 0/2. Because the RPF check fails, the multilayer switch discards the packet. Another multicast packet from source 151.10.3.21 is received on interface 0/1, and the routing table shows this interface is on the reverse path to the source. Because the RPF check passes, the switch forwards the packet to all interfaces in the outgoing interface list.</p>
+</div>
+<div id="rpf" class="imageblock">
+<div class="content">
+<img src="images/pim-rpf-check.png" alt="pim rpf check">
+</div>
+<div class="title">Figure 4. RPF Check</div>
+</div>
+<div class="paragraph">
+<p>PIM uses both source trees and RP-rooted shared trees to forward datagrams ; the RPF check is performed differently for each:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If a PIM router or multilayer switch has a source-tree state (that is, an (S,G) entry is present in the multicast routing table), it performs the RPF check against the IP address of the source of the multicast packet.</p>
+</li>
+<li>
+<p>If a PIM router or multilayer switch has a shared-tree state (and no explicit source-tree state), it performs the RPF check on the rendezvous point (RP) address (which is known when members join the group).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sparse-mode PIM uses the RPF lookup function to determine where it needs to send joins and prunes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>(S,G) joins (which are source-tree states) are sent toward the source.</p>
+</li>
+<li>
+<p>(*,G) joins (which are shared-tree states) are sent toward the RP.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>DVMRP and dense-mode PIM use only source trees and use RPF as previously described.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_neighbor_discovery">1.6. Neighbor Discovery</h3>
+<div class="paragraph">
+<p>PIM uses a neighbor discovery mechanism to establish PIM neighbor adjacencies.
+To establish adjacencies, a PIM router or multilayer switch sends PIM hello
+messages to the all-PIM-routers multicast group (224.0.0.13) on each of its
+multicast-enabled interfaces. The hello message contains a holdtime, which
+tells the receiver when the neighbor adjacency associated with the sender
+expires if no more PIM hello messages are received. Keeping track of
+adjacencies is important for PIM DM operation for building the source
+distribution tree.</p>
+</div>
+<div class="paragraph">
+<p>PIM hello messages are also used to elect the DR for multi-access networks
+(Ethernet). The router or multilayer switch on the network with the highest IP
+address is the DR. With PIM DM operation, the DR has meaning only if IGMPv1 is
+in use; IGMPv1 does not have an IGMP querier election process, so the elected
+DR functions as the IGMP querier. In PIM SM operation, the DR is the router or
+switch that is directly connected to the multicast source. It sends PIM
+register messages to notify the RP that multicast traffic from a source needs
+to be forwarded down the shared tree.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pimv1_and_pimv2_interoperability">1.7. PIMv1 and PIMv2 interoperability</h3>
+<div class="paragraph">
+<p>The Cisco PIMv2 implementation allows interoperability and transition between
+Version 1 and Version 2, although there might be some minor problems.</p>
+</div>
+<div class="paragraph">
+<p>You can upgrade to PIMv2 incrementally. PIM Versions 1 and 2 can be configured
+on different routers and multilayer switches within one network. Internally,
+all routers and multilayer switches on a shared media network must run the same
+PIM version. Therefore, if a PIMv2 device detects a PIMv1 device, the Version 2
+device downgrades itself to Version 1 until all Version 1 devices have been
+shut down or upgraded.</p>
+</div>
+<div class="paragraph">
+<p>PIMv2 uses the BSR to discover and announce RP-set information for each group
+prefix to all the routers and multilayer switches in a PIM domain. PIMv1,
+together with the Auto-RP feature, can perform the same tasks as the PIMv2 BSR.
+However, Auto-RP is a standalone protocol, separate from PIMv1, and is a
+proprietary Cisco protocol. PIMv2 is a standards track protocol in the IETF. We
+recommend that you use PIMv2. The BSR mechanism interoperates with Auto-RP on
+Cisco routers and multilayer switches. For more information, see the "Auto-RP
+and BSR Configuration Guidelines" section.</p>
+</div>
+<div class="paragraph">
+<p>When PIMv2 devices interoperate with PIMv1 devices, Auto-RP should have already
+been deployed. A PIMv2 BSR that is also an Auto-RP mapping agent automatically
+advertises the RP elected by Auto-RP. That is, Auto-RP sets its single RP on
+every router or multilayer switch in the group. Not all routers and switches in
+the domain use the PIMv2 hash function to select multiple RPs.</p>
+</div>
+<div class="paragraph">
+<p>Dense-mode groups in a mixed PIMv1 and PIMv2 region need no special
+configuration; they automatically interoperate.</p>
+</div>
+<div class="paragraph">
+<p>Sparse-mode groups in a mixed PIMv1 and PIMv2 region are possible because the
+Auto-RP feature in PIMv1 interoperates with the PIMv2 RP feature. Although all
+PIMv2 devices can also use PIMv1, we recommend that the RPs be upgraded to
+PIMv2 (or at least upgraded to PIMv1 in the Cisco IOS Release 11.3 software).
+To ease the transition to PIMv2, we have these recommendations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use Auto-RP throughout the region.</p>
+</li>
+<li>
+<p>Configure sparse-dense mode throughout the region.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_auto_rp_and_bsr_configuration_guidelines">1.8. Auto-RP and BSR configuration guidelines</h3>
+<div class="paragraph">
+<p>There are two approaches to using PIMv2. You can use Version 2 exclusively in
+your network or migrate to Version 2 by employing a mixed PIM version
+environment.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If your network is all Cisco routers and multilayer switches, you can use
+either Auto-RP or BSR.</p>
+</li>
+<li>
+<p>If you have non-Cisco routers in your network, you must use BSR.</p>
+</li>
+<li>
+<p>If you have Cisco PIMv1 and PIMv2 routers and multilayer switches and
+non-Cisco routers, you must use both Auto-RP and BSR.</p>
+</li>
+<li>
+<p>Because bootstrap messages are sent hop-by-hop, a PIMv1 device prevents these
+messages from reaching all routers and multilayer switches in your network.
+Therefore, if your network has a PIMv1 device in it and only Cisco routers and
+multilayer switches, it is best to use Auto-RP.</p>
+</li>
+<li>
+<p>If you have a network that includes non-Cisco routers, configure the Auto-RP
+mapping agent and the BSR on a Cisco PIMv2 router or multilayer switch. Ensure
+that no PIMv1 device is on the path between the BSR and a non-Cisco PIMv2
+router.</p>
+</li>
+<li>
+<p>If you have non-Cisco PIMv2 routers that need to interoperate with Cisco PIMv1
+routers and multilayer switches, both Auto-RP and a BSR are required. We
+recommend that a Cisco PIMv2 device be both the Auto-RP mapping agent and the
+BSR.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration_tasks">2. Configuration tasks</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_configure_basic_multicast_routing">2.1. Configure basic multicast routing</h3>
+<div class="paragraph">
+<p>You must enable IP multicast routing and configure the PIM version and PIM mode
+so that the IOS software can forward multicast packets and determine how the
+multilayer switch populates its multicast routing table.</p>
+</div>
+<div class="paragraph">
+<p>You can configure an interface to be in PIM dense mode, sparse mode, or
+sparse-dense mode. The mode determines how the switch populates its multicast
+routing table and how it forwards multicast packets it receives from its
+directly connected LANs. You must enable PIM in one of these modes for an
+interface to perform IP multicast routing. Enabling PIM on an interface also
+enables IGMP operation on that interface.</p>
+</div>
+<div class="paragraph">
+<p>By default, multicast routing is disabled, and there is no default mode
+setting. The following procedure is required.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Enable IP multicast forwarding</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config)# ip multicast-routing</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Enter interface configuration mode, and specify the Layer 3 interface on which you want to enable multicast routing.
+The specified interface must be one of the following:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A routed port: a physical port that has been configured as a Layer 3 port by entering the no <strong>switchport interface</strong> configuration command.</p>
+</li>
+<li>
+<p>An SVI: a VLAN interface created by using the <strong>interface vlan vlan-id</strong> global configuration command.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These ports must have IP addresses assigned to them.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interface _interface-id_</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Configure the PIM version on the interface. By default, version 2 is enabled and is the recommended setting.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-if)# ip pim version [1|2]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Enable a PIM mode on the interface.  By default, no mode is configured.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-if)# pim {dense-mode | sparse-mode | sparse-dense-mode }</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_manually_assigning_an_rp_to_multicast_groups">2.1.1. Manually Assigning an RP to Multicast Groups</h4>
+<div class="paragraph">
+<p>Senders of multicast traffic announce their existence through register messages
+received from the source&#8217;s first-hop router (designated router) and forwarded
+to the RP. Receivers of multicast packets use RPs to join a multicast group by
+using explicit join messages. RPs are not members of the multicast group;
+rather, they serve as a meeting place for multicast sources and group members.</p>
+</div>
+<div class="paragraph">
+<p>Configure the address of a PIM RP.</p>
+</div>
+<div class="paragraph">
+<p>By default, no PIM RP address is configured. You must configure the IP address
+of RPs on all routers and multilayer switches (including the RP). If there is
+no RP configured for a group, the multilayer switch treats the group as dense,
+using the dense-mode PIM techniques. A PIM device can use multiple RPs, but
+only one per group.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For ip-address, enter the unicast address of the RP in dotted-decimal
+notation.</p>
+</li>
+<li>
+<p>(Optional) For access-list-number, enter an IP standard access list number
+from 1 to 99. If no access list is configured, the RP is used for all groups.</p>
+</li>
+<li>
+<p>(Optional) The override keyword means that if there is a conflict between the
+RP configured with this command and one learned by Auto-RP or BSR, the RP
+configured with this command prevails.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim rp-address ip-address [access-list-number] [override]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_auto_rp">2.2. Configure Auto-RP</h3>
+<div class="paragraph">
+<p>Configure another PIM device to be the candidate RP for local groups.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For interface-id, enter the interface type and number that identifies the RP
+address. Valid interfaces include physical ports, port channels, and VLANs.</p>
+</li>
+<li>
+<p>For scope ttl, specify the time-to-live value in hops. Enter a hop count that
+is high enough so that the RP-announce messages reach all mapping agents in the
+network. There is no default setting. The range is 1 to 255.</p>
+</li>
+<li>
+<p>For <strong>group-list</strong> access-list-number, enter an IP standard access list number
+from 1 to 99. If no access list is configured, the RP is used for all groups.</p>
+</li>
+<li>
+<p>For interval seconds, specify how often the announcement messages must be
+sent. The default is 60 seconds. The range is 1 to 16383.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim send-rp-announce _interface-id_ scope _ttl_ group-list _access-list-number_ interval _seconds_</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Find a multilayer switch whose connectivity is not likely to be interrupted,
+and assign it the role of RP-mapping agent.</p>
+</div>
+<div class="paragraph">
+<p>For scope ttl, specify the time-to-live value in hops to limit the RP discovery
+packets. All devices within the hop count from the source device receive the
+Auto-RP discovery messages. These messages tell other devices which group-to-RP
+mapping to use to avoid conflicts (such as overlapping group-to-RP ranges).
+There is no default setting. The range is 1 to 255.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim send-rp-discovery scope ttl</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configure PIM-SM interfaces to use dens mode to flood Auto-RP traffic to 224.0.1.39 and 224.0.1.40.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim autorp listener</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prevent_join_messages_to_false_rps">2.3. Prevent Join Messages to false RPs</h3>
+<div class="paragraph">
+<p>Determine whether the <strong>ip pim accept-rp</strong> command was previously configured
+throughout the network by using the show running-config privileged EXEC
+command. If the <strong>ip pim accept-rp</strong> command is not configured on any device, this
+problem can be addressed later. In those routers or multilayer switches already
+configured with the <strong>ip pim accept-rp</strong> command, you must enter the command again
+to accept the newly advertised RP.</p>
+</div>
+<div class="paragraph">
+<p>To accept all RPs advertised with Auto-RP and reject all other RPs by default,
+use the <strong>ip pim accept-rp auto-rp</strong> global configuration command.</p>
+</div>
+<div class="paragraph">
+<p>If all interfaces are in sparse mode, use a default-configured RP to support
+the two well-known groups 224.0.1.39 and 224.0.1.40. Auto-RP uses these two
+well-known groups to collect and distribute RP-mapping information. When this
+is the case and the <strong>ip pim accept-rp auto-rp</strong> command is configured, another <strong>ip
+pim accept-rp</strong> command accepting the RP must be configured as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Switch(config)# ip pim accept-rp 172.10.20.1 1
+Switch(config)# access-list 1 permit 224.0.1.39
+Switch(config)# access-list 1 permit 224.0.1.40</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prevent_candidate_rp_spoofing">2.4. Prevent candidate RP spoofing</h3>
+<div class="paragraph">
+<p>Filter incoming RP announcement messages.</p>
+</div>
+<div class="paragraph">
+<p>Enter this command on each mapping agent in the network.</p>
+</div>
+<div class="paragraph">
+<p>Without this command, all incoming RP-announce messages are accepted by
+default.</p>
+</div>
+<div class="paragraph">
+<p>For <strong>rp-list</strong> access-list-number, configure an access list of candidate RP
+addresses that, if permitted, is accepted for the group ranges supplied in the
+group-list access-list-number variable. If this variable is omitted, the filter
+applies to all multicast groups.</p>
+</div>
+<div class="paragraph">
+<p>If more than one mapping agent is used, the filters must be consistent across
+all mapping agents to ensure that no conflicts occur in the Group-to-RP mapping
+information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim rp-announce-filter rp-list _access-list-number_ group-list _access-list-number_</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_the_pim_domain_border">2.5. Define the PIM domain border</h3>
+<div class="paragraph">
+<p>As IP multicast becomes more widespread, the chances of one PIMv2 domain
+bordering another PIMv2 domain is increasing. Because these two domains
+probably do not share the same set of RPs, BSR, candidate RPs, and candidate
+BSRs, you need to constrain PIMv2 BSR messages from flowing into or out of the
+domain. Allowing these messages to leak across the domain borders could
+adversely affect the normal BSR election mechanism and elect a single BSR
+across all bordering domains and co-mingle candidate RP advertisements,
+resulting in the election of RPs in the wrong domain.</p>
+</div>
+<div class="paragraph">
+<p>Define a PIM bootstrap message boundary for the PIM domain.</p>
+</div>
+<div class="paragraph">
+<p>Enter this command on each interface that connects to other bordering PIM
+domains. This command instructs the multilayer switch to neither send or
+receive PIMv2 BSR messages on this interface as shown in Figure 33-8.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-if)# ip pim bsr-border</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/pim-constraining-bsr-messages.png" alt="pim constraining bsr messages">
+</div>
+<div class="title">Figure 5. Constraining PIMv2 BSR Messages</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_the_ip_multicast_boundary">2.6. Define the IP multicast boundary</h3>
+<div class="paragraph">
+<p>You define a multicast boundary to prevent Auto-RP messages from entering the
+PIM domain. You create an access list to deny packets destined for 224.0.1.39
+and 224.0.1.40, which carry Auto-RP information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config-if)# ip multicast boundary access-list-number</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_candidate_bsrs">2.7. Configure candidate BSRs</h3>
+<div class="paragraph">
+<p>You can configure one or more candidate BSRs. The devices serving as candidate
+BSRs should have good connectivity to other devices and be in the backbone
+portion of the network.</p>
+</div>
+<div class="paragraph">
+<p>Configure your multilayer switch to be a candidate BSR.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For interface-id, enter the interface type and number on this switch from which the BSR address is derived to make it a candidate. This interface must be enabled with PIM. Valid interfaces include physical ports, port channels, and VLANs.</p>
+</li>
+<li>
+<p>For hash-mask-length, specify the mask length (32 bits maximum) that is to be ANDed with the group address before the hash function is called. All groups with the same seed hash correspond to the same RP. For example, if this value is 24, only the first 24 bits of the group addresses matter.</p>
+</li>
+<li>
+<p>(Optional) For priority, enter a number from 0 to 255. The BSR with the larger priority is preferred. If the priority values are the same, the device with the highest IP address is selected as the BSR. The default is 0.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config)# ip pim bsr-candidate _interface-id_ _hash-mask-length_ [priority]</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_candidate_rps">2.8. Configure Candidate RPs</h3>
+<div class="paragraph">
+<p>You can configure one or more candidate RPs. Similar to BSRs, the RPs should
+also have good connectivity to other devices and be in the backbone portion of
+the network. An RP can serve the entire IP multicast address space or a portion
+of it. Candidate RPs send candidate RP advertisements to the BSR. When deciding
+which devices should be RPs, consider these options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In a network of Cisco routers and multilayer switches where only Auto-RP is
+used, any device can be configured as an RP.</p>
+</li>
+<li>
+<p>In a network that includes only Cisco PIMv2 routers and multilayer switches
+and with routers from other vendors, any device can be used as an RP.</p>
+</li>
+<li>
+<p>In a network of Cisco PIMv1 routers, Cisco PIMv2 routers, and routers from
+other vendors, configure only Cisco PIMv2 routers and multilayer switches as
+RPs.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Configure your multilayer switch to be a candidate RP.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For interface-id, enter the interface type and number whose associated IP address is advertised as a candidate RP address. Valid interfaces include physical ports, port channels, and VLANs.</p>
+</li>
+<li>
+<p>(Optional) For group-list access-list-number, enter an IP standard access list number from 1 to 99. If no group-list is specified, the multilayer switch is a candidate RP for all groups.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim rp-candidate interface-id [group-list access-list-number]</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_delay_the_use_of_pim_shortest_path_tree">2.9. Delay the Use of PIM Shortest-Path Tree</h3>
+<div class="paragraph">
+<p>The change from shared to source tree happens when the first data packet
+arrives at the last-hop router (Router C in Figure 33-9). This change occurs
+because the ip pim spt-threshold interface configuration command controls that
+timing; its default setting is 0 kbps.</p>
+</div>
+<div class="paragraph">
+<p>The shortest-path tree requires more memory than the shared tree but reduces
+delay. You might want to postpone its use. Instead of allowing the leaf router
+to immediately move to the shortest-path tree, you can specify that the traffic
+must first reach a threshold.</p>
+</div>
+<div class="paragraph">
+<p>You can configure when a PIM leaf router should join the shortest-path tree for
+a specified group. If a source sends at a rate greater than or equal to the
+specified kbps rate, the multilayer switch triggers a PIM join message toward
+the source to construct a source tree (shortest-path tree). If the traffic rate
+from the source drops below the threshold value, the leaf router switches back
+to the shared tree and sends a prune message toward the source.</p>
+</div>
+<div class="paragraph">
+<p>You can specify to which groups the shortest-path tree threshold applies by
+using a group list (a standard access list). If a value of 0 is specified or if
+the group list is not used, the threshold applies to all groups.</p>
+</div>
+<div class="paragraph">
+<p>Specify the threshold that must be reached before moving to shortest-path tree
+(spt).</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For kbps, specify the traffic rate in kilobits per second. The default is 0
+kbps. The range is 0 to 4294967.</p>
+</li>
+<li>
+<p>Specify infinity if you want all sources for the specified group to use the
+shared tree, never switching to the source tree.</p>
+</li>
+<li>
+<p>(Optional) For group-list access-list-number, specify the access list created
+in Step 2. If the value is 0 or if the group-list is not used, the threshold
+applies to all groups.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim spt-threshold {kbps | infinity} [group-list access-list-number]</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modifying_the_pim_router_query_message_interval">2.10. Modifying the PIM Router-Query Message Interval</h3>
+<div class="paragraph">
+<p>PIM routers and multilayer switches send PIM router-query messages to determine
+which device will be the DR for each LAN segment (subnet). The DR is
+responsible for sending IGMP host-query messages to all hosts on the directly
+connected LAN.</p>
+</div>
+<div class="paragraph">
+<p>With PIM DM operation, the DR has meaning only if IGMPv1 is in use. IGMPv1 does
+not have an IGMP querier election process, so the elected DR functions as the
+IGMP querier. With PIM SM operation, the DR is the device that is directly
+connected to the multicast source. It sends PIM register messages to notify the
+RP that multicast traffic from a source needs to be forwarded down the shared
+tree. In this case, the DR is the device with the highest IP address.</p>
+</div>
+<div class="paragraph">
+<p>The default is 30 seconds. The range is 1 to 65535.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip pim query-interval _seconds</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_verify">2.11. Verify</h3>
+<div class="paragraph">
+<p>Display information about interfaces configured for PIM.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip pim interface [type number] [count]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>List the PIM neighbors discovered by the multilayer switch.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip pim neighbor [type number]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Display the elected BSR</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip pim bsr</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>displays the RP that was selected for the specified group.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip pim rp-hash group</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>displays how the multilayer switch learns of the RP (through the BSR or the Auto-RP mechanism).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip pim rp [group-name | group-address | mapping]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Display the RP routers associated with a sparse-mode multicast group.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip pim rp [group-name | group-address]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Display how the multilayer switch is doing Reverse-Path Forwarding (that is, from the unicast routing table, DVMRP routing table, or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show ip rpf {source-address | name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Query a multicast router or multilayer switch about which neighboring multicast devices are peering with it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mrinfo [hostname | address] [source-address | interface]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Display IP multicast packet rate and loss information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mstat source [destination] [group]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Trace the path from a source to a destination branch for a multicast distribution tree for a given group.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mtrace source [destination] [group]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_troubleshoot">3. Troubleshoot</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When debugging interoperability problems between PIMv1 and PIMv2, check these
+in the order shown:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Verify RP mapping with the show ip pim rp-hash privileged EXEC command,
+making sure that all systems agree on the same RP for the same group.</p>
+</li>
+<li>
+<p>Verify interoperability between different versions of DRs and RPs. Make sure
+the RPs are interacting with the DRs properly (by responding with
+register-stops and forwarding decapsulated data packets from registers).</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><a href="http://www.cisco.com/c/en/us/td/docs/ios/12_4t/ip_mcast/configuration/guide/mctlsplt.html#wp1061381">Load splitting IP multicast traffic over ECMP</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_misc">4. misc</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To be added in the text,</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. PIM type code</caption>
+<colgroup>
+<col style="width: 10%;">
+<col style="width: 90%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type  , Name</th>
+<th class="tableblock halign-left valign-top">0     , Hello</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1     , Register</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2     , Register Stop</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3     , Join/Prune</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4     , Bootstrap</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5     , Assert</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6     , Graft</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7     , Graft-Ack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8     , Candidate RP Advertisement</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">9     , State Refresh</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10    , DF Election</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">11-14 , Unassigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">15    , Reserved for extension of type space</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Define the ssm range of IP multicast addresses</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(config)# ip pim [vrf name] ssm { default | range access-list-number}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>default</strong> defines the ssm range access list to 232/8</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2014-03-07 21:24:23 SAST
+</div>
+</div>
+</body>
+</html>

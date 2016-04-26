@@ -1,0 +1,337 @@
+= CCIE written project plan
+Christian Kyony <ckyony@changamuka.com>
+
+== Introduction 
+
+Objectif: to pass the CCIE written exam on 30 Jan 2014
+
+Before the test day, I should be able to:
+
+- pass the testking exam with 95%
+- pass all Boson exams with 100% 
+- Answer all relevan MCQ in the 4th-
+
+
+
+I'd like to track my daily progress against the following metrics:
+
+- 10 hours of study per day
+
+Weekly metrics 
+
+- Pass 
+
+- Keep all documentations relevant to this project under source control
+- Keep copies of all materials sur external hard drive, and on the cloud
+- incorporate GNS lab in my preparation
+
+
+== Day 1
+
+- Study hours: 7 / 10 
+- flash cards for IP services: 5/5
+- create written plan until exam day: 2/2 
+- create daily plan for next day: 1/1  
+
+- Score: 15/18
+- Feelings: It is a good start. I have a home office in the new house.
+but it is terribly hot in here. I need to remember to drink a lot of water.
+
+== Day 2
+
+- study hours : 7.5 /10
+- anki review: 1/1
+- Study the ccie blue print: 2/2  
+- Create flash cards for the blue print (2)
+- flashcards for Ethernet basics: 1/1
+- flashcards for VLANS and VLAN trunking: 1/1 
+- flashcards for STP : 1/1
+- read notes before sleep
+- contact Telkon to transfer ADSL to the new house:  1/1 
+
+- notes for ethernet chapter: 0/2
+- notes for vlan: 0 /4
+- notes for stp :  0/4 
+
+- Feelings: 
+  * Upset by the lack of internet connection to finalize my notes.
+  * Did not succeeded to have 10 hours of study.
+  
+
+== Day 3
+
+- study hours : 9.0 /10
+- Anki review: /2 
+- wccp
+  - notes: 3/3 
+  - flashcards: 2/2
+
+- rite notes: 1/1
+- rite flashcards : 1/1
+
+- review random Boson exam: 
+
+- loop guard
+
+
+
+- IP addressing - notes : /2
+  - flash cards : /2
+  - Do I Know this already: /1  
+- IP services
+  - notes : /2
+  - flash cards : /2
+  - Do I Know this already: /1  
+- IP forwarding
+  - notes : /2
+  - flash cards : /2
+  - Do I Know this already: /1  
+- read notes before sleep
+
+
+
+- Feelings: 
+
+  * Did not wake up on time (8am )
+  * Dont feel very energetic this morming
+  * Try to complete 10 hours before going to sleep
+  * Fail to reach 10 h, very tired.
+  * A challenge is an activity where the probability to fail is not zero.
+  * anki review took an hour, I reduced new card to 40
+
+== Day 4
+
+- study hours : 6.0 /10
+- Anki review: 2 / 2
+- EIGRP notes : 4 /8
+- 
+- RIP
+- OSPF
+- BGP
+- read notes before sleep
+- create a prayer/ ritual / procedure when I feel down / when I need to boost up
+
+- Feelings
+  - Did not wake on time
+  - waste time on bed
+  - not very motivated to study this morning
+  - 2014-01-04 Sat 13:50 get my own notes for eigrp will be a nice target for today.
+  - 2014-01-05 Sun 08:33 Spent evenings speak to John about future plans. Total waste of time.
+
+  
+
+== Day 5
+
+- study hours: 4/10
+- Anki review: 2 / 2
+- complete subsections  topics (8) of the blueprint: 0/1 
+- Qos classification and marking: 0/4
+- QoS Congestion management and avoidance: 0/4
+- Shaping, policing and link fragmentation : 0/4
+
+- feelings:
+  - more like a off-day, watch movie 'The strange life of Walter Mitty'
+  - 
+  
+
+== Day 6
+
+- study hours: 3/10
+- complete subsections  topics (1,2) of the blueprint: 0/1 
+- anki review: 2 /2
+- ios configuration fundamentals: /2 
+- eigrp notes: /2
+- IP multicast: /4
+- read notes before sleep
+
+- feelings: 
+  - more energy after the 10 kms run this morning
+  - get distracted and watch movies in the afternoon
+
+
+== Day 7
+
+- study hours: 8/10
+- Qos classification and marking: 4/4
+- 
+- MPLS 
+
+- feelings: 
+  - Get results for John: Pass with 45% , no improvement from last year,
+    waste year, should have not take the decison to quit job for him ?,
+  - getting scare I wont be ready for the 30th January
+
+== Week 1 review
+
+- Review full blueprint: /1 
+- total study hours: 44.50/60 = 74.2 % 
+
+- pass Boson exam C with 100 % score
+- have 70 hours of study: 
+- create flash cards for the blue print  
+- know the ccie written blue print v4 = 1/1
+
+
+
+== Day 8
+
+- study hours: 0 / 10
+- Security
+- read notes before sleep
+
+- feelings: 
+  - spend day preparing departure of John.
+  - thought about bonding until he dispareared during movie to smoke joint
+
+
+== Day 9
+
+- study hours: 0 / 10
+- hdlc notes : / 2
+- ppp notes: /2 
+- Frame Relay:
+  - notes: 0 / 4 
+  - flashcards : 0 / 4 
+- read notes before sleep
+
+== Day 10
+
+- IPv6 
+- worked from mall
+- watched good videos from ipexpert MArko
+-
+
+== Day 11
+
+- anki review: 2/2
+- strategy: follow the blueprint order to create the notes with the minimum material from 4th-edition OCG
+- 
+
+
+== Day 12 
+- anki review : 2/2
+- read notes before sleep
+
+== Day 13
+
+- security chapter 
+  - study 
+  - notes
+  - flashcards
+  - quiz
+
+
+
+== Day 14
+- read notes before sleep
+
+== Week 2
+
+
+- read notes before sleep
+- monitor study hours in spreadsheet
+
+- knowledge of the 4th certification guide 
+- notes for each topic of the blueprint
+- flashcards for IOS commands of the blueprint ( 4th ed certification guide)
+- targets : 90% > 108 / 120 hours of work
+- 
+
+
+== Day 15
+
+- read notes before sleep
+
+== Day 16
+
+- read notes before sleep
+
+- I wasted a lot of time so far. The idea is to check my current percentage and beat it every day.
+- Starting at 55%
+
+- start reading the 4th ed osg, respond with 100% to all questions and create notes with key points 
+in a document that will follow the blue print structure. 
+- Use the include facility.
+
+- Go for a 6km run anticlockwise at 6 oclock. or after dropping the kids.
+- try to wake up at 345 and get 2 hours work before 6.
+-
+
+
+== Day 17
+
+- 2014-01-17 Fri 09:22 Anki review done
+- 2014-01-17 Fri 09:23 target today is the first three chapter of osg
+-
+- read notes before sleep
+
+== Day 18
+
+- read notes before sleep
+
+== Day 19
+
+- read notes before sleep
+
+== Day 20
+
+- anki review blue print: /2
+- add all subtopics flashcards: /1
+- study multicast: /4
+- flash card multicast: /2
+- notes multicast: /4
+- read supplementary multicast: /2
+- read notes before sleep
+
+== Day 21
+
+- read notes before sleep
+
+
+
+
+== Week 3
+
+- Read Cisco documentation to supplement and reinforce knowledge build in week 2
+- Make transport and accomodation arrangement 
+
+
+== Day 22 
+
+- Read notes before sleep
+
+
+
+== Day 23
+
+- read notes before sleep
+
+== Day 24
+
+- read notes before sleep
+
+== Day 25
+
+- read notes before sleep
+
+== Day 26
+
+- read notes before sleep
+
+== Day 27
+
+- read notes before sleep
+
+== Day 28
+
+- read notes before sleep
+
+== Week 4
+
+== Day 29 - Revision Day
+
+- read notes before sleep
+
+
+== Day 30 - Exam Day
+== Day 31 - Celebration time

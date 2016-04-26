@@ -1,0 +1,15 @@
+.header format
+["packetdiag", target=""]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Marker [len = 128]
+  * Length [len = 16]
+  * Type [len = 8]
+}
+----
+

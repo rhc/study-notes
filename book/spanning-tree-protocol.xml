@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+
+<article lang="en">
+<articleinfo>
+    <title>STP</title>
+</articleinfo>
+<section id="_802_1d">
+<title>802.1d</title>
+<itemizedlist>
+<listitem>
+<simpara>
+creates loop-free topology
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+uses bpdu
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+elect one root switch and one designated switch for each segment
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+one root port per non-root switch, one designated port for each segment
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+other ports on blocking state
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+steps
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+elect the root switch with the lowest bridge id ( 2-byte priority + 6-byte MAC)
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+determine each switch&#8217;s root port: with the least cost path to the root
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+determine the designated port for each segment: the switch that forwards the least cost hello on the segment
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+original ieee 802.1d bridge Id
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+2-byte priority
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+6-byte MAC adress
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+revised ieee 802.1d brigde id Priority for MAC address reduction
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+4 bits : priority multiple of 4096
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+12 bits : system id extension (vlan id ) to support pvst+ and ieee 802.1s
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+hello timer (2 seconds )
+</simpara>
+</listitem>
+</itemizedlist>
+<section id="_determining_the_root_port">
+<title>determining the root port</title>
+<table
+frame="all"
+rowsep="1" colsep="1"
+>
+<title>default port costs</title>
+<tgroup cols="1">
+<colspec colname="col_1" colwidth="100*"/>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>Speed , original, revised
+10 Mbps, 100, 100
+100 Mbps, 10, 19
+1 Gbps, 1, 4
+10 Gbps, 1 , 2</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+<simpara>tie breaker when a switch receives multiple Hellos with equal cost</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+lowest bridge id
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+lowest port priority
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+lowest port number
+</simpara>
+</listitem>
+</orderedlist>
+</section>
+<section id="_determining_the_designated_port">
+<title>determining the designated port</title>
+<itemizedlist>
+<listitem>
+<simpara>
+Designated switch: send the hello with the lowest advertised cost for the segmen
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+DP: port that forward frames onto that segment
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section id="_convergence">
+<title>Convergence</title>
+<itemizedlist>
+<listitem>
+<simpara>
+steady operations
+</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+root switch generates a hello every 2 seconds
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+each RP on non root switch receives a copy of the root&#8217;s hello
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+each DP updates and forwards the hello out
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+each blocking port receives a copy of the hello from the DP without forwarding it
+</simpara>
+</listitem>
+</orderedlist>
+</listitem>
+<listitem>
+<simpara>
+topology change notification and updating the cam
+</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+A switch experiencing the STP port state change sends a TCN BPDU out its Root Port; it
+repeats this message every Hello time until it is acknowledged.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+The next switch receiving that TCN BPDU sends back an acknowledgment via its next
+forwarded Hello BPDU by marking the Topology Change Acknowledgment (TCA) bit in
+the Hello.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+The switch that was the DP on the segment in the first two steps repeats the first two steps,
+sending a TCN BPDU out its Root Port, and awaiting acknowledgment from the DP on that
+segment.
+</simpara>
+</listitem>
+</orderedlist>
+</listitem>
+</itemizedlist>
+<simpara>By each successive switch repeating Steps 1 and 2, eventually the root receives a TCN BPDU.
+Once received, the root sets the TC flag on the next several Hellos, which are forwarded to all
+switches in the network, notifying them that a change has occurred. A switch receiving a Hello
+BPDU with the TC flag set uses the short (Forward Delay time) timer to time out entries in
+the CAM.</simpara>
+<simpara>transitioning from blocking to forwarding</simpara>
+<informaltable
+frame="all"
+rowsep="1" colsep="1"
+>
+<tgroup cols="1">
+<colspec colname="col_1" colwidth="100*"/>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>state, forward data frames, learn source MAC, stable?
+blocking, no, no, yes
+listening, no, no, no
+learning, no, yes, no
+forwarding, yes, yes, yes
+disabled, no, no, stable</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</section>
+<section id="_pvst">
+<title>PVST+</title>
+<itemizedlist>
+<listitem>
+<simpara>
+Per-VLAN spanning tree: for better load balancing
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+cisco + pvst+
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+non-cisco + 802.1q &#8658; one Common Spanning Tree over vlan  1
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+when mixing cisco and non cisco switches with 802.1q trunking,
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+send bpdu to multicast destination MAC of 0100.0CCC.CCCD
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+</itemizedlist>
+</section>
+<section id="_configuration">
+<title>configuration</title>
+<simpara>show spanning-tree root
+show spanning-tree vlan 1 root detail</simpara>
+</section>
+<section id="_optimizing_improving_spanning_tree">
+<title>optimizing, improving spanning tree</title>
+<section id="_portfast">
+<title>PortFast</title>
+<itemizedlist>
+<listitem>
+<simpara>
+used on access ports connected to end users devices not other switches
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+puts the port into forwarding states
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+can generate loops if another switch is connected. so must be used with
+bpdu guard and root guard features
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>(cfg-if) spanning-tree portfast
+(cfg) spanning-tree portfast default</simpara>
+</section>
+<section id="_uplinkfast">
+<title>UplinkFast</title>
+<itemizedlist>
+<listitem>
+<simpara>
+Used on access layer switches that have multiple uplinks to distribution/core switches
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+immediately replaces a lost RP with an alternate RP
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+increases the root and all port priority so the switch does not become root or transit switch
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+time-out the correct entries in their CAMs but doesnt use the TCN process. Instead, finds all the MAC
+addresses of local devices and sends one multicast frame with each local addresses as the source MAC
+causing all the other switches to update their CAMs. The access switch also clears out the rest of the
+entries in its own CAM.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>(cfg) spanning-tree uplinkfast [max-update-rate rate]</simpara>
+</section>
+<section id="_backbonefast">
+<title>BackboneFast</title>
+<itemizedlist>
+<listitem>
+<simpara>
+used in core switches to detect indirect link failures to the Root
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+do not wait for Maxage to expire when another switch&#8217;s direct link fails
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+send a Root Link Query out the port in which the missing Hello should arrive.
+The RLQ asks the neighboring switch if that neighboring switch is still receiving Hellos from the root.
+IF that neighbor had a direct link failure, it can tell the original switch via another RLQ that this path to the root is lost. Once known,
+the switch experiencing the indirect link failure can go ahead and converge without waiting for Axage to expire
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+all switches must have backbone fast configured
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>(cfg) spanning-tree backbonefast</simpara>
+</section>
+</section>
+<section id="_portchannel">
+<title>PortChannel</title>
+<itemizedlist>
+<listitem>
+<simpara>
+for better load balancing
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+each PortChannel is used as if it were a single port for STP purposes
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</section>
+<section id="_802_1w">
+<title>802.1w</title>
+<itemizedlist>
+<listitem>
+<simpara>
+improves convergence by
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+waiting for only 3 missed Hellos on an RP before reacting instead of 10 with 802.1d
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+bypass listening state
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+includes natively Cisco PortFast, UplinkFast, BackboneFast
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+add backup DP when multiple ports connected to the same segment
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+</itemizedlist>
+<formalpara><title>RSTP link types</title><para>Point-to-point, switch to switch
+Shared , switch to hub
+Edge, switch to single end-user device</para></formalpara>
+<formalpara><title>RSTP port states</title><para>administrative state, 802.1d, 802.1w
+disabled, disabled, discarding
+enabled, blocking, discarding
+enabled, listening, discarding
+enabled, learning, learning
+enabled, forwarding, switch to single end-user device</para></formalpara>
+<formalpara><title>RSTP port states</title><para>administrative state, 802.1d, 802.1w
+disabled, disabled, discarding
+enabled, blocking, discarding
+enabled, listening, discarding
+enabled, learning, learning
+enabled, forwarding, forwarding</para></formalpara>
+<formalpara><title>port roles</title><para>Role, Definition
+Root ,
+designated,
+alternate,
+backup, port on the same-link type and ready to take over if DP fails</para></formalpara>
+<section id="_configuration_2">
+<title>configuration</title>
+<simpara>(config) spanning-tree mode rapid-pvst</simpara>
+</section>
+</section>
+<section id="_802_1s">
+<title>802.1s</title>
+</section>
+<section id="_loop_guard">
+<title>loop guard</title>
+<itemizedlist>
+<listitem>
+<simpara>
+prevents non-designated ports from inadvertently forming layer 2 switching loops
+if the flow of bpdus is interrupted.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+puts the port into the loop-inconsistent state when the steady flow of BPDUs is interrupted
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+only used on point-to-point links
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section id="_root_guard">
+<title>root guard</title>
+<itemizedlist>
+<listitem>
+<simpara>
+prevent a port from becoming a root port when receiving a superior bpdu (e.g. inferior priority + mac)
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+puts the port in root-inconsistent state (no data flow) until it stops receiving superior BPDUs
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section id="_bpdu_guard">
+<title>bpdu guard</title>
+<simpara>-
+- puts the port into the errdisable state and shuts down the port
+- the port must be manually re-enabled or it can be recovered automatically through the errdiable timeout function.
+- a port configured with bpdu guard will not be put into the root-inconsistent state.</simpara>
+</section>
+<section id="_storm_control">
+<title>storm control</title>
+</section>
+<section id="_unicast_flooding">
+<title>unicast flooding</title>
+</section>
+<section id="_port_roles">
+<title>port roles</title>
+</section>
+<section id="_root_guard_2">
+<title>Root guard</title>
+<simpara><ulink url="http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10588-74.html">http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10588-74.html</ulink></simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+enforce the root bridge placement
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+ensures that the port on which root guard is enabled is the designated port.
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</article>

@@ -1,0 +1,956 @@
+= PIM
+
+== Understanding
+
+- protocol-independent
+** relies on unicast routing table to perform RPF check
+
+=== Versions
+
+
+==== PIMv1
+
+- Introduced in IOS 11.1(6)
+- Support Auto-RP : eliminates the need to manually configure the rendezvous point in every router.
+
+==== PIMv2
+
+- Default version since IOS 11.3 
+- Support BSR (boot strap router) capability. 
+
+- A single, active RP exists per multicast group, with multiple backup RPs. This single RP compares to multiple active RPs for the same group in PIMv1.
+
+- A BSR provides a fault-tolerant, automated RP discovery and distribution mechanism that enables routers and multilayer switches to dynamically learn the group-to-RP mappings.
+
+- Sparse mode and dense mode are properties of a group, as opposed to an interface. We strongly recommend sparse-dense mode, as opposed to either sparse mode or dense mode only.
+
+- PIM join and prune messages have more flexible encoding for multiple address families.
+
+- A more flexible hello packet format replaces the query packet to encode current and future capability options.
+
+- Register messages to an RP specify whether they are sent by a border router or a designated router.
+
+- PIM packets are no longer inside IGMP packets; they are standalone packets. 
+
+
+
+=== Modes
+
+PIM can operate in dense mode (DM), sparse mode (SM), or in sparse-dense mode
+(PIM DM-SM), which handles both sparse groups and dense groups at the same
+time. 
+
+
+==== PIM DM
+
+In dense mode, a PIM DM router  assumes that all other
+routers es forward multicast packets for a group. If a PIM
+DM device receives a multicast packet and has no directly connected members or
+PIM neighbors present, a prune message is sent back to the source. Subsequent
+multicast packets are not flooded to this router or switch on this pruned
+branch. PIM DM builds source-based multicast distribution trees.
+
+The simplest form of a multicast distribution tree is a source tree whose root
+is the source of the multicast traffic and whose branches form a spanning tree
+through the network to the receivers. Because this tree uses the shortest path
+through the network, it is also referred to as a shortest-path tree (SPT). A
+separate SPT exists for every individual source sending to each group. The
+special notation of (S,G) (pronounced S comma G) identifies an SPT where S is
+the IP address of the source and G is the multicast group address.
+
+<<x1>> shows an example of SPT for group 224.1.1.1 rooted at the source,
+Host A, and connecting two receivers, Hosts B and C. The SPT notation for this
+group would be (194.1.1.1, 224.1.1.1).
+
+[[x1]]
+.Host A Shortest-Path Tree
+image::images/pim-shortest-path-tree.png[]
+
+If Host B is also sending traffic to group 224.1.1.1 and Hosts A and C are
+receivers, then a separate (S,G) SPT would exist with the notation of
+(194.2.2.2, 224.1.1.1).
+
+PIM DM employs only SPTs to deliver (S,G) multicast traffic by using a flood
+and prune method. It assumes that every subnet in the network has at least one
+receiver of the (S,G) multicast traffic, and therefore the traffic is flooded
+to all points in the network.
+
+To avoid unnecessary consumption of network resources, PIM DM devices send
+prune messages up the source distribution tree to stop unwanted multicast
+traffic. Branches without receivers are pruned from the distribution tree,
+leaving only branches that contain receivers. Prunes have a timeout value
+associated with them, after which the PIM DM device puts the interface into the
+forwarding state and floods multicast traffic out the interface. When a new
+receiver on a previously pruned branch of the tree joins a multicast group, the
+PIM DM device detects the new receiver and immediately sends a graft message up
+the distribution tree toward the source. When the upstream PIM DM device
+receives the graft message, it immediately puts the interface on which the
+graft was received into the forwarding state so that the multicast traffic
+begins flowing to the receiver. 
+
+
+==== PIM SM
+
+PIM SM uses shared trees and SPTs to distribute multicast traffic to multicast receivers in the network. 
+
+In PIM SM, a router  assumes that other routers or switches
+do not forward multicast packets for a group, unless there is an explicit
+request for the traffic (join message). When a host joins a multicast group
+using IGMP, its directly connected PIM SM device sends PIM join messages toward
+the root, also known as the RP. This join message travels router-by-router
+toward the root, constructing a branch of the shared tree as it goes. The RP
+keeps track of multicast receivers; it also registers sources through register
+messages received from the source's first-hop router (designated router [DR])
+to complete the shared tree path from the source to the receiver. The branches
+of the shared tree are maintained by periodic join refresh messages that the
+PIM SM devices send along the branch.
+
+When using a shared tree, sources must send their traffic to the RP so that the
+traffic reaches all receivers. The special notation \*,G, (pronounced star comma
+G) is used to represent the tree, where * means all sources and G represents
+the multicast group. Figure <<pim-shared-distribution-tree>> shows a shared tree for group 224.2.2.2 with
+the RP located at Router 3. Multicast group traffic from source Hosts A and D
+travels to the RP (Router 3) and then down the shared tree to two receivers,
+Hosts B and C. Because all sources in the multicast group use a common shared
+tree, the special notation (*, 224.2.2.2) describes this shared tree.
+
+[[pim-shared-distribution-tree]]
+.Shared Distribution Tree
+image::images/pim-shared-distribution-tree.png[]
+
+NOTE: In addition to using the shared distribution tree, PIM SM can also use
+SPTs. By joining an SPT, multicast traffic is routed directly to the receivers
+without having to go through the RP, thereby reducing network latency and
+possible congestion at the RP. The disadvantage is that PIM SM devices must
+create and maintain (S,G) state entries in their routing tables along with the
+(S,G) SPT. This action consumes router resources.
+
+Prune messages are sent up the distribution tree to prune multicast group
+traffic. This action permits branches of the shared tree or SPT that were
+created with explicit join messages to be torn down when they are no longer
+needed. For example, if a leaf router (a router without any downstream
+connections) detects that it no longer has any directly connected hosts (or
+downstream multicast routers) for a particular multicast group, it sends a
+prune message up the distribution tree to stop the flow of unwanted multicast
+traffic.  
+
+
+=== Shared tree vs Source tree
+
+By default, members of a group receive data from senders to the group across a
+single data-distribution tree rooted at the RP. Figure <<pim_tree>> shows this type of
+shared-distribution tree. Data from senders is delivered to the RP for
+distribution to group members joined to the shared tree. 
+
+
+[[pim_tree]]
+.PIM trees
+image::images/pim-trees.png[]
+
+
+
+If the data rate warrants, leaf routers (routers without any downstream
+connections) on the shared tree can use the data distribution tree rooted at
+the source. This type of distribution tree is called a shortest-path tree or
+source tree. By default, the IOS software switches to a source tree upon
+receiving the first data packet from a source.
+
+This process describes the move from a shared tree to a source tree:
+
+. A receiver joins a group; leaf Router C sends a join message toward the RP.
+
+. The RP puts a link to Router C in its outgoing interface list.
+
+. A source sends data; Router A encapsulates the data in a register message
+and sends it to the RP.
+
+. The RP forwards the data down the shared tree to Router C and sends a join
+message toward the source. At this point, data might arrive twice at Router C,
+once encapsulated and once natively.
+
+. When data arrives natively (unencapsulated) at the RP, it sends a
+register-stop message to Router A.
+
+. By default, reception of the first data packet prompts Router C to send a
+join message toward the source.
+
+. When Router C receives data on (S,G), it sends a prune message for the
+source up the shared tree.
+
+. The RP deletes the link to Router C from the outgoing interface of (S,G).
+The RP triggers a prune message toward the source.
+
+Join and prune messages are sent for sources and RPs. They are sent hop-by-hop
+and are processed by each PIM device along the path to the source or RP.
+Register and register-stop messages are not sent hop-by-hop. They are sent by
+the designated router that is directly connected to a source and are received
+by the RP for the group.
+
+Multiple sources sending to groups use the shared tree.
+
+You can configure the PIM device to stay on the shared tree.
+
+
+=== Auto-RP
+
+This proprietary feature eliminates the need to manually configure the
+rendezvous point (RP) information in every router and multilayer switch in the
+network.  Auto-RP uses IP multicast to automate the distribution of group-to-RP mappings
+to all Cisco routers and multilayer switches in a PIM network. 
+
+It has these benefits:
+
+- It is easy to use multiple RPs within a network to serve different group
+  ranges.
+
+- It allows load splitting among different RPs and arrangement of RPs according
+  to the location of group participants.
+
+- It avoids inconsistent, manual RP configurations on every router and
+  multilayer switch in a PIM network, which can cause connectivity problems. 
+
+
+For Auto-RP to work, you configure a Cisco router 
+as the *mapping agent*. It uses IP multicast to learn which routers or switches
+in the network are possible candidate RPs by joining the well-known
+Cisco-RP-announce multicast group (224.0.1.39) to receive candidate RP
+announcements. Candidate RPs send multicast RP-announce messages to a
+particular group or group range every 60 seconds (default) to announce their
+availability. Each RP-announce message contains a holdtime that tells the
+mapping agent how long the candidate RP announcement is valid. The default is
+180 seconds.
+
+Mapping agents listen to these candidate RP announcements and use the
+information to create entries in their Group-to-RP mapping caches. Only one
+mapping cache entry is created for any Group-to-RP range received, even if
+multiple candidate RPs are sending RP announcements for the same range. As the
+RP-announce messages arrive, the mapping agent selects the router or switch
+with the highest IP address as the active RP and stores this RP address in the
+Group-to-RP mapping cache.
+
+Mapping agents multicast the contents of their Group-to-RP mapping cache in
+RP-discovery messages every 60 seconds (default) to the Cisco-RP-discovery
+multicast group (224.0.1.40), which all Cisco PIM routers and multilayer
+switches join to receive Group-to-RP mapping information. Thus, all routers and
+switches automatically discover which RP to use for the groups they support.
+The discovery messages also contain a holdtime, which defines how long the
+Group-to-RP mapping is valid. If a router or switch fails to receive
+RP-discovery messages and the Group-to-RP mapping information expires, it
+switches to a statically configured RP that was defined with the *ip pim
+rp-address* global configuration command. If no statically configured RP exists,
+the router or switch changes the group to dense-mode operation.
+
+Multiple RPs serve different group ranges or serve as hot backups of each
+other.
+
+=== Bootstrap Router
+
+PIMv2 BSR is another method to distribute group-to-RP mapping information to
+all PIM routers and multilayer switches in the network. It eliminates the need
+to manually configure RP information in every router and switch in the network.
+However, instead of using IP multicast to distribute group-to-RP mapping
+information, BSR uses hop-by-hop flooding of special BSR messages to distribute
+the mapping information.
+
+The BSR is elected from a set of candidate routers and switches in the domain
+that have been configured to function as BSRs. The election mechanism is
+similar to the root-bridge election mechanism used in bridged LANs. The BSR
+election is based on the BSR priority of the device contained in the BSR
+messages that are sent hop-by-hop through the network. Each BSR device examines
+the message and forwards out all interfaces only the message that has either a
+higher BSR priority than its BSR priority or the same BSR priority, but with a
+higher BSR IP address. Using this method, the BSR is elected.
+
+The elected BSR sends BSR messages to the all-PIM-routers multicast group
+(224.0.0.13) with a TTL of 1. Neighboring PIMv2 routers es
+receive the BSR message and multicast it out all other interfaces (except the
+one on which it was received) with a TTL of 1. In this way, BSR messages travel
+hop-by-hop throughout the PIM domain. Because BSR messages contain the IP
+address of the current BSR, the flooding mechanism allows candidate RPs to
+automatically learn which device is the elected BSR.
+
+Candidate RPs send candidate RP advertisements showing the group range for
+which they are responsible directly to the BSR, which stores this information
+in its local candidate-RP cache. The BSR periodically advertises the contents
+of this cache in BSR messages to all other PIM devices in the domain. These
+messages travel hop-by-hop through the network to all routers and switches,
+which store the RP information in the BSR message in their local RP cache. The
+routers and switches select the same RP for a given group because they all use
+a common RP hashing algorithm.
+
+==== Multicast Forwarding and Reverse Path Check
+
+With unicast routing, routers and multilayer switches forward traffic through
+the network along a single path from the source to the destination host whose
+IP address appears in the destination address field of the IP packet. Each
+router and switch along the way makes a unicast forwarding decision, using the
+destination IP address in the packet, by looking up the destination address in
+the unicast routing table and forwarding the packet through the specified
+interface to the next hop toward the destination.
+
+With multicasting, the source is sending traffic to an arbitrary group of hosts
+represented by a multicast group address in the destination address field of
+the IP packet. To determine whether to forward or drop an incoming multicast
+packet, the router  uses a *reverse path forwarding* (RPF)
+check on the packet as follows and shown in Figure <<rpf>>:
+
+. The router  examines the source address of the arriving
+multicast packet to determine whether the packet arrived on an interface that
+is on the reverse path back to the source.
+
+. If the packet arrives on the interface leading back to the source, the RPF
+check is successful and the packet is forwarded to all interfaces in the
+outgoing interface list (which might not be all interfaces on the router).
+
+. If the RPF check fails, the packet is discarded.
+
+Some multicast routing protocols, such as DVMRP, maintain a separate multicast
+routing table and use it for the RPF check. However, PIM uses the unicast
+routing table to perform the RPF check.
+
+Figure <<rpf>> shows Gigabit Ethernet interface 0/2 receiving a multicast packet from source 151.10.3.21. A check of the routing table shows that the interface on the reverse path to the source is Gigabit Ethernet interface 0/1, not interface 0/2. Because the RPF check fails, the multilayer switch discards the packet. Another multicast packet from source 151.10.3.21 is received on interface 0/1, and the routing table shows this interface is on the reverse path to the source. Because the RPF check passes, the switch forwards the packet to all interfaces in the outgoing interface list.
+
+[[rpf]]
+.RPF Check
+image::images/pim-rpf-check.png[]
+
+PIM uses both source trees and RP-rooted shared trees to forward datagrams ; the RPF check is performed differently for each:
+
+- If a PIM router  has a source-tree state (that is, an (S,G) entry is present in the multicast routing table), it performs the RPF check against the IP address of the source of the multicast packet.
+
+- If a PIM router  has a shared-tree state (and no explicit source-tree state), it performs the RPF check on the rendezvous point (RP) address (which is known when members join the group).
+
+Sparse-mode PIM uses the RPF lookup function to determine where it needs to send joins and prunes:
+
+- (S,G) joins (which are source-tree states) are sent toward the source.
+
+- (*,G) joins (which are shared-tree states) are sent toward the RP.
+
+DVMRP and dense-mode PIM use only source trees and use RPF as previously described.
+
+=== Neighbor Discovery
+
+PIM uses a neighbor discovery mechanism to establish PIM neighbor adjacencies.
+To establish adjacencies, a PIM router  sends PIM hello
+messages to the all-PIM-routers multicast group (224.0.0.13) on each of its
+multicast-enabled interfaces. The hello message contains a holdtime, which
+tells the receiver when the neighbor adjacency associated with the sender
+expires if no more PIM hello messages are received. Keeping track of
+adjacencies is important for PIM DM operation for building the source
+distribution tree.
+
+PIM hello messages are also used to elect the DR for multi-access networks
+(Ethernet). The router  on the network with the highest IP
+address is the DR. With PIM DM operation, the DR has meaning only if IGMPv1 is
+in use; IGMPv1 does not have an IGMP querier election process, so the elected
+DR functions as the IGMP querier. In PIM SM operation, the DR is the router or
+switch that is directly connected to the multicast source. It sends PIM
+register messages to notify the RP that multicast traffic from a source needs
+to be forwarded down the shared tree. 
+
+
+//add something about the PIM sparse-dense mode
+
+=== PIMv1 and PIMv2 interoperability
+
+The Cisco PIMv2 implementation allows interoperability and transition between
+Version 1 and Version 2, although there might be some minor problems.
+
+You can upgrade to PIMv2 incrementally. PIM Versions 1 and 2 can be configured
+on different routers and multilayer switches within one network. Internally,
+all routers and multilayer switches on a shared media network must run the same
+PIM version. Therefore, if a PIMv2 device detects a PIMv1 device, the Version 2
+device downgrades itself to Version 1 until all Version 1 devices have been
+shut down or upgraded.
+
+PIMv2 uses the BSR to discover and announce RP-set information for each group
+prefix to all the routers and multilayer switches in a PIM domain. PIMv1,
+together with the Auto-RP feature, can perform the same tasks as the PIMv2 BSR.
+However, Auto-RP is a standalone protocol, separate from PIMv1, and is a
+proprietary Cisco protocol. PIMv2 is a standards track protocol in the IETF. We
+recommend that you use PIMv2. The BSR mechanism interoperates with Auto-RP on
+Cisco routers and multilayer switches.
+
+When PIMv2 devices interoperate with PIMv1 devices, Auto-RP should have already
+been deployed. A PIMv2 BSR that is also an Auto-RP mapping agent automatically
+advertises the RP elected by Auto-RP. That is, Auto-RP sets its single RP on
+every router  in the group. Not all routers and switches in
+the domain use the PIMv2 hash function to select multiple RPs.
+
+Dense-mode groups in a mixed PIMv1 and PIMv2 region need no special
+configuration; they automatically interoperate.
+
+Sparse-mode groups in a mixed PIMv1 and PIMv2 region are possible because the
+Auto-RP feature in PIMv1 interoperates with the PIMv2 RP feature. Although all
+PIMv2 devices can also use PIMv1, we recommend that the RPs be upgraded to
+PIMv2 (or at least upgraded to PIMv1 in the Cisco IOS Release 11.3 software).
+To ease the transition to PIMv2, we have these recommendations:
+
+- Use Auto-RP throughout the region.
+
+- Configure sparse-dense mode throughout the region.
+
+
+
+=== Auto-RP and BSR configuration guidelines
+
+There are two approaches to using PIMv2. You can use Version 2 exclusively in
+your network or migrate to Version 2 by employing a mixed PIM version
+environment.
+
+- If your network is all Cisco routers and multilayer switches, you can use
+either Auto-RP or BSR.
+
+- If you have non-Cisco routers in your network, you must use BSR.
+
+- If you have Cisco PIMv1 and PIMv2 routers and multilayer switches and
+non-Cisco routers, you must use both Auto-RP and BSR.
+
+- Because bootstrap messages are sent hop-by-hop, a PIMv1 device prevents these
+messages from reaching all routers and multilayer switches in your network.
+Therefore, if your network has a PIMv1 device in it and only Cisco routers and
+multilayer switches, it is best to use Auto-RP.
+
+- If you have a network that includes non-Cisco routers, configure the Auto-RP
+mapping agent and the BSR on a Cisco PIMv2 router . Ensure
+that no PIMv1 device is on the path between the BSR and a non-Cisco PIMv2
+router.
+
+- If you have non-Cisco PIMv2 routers that need to interoperate with Cisco PIMv1
+routers and multilayer switches, both Auto-RP and a BSR are required. We
+recommend that a Cisco PIMv2 device be both the Auto-RP mapping agent and the
+BSR.
+
+
+
+== Configuration tasks
+
+=== Configure basic multicast routing
+
+You must enable IP multicast routing and configure the PIM version and PIM mode
+so that the IOS software can forward multicast packets and determine how the
+multilayer switch populates its multicast routing table.
+
+You can configure an interface to be in PIM dense mode, sparse mode, or
+sparse-dense mode. The mode determines how the switch populates its multicast
+routing table and how it forwards multicast packets it receives from its
+directly connected LANs. You must enable PIM in one of these modes for an
+interface to perform IP multicast routing. Enabling PIM on an interface also
+enables IGMP operation on that interface.
+
+By default, multicast routing is disabled, and there is no default mode
+setting. The following procedure is required. 
+
+- Enable IP multicast forwarding
+
+----
+(config)# ip multicast-routing
+----
+  
+- Enter interface configuration mode, and specify the Layer 3 interface on which you want to enable multicast routing.
+The specified interface must be one of the following:
+
+** A routed port: a physical port that has been configured as a Layer 3 port by entering the no *switchport interface* configuration command.
+
+** An SVI: a VLAN interface created by using the *interface vlan vlan-id* global configuration command. 
+
+These ports must have IP addresses assigned to them.
+
+----
+interface <interface-id> 
+----
+
+- Configure the PIM version on the interface. By default, version 2 is enabled and is the recommended setting.
+
+----
+(config-if)# ip pim version [1|2]
+----
+
+- Enable a PIM mode on the interface.  By default, no mode is configured. 
+
+----
+(config-if)# pim {dense-mode | sparse-mode | sparse-dense-mode }
+----
+
+==== Manually Assigning an RP to Multicast Groups
+
+Senders of multicast traffic announce their existence through register messages
+received from the source's first-hop router (designated router) and forwarded
+to the RP. Receivers of multicast packets use RPs to join a multicast group by
+using explicit join messages. RPs are not members of the multicast group;
+rather, they serve as a meeting place for multicast sources and group members. 
+
+
+Configure the address of a PIM RP.
+
+By default, no PIM RP address is configured. You must configure the IP address
+of RPs on all routers and multilayer switches (including the RP). If there is
+no RP configured for a group, the multilayer switch treats the group as dense,
+using the dense-mode PIM techniques. A PIM device can use multiple RPs, but
+only one per group.
+
+- For ip-address, enter the unicast address of the RP in dotted-decimal
+notation.
+
+- (Optional) For access-list-number, enter an IP standard access list number
+from 1 to 99. If no access list is configured, the RP is used for all groups.
+
+- (Optional) The override keyword means that if there is a conflict between the
+RP configured with this command and one learned by Auto-RP or BSR, the RP
+configured with this command prevails. 
+
+----
+ip pim rp-address ip-address [access-list-number] [override] 
+----
+
+=== Configure Auto-RP
+
+Configure another PIM device to be the candidate RP for local groups.
+
+- For interface-id, enter the interface type and number that identifies the RP
+address. Valid interfaces include physical ports, port channels, and VLANs.
+
+- For scope ttl, specify the time-to-live value in hops. Enter a hop count that
+is high enough so that the RP-announce messages reach all mapping agents in the
+network. There is no default setting. The range is 1 to 255.
+
+- For *group-list* access-list-number, enter an IP standard access list number
+from 1 to 99. If no access list is configured, the RP is used for all groups.
+
+- For interval seconds, specify how often the announcement messages must be
+sent. The default is 60 seconds. The range is 1 to 16383. 
+
+----
+ip pim send-rp-announce <interface-id> scope <ttl> group-list <access-list-number> interval <seconds> 
+----
+
+
+Find a multilayer switch whose connectivity is not likely to be interrupted,
+and assign it the role of RP-mapping agent.
+
+For scope ttl, specify the time-to-live value in hops to limit the RP discovery
+packets. All devices within the hop count from the source device receive the
+Auto-RP discovery messages. These messages tell other devices which group-to-RP
+mapping to use to avoid conflicts (such as overlapping group-to-RP ranges).
+There is no default setting. The range is 1 to 255. 
+
+----
+ip pim send-rp-discovery scope <1..255>
+----
+
+
+Configure PIM-SM interfaces to use dense mode to flood Auto-RP traffic to 224.0.1.39 and 224.0.1.40.
+
+----
+ip pim autorp listener
+----
+
+
+=== Prevent Join Messages to false RPs
+
+Determine whether the *ip pim accept-rp* command was previously configured
+throughout the network by using the show running-config privileged EXEC
+command. If the *ip pim accept-rp* command is not configured on any device, this
+problem can be addressed later. In those routers es already
+configured with the *ip pim accept-rp* command, you must enter the command again
+to accept the newly advertised RP.
+
+To accept all RPs advertised with Auto-RP and reject all other RPs by default,
+use the *ip pim accept-rp auto-rp* global configuration command.
+
+If all interfaces are in sparse mode, use a default-configured RP to support
+the two well-known groups 224.0.1.39 and 224.0.1.40. Auto-RP uses these two
+well-known groups to collect and distribute RP-mapping information. When this
+is the case and the *ip pim accept-rp auto-rp* command is configured, another *ip
+pim accept-rp* command accepting the RP must be configured as follows:
+
+----
+Switch(config)# ip pim accept-rp 172.10.20.1 1
+Switch(config)# access-list 1 permit 224.0.1.39
+Switch(config)# access-list 1 permit 224.0.1.40
+----
+
+=== Prevent candidate RP spoofing
+
+Filter incoming RP announcement messages.
+
+Enter this command on each mapping agent in the network.
+
+Without this command, all incoming RP-announce messages are accepted by
+default.
+
+For *rp-list* access-list-number, configure an access list of candidate RP
+addresses that, if permitted, is accepted for the group ranges supplied in the
+group-list access-list-number variable. If this variable is omitted, the filter
+applies to all multicast groups.
+
+If more than one mapping agent is used, the filters must be consistent across
+all mapping agents to ensure that no conflicts occur in the Group-to-RP mapping
+information. 
+
+----
+ip pim rp-announce-filter rp-list <access-list-number> group-list <access-list-number> 
+----
+
+=== Define the PIM domain border
+
+As IP multicast becomes more widespread, the chances of one PIMv2 domain
+bordering another PIMv2 domain is increasing. Because these two domains
+probably do not share the same set of RPs, BSR, candidate RPs, and candidate
+BSRs, you need to constrain PIMv2 BSR messages from flowing into or out of the
+domain. Allowing these messages to leak across the domain borders could
+adversely affect the normal BSR election mechanism and elect a single BSR
+across all bordering domains and co-mingle candidate RP advertisements,
+resulting in the election of RPs in the wrong domain. 
+
+
+Define a PIM bootstrap message boundary for the PIM domain.
+
+Enter this command on each interface that connects to other bordering PIM
+domains. This command instructs the multilayer switch to neither send or
+receive PIMv2 BSR messages on this interface as shown in Figure <<bsr-boundaries>>. 
+
+----
+(config-if)# ip pim bsr-border
+----
+
+[[bsr-boundaries]]
+.Constraining PIMv2 BSR Messages
+image::images/pim-constraining-bsr-messages.png[]
+
+
+=== Define the IP multicast boundary
+
+You define a multicast boundary to prevent Auto-RP messages from entering the
+PIM domain. You create an access list to deny packets destined for 224.0.1.39
+and 224.0.1.40, which carry Auto-RP information. 
+
+----
+(config-if)# ip multicast boundary <access-list-number>
+----
+
+=== Configure candidate BSRs
+
+You can configure one or more candidate BSRs. The devices serving as candidate
+BSRs should have good connectivity to other devices and be in the backbone
+portion of the network. 
+
+
+	
+
+Configure your multilayer switch to be a candidate BSR.
+
+- For interface-id, enter the interface type and number on this switch from which the BSR address is derived to make it a candidate. This interface must be enabled with PIM. Valid interfaces include physical ports, port channels, and VLANs.
+
+- For hash-mask-length, specify the mask length (32 bits maximum) that is to be ANDed with the group address before the hash function is called. All groups with the same seed hash correspond to the same RP. For example, if this value is 24, only the first 24 bits of the group addresses matter.
+
+- (Optional) For priority, enter a number from 0 to 255. The BSR with the larger priority is preferred. If the priority values are the same, the device with the highest IP address is selected as the BSR. The default is 0. 
+
+----
+(config)# ip pim bsr-candidate <interface-id> <hash-mask-length> [priority]
+----
+
+=== Configure Candidate RPs
+
+
+You can configure one or more candidate RPs. Similar to BSRs, the RPs should
+also have good connectivity to other devices and be in the backbone portion of
+the network. An RP can serve the entire IP multicast address space or a portion
+of it. Candidate RPs send candidate RP advertisements to the BSR. When deciding
+which devices should be RPs, consider these options:
+
+- In a network of Cisco routers and multilayer switches where only Auto-RP is
+used, any device can be configured as an RP.
+
+- In a network that includes only Cisco PIMv2 routers and multilayer switches
+and with routers from other vendors, any device can be used as an RP.
+
+- In a network of Cisco PIMv1 routers, Cisco PIMv2 routers, and routers from
+other vendors, configure only Cisco PIMv2 routers and multilayer switches as
+RPs. 
+
+Configure your multilayer switch to be a candidate RP.
+
+- For interface-id, enter the interface type and number whose associated IP address is advertised as a candidate RP address. Valid interfaces include physical ports, port channels, and VLANs.
+
+- (Optional) For group-list access-list-number, enter an IP standard access list number from 1 to 99. If no group-list is specified, the multilayer switch is a candidate RP for all groups. 
+
+----
+ip pim rp-candidate interface-id [group-list access-list-number]
+----
+
+
+=== Delay the Use of PIM Shortest-Path Tree
+
+
+The change from shared to source tree happens when the first data packet
+arrives at the last-hop router. This change occurs
+because the *ip pim spt-threshold* interface configuration command controls that
+timing; its default setting is 0 kbps.
+
+The shortest-path tree requires more memory than the shared tree but reduces
+delay. You might want to postpone its use. Instead of allowing the leaf router
+to immediately move to the shortest-path tree, you can specify that the traffic
+must first reach a threshold.
+
+You can configure when a PIM leaf router should join the shortest-path tree for
+a specified group. If a source sends at a rate greater than or equal to the
+specified kbps rate, the multilayer switch triggers a PIM join message toward
+the source to construct a source tree (shortest-path tree). If the traffic rate
+from the source drops below the threshold value, the leaf router switches back
+to the shared tree and sends a prune message toward the source.
+
+You can specify to which groups the shortest-path tree threshold applies by
+using a group list (a standard access list). If a value of 0 is specified or if
+the group list is not used, the threshold applies to all groups. 
+
+
+Specify the threshold that must be reached before moving to shortest-path tree
+(spt).
+
+- For kbps, specify the traffic rate in kilobits per second. The default is 0
+kbps. The range is 0 to 4294967.
+
+- Specify infinity if you want all sources for the specified group to use the
+shared tree, never switching to the source tree.
+
+- (Optional) For group-list access-list-number, specify the access list created
+in Step 2. If the value is 0 or if the group-list is not used, the threshold
+applies to all groups. 
+
+----
+ip pim spt-threshold {kbps | infinity} [group-list access-list-number]
+----
+
+
+=== Modifying the PIM Router-Query Message Interval
+
+PIM routers and multilayer switches send PIM router-query messages to determine
+which device will be the DR for each LAN segment (subnet). The DR is
+responsible for sending IGMP host-query messages to all hosts on the directly
+connected LAN.
+
+With PIM DM operation, the DR has meaning only if IGMPv1 is in use. IGMPv1 does
+not have an IGMP querier election process, so the elected DR functions as the
+IGMP querier. With PIM SM operation, the DR is the device that is directly
+connected to the multicast source. It sends PIM register messages to notify the
+RP that multicast traffic from a source needs to be forwarded down the shared
+tree. In this case, the DR is the device with the highest IP address. 
+
+The default is 30 seconds. The range is 1 to 65535. 
+
+----
+ip pim query-interval <seconds>
+----
+
+=== Verify 
+
+Display information about interfaces configured for PIM.
+
+----
+show ip pim interface [type number] [count]
+----
+
+
+List the PIM neighbors discovered by the multilayer switch.
+
+----
+show ip pim neighbor [type number]
+----
+	
+
+Display the elected BSR
+
+----
+show ip pim bsr 
+----
+
+displays the RP that was selected for the specified group.
+----
+show ip pim rp-hash group 
+----
+
+displays how the multilayer switch learns of the RP (through the BSR or the Auto-RP mechanism). 
+
+----
+show ip pim rp [group-name | group-address | mapping] 
+----
+
+Display the RP routers associated with a sparse-mode multicast group.
+
+----
+show ip pim rp [group-name | group-address]
+----
+	
+
+Display how the multilayer switch is doing Reverse-Path Forwarding
+
+----
+show ip rpf {source-address | name}
+----
+	
+Query a multicast router  about which neighboring multicast devices are peering with it.
+
+----
+mrinfo [hostname | address] [source-address | interface]
+----
+	
+
+Display IP multicast packet rate and loss information.
+
+----
+mstat source [destination] [group]
+----
+	
+
+Trace the path from a source to a destination branch for a multicast distribution tree for a given group. 
+
+----
+mtrace source [destination] [group]
+----
+	
+
+
+== Troubleshoot
+
+When debugging interoperability problems between PIMv1 and PIMv2, check these
+in the order shown:
+
+. Verify RP mapping with the show ip pim rp-hash privileged EXEC command,
+making sure that all systems agree on the same RP for the same group.
+
+. Verify interoperability between different versions of DRs and RPs. Make sure
+the RPs are interacting with the DRs properly (by responding with
+register-stops and forwarding decapsulated data packets from registers). 
+
+
+//to read 
+
+http://www.cisco.com/c/en/us/td/docs/ios/12<4t/ip>mcast/configuration/guide/mctlsplt.html#wp1061381[Load splitting IP multicast traffic over ECMP]
+
+
+== Misc
+
+TODO To be added in the text
+
+.PIM type code
+[format="csv", cols="10,90", options="header"]
+|===
+Type  , Name
+0     , Hello
+1     , Register
+2     , Register Stop
+3     , Join/Prune
+4     , Bootstrap
+5     , Assert
+6     , Graft
+7     , Graft-Ack
+8     , Candidate RP Advertisement
+9     , State Refresh
+10    , DF Election
+11-14 , Unassigned
+15    , Reserved for extension of type space
+|===
+
+//Forgotten commands
+
+Define the ssm range of IP multicast addresses
+
+----
+(config)# ip pim [vrf name] ssm { default | range access-list-number}
+----
+
+*default* defines the ssm range access list to 232/8
+
+
+
+TODO: Need to delete section below.
+
+=== Configure the TTL Threshold
+
+Each time an IP multicast packet is forwarded by the multilayer switch, the
+time-to-live (TTL) value in the IP header is decremented by one. If the packet
+TTL decrements to zero, the switch drops the packet. TTL thresholds can be
+applied to individual interfaces of the multilayer switch to prevent multicast
+packets with a TTL less than the TTL threshold from being forwarded out the
+interface. TTL thresholds provide a simple method to prevent the forwarding of
+multicast traffic beyond the boundary of a site or region, based on the TTL
+field in a multicast packet. This is known as TTL scoping.
+
+Figure 33-10 shows a multicast packet arriving on Gigabit Ethernet interface
+0/2 with a TTL value of 24. Assuming that the RPF check succeeds and that
+Gigabit Ethernet interfaces 0/1, 0/3, and 0/4 are all in the outgoing interface
+list, the packet would normally be forwarded out these interfaces. Because some
+TTL thresholds have been applied to these interfaces, the multilayer switch
+makes sure that the packet TTL value, which is decremented by 1 to 23, is
+greater than or equal to the interface TTL threshold before forwarding the
+packet out the interface. In this example, the packet is forwarded out
+interfaces 0/1 and 0/4, but not interface 0/3. 
+
+
+image::images/multicast-ttl-threshold.png[]
+
+Figure 33-11 shows an example of TTL threshold boundaries being used to limit
+the forwarding of multicast traffic. Company XYZ has set a TTL threshold of 100
+on all routed interfaces at the perimeter of its network. Multicast
+applications that constrain traffic to within the company's network need to
+send multicast packets with an initial TTL value set to 99. The engineering and
+marketing departments have set a TTL threshold of 40 at the perimeter of their
+networks; therefore, multicast applications running on these networks can
+prevent their multicast transmissions from leaving their respective networks. 
+
+image::images/multicast-ttl-boundaries.png[]
+
+The default TTL value is 0 hops, which means that all multicast packets are
+forwarded out the interface. The range is 0 to 255.
+
+Only multicast packets with a TTL value greater than the threshold are
+forwarded out the interface.
+
+You should configure the TTL threshold only on routed interfaces at the
+perimeter of the network. 
+
+----
+(config-if)# ip multicast ttl-threshold _value_
+----
+
+=== Configure an IP multicast boundary
+
+
+Like TTL thresholds, administratively-scoped boundaries can also be used to
+limit the forwarding of multicast traffic outside of a domain or subdomain.
+This approach uses a special range of multicast addresses, called
+administratively-scoped addresses, as the boundary mechanism. If you configure
+an administratively-scoped boundary on a routed interface, multicast traffic
+whose multicast group addresses fall in this range can not enter or exit this
+interface, thereby providing a firewall for multicast traffic in this address
+range.
+
+Figure 33-12 shows that Company XYZ has an administratively-scoped boundary set
+for the multicast address range 239.0.0.0/8 on all routed interfaces at the
+perimeter of its network. This boundary prevents any multicast traffic in the
+range 239.0.0.0 through 239.255.255.255 from entering or leaving the network.
+Similarly, the engineering and marketing departments have an
+administratively-scoped boundary of 239.128.0.0/16 around the perimeter of
+their networks. This boundary prevents multicast traffic in the range of
+239.128.0.0 through 239.128.255.255 from entering or leaving their respective
+networks.
+
+.Administratively-Scoped Boundaries
+image::images/multicast-administratively-scoped-boundaries.png[]
+
+You can define an administratively-scoped boundary on a routed interface for
+multicast group addresses. A standard access list defines the range of
+addresses affected. When a boundary is defined, no multicast data packets are
+allowed to flow across the boundary from either direction. The boundary allows
+the same multicast group address to be reused in different administrative
+domains.
+
+The IANA has designated the multicast address range 239.0.0.0 to
+239.255.255.255 as the administratively-scoped addresses. This range of
+addresses can then be reused in domains administered by different
+organizations. The addresses would be considered local, not globally unique.
+
+----
+(config-if)# ip multicast boundary _standard-access-list-number_
+----

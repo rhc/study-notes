@@ -1,0 +1,226 @@
+= NAT
+:experimental:
+:icons: font
+
+
+
+
+
+== Purpose
+
+- NAT allows the IP network of an organization to appear from
+the outside to use a different IP address space than what it is actually using.
+
+- Thus, NAT allows an organization with nonglobally routable addresses to connect
+to the Internet by translating those addresses into a globally routable address
+space. 
+
+- NAT also allows a graceful renumbering strategy for organizations that are changing service providers or voluntarily renumbering into classless
+interdomain routing (CIDR) blocks. 
+
+- RFC 1631. 
+
+== Inside and outside address 
+
+[horizontal]
+Inside local address::
+The (private) IP address that is assigned to a host on the inside network. 
+Inside global address::
+A (public) IP address that represents one or more inside local IP addresses to the outside world.
+Outside local address::
+The (private) IP address of an outside host as it appears to the inside network. 
+Outside global address::
+The (public) IP address assigned to a host on the outside network by the owner of the host. 
+
+== Types of NAT
+
+Static NAT::
+- Statically correlates the same local host to the same public IP address.
+- Does not conserve IP addresses.
+
+Dynamic NAT::
+- One local host uses an available public IP address in a pool. 
+- Does not conserve IP addresses.
+
+PAT::
+- Like dynamic NAT but multiple local hosts share a single public address by multiplexing TCP/UDP ports.
+- Conserves IP addresses.
+
+NAT for overlapping address::
+- Can be done with any of the first three types.
+- Translates both source and destination addresses, instead of just the source (for packets going from
+  enterprise to the Internet).
+
+== TCP load distribution for NAT
+
+- Round-robin allocation of a virtual host that coordinates load sharing among real hosts.
+
+.NAT TCP load distribution
+image::images/nat-tcp-load-distribution.png[]
+
+
+== NAT order of operations 
+
+=== Inside-to-Outside 	
+
+Inside-to-Outside 	Outside-to-Inside
+
+. If IPSec then check input access list
+. decryption - for CET (Cisco Encryption Technology) or IPSec
+. check input access list
+. check input rate limits
+. input accounting
+. redirect to web cache
+. policy routing
+. routing
+. NAT inside to outside (local to global translation)
+. crypto (check map and mark for encryption)
+. check output access list
+. inspect (Context-based Access Control (CBAC))
+. TCP intercept
+. encryption
+. Queueing
+
+
+
+=== Outside-to-Inside
+
+. If IPSec then check input access list
+. decryption - for CET or IPSec
+. check input access list
+. check input rate limits
+. input accounting
+. redirect to web cache
+. NAT outside to inside (global to local translation)
+. policy routing
+. routing
+. crypto (check map and mark for encryption)
+. check output access list
+. inspect CBAC
+. TCP intercept
+. encryption
+. Queueing
+
+Read more: http://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html#topic1NAT[order of operations]
+
+
+=== Configure static translation of inside source address
+
+----
+ip nat inside source static local-ip global-ip
+
+interface type number
+  ip address ip-address mask [secondary]
+  ip nat inside
+  
+interface type number
+  ip address ip-address mask
+  ip nat outside
+----
+
+=== Configure dynamic translation of inside source address
+
+----
+ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
+access-list access-list-number permit source [source-wildcard]
+ip nat inside source list access-list -number pool name
+
+interface type number
+  ip address ip-address mask
+  ip nat inside
+
+interface type number
+  ip address ip-address mask
+  ip nat outside
+----
+
+== Allow internal users access to the internet
+
+----
+ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
+access-list number permit a.b.c.d [e.f.g.h]
+ip nat inside source list number pool name overload
+
+interface type number
+  ip address ip-address mask
+  ip nat inside
+
+interface type number
+  ip address ip-address mask
+  ip nat outside
+end
+----
+
+== Change timeouts value
+
+----
+ip nat translation seconds
+ip nat translation udp-timeout seconds
+ip nat translation dns-timeout seconds
+ip nat translation tcp-timeout seconds
+ip nat translation finrst-timeout seconds
+ip nat translation icmp-timeout seconds
+ip nat translation syn-timeout seconds
+----
+
+== Configure dynamic translation of overlapping networks
+
+Configure dynamic translation of overlapping networks if your IP addresses in the stub network are
+legitimate IP addresses belonging to another network and you want to communicate with those hosts or
+routers using dynamic translation.
+
+----
+ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
+access-list access-list-number permit source [source-wildcard]
+ip nat outside source list access-list-number pool name
+
+interface type number
+  ip address ip-address mask
+  ip nat inside
+  
+interface type number
+  ip address ip-address mask
+  ip nat outside
+----
+
+
+== Server TCP load balancing
+
+----
+ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length} type rotary
+access-list access-list-number permit source [source-wildcard]
+ip nat inside destination-list access-list-number pool name
+
+interface type number
+  ip address ip-address mask
+  ip nat inside
+  
+interface type number
+  ip address ip-address mask
+  ip nat outside
+----
+
+
+.Task: Display NAT translation information
+
+----
+show ip nat translations [verbose]
+show ip nat statistics
+----
+
+.Task: Clear NAT entries before the timeout
+
+----
+clear ip nat translation inside global-ip local-ip outside local-ip global-ip
+clear ip nat translation outside global-ip local-i p
+clear ip nat translation protocol inside global-ip global-port local-ip local-port outside local-ip local-port-global-ip global-port
+clear ip nat translation {* | [forced] | [inside global-ip local-ip] [outside local-ip global-ip]}
+----
+
+.Task: Enable Syslog for logging NAT translations
+
+----
+ip nat log translations syslog
+no logging console
+----
+
