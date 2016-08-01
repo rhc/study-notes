@@ -1,0 +1,43 @@
+= ICMP
+
+== Concepts
+
+=== Header
+
+.ICMP header format
+["packetdiag", target="icmp-header"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 11
+
+  * Type [len=8]
+  * Code [len = 8]
+  * Checksum [len=16]
+  * Rest of Header [len=32]
+}
+----
+
+
+   
+
+=== Data
+
+=== Control messages
+
+==== Redirect
+
+==== Time exceeded
+
+==== Timestamp
+
+==== Timestamp reply
+
+==== Address mask request
+
+==== Address mask reply
+
+==== Destination unreachable
+

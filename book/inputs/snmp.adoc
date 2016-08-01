@@ -1,0 +1,185 @@
+= SNMP
+:experimental:
+:icons: font
+
+menu:Configuration guides[Network Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/snmp/configuration/15-mt/snmp-15-mt-book/nm-snmp-cfg-snmp-support.html[configuring SNMP support] ]
+
+== Overview
+
+//TODO start here with the pictures
+
+- Application-layer protocol between SNMP managers and agents 
+** SNMP manager running NMS software:i UDP port 162 open for traps/informs messages
+** SNMP managed devices running SNMP agent: UDP 161 open for GET/SET messages  
+
+=== Version 
+
+v1:: original specs, weak authentication with community string  
+v2c:: 64-bit counters, getBulkRequest, informsRequest 
+v3:: authentication, encryption
+
+=== MIB
+
+MIB: dictionaries of OID
+
+OID: hierarchical identifiers in numerical format that represent MIB variables.
+( e.g. 1.3.6.1.2.1 "Interfaces"
+1.3.6.1.4.1.9 "Enterprises - Cisco"
+)
+
+
+=== Packet format
+
+.SNMP header format
+["packetdiag", target="snmp-header"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 16
+  * Version [len=32]
+  * Community [len=32]
+  * PDU Type [len=32]
+  * Request Identifier [len=32]
+  * Error Status [len=32]
+  * Error Index [len=32  ]
+  * PDU variable bindings [len=64]
+}
+----
+
+==== SNMP PDU Types
+
+. SetRequest
+. GetRequest
+. GetNextRequest
+. GetBulkRequest
+. Trap
+. InformsRquest
+. Response
+
+
+== Configuration 
+
+=== Configure basic system information
+
+.Task: Configure the location information
+----
+(config)# snmp-server location <homesweethome>
+----
+
+.Task: Configure the contact information
+----
+(config)# snmp-server contact <no-where-to-be-found>
+----
+
+.Task: Configure the system serial number
+----
+(config)# snmp-server chassis-id <system-serial-number>
+----
+
+=== Configure SNMP v1/2  
+
+.Task: Create a view
+----
+(config)# snmp-server view <name> <oid-tree> {included | excluded} 
+----
+
+.Task: Configure a community string
+----
+(config)# snmp-server community <string> [view <name>] [ro|rw] [<acl]
+----
+
+.Task: Display community string
+----
+# sh snmp community
+----
+
+== Traps
+
+.Task: Send traps to NMS 
+----
+(config)# snmp-server host <ip-address> [traps | informs] [version {1| 2c | 3 [auth | noauth | priv]}] community-string [udp-port port-number] [notification-type] 
+
+----
+
+== SNMP v3
+
+.Task: Configure SNMP v3 group 
+----
+(config)# snmp-server group [<groupname> {v1 | v2c | v3 [auth | noauth | priv]}] 
+            [read <readview>] 
+            [write <writeview>] 
+            [notify <notifyview>] 
+            [access <acl] 
+----
+
+.Task: Display SNMP v3 group settings
+----
+# sh snmp group 
+----
+
+.Task: Configure  SNMP v3 user
+----
+(config)# snmp-server engineID {local <engine-id> | remote <ip-address> [udp-port <number> ] [vrf <vrf-name> ] <engine-id-string> } 
+(config)# snmp-server user <username> <groupname> [remote <ip-address> [udp-port <number> ]] {v1 | v2c | v3 [encrypted] [auth {md5 | sha} <auth-password> ]} [access <acl>] 
+----
+
+.Task: Display SNMP user information
+----
+# sh snmp user <user>
+----
+
+.Task: Display SNMP engineID
+----
+# sh snmp engineID
+----
+
+== Configure a device as SNMP manager
+
+.Task: Configure the SNMP manager process
+----
+(config)# snmp-server manager
+----
+
+.Task: Configure the SNMP manager session time-out
+----
+(config)# snmp-server manager session-timeout <seconds>
+----
+
+.Task: Display the status of the SNMP sessions
+----
+# sh snmp sessions brief
+----
+
+.Task: Display the current set of pending SNMP requests
+----
+# sh snmp pending
+----
+
+
+== Enable the SNMP shutdown mechanism
+
+.Task: Enable the SNMP shutdown mechanism
+----
+(config)# snmp-server system-shutdown
+----
+
+
+.Task: Define the maximum SNMP agent packet size
+----
+(config)# snmp-server packetsize <bytes> 
+----
+
+.Task: Specify the TFTP servers used for saving and loading configuration files
+----
+(config)# snmp-server tftp-server-list <acl>
+----
+
+
+.Task: Disable SNMP agent
+----
+(config)# no snmp-server
+----
+
+

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>CDP</title>
+<date>2016-04-26</date>
+</info>
+<simpara>Check <link xl:href="http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swcdp.html">CDP</link>.</simpara>
+<simpara>print docbook5
+print <link xl:href="http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swcdp.html">http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swcdp.html</link></simpara>
+<simpara><menuchoice><guimenu>Catalyst3560-XConfigurationGuides</guimenu> <guimenuitem> <link xl:href="http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swcdp.html">CDP</link> </guimenuitem></menuchoice></simpara>
+<section xml:id="_overview">
+<title>Overview</title>
+<itemizedlist>
+<listitem>
+<simpara>Layer 2 discovery protocol  running on Cisco devices</simpara>
+</listitem>
+<listitem>
+<simpara>Retrieves device type and SNMP agent address of neighboring devices</simpara>
+</listitem>
+</itemizedlist>
+<section xml:id="_packet_format">
+<title>Packet format</title>
+<itemizedlist>
+<listitem>
+<simpara>header followed by a set of TLV value</simpara>
+</listitem>
+</itemizedlist>
+<figure>
+<title>CDP frame format</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref="cdp-frame-format.png"/>
+</imageobject>
+<textobject><phrase>CDP frame format</phrase></textobject>
+</mediaobject>
+</figure>
+</section>
+</section>
+<section xml:id="_cdp_operations">
+<title>CDP operations</title>
+<itemizedlist>
+<listitem>
+<simpara>Enable by default</simpara>
+</listitem>
+</itemizedlist>
+<formalpara>
+<title>Task: Display global information about CDP characteristics</title>
+<para>
+<screen># show cdp
+
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                 S - Switch, H - Host, I - IGMP, r - Repeater
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+Router3             Ser 1          120           R        2500      Ser 0
+Router1             Eth 1          180           R        2500      Eth 0
+Switch1             Eth 0          240           S        1900      2</screen>
+</para>
+</formalpara>
+<screen>show cdp entry &lt;entry-name&gt; [protocol | version]</screen>
+<formalpara>
+<title>Task: Disable CDP</title>
+<para>
+<screen>(config)# no cdp run</screen>
+</para>
+</formalpara>
+<formalpara>
+<title>Task: Enable CDP on an interface</title>
+<para>
+<screen>(config-if)# cdp enable</screen>
+</para>
+</formalpara>
+<section xml:id="_cdp_updates">
+<title>CDP updates</title>
+<itemizedlist>
+<listitem>
+<simpara>default: 60 seconds range: 5-254 seconds</simpara>
+</listitem>
+</itemizedlist>
+<formalpara>
+<title>Task: Set the transmission frequency of CDP updates in seconds</title>
+<para>
+<screen>(config)# cdp timer &lt;seconds&gt;</screen>
+</para>
+</formalpara>
+<formalpara>
+<title>Task: Specify the amount of time a receiving device should hold the information sent by your device</title>
+<para>
+<screen>(config)# cdp holdtime &lt;seconds&gt;</screen>
+</para>
+</formalpara>
+<note>
+<simpara>default: 180 seconds, range: 10 to 255 seconds</simpara>
+</note>
+</section>
+<section xml:id="_version">
+<title>Version</title>
+<formalpara>
+<title>Task: Send Version-2 advertisements</title>
+<para>
+<screen>(config)# cdp advertise-v2</screen>
+</para>
+</formalpara>
+</section>
+</section>
+<section xml:id="_monitoring_and_maintenance">
+<title>Monitoring and maintenance</title>
+<formalpara>
+<title>Task: Reset the traffic counters to zero</title>
+<para>
+<screen>clear cdp counters</screen>
+</para>
+</formalpara>
+<section xml:id="_neighbors">
+<title>Neighbors</title>
+<formalpara>
+<title>Task: Delete the CDP table of information about neighbors</title>
+<para>
+<screen>clear cdp table</screen>
+</para>
+</formalpara>
+<formalpara>
+<title>Task: Display information about interfaces where CDP enabled</title>
+<para>
+<screen>sh cdp interface [&lt;interface-id&gt;]</screen>
+</para>
+</formalpara>
+<formalpara>
+<title>Task: Display information about neighbors</title>
+<para>
+<screen>sh cdp neighbors [&lt;interface-id&gt;] [detail]</screen>
+</para>
+</formalpara>
+<formalpara>
+<title>Task: Display CDP counters, including the number of packets sent and received and checksum errors</title>
+<para>
+<screen># show cdp traffic
+
+Total packets output: 543, Input: 333
+ Hdr syntax: 0, Chksum error: 0, Encaps failed: 0
+ No memory: 0, Invalid: 0, Fragmented: 0
+ CDP version 1 advertisements output: 191, Input: 187
+ CDP version 2 advertisements output: 352, Input: 146</screen>
+</para>
+</formalpara>
+</section>
+</section>
+</article>

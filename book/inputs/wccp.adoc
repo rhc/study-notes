@@ -1,0 +1,228 @@
+= Web Cache Communication Protocol
+
+== Concepts
+
+WCCP 
+
+- UDP 2048
+- transparently redirect traffic to local content or cache engines  
+- no need to configure http proxy on the client browser
+
+=== Version 1
+
+* only one control router redirects traffic to a cluster of content engines
+* up to 32 content engines can communicate with a single router using WCCPv1.
+* supports only HTTP traffic (TCP 80)
+
+* configuration sequence
+
+    ** configure the ip address of the control router on each cache engine
+    ** each cache engine send their address to the control router using UDP 2048
+    ** the control router creates a cluster view and distribute the list of caches when the view stabilizes. 
+    ** elect as the lead the cache engine with the lowest IP address. 
+    ** the lead cache engine indicates to the control router how the traffic should be distributed accross the cluster.
+
+
+===  Version 2
+
+* supports up to 32 routers per cluster for redundancy and load distribution.
+* supports load distribution  
+  ** by hot spot handling: allows an individual hash bucket to be distributed accross all the cache engine.
+  ** by load balancing: allows the set of hash buckets assigned to a cache engine to be adjusted so that the load can be shifted from an overwhelmed cache engine to other cluster members.
+  ** by load shedding: enables the router to selectively redirect the load to avoid exceeding the capacity of the cache engine.
+* supports other services than http: ftp caching, ftp proxy, web caching, real audio, video, telephony
+* uses service group for a subset of caches and routers running the same service
+* uses unicast or multicast address on each cache engine for each service group
+* uses priority system for deciding with cluster to use for a particular cached protocol.
+* supports multicast to simplify configuration
+* supports MD5 security
+* supports web cache packet return . If the cache engine is unable to provide a requested object 
+  already cached due to error or overload, the cache engine asks the router to contact the original destination server.
+  ( no useless attempt to resend the request to the cache cluster, no errors sent to the client)
+
+* configuration sequence
+  ** configure the unicast address of the control routers or the multicast address of the service group
+  ** each cache engine announces its presence and a list of all routers with which it has established communications.
+  ** each router reply with their view of cache engines in the group
+  ** elect one once the view is consistent accross all caches
+
+* Restrictions
+  ** only works with IP network
+  ** TTL <= 15 for routers servicing a multicast cluster. 
+  ** filtering needed to avoid duplicate or irrelevant multicast messages.
+  ** configure all cache engines to communicate with all routers servicing the clusters
+
+== Configuration tasks
+
+=== Enable WCCP service 
+
+----
+(config)# ip wccp { web-cache | service-number}
+----
+
+=== Specify a version of WCCP
+
+- version 2 enable by default globally
+- different version can be configured on each interface
+
+----
+(config)#  ip wccp version { 1 | 2}
+----
+
+=== Configure a service group 
+
+Specifies a web-cache or dynamic service to enable on the router,
+specifies the IP multicast address used by the service group,
+specifies any access lists to use,
+specifies whether to use MD5 authentication, and enables the WCCP service.
+
+
+----
+(config)# ip wccp {web-cache | service-number}
+  [group-address multicast-address] 
+  [redirect-list access-list] 
+  [group-list access-list] 
+  [password string] 
+----
+
+Enables WCCP redirection on the specified interface
+
+----
+(config-if)# ip wccp {web-cache | service-number} redirect {out | in}
+----
+
+[NOTE]
+Inbound traffic can be configured to use CEF, Fast forwarding or process forwarding.
+Configuring WCCP for redirection for inbound traffic on interfaces avoids the overhead associated with CEF forwarding for outbound traffic. 
+Setting an output feature on any interface results in the slower switching path of the feature being taken by all packets arriving at all interfaces.
+Setting an input feature on an interface results in only those packets arriving at that interface taking the
+configured feature path; packets arriving at other interfaces will use the faster default path. 
+Configuring WCCP for inbound traffic also allows packets to be classified before the routing table lookup, 
+which translates into faster redirection of packets.
+
+
+
+=== Exclude traffic on a specific interface from redirection
+
+xxx
+
+----
+(config-if)# ip wccp redirect exclude in
+----
+
+=== register a router to a multicast address
+
+Specifies the multicast address for the service group 
+
+----
+(config)# ip wccp { web-cache | service-number} group-address multicast-address
+----
+
+Enable the reception of IP multicast packets originating from the cache engines on the specified interface
+
+----
+(config-if)# ip wccp { web-cache | service-number } group-listen
+----
+
+[NOTE]
+To enable traversal over an intervening router:
+- enable IP multicast routing with *ip multicast-routing* 
+- enable the interfaces to which the cache engines will connect to receive multicast transmissions 
+with *ip wccp group-listen*
+
+
+=== use access list for a WCCP service group
+
+Indicates to the router from which IP addresses of cache engines to accept packets
+
+----
+(config)# ip wccp web-cache group-list access-list
+----
+
+Disables caching for certain clients
+
+----
+(config)# ip wccp web-cache redirect-list access-list
+----
+
+
+=== set a MD5 password for a router and cache engines
+
+----
+(config)# ip wccp web-cache password _string_
+----
+
+=== verify WCCP configuration settings
+
+Displays global information related to WCCP, 
+including the protocol version currently running, 
+the number of cache engines in the routers service group, 
+which cache engine group is allowed to connect to the router, and
+which access list is being used.
+
+----
+# show ip wccp {web-cache | service number}
+----
+
+Queries the router for information on which cache
+engines of a specific service group the router has
+detected. The information can be displayed for either
+the web cache service or the specified dynamic service.
+
+----
+# show ip wccp {web-cache | service number} detail
+----
+
+Displays status about whether any ip wccp redirection
+commands are configured on an interface. For example,
+“Web Cache Redirect is enabled / disabled.”
+
+----
+# show ip interface
+----
+
+Displays which devices in a particular service group
+have been detected and which cache engines are having
+trouble becoming visible to all other routers to which
+the current router is connected. The view keyword
+indicates a list of addresses of the service group. The
+information can be displayed for either the web cache
+service or the specified dynamic service.
+
+----
+# show ip wccp {web-cache | servicenumber} view
+----
+
+For further troubleshooting information
+
+----
+# show ip wccp {web-cache | servicenumber} service
+----
+
+.WCCP configuration example
+[source]
+----
+! Enable WCCP globally on the router,
+! specifying a service (web caching), 
+! a multicast address for the WCCP communication,
+! and an MD5 password
+
+ip wccp web-cache group-address 239.128.1.100 password cisco
+
+! Configure an interface to redirect WCCP web-cache
+! traffic outbound to a content engine:
+
+int fa0/0
+  ip wccp web-cache redirect out
+
+! Exclude inbound traffic on interface fa0/1 from redirection:
+
+int fa0/1
+ip wccp redirect exclude in
+----
+
+
+
+== References
+
+Configuring web cache services using WCCP

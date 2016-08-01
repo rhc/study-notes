@@ -1,0 +1,35 @@
+! R1-10 
+conf t
+int f0/0
+  no shut
+end
+
+! R6
+conf t
+int l0
+  ip ospf 1 area 0
+int f0/0.67
+  ip ospf 1 area 0
+  ip ospf network point-to-point
+end
+
+! R7
+conf t
+int l0
+  ip ospf 1 area 0
+int f0/0.67
+  ip ospf 1 area 0
+  ip ospf network point-to-point
+int f0/0.79
+  ip ospf 1 area 0
+  ip ospf network point-to-point
+end
+
+! R9
+conf t
+int l0
+  ip ospf 1 area 0
+int f0/0.79
+  ip ospf 1 area 0
+  ip ospf network point-to-point
+end

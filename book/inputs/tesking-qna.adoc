@@ -1,0 +1,5 @@
+
+Bridges and switches forward frames from on interface to another based on 
+
+A destination mac address
+B origin MAC address

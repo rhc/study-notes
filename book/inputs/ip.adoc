@@ -1,0 +1,42 @@
+= IP
+:experimental:
+:icons: font
+
+menu:Configuration guides[IP > IP Application Services > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp/configuration/15-mt/iap-15-mt-book/iap-ip.html[Configuring IP] ]
+
+== Message format
+
+.IP header format
+["packetdiag", target="ip-header"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 16
+
+  * Version [len=4]
+  * IHL Type [len=4]
+  * DSCP [len=6]
+  * ECN [len=2]
+  * Total Length [len=16]
+  * Identification [len=16  ]
+  * Flags [len=3 ]
+  * Fragment Offset [len= 13 ]
+  * Time To Live [len= 8 ]
+  * Protocol [len= 8 ]
+  * Header Checksum [len= 16  ]
+  * Source IP Address [len=32  ]
+  * Destination IP Address [len= 32  ]
+  * Options (If IHL > 5) [len= 32 ]
+}
+----
+
+
+.Task: Assign an IP address to an interface
+----
+(config-if)# ip address <ip-address> <mask>
+----
+
+
+   

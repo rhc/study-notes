@@ -1,0 +1,14 @@
+= Test Menu choice
+:experimental:
+:icons: font
+
+
+== Intro
+
+menu:Home[Open File > bonjour ]
+
+
+== Conclusion
+
+the end
+

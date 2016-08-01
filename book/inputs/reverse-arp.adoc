@@ -1,0 +1,45 @@
+
+= ARP
+
+== Information 
+
+
+=== Message format
+
+.header format
+["packetdiag", target=""]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Hardware Type [len=16]
+  * Protocol Type [len=16]
+  * Hardware Address Length [len=8]
+  * Protocol Address Length [len=8]
+  * Opcode [len=16]
+  * Sender Hardware Address [len=48, color=green]
+  * Sender Protocol Address [len=32, color=yellow]
+  * Target Hardware Address [len=48, color=green]
+  * Target Protocol Address [len=32, color=yellow]
+}
+----
+
+
+
+
+
+
+== Configuration
+
+
+
+
+== Monitoring
+
+
+
+== Troubleshooting
+

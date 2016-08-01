@@ -1,0 +1,7 @@
+= Private VLANs
+
+- separate ports as if they are on different VLAN while consuming only one subset.
+- typically use by service provider in a multi-tenant offerings: one router, one switch, multiple customers 
+- pVLAN = one primary VLAN ( promiscuous ports) + multiple secondary VLANs ( community and isolated ports)
+
+http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swpvlan.html

@@ -1,0 +1,392 @@
+= STP
+
+http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swstp.html
+
+
+- Creates loop-free layer 2 topology
+- prevents broadcast storms
+
+- STP variations:
+  * 802.1d : Common Spanning Tree
+  * PVST/PVST+: Cisco per-VLAN Spanning Tree
+  * 802.1w: Rapid Spanning Tree Protocol
+  * 802.1s: Multiple STP 
+
+
+== 802.1d
+
+- Uses bpdu 
+- Elect one root switch and one designated switch for each segment
+- One root port per non-root switch, one designated port for each segment
+- Other ports on blocking state
+
+- Steps
+  * elect the root switch with the lowest bridge id ( 2-byte priority + 6-byte MAC)
+  * determine each switch's root port: with the least cost path to the root
+  * determine the designated port for each segment: 
+    the switch that forwards the least cost hello on the segment
+  * if there is a tie, select the lowest port ID
+
+- Original ieee 802.1d bridge Id
+
+  * 2-byte priority 
+  * 6-byte MAC adress
+
+
+- Revised ieee 802.1d brigde id Priority for MAC address reduction
+
+  * 4 bits : priority multiple of 4096
+  * 12 bits : system id extension (vlan id ) to support pvst+ and ieee 802.1s
+  
+=== Root port election
+
+- RP is upstream facing towards Root bridge
+- lowest root path cost ( cumulative cost of all links to get to the root)
+- cost based on inverse bandwith
+
+
+.default port costs 
+[format="csv", options="header"]
+|====
+Speed    , original , revised
+10 Mbps  , 100      , 100
+100 Mbps , 10       , 19
+1 Gbps   , 1        , 4
+10 Gbps  , 1        , 2
+|====
+
+Tie breaker when a switch receives multiple Hellos with equal cost
+
+. lowest bridge id
+. lowest port priority 
+. lowest port number
+
+
+.Task: Force election of a root bridge
+----
+# spanning-tree vlan <id> root
+----
+
+=== determining the designated port
+
+- Designated switch: send the hello with the lowest advertised cost for the segment
+- DP: port that forward frames onto that segment
+- DP are downstream facing away from root bridge
+- elected based on lowest root path cost, BID, port ID
+
+=== blocking all non-RP and non-DP ports
+
+- Receive BPDUs
+- discard all other traffic
+- cannot send traffic
+- do not send Hellos
+
+
+=== Convergence
+
+- Steady operations: one Root bridge, one RP on each non-root bridge, one DP on each segment, blocking state
+
+. root switch generates a Hello every 2 seconds
+. each RP on non root switch receives a copy of the root's hello  
+. each DP updates and forwards the hello out
+. each blocking port receives a copy of the hello from the DP without forwarding it
+
+===  Topology change notification 
+
+more at 
+http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/24062-146.html#topchng[understand new topology changes]
+
+// split this section for 802.1d and 802.1w
+
+
+. A switch experiencing the STP port state change sends a TCN BPDU out its Root Port; it
+repeats this message every Hello time until it is acknowledged.
+
+. The next switch receiving that TCN BPDU sends back an acknowledgment via its next
+forwarded Hello BPDU by marking the Topology Change Acknowledgment (TCA) bit in
+the Hello.
+
+. The switch that was the DP on the segment in the first two steps repeats the first two steps,
+sending a TCN BPDU out its Root Port, and awaiting acknowledgment from the DP on that
+segment.
+
+By each successive switch repeating Steps 1 and 2, eventually the root receives a TCN BPDU.
+Once received, the root sets the TC flag on the next several Hellos, which are forwarded to all
+switches in the network, notifying them that a change has occurred. A switch receiving a Hello
+BPDU with the TC flag set uses the short (Forward Delay time) timer to time out entries in
+the CAM.
+
+
+Transitioning from blocking to forwarding
+
+[format="csv"]
+|=====
+state, forward data frames, learn source MAC, stable?
+blocking, no, no, yes
+listening, no, no, no
+learning, no, yes, no
+forwarding, yes, yes, yes
+disabled, no, no, stable
+|=====
+
+
+=== Timers
+
+Hello timer:: 
+  - 2 seconds 
+  - Interval at which the root sends Hellos
+- Forward delay::
+  - 15 seconds
+  - Time that switch leaves a port in listening state and learning state
+  - also used sd the short CAM timeout timer
+- Maxage::
+  - 20 seconds
+  - Time without hearing a Hello before believing that the root has failed
+
+
+=== PVST+  
+
+- Per-VLAN STP : for better load balancing
+  * one instance of legacy STP per VLAN
+  * Cisco ISL support
+
+- PVST+
+  * one instance of legacy STP per VLAN
+  * Cisco ISL and 802.1q support
+  * interoperability between CST and PVST
+  - default mode on most Catalyst platforms
+  - allows root bridge/port placement per VLAN 
+
+- Non-cisco + 802.1q => one Common Spanning Tree over vlan  1
+
+- When mixing cisco and non cisco switches with 802.1q trunking,
+  * send bpdu to multicast destination MAC of 0100.0CCC.CCCD 
+  
+//todo: add picture here pp. 78
+
+=== configuration
+
+show spanning-tree root
+show spanning-tree vlan 1 root detail
+
+
+=== optimizing, improving spanning tree
+
+
+==== PortFast
+
+- Used on access ports connected to end users devices not other switches
+- Puts the port into forwarding state immediately
+- Prevent them to generate TCNs
+- Can generate loops if another switch is connected. so must be used with bpdu guard and root guard features 
+
+----
+(cfg-if) spanning-tree portfast
+(cfg) spanning-tree portfast default
+----
+
+==== UplinkFast
+
+- Used on access layer switches that have multiple uplinks to distribution/core switches
+- Immediately replaces a lost RP with an alternate RP
+- Increases the root and all port priority so the switch does not become root or transit switch
+- Time-out the correct entries in their CAMs but doesnt use the TCN process. Instead, finds all the MAC
+addresses of local devices and sends one multicast frame with each local addresses as the source MAC
+causing all the other switches to update their CAMs. The access switch also clears out the rest of the 
+entries in its own CAM.
+
+----
+(config)#  spanning-tree uplinkfast [max-update-rate rate]
+----
+
+==== BackboneFast
+
+- Used in core switches to detect indirect link failures to the Root
+- Do not wait for Maxage to expire when another switch's direct link fails
+- Send a Root Link Query out the port in which the missing Hello should arrive.
+The RLQ asks the neighboring switch if that neighboring switch is still receiving Hellos from the root.
+IF that neighbor had a direct link failure, it can tell the original switch via another RLQ that this path to the root is lost. Once known, 
+the switch experiencing the indirect link failure can go ahead and converge without waiting for Axage to expire
+- All switches must have backbone fast configured 
+
+----
+(config)#  spanning-tree backbonefast
+----
+
+=== bpdu filter
+
+- Filter BPDUs in and out
+
+
+=== bpdu guard
+
+- Puts a (portfast enabled ???) port into the errdisable state when a BPDU is received and shuts down the port 
+- The port must be manually re-enabled or it can be recovered automatically through the errdiable timeout function.
+- A port configured with bpdu guard will not be put into the root-inconsistent state.
+
+
+=== loop guard
+
+- Prevents non-designated ports from inadvertently forming layer 2 switching loops 
+if the flow of bpdus is interrupted.
+- Puts the port into the loop-inconsistent state when the steady flow of BPDUs is interrupted
+- Only used on point-to-point links
+- Can be used with *UDLD aggressive mode* to get extra protection.
+
+=== root guard
+
+//todo: check command show spanning-tree inconsistentports
+
+- Prevent a port from becoming a root port when receiving a superior bpdu (e.g. inferior priority + mac)
+- it is enabled on ports other than the root  port and on switches other than the root.
+- Puts the port in *root-inconsistent* state (no data flow) until it stops receiving superior BPDUs.
+  No traffic is forwarded.
+
+- enforce the root bridge placement by ensuring the the port on which root guard is enabled is the designated port.
+ 
+
+http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10588-74.html
+
+- Enforce the root bridge placement
+- Ensures that the port on which root guard is enabled is the designated port.
+
+
+=== UDLD
+
+// Read more in the udld file
+
+- unidirectional links: 
+  * one of the 2 transmission path has failed but not both
+  * due to miscabling, cutting on fiber cable, unplugging one fiber, GBIC problems, ...
+  * can cause a loop as the previously blocking port will move to a forwarding state
+
+image::stp-unidirectional-links.png[height=150]
+
+- solutions: 
+
+UDLD **u**ni**d**irectional **l**ink **d**etection:::
+Uses Layer 2 messaging to decide when a switch can no longer receive frames from
+a neighbor. The switch whose transmit interface did not fail is placed into an err-disabled
+state.
+
+UDLD aggressive mode:::
+Attempts to reconnect with the other switch (eight times) 
+after realizing no messages have been received. 
+If the other switch does not reply to the repeated additional messages, 
+both sides become err-disabled.
+
+Loop Guard:::
+When normal BPDUs are no longer received, 
+the port does not go through normal STP convergence, but rather falls into an STP loop-inconsistent state.
+
+
+In all cases, the formerly blocking port that would now cause a loop is prevented from migrating
+to a forwarding state. With both types of UDLD, the switch can be configured to automatically
+transition out of err-disabled state. With Loop Guard, the switch automatically puts the port back
+into its former STP state when the original Hellos are received again.
+
+== 802.1w
+
+- Improves convergence by
+
+** waiting for only 3 missed Hellos on an RP before flushing the CAM instead of 10 with 802.1d
+** bypass listening state
+** includes natively Cisco PortFast, UplinkFast, BackboneFast
+** add backup DP when multiple ports connected to the same segment
+
+- backward compatible with 802.1d although
+
+- All bridges generate BPDUs every Hello interval
+
+
+=== RSTP link types
+
+- *Point-to-point*: switch to switch
+- *Shared* : switch to hub
+- *Edge*: switch to single end-user device
+
+=== RSTP port states
+
+[format="csv", options="header"]
+|===
+administrative state, 802.1d, 802.1w
+disabled, disabled, discarding
+enabled, blocking, discarding
+enabled, listening, discarding
+enabled, learning, learning
+enabled, forwarding, forwarding
+|===
+
+=== RSTP role ports
+
+Root Port::
+- Same role as 802.1d RP
+
+Designated Port::
+- Same role as 802.1d DP
+
+Alternate Port::
+- an alternate root port
+- same concept as Cisco UplinkFast feature 
+- protects against the loss of a switch's RP by keeping track of the AP with a path to the root
+
+
+Backup Port::
+- no equivalent Cisco features
+- protects against losing the DP attached to a shared liknk 
+  when the switch has another physical port attached to the same shared segment
+
+NOTE: root bridge ports are all designated port 
+unless 2 or more ports of the root bridge are connected together.
+
+NOTE: a port needs to receive BPDUs to stay blocked.
+
+
+
+=== configuration
+
+.Task: Configure Rapid PVST
+----
+(config)#  spanning-tree mode rapid-pvst
+----
+[NOTE]
+====
+- Rapid PVST+ immediately deletes dynamically learned MAC address entries
+  when it receives a topology change instead of a timer used by PVST+ or MST
+====
+
+== 802.1s
+
+
+- Multiple VLANs mapped to the same STP instance.
+- enable load balancing
+- improves fault tolerance of the network 
+  because a failure in one instance or forwarding path does not affect other instances.
+- Uses 802.1w for rapid convergence
+- Highly scalable
+  * switches with same instance, configuration revision number and name form a *region*
+  * different regions see each other as virtual bridges
+- each switch have three attributes:
+  * alphanumeric configuration name (32 bytes)
+  * configuration number (2 bytes)
+  * 4096-element table that associates each of the potential 4096 VLANs to a map ???
+
+
+
+=== storm control
+
+=== unicast flooding
+
+
+== Troubleshooting 
+
+=== flapping port that is generating BPDUs with the TCN bit set
+
+== Questions
+
+
+
+
+
+
+

@@ -1,0 +1,100 @@
+= Router IP Traffic Export
+
+== Concepts
+
+- export IP packets received on multiple WAN or LAN interfaces 
+  to a single LAN or VLAN interface
+- allow IDS probe to be placed centrally and not inline with the monitored device
+- allow to direct all exported traffic to a dedicated VLAM for network monitoring.
+
+- can filter copied packets through ACL
+- can sample 
+- can copied incoming or outgoing traffic.
+
+=== Restrictions
+
+- platform: intended for software switching platforms  and not distributed platforms
+- performance: delay on the outbound interface , delay increase with number of monitored interfaces and destination hosts.
+- destination: the MAC address of the device that is receiving the exported traffic must be on the same VLAN or directly connected to one of the router interfaces.
+- outgoing interface for exported traffic must be Ethernet (10/100/1000)
+
+
+== Configuration tasks
+
+
+=== Create IP traffic export profiles
+
+----
+(config)# ip traffic-export profile name
+----
+
+=== Specify the outgoing interface for exported traffic
+
+- mandatory
+
+----
+(config-rite)# interface type number
+----
+
+=== Export incoming and outgoing IP traffic on the monitored interface
+
+----
+(config-rite)# bidirectional
+----
+
+If this command is not enabled, only incoming traffic is exported
+
+=== Specify the MAC address of the destination host 
+
+- mandatory
+
+----
+(config-rite)# mac-address hhhh.hhhh.hhhh
+----
+
+=== Filter incoming traffic 
+
+----
+(config-rite)# incoming {access-list {standard | extended | named} | sample one-in-every integerk}
+----
+
+=== Filter outgoing traffic 
+
+----
+(config-rite)# outgoing {access-list {standard | extended | named} | sample one-in-every integerk}
+----
+
+- the *bidirectional* command must be enabled.
+- only routed traffic is exported and not traffic originate from the device.
+
+=== Enable IP traffic export on an interface
+
+----
+(config-if)# ip traffic-export apply profile name
+----
+
+
+== Troubleshooting
+
+- The *interface* and the *mac-address* are mandatory.
+- otherwise, you will get errors similar to this when *show running-config* after the *ip traffic-export profile* line
+
+-----
+! no outgoing interface configured
+! no destination mac-address  configured
+----
+
+- Verify IP traffic export parameters such as the monitored ingress interface, which is where the traffic is exported and outgoing and incoming IP packet.
+
+
+----
+debug ip traffic-export events
+show ip traffic-export [interface type number | profile name]
+----
+
+== Configuration examples
+
+// add example from pdfs 
+
+
+

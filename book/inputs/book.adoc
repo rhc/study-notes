@@ -1,0 +1,125 @@
+= CCIE Routing and Switching study notes 
+Christian Kyony <ckyony@changamuka.com>
+v1.0, 2015-10-12
+:doctype: book
+:producer: asciidoctor
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+:imagesdir: ../images
+:frame: none
+:grid: rows
+:stylesheet: ../stylesheets/asciidoctor.css
+
+[dedication]
+= Dedication
+To Cyril "Matiere" Kalenga
+
+<<<
+= Part I : Layer 2 Technologies
+
+include::switch-administration.adoc[leveloffset=+1]
+include::ethernet.adoc[leveloffset=+1]
+
+== CDP, LLDP and UDLD
+
+include::cdp.adoc[leveloffset=+2]
+include::lldp.adoc[leveloffset=+2]
+include::udld.adoc[leveloffset=+2]
+
+== VLAN
+
+include::vlan.adoc[leveloffset=+2]
+include::voice-vlan.adoc[leveloffset=+2]
+include::private-vlan.adoc[leveloffset=+2]
+include::vtp.adoc[leveloffset=+2]
+include::dtp.adoc[leveloffset=+2]
+include::isl.adoc[leveloffset=+2]
+include::802.1q.adoc[leveloffset=+2]
+
+== Spanning tree
+include::spanning-tree-protocol.adoc[leveloffset=+2]
+include::mst.adoc[leveloffset=+2]
+
+== EtherChannel
+
+include::etherchannel.adoc[leveloffset=+2]
+include::lacp.adoc[leveloffset=+2]
+include::pagp.adoc[leveloffset=+2]
+
+include::span.adoc[leveloffset=+1]
+
+
+
+== WAN
+include::hdlc.adoc[leveloffset=+2]
+include::ppp.adoc[leveloffset=+2]
+
+
+<<<
+= Part II : Layer 3 Technologies
+
+== IP addressing
+
+include::ipv4.adoc[leveloffset=+2]
+include::arp.adoc[leveloffset=+2] 
+include::dhcp.adoc[leveloffset=+2]
+include::nat.adoc[leveloffset=+2]
+include::nhrp.adoc[leveloffset=+2]
+include::ipv6.adoc[leveloffset=+2]
+
+== IP routing 
+
+include::rip.adoc[leveloffset=+2]
+include::eigrp.adoc[leveloffset=+2]
+include::ospf.adoc[leveloffset=+2]
+include::bgp.adoc[leveloffset=+2]
+include::redistribution.adoc[leveloffset=+2]
+
+<<<
+= Part III : VPN Technologies
+
+include::mpls.adoc[leveloffset=+1]
+include::gre.adoc[leveloffset=+1]
+include::dmvpn.adoc[leveloffset=+1]
+include::ipsec.adoc[leveloffset=+1]
+
+<<<
+= Part IV : Infrastructure Security
+
+== Device security
+
+include::snmp.adoc[leveloffset=+2]
+
+== Network security
+
+=== Switch security
+
+
+=== Router security
+
+
+<<< 
+= Part V : Infrastructure Services
+
+== System management 
+
+== QoS
+
+== Network services
+
+include::hsrp.adoc[leveloffset=+2]
+include::glbp.adoc[leveloffset=+2]
+include::vrrp.adoc[leveloffset=+2]
+include::irdp.adoc[leveloffset=+2]
+include::ntp.adoc[leveloffset=+2]
+include::dhcp.adoc[leveloffset=+2]
+include::nat.adoc[leveloffset=+2]
+
+== Multicast
+
+include::igmp.adoc[leveloffset=+2]
+include::pim.adoc[leveloffset=+2]
+
+// == Network optimization

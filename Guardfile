@@ -3,16 +3,17 @@
 # vim: ft=ruby
 #
 Bundler.require(:default)
+
 guard :shell do
-  watch(/(.*)\.adoc$/) do |m|
- 
-    # Asciidoctor.convert_file(m[0], :in_place => true)
-    `asciidoctor -n -r asciidoctor-diagram #{m[0]} `
-    `asciidoctor -n -r asciidoctor-diagram -a theme=volnitsky book/book.adoc  `
+  watch(%r{book/inputs/.*\.adoc$}) do
+    `asciidoctor -n -r asciidoctor-diagram book/inputs/book.adoc -D book/outputs `
+    `asciidoctor-pdf -n -r asciidoctor-diagram book/inputs/book.adoc -D book/outputs`
   end
 end
 
-guard 'livereload' do 
-  watch(%r{.*\.(css|js|html)$})
+guard 'livereload', host: '127.0.0.1' do 
+  watch(%r{book/outputs/book.html})
 end
+
+
 

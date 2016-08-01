@@ -1,0 +1,199 @@
+= RIP
+:experimental:
+:icons: font
+
+menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_rip/configuration/15-mt/irr-15-mt-book/irr-cfg-info-prot.html#GUID-2651B980-3A1B-489F-98D0-93A7102AEA5D[RIP] ]
+
+
+== Overview
+
+- Distance vector protocol
+- transport: UDP 520
+- update destination:
+  * broadcast 255.255.255.255 for RIPv1
+  * multicast 224.0.0.9 for RIPv2
+- full updates every 30 seconds 
+- Trigerred updates
+- multiple routes to the same subnet with equal metric:
+  * 1 to 6
+  * default = 4
+  * configured with *ip maximum-paths _n_*
+- metric: hop count with 
+  * 1 signifying a directly connected network of the advertising router
+  * 16 signifying an unreachable network.
+- Support CIDR, VLSM, authentication
+- Periodic updates every 30 seconds to multicast address 224.0.0.9
+- Split horizon with poison reverse
+- Subnet mask included in route entry
+- Administrative distance: 120
+- Route tags when routes are redistributed into RIP
+- Can advertise a next-hop router that is different from itself
+- Does not keep a separate topology table
+
+== Default RIP configuration 
+
+- version : 1
+- auto-summary : enable
+- authentication : disable
+- authentication mode: text
+- split-horizon : enable
+- Interpacket delay : no
+
+== Basic configuration
+
+----
+(config)#router rip
+(config-router)#version 2
+(config-router)#network 10.0.0.0
+(config-router)#no auto-summary
+----
+
+== Version
+
+.Task: Specify the RIP version globally
+----
+(config-router)# version {1 | 2} 
+----
+
+.Task: Configure an interface to send only a RIPv2 packets
+----
+(config-if)ip rip send version {1,2}
+----
+
+.Task: Configure an interface to receive only a RIPv2 packets
+----
+(config-if)ip rip receive version {1|2}
+----
+
+== Authentication
+
+.Task: Enable RIP authentication
+----
+(config-if)# ip rip authentication key-chain <name>
+(config-if)# ip rip authentication mode {text | md5} 
+----
+
+[TIP]
+====
+Use *show key chain" to spot invisible blank space after passwords
+====
+
+== Summarization
+
+- Default: auto-summarization
+** summarizes prefixes to the classful network boundaries 
+when classful network boundaries are crossed.
+
+- Supernet advertisement not allowed
+** e.g. *ip summary-address rip 10.0.0.0 252.0.0.0*
+
+
+.Task: Disable automatic route summarization
+----
+(config-router)# no auto-summary 
+----
+
+.Task: Summarize a prefix
+----
+(config-if)# ip summary-address rip <ip-address> <mask>
+----
+
+
+== Route updates
+
+.Task: Disable sending RIP updates on an interface but continue to receive the update
+----
+(config-if)# passive-interface { default | <type number>} 
+----
+
+.Task: Disable the validation of the source IP address of incoming RIP routing updates
+----
+(config-router)# no validate-update-source
+----
+
+
+== Route filtering
+
+.Task: Stop advertising a route with a prefix-list 
+----
+
+----
+
+.Task: filter out RIP routes with extended access lists
+----
+(config-router)# distribute-list <extended-acl> {in|out} [<interface-id>]
+----
+[NOTE]
+====
+- The source field in the ACL matches the update source of the route
+- The destination field represents the network address
+====
+
+
+== Route metric
+
+== Split horizon
+
+.Task: Disable split horizon
+----
+(config-if)# no ip split-horizon
+----
+
+== Interpacket delay for RIP updates
+
+- Useful when high-end router send RIP updates to low-end router
+- default: 0 in range 8 to 50 milliseconds
+
+.Task: Configure interpacket delay
+----
+(config-if)# output-delay <milliseconds>
+----
+
+== Rip Optimization over WAN
+
+.Task: Enable triggered extensions for RIP
+----
+(config)# int serial <controller-number>
+(config-if)# ip rip trigerred
+----
+
+
+== Offset-list
+
+.Task: Add an offset to incoming and outgoing metrics to RIP routes
+----
+(config-router)# offset-list {<acl>} {in | out } <offset> {interface-type-number>} 
+----
+
+== Timers
+
+.Task: Configure RIP timers
+----
+(config-router)# timers basic <update> <invalid> <holddown> <flush> [<sleeptime>]
+----
+
+[NOTE]
+====
+- Update timer: interval between updates. Default: 30 seconds
+- Invalid timer: time in seconds after which a route is declared invalid. 
+  ** Should be at least 3 times the update timer. 
+  ** Invalid routes are still used for forwarding packets
+  ** Default: 180 seconds
+- Holdown timer: interval during which routing information about better paths is suppressed.
+  ** Should be at least 3 times the update timer
+  ** The route is marked inaccessible and advertised as unreachable.
+  ** Holdown routes are still used for forwarding packets
+  ** Default: 180 seconds
+- Flush timer: amount of time that must pass berore a route is removed from the RIB. Default: 240 seconds
+- Sleep time: amount of time for which routing updates will be postponed.
+====
+
+.Task: Specify a default update interval on an interface
+----
+(config-if)# ip rip advertise <seconds>
+----
+[NOTE]
+====
+- The comd above overrides the update timers set by *timers basic* command.
+====
+

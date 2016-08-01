@@ -1,0 +1,93 @@
+
+
+
+   Chapter 1: Ethernet Basics
+
+
+
+        In order to best use this pre-chapter assessment, remember to score yourself strictly. You can find
+        the answers in Appendix A, “Answers to the ‘Do I Know This Already?’ Quizzes.”
+
+        1.   Which of the following denotes the correct usage of pins on the RJ-45 connectors at the
+             opposite ends of an Ethernet cross-over cable?
+              a.   1 to 1
+             b.    1 to 2
+              c.   1 to 3
+             d.    6 to 1
+              e.   6 to 2
+              f.   6 to 3
+
+        2.   Which of the following denotes the correct usage of pins on the RJ-45 connectors at the
+             opposite ends of an Ethernet straight-through cable?
+              a.   1 to 1
+             b.    1 to 2
+              c.   1 to 3
+             d.    6 to 1
+              e.   6 to 2
+              f.   6 to 3
+
+        3.   Which of the following commands must be configured on a Cisco IOS switch interface to
+             disable Ethernet auto-negotiation?
+              a.   no auto-negotiate
+             b.    no auto
+              c.   Both speed and duplex
+             d.    duplex
+              e.   speed
+        4.   Consider an Ethernet cross-over cable between two 10/100 ports on Cisco switches. One
+             switch has been configured for 100-Mbps full duplex. Which of the following is true about
+             the other switch?
+              a.   It will use a speed of 10 Mbps.
+             b.    It will use a speed of 100 Mbps.
+              c.   It will use a duplex setting of half duplex.
+             d.    It will use a duplex setting of full duplex.
+                                                            “Do I Know This Already?” Quiz         5
+
+
+
+5.   Consider an Ethernet cross-over cable between two 10/100/1000 ports on Cisco switches.
+     One switch has been configured for half duplex, and the other for full duplex. The ports
+     successfully negotiate a speed of 1 Gbps. Which of the following could occur as a result of
+     the duplex mismatch?
+      a.   No frames can be received by the half-duplex switch without it believing an FCS error
+           has occurred.
+     b.    CDP would detect the mismatch and change the full-duplex switch to half duplex.
+      c.   CDP would detect the mismatch and issue a log message to that effect.
+     d.    The half-duplex switch will erroneously believe collisions have occurred.
+6.   Which of the following Ethernet header type fields is a 2-byte field?
+      a.   DSAP
+     b.    Type (in SNAP header)
+      c.   Type (in Ethernet V2 header)
+     d.    LLC Control
+7.   Which of the following standards defines a Fast Ethernet standard?
+      a.   IEEE 802.1Q
+     b.    IEEE 802.3U
+      c.   IEEE 802.1X
+     d.    IEEE 802.3Z
+      e.   IEEE 802.3AB
+      f.   IEEE 802.1AD
+8.   Suppose a brand-new Cisco IOS–based switch has just been taken out of the box and cabled
+     to several devices. One of the devices sends a frame. For which of the following destinations
+     would a switch flood the frames out all ports (except the port upon which the frame was
+     received)?
+      a.   Broadcasts
+     b.    Unknown unicasts
+      c.   Known unicasts
+     d.    Multicasts
+9.   Which of the following configuration issues will keep a SPAN session from becoming active?
+      a.   Misconfigured destination port
+     b.    Destination port configured as a trunk
+      c.   Destination port shutdown
+     d.    Source port configured as a trunk
+
+
+
+       10.   Which of the following are rules for SPAN configuration?
+             a.    SPAN source and destination ports must be configured for the same speed and duplex.
+             b.    If the SPAN source port is configured for 100 Mbps, the destination port must be config-
+                   ured for 100 Mbps or more.
+              c.   In a SPAN session, sources must consist of either physical interfaces or VLANs, but not
+                   a mix of these.
+             d.    Remote SPAN VLANs must be in the range of VLAN 1–66.
+             e.    Only three SPAN sessions may be configured on one switch.
+
+

@@ -1,0 +1,35 @@
+! SW1
+conf t
+int range fa0/19 - 20
+  channel-group 13 mode desirable
+int range fa0/21 - 22
+  channel-group 14 mode desirable
+int range fa0/23 - 24
+  channel-group 12 mode desirable
+!
+int port-channel12
+  switchport trunk enc dot1q
+  switchport mode dynamic desirable
+!
+int port-channel13
+  switchport trunk enc dot1q
+  switchport mode dynamic desirable
+!
+int port-channel14
+  switchport trunk enc dot1q
+  switchport mode dynamic desirable
+
+! SW2
+conf t
+int range fa0/23 - 24
+  channel-group 12 mode auto
+
+! SW3
+conf t
+int range fa0/19 - 20
+  channel-group 13 mode auto
+  
+! SW4
+conf t
+int range fa0/21 - 22
+  channel-group 14 mode auto

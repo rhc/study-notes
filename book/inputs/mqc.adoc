@@ -1,0 +1,139 @@
+= MQC
+
+== MQC structure
+
+- define a traffic class with *class map*
+- create a traffic policy with *policy map*
+- attach the traffic policy to an interface with *service-policy*
+
+- restrictions: maximum of 256 classes in a single policy map
+
+== Fields that can be marked for QoS purposes
+
+- IPP, IP DSCP, DS field, ToS byte, CoS,Frame Relay  DE, ATM CLP, MPLS EXP
+
+
+===  IPP 
+
+image::ipp-vs-dscp.png[]
+
+.IPP and Class Selector DSCP values
+[format="dsv"]
+|===
+DSCP CS name : IPP names
+CS0/Default: routine 
+CS1 : priority
+CS2 : immediate
+CS3 : flash 
+CS4 : flash override
+CS5 : critical
+CS6 : internetwork control
+CS7 : network control
+|===
+
+
+=== DSCP 
+
+
+- PHB: Per-hop Behavior
+
+- Expedited Forwarding: 
+  - packets given queunino
+
+== Elements of a traffic class
+
+A traffic class contains 3 major elts: a name, a series of *match* commands followed by *match-all* (default) or *match-any*
+
+.match commands that can be used with MQC
+
+- match access-group 
+- match any
+- match class-map
+- match cos
+- match destination-address mac
+- match discard-class
+- match [ip] dscp
+- match field
+- match fr-dlci
+- match input-interface
+- match ip rtp
+- match mpls experimental
+- match mpls experimental topmost
+- match not  // add a note here
+- match packet length
+- 
+- etc
+
+[format="dsv",options="header",cols="25,75"]
+|===
+Command                  : Purpose
+match protocol           : Configures the match criteria for a class map on the basis of the specified protocol.
+match protocol citrix    : Configures NBAR to match Citrix traffic.
+match protocol fasttrack : Configures NBAR to match FastTrack peer-to-peer traffic.
+match protocol gnutella  : Configures NBAR to match Gnutella peer-to-peer traffic.
+match protocol http      : Configures NBAR to match HTTP traffic by URL, host,MIME type, or fields in HTTP packet headers.
+match protocol rtp       : Configures NBAR to match Real-Time Transport Protocol (RTP) traffic.
+match qos-group          : Identifies a specific QoS group value as a match criterion.
+match source-address mac : Uses the source MAC address as a match criterion.
+match start              : Configures the match criteria for a class map on the basis of the datagram header (Layer 2) or the network header (Layer 3).
+match tag                : Specifies tag type as a match criterion.
+|===
+
+[NOTE]
+nbar cannot classify ipx 
+nbar cannot classify multicast traffic
+//maybe I need a separate chapter for nbar
+
+
+== Elements of a traffic policy
+
+- contains 3 elts: name, traffic class, command to enable the QoS feature
+
+[format="dsv",options="header",cols="25,75"]
+|===
+Command                                      : Purpose
+random-detect discard-class                  : Configures the WRED parameters for a discard- class value for a class in a policy map.
+random-detect discard-class-based            : Configures  WRED on the basis of the discard class value of a packet.
+random-detect ecn                            : Enables explicit congestion notification (ECN).
+random-detect exponential-weighting-constant : Configures the exponential weight factor for the average queue size calculation for the queue reserved for a class.
+random-detect precedence                     : Configure the WRED parameters for a particular IP Precedence for a class policy in a policy map.
+set atm-clp                                  : Sets the cell loss priority (CLP) bit when a policy map is configured.
+set cos                                      : Sets the  Layer 2 class of service (CoS) value of an outgoing packet.
+set discard-class                            : Marks a packet with a discard-class value.
+set [ip] dscp                                : Marks a packet by setting the differentiated services code point (DSCP) value in the type of service (ToS) byte.
+set fr-de                                    : Changes the discard eligible (DE) bit setting in the address field of a Frame Relay frame to 1 for all traffic leaving an interface.
+set mpls experimental                        : Designates the value to which the  MPLS bits are set if the packets match the specified policy map.
+set precedence                               : Sets the precedence value in the packet header.
+set qos-group                                : Sets a  QoS group identifier (ID) that can be used later to classify packets.
+shape                                        : Shapes traffic to the indicated bit rate according to the algorithm specified.
+shape adaptive                               : Configures a Frame  Relay interface or a point-to- point subinterface to estimate the available bandwidth by backward explicit congestion notification (BECN) integration while trafficommand 
+shape fecn-adaptative                        : configures a Frame Relay interface to reflect FECN bits as BECN bits in Q.922 test response messages.
+|===
+
+
+=== Service policy
+
+-----
+(config-if)# service-policy {input | output } policy-map-name
+-----
+
+== Verification
+
+Display all class maps and their matching criteria
+
+----
+> show class-map
+----
+
+Display the configuration for the specified class of the specified policy map
+
+----
+> show policy-map policy-name class class-name
+----
+
+
+Display the configuration of all classes for all existing policy maps
+
+----
+> show policy-map interface interface-name interface-number
+----

@@ -1,0 +1,63 @@
+= LDP
+
+== Concepts
+
+- UDP 646 (TCP 711 for TDP) 
+- Hellos multicast to 224.0.0.2
+- Updates unicast TCP to LDP ID
+
+
+== Configuration
+
+.Task: enable cef
+
+
+- agree on label protocol
+
+--
+mpls label protocol
+--
+
+.Task:  define router-id (recommended)
+
+--
+mpls ldp router-id
+--
+
+.Task: enable ldp at interface level
+
+--
+(config-if)# mpls ip
+--
+
+.Task: enable ldp at IGP process
+
+--
+(config-router)#mpls ldp autoconfig 
+--
+
+.Task: verify ldp is enabled
+
+--
+sh mpls interfaces
+--
+
+.Task:- verify LDP sessions
+
+--
+sh mpls ldp neighbor
+--
+
+.Task:- Verify LFIB
+
+--
+sh mpls forwarding-table
+--
+
+
+.Task:- Troubleshoot LDP adjacencies
+
+--
+debug mpls ldp transport events
+--
+

@@ -1,0 +1,14 @@
+= PIM 
+
+read cisco wiki
+
+http://docwiki.cisco.com/wiki/Internet_Protocol_Multicast#PIM_Sparse_Mode
+
+understand the following commands:
+
+ip pim autorp listener
+ip pim send-rp-discovery
+ip pim send-rp-announce
+ip pim sparse-dense-mode
+
+

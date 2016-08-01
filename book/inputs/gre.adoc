@@ -1,0 +1,242 @@
+= GRE
+// ft:asciidoc
+
+== Concepts 
+
+=== Tunneling
+
+- Tunneling encapsulates data packets from one protocol inside a different
+protocol and transports the data packets unchanged across a foreign network.
+Unlike encapsulation, tunneling allows a lower-layer protocol, or same-layer
+protocol, to be carried through the tunnel. 
+
+Components:
+
+- *Passenger protocol* : The protocol that you are encapsulating. Examples: AppleTalk, IP, IPX.
+- *Carrier protocol* : The protocol that does the encapsulating. Examples: GRE, IP-in-IP, L2TP,MPLS, STUN,DLSw+.
+- *Transport protocol* : The protocol used to carry the encapsulated protocol. The main transport protocol is IP.
+
+.IP Tunneling Terminology and Concepts
+image::ip-tunneling-concepts.png[]
+
+
+
+
+=== GRE
+
+- IP protocol 47
+- https://tools.ietf.org/html/rfc2784[RFC 2784]  
+- https://tools.ietf.org/html/rfc2345[RFC 2345]  
+- https://tools.ietf.org/html/rfc1234[RFC 1234]  
+
+==== GRE header
+
+["packetdiag", target= 'gre-header-format.png']
+----
+{
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  0-0   : C
+  1-12  : Reserved0
+  13-15 : Ver
+  16-31 : Protocol Type
+  32-47 : Checksum (optional)
+  48-63 : Reserved1 (optional)
+
+}
+----
+
+Checksum present::
+- bit 0
+- indicates that the checksum and the Reserved1 field are present
+
+Reserved0::
+- 12 bits
+- if any of bits 1-5 are non-zero, a receiver must discard the packet 
+  unless receiver implements RFC1701 
+
+
+==== GRE keepalive
+
+The GRE tunnel keepalive mechanism gives the ability for one side to originate
+and receive keepalive packets to and from a remote router even if the remote
+router does not support GRE keepalives. For GRE keepalives, the sender
+pre-builds the keepalive response packet inside the original keepalive request
+packet so that the remote end only needs to do standard GRE decapsulation of
+the outer GRE IP header and then forward the inner IP GRE packet. GRE tunnel
+keepalives timers on each side are independent and do not have to match. The
+problem with the configuration of keepalives only on one side of the tunnel is
+that only the router that has keepalives configured marks its tunnel interface
+as down if the keepalive timer expires. The GRE tunnel interface on the other
+side, where keepalives are not configured, remains up even if the other side of
+the tunnel is down. The tunnel can become a black-hole for packets directed
+into the tunnel from the side that did not have keepalives configured.
+
+
+
+== Configuration
+
+
+=== Configure a GRE tunnel
+
+To build a tunnel, a tunnel interface must be defined on each of two routers
+and the tunnel interfaces must reference each other. 
+At each router, the tunnel interface must be configured with a L3 address. 
+The tunnel endpoints, tunnel source, and tunnel destination must be defined, 
+and the type of tunnel must be selected. 
+
+Optional steps can be performed to customize the tunnel.  
+
+Remember to configure the router at each end of the tunnel. 
+If only one side of a tunnel is configured, 
+the tunnel interface may still come up and stay up (unless
+keepalive is configured), but packets going into the tunnel will be dropped.
+
+.summary steps
+----
+interface tunnel number
+  bandwidth kbps
+  keepalive [period [retries]]
+  tunnel source {ip-address | interface-type interface-number}
+  tunnel destination {hostname | ip-address}
+  tunnel key key-number
+  tunnel mode {gre ip| gre multipoint}
+  ip mtu bytes
+  ip tcp mss mss-value
+  tunnel path-mtu-discovery [age-timer {aging-mins| infinite}]
+----
+
+==== Create a tunnel interface 
+
+----
+interface tunnel number 
+----
+
+==== Specify a source interface for the tunnel.
+
+The tunnel source interface can be a local physical or logical local interface,
+and not just an IP address
+
+
+----
+tunnel source {a.b.c.d | source-interface }
+---- 
+
+
+
+
+==== Specify the destination IP address for the tunnel
+
+[TIP]
+The router should have a route to this address, but not through the tunnel interface.
+
+----
+tunnel destination ip-address 
+----
+
+
+==== Specify the tunnel mode 
+
+The default tunnel mode is *gre ip*.
+
+----
+tunnel mode [gre {ip | multipoint} | dvmrp | ipip | mpls | nos] 
+----
+
+==== Adjust the GRE keepalive
+
+Specifies the number of times that the device will continue to send keepalive
+packets without response before bringing the tunnel interface protocol down.
+
+GRE keepalive packets may be configured either on only one side of the tunnel or on both.
+If GRE keepalive is configured on both sides of the tunnel, the period and retries arguments can be different at each side of the link.
+
+This command is supported only on GRE point-to-point tunnels. 
+
+----
+(config-if)# keepalive [ period [retries]]
+----
+
+
+=== Configuration example
+
+Note that Ethernet interface 0/1 is the tunnel source for Router A and the tunnel destination for Router B. 
+Fast Ethernet interface 0/1 is the tunnel source for Router B and the tunnel destination for Router A.
+
+
+Router A::
++
+----
+interface Tunnel0
+ ip address 10.1.1.2 255.255.255.0
+ tunnel source Ethernet0/1
+ tunnel destination 192.168.3.2
+ tunnel mode gre ip
+!
+interface Ethernet0/1
+ ip address 192.168.4.2 255.255.255.0
+----
++
+Router B::
++
+----
+interface Tunnel0
+ ip address 10.1.1.1 255.255.255.0
+ tunnel source FastEthernet0/1
+ tunnel destination 192.168.4.2
+ tunnel mode gre ip
+!
+interface FastEthernet0/1
+ ip address 192.168.3.2 255.255.255.0
+----
+
+== Troubleshooting
+
+
+Three reasons for a GRE tunnel to shut down:
+
+- There is no route to the tunnel destination address.
+- The interface that anchors the tunnel source is down.
+- The route to the tunnel destination address is through the tunnel itself. “%TUN-5-RECURDOWN:Tunnel0“
+
+With the above three reasons for tunnel shut down are problems local to the
+router at the tunnel endpoints and do not cover problems in the intervening
+network.
+
+Also if the two routers tunnel modes do not match, the tunnel interface can
+still stay in an up/ip state but the routers cannot forward packets because of
+the mismatch encapsulation.
+
+
+=== "%TUN-5-RECURDOWN" error message and flapping EIGRP/OSPF/BGP neighbors over a GRE tunnel
+
+http://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/22327-gre-flap.html
+
+== Questions
+
+1.  What is the minimum amount of additional header that GRE adds to a packet?
+a.  16 bytes
+b.  20 bytes
+c.  24 bytes
+d.  36 bytes
+e.  48 bytes
+
+2.  Which of the following are valid options in a GRE header (select all that apply)?
+a.  GRE Header Length
+b.  Checksum Present
+c.  Key Present
+d.  External Encryption
+e.  Protocol
+
+3.  What is the purpose of a GRE tunnel interface?
+a.  It is always the tunnel source interface.
+b.  It is always the tunnel destination interface.
+c.  It is where the protocol that travels through the tunnel is configured.
+d.  It is the interface that maps to the physical tunnel port.
+e.  It is not used today
+
+//todo: import questionnaire from
+http://ptgmedia.pearsoncmg.com/9781587201509/samplechapter/158720150X_CH14.pdf 

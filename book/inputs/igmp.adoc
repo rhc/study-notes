@@ -1,0 +1,495 @@
+= IGMP 
+:experimental:
+:icons: font
+
+menu:Configuration guides[Multicast > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipmulti_igmp/configuration/15-mt/imc-igmp-15-mt-book.htm[IGMP] ]
+
+Check also
+http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swigmp.html#pgfId-1027678[Catalyst configuration guides]
+
+== Concepts
+
+- Group membership protocol used by hosts to inform routers and multilayer switches of the
+existence of members on their directly connected networks and to allow them to send and receive multicast datagrams.
+- IP protocol number: 2
+
+
+== Messages
+
+- membership queries: 
+  ** general:  sent to 224.0.0.1 (all systems on a subnet)
+  ** group-specific: sent to the group
+- membership reports
+  ** sollicited: sent to the group in v2, sent to 224.0.0.22 in v3
+  ** unsollicited
+- Leave Group messages 
+
+== Default IGMP configuration
+
+[format="dsv", options= "header", cols="60,50"]
+|===
+Feature                                            : Default Setting
+IGMP version                                       : Version 2 on all interfaces.
+IGMP query timeout                                 : 60 seconds on all interfaces.
+IGMP maximum query response time                   : 10 seconds on all interfaces.
+Multilayer switch as a member of a multicast group : No group memberships are defined.
+Access to multicast groups                         : All groups are allowed on an interface.
+IGMP host-query message interval                   : 60 seconds on all interfaces.
+Multilayer switch as a statically connected member : Disabled.
+|===
+
+.Task: Display multicast-related information about an interface. 
+----
+# show ip igmp interface [interface-id]
+----
+
+=== IGMP version 
+
+v1::
+- general membership queries 
+- join 
+- implicit leave 
+
+v2::
+- group-specific queries
+- explicit leave group process
+- explicit max response time field
+- querier election'
+
+v3:: 
+- source filtering 
+- uses 224.0.0.22 for membership reports
+
+.Task: Specify the IGMP version
+----
+(config-if)# ip igmp version {1 | 2 | 3}
+----
+
+.Task: Return to the default version 
+----
+(config-if)# no ip igmp version
+----
+
+NOTE: If you change to version 1, you cannot configure the *ip igmp query-interval* or the *ip igmp query-max-response-time* interface configuration
+commands. 
+
+
+=== Querier election
+
+- Each IGMPv2 router sends general query message to 224.0.0.1 with its interface source address. 
+- The router stops upon receiption of query messages with lowest IP address
+-> The router with the lowest IP address wins 
+
+=== IGMPv2 query timeout 
+
+- period of time before the multilayer switch takes over as the querier for the interface. 
+- By default, the switch waits twice the query interval. After that time, if the switch has received no queries, it becomes the querier. 
+
+----
+(config-if)# ip igmp querier-timeout <60-300-seconds> 
+----
+
+=== Maximum response time field
+
+- v1, fixed at 10 seconds
+- v2, can be changed to control the burstiness of the response process especially with large number of active routers.
+  Note that increasing the maximum response timer value also increases the leave
+latency; the query router must now wait longer to make sure there are no more
+hosts for the group on the subnet.
+
+- Default:10 seconds, range: 1..25. 
+
+.Task:Change the maximum response time field
+----
+(config-if)# ip igmp query-max-response-time <seconds> 
+----
+
+== Join the club
+
+.Task: Join a specified group
+----
+(config-if)# ip igmp join-group <address>
+----
+
+.Task: Join a specified (S,G) channel
+----
+(config-if)# ip igmp join-group <address> source <a.b.c.d>
+----
+
+.Task: Display the multicast groups that are directly connected to the multilayer switch and that were learned through IGMP. 
+----
+# sh ip igmp groups [group-name | group-address | type number]
+----
+
+.Task: Forward multicast packet without accepting them
+----
+(config-if)# ip igmp static-group
+----
+NOTE: This method allows fast switching. 
+The outgoing interface appears in the IGMP cache, 
+but the switch itself is not a member, 
+as evidenced by lack of an L (local) flag in the multicast route entry. 
+
+----
+(config-if)# ip igmp static-group 
+----
+
+== Leave process
+
+- in v1, implicit exit
+- in v2, 
+** host send leave group message to group address, 
+** querier send *igmp-last-member-query-count* group-specific queries at *igmp-last-member-interval* milliseconds 
+** querier stops forwarding for the group if no reply within timeout period
+
+.Task: Specify the last member query interval 
+----
+(config-if)# ip igmp last-member-query-interval <milliseconds> 
+----
+
+.Task: Specify the last member query count 
+----
+(config-if)# ip igmp last-member-query-count <1-7> 
+----
+
+.Task: Minimize the leave latency when only one IGMPv2 receiver is connected to the interface 
+----
+(config-if)# ip igmp immediate-leave group-list <acl>
+----
+
+NOTE: Can also be in global mode but not combined with the interface mode 
+
+== IGMP message restriction
+
+.Task: Restrict receivers on a subnet to join only certain multicast groups
+----
+(config-if)# ip igmp access-group <standard-acl>
+----
+
+.Task: Restrict receivers on a subnet to join  multicast groups from specific sources
+----
+(config-if)# ip igmp access-group <extended-acl>
+----
+
+
+== IGMP proxy
+
+TODO
+
+== IGMP snooping
+
+- Problem: L2 switch forwards multicast packets to all interfaces -> wasted traffic
+- Solution: Tracks IGMP messages (Join/Leave) to only forward invites to interested parties.
+  ** Add ports when receiving Join message 
+  ** Delete ports when Leave messages or no membership reports from clients
+
+.Default IGMP snooping configuration
+[format="csv", options= "header", cols="60,50"]
+|====
+Feature, Default Setting
+IGMP snooping, Enabled globally and per VLAN
+Multicast routers, None configured
+Multicast router learning method, PIM-DVMRP
+IGMP snooping Immediate Leave, Disabled
+Static groups , None configured
+TCN flood query count, 2
+TCN query solicitation, Disabled
+IGMP snooping querier, Disabled
+IGMP report suppression, Enabled
+|====
+
+.Task: Display IGMP snooping information
+----
+# sh ip igmp snooping
+----
+
+.Task: Disable IGMP snooping globally
+----
+(config)# no ip igmp snooping
+----
+
+.Task: Enable VLAN snooping
+----
+(config)# ip igmp snooping vlan <1-1001,1006-4094>
+----
+
+.Task: Change the snooping method
+----
+(config)# ip igmp snooping vlan <vlan-id> mrouter learn {cgmp | pim-dvmrp}
+----
+
+=== Multicast router port
+
+.Task: Add a multicast router port 
+----
+(config)# ip igmp snooping vlan <id> mrouter interface <type-number>
+----
+
+.Task: Verify that IGMP snooping is enabled on the VLAN interface
+----
+(config)# sh ip igmp snooping mrouter vlan <id>
+----
+
+
+=== Statically join a group
+
+.Task: Add a L2 port to join a group
+----
+ip igmp snooping vlan <vlan-id> static <ip-address> interface <type number>
+----
+NOTE: Hosts or L2 ports normally join multicast groups dynamically
+
+.Task: Verify the member port and the IP address
+----
+# sh ip igmp snooping groups
+----
+
+
+=== IGMP immediate leave
+
+.Task: Remove a port immediately when it detects an IGMPv2 leave message 
+----
+(config)# ip igmp snooping vlan <id> immediate-leave
+----
+
+==== IGMP leave Timer
+
+.Task: configure the IGMP leave timer globally
+----
+ip igmp snooping last-member-query-interval <milliseconds>
+----
+
+.Task: configure the IGMP leave timer on the VLAN interface
+----
+ip igmp snooping vlan <id> last-member-query-interval <milliseconds>
+----
+
+
+=== TCN Events
+
+- when the client changed its loaction and the receiver is on smae port that was blocked but is now forwarding,
+- when a port went down without sending a leave message. 
+
+.Task: Control the multicast flooding time after a TCN event
+----
+(config)# ip igmp snooping tcn flood query count <1-2-10>
+----
+
+.Task: Speed the process of recovering from the flood mode caused by a TCN event.
+----
+(config)# ip igmp snooping tcn query solicit
+----
+
+[NOTE]
+====
+- When a topology change occurs, the spanning-tree root sends a IGMP global leave with group 0.0.0.0.
+- however, after *ip igmp snooping tcn query solicit* command, 
+the switch sneds the global leave message whether or not it is the spanning-tree root.
+- When the router receives this special leave, it immediately sends general queries,
+which expedite the process of recovering from the flood mode during the TCN event.
+====
+
+.Task: Disable the flooding of multicast traffic during a TCN event
+----
+(config-if)# no ip igmp snooping tcn flood
+----
+
+[NOTE]
+====
+- When the swith receives a TCN, multicast traffic is flooded to all the ports until 2 general queries are received.
+- If the switch has many ports with attached hosts subscribed to many groups, 
+this flooding might exceed the capacity of the link and cause packet loss.
+====
+
+=== IGMP snooping querier
+
+.Task: Enable IGMP snooping querier
+----
+(config)# ip igmp snooping querier
+(config)# ip igmp snooping querier address <ip.ad.re.ss>
+(config)# ip igmp snooping querier query-interval <seconds>
+(config)# ip igmp snooping querier tcn query [count <n> | interval <seconds>]
+(config)# ip igmp snooping querier timer expiry <seconds>
+(config)# ip igmp snooping querier version {1 | 2}
+----
+
+.Task: Display information about the IP address and receiving port for the most-recently received IGMP query in the VLAN
+----
+# sh ip igmp snooping querier [vlan <id>] [detail]
+----
+
+
+=== IGMP report suppression
+
+.Task: Disable IGMP report suppression
+----
+(config)# no ip igmp snooping report-suppression
+----
+
+
+== MVR
+
+- Multicast VLAN Registration 
+- Problem: How to scale multicast traffic accross an Ethernet ring-based SP network 
+- Solution : one multicast VLAN shared with subscribers in seperate VLANs
+- Use case: broadcast of multiple TV channels over a service-provider network
+- works with or without IGMP snooping 
+** If both enabled, MVR reacts only to join and leave messages from MVR groups.
+
+.Default MVR configuration
+[format="csv", options= "header", cols="60,30"]
+|===
+Feature                      , Default Setting
+MVR                          , Disabled globally and per interface
+Multicast addresses          , None configured
+Query response time          , 0.5 second
+Multicast VLAN               , VLAN 1
+Mode                         , Compatible
+Interface (per port) default , Neither a receiver nor a source port
+Immediate Leave              , Disabled on all ports
+|===
+
+=== MVR global parameters
+
+.Task: Enable MVR on the switch
+----
+(config)# mvr
+----
+
+.Task: Configure a range of IP multicast address on the switch
+----
+(config)# mvr group <ip-address> [count]
+----
+
+[NOTE]
+====
+- The *count* parameter configure a contiguous series of MVR group addresses. Default= 1 in 1..256
+- Any multicast data sent to the ip address  corresponding to one TV channel 
+is sent to all source ports on the switch and all interested receiver ports.
+====
+
+.Task: Define the maximum time to wait for IGMP report memberships on a receiver port
+----
+(config)# mvr querytime <tenths-of-seconds>
+----
+
+.Task: Specify the VLAN in which multicast data is received
+----
+(config)# mvr vlan <vlan-id>
+----
+
+[NOTE]
+====
+- All source ports must belong to this VLAN
+====
+
+.Task: Specify the MVR mode of operation
+----
+(config)# mvr mode { dynamic | compatible }
+----
+
+[NOTE]
+====
+- *dynamic*: allows dynamic MVR memberships on source ports.
+- *compatible* is the default and does not support ICMP dynamic joins on source ports.
+====
+
+.Task: Verify the MVR global configuration
+----
+(config)# sh mvr
+(config)# sh mvr members
+----
+
+=== MVR interfaces
+
+.Task: configure an MVR port as source 
+----
+(config-if)# mvr type source
+----
+
+[NOTE]
+====
+- Configure uplinks ports that receive and send multicast data as source ports
+- Subscribers cannot be directly connected to source ports
+- All source ports on a switc belong to the single multicast VLAN.
+====
+
+
+.Task: configure an MVR port as receiver 
+----
+(config-if)# mvr type receiver
+----
+
+[NOTE]
+====
+- Configure a port as a receiver port if it is a subscriber port and should only recieve multicast data.
+- Receiver ports do not receive data unless it becomes a member of the multicast group.
+- Receiver ports cannot belongs to the multicast VLAN.
+====
+
+.Task: Statically configure a port to receive multicast traffic
+----
+(config)# mvr vlan <id> group <ip-address>
+----
+
+.Task: Enable the Immediate-Leave feature of MVR on the receiver port
+----
+(config)# mvr immediate
+----
+
+.Task: Verify the MVR interface configuration 
+----
+# sh mvr interface
+----
+
+.Task: Display all receiver and source ports that are members of a multicast group
+----
+# sh mvr members [group-ip-address]
+----
+
+
+== IGMP filtering and throttling
+
+
+.Default IGMP filtering configuration
+[format="csv", options= "header", cols="60,30"]
+|===
+Feature        , Default Setting
+Filters        , none applied
+profiles       , none defined
+profile action , deny the range addresses
+|===
+
+
+=== IGMP profiles
+
+.Task: Configure an IGMP profile
+----
+(config)# ip igmp profile <number>
+(config-igmp-profile)# permit | deny 
+(config-igmp-profile)# range <low-ip-address> [<high-ip-address>]
+----
+
+.Task: Apply IGMP profile to an interface
+----
+(config)# ip igmp filter <profile-number>
+----
+
+.Task: Verify the profile configuration
+----
+# sh ip igmp profile <number>
+----
+
+=== IGMP throttling
+
+.Task: Set the maximum number of IGMP groups that the interface can join
+----
+(config-if)# ip igmp max-groups <count>
+----
+
+.Task: Specify the action that the interface takes when it reaches the maximum number of entries and receives a new IGMP report
+----
+(config-if)# ip igmp max-groups action {deny | replace }
+----
+
+

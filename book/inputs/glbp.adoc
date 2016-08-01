@@ -1,0 +1,61 @@
+= GLBP
+
+== Concepts
+
+AVG active virtual gateway
+AVF active virtual forwarder
+
+
+- AVG responds to all ARP requests with MAC from all particapating AVF
+  * Not with own MAC address like HSRP
+- load-balancing
+  * round-robin (default)
+  * weigthed  
+
+- UDP port 3222
+
+
+
+!! GLBP configuration
+int f0/0.40
+  glbp 1 ip 172.16.26.100
+  glbp 1 authentication md5 key-string test
+
+
+.Task: Description
+----
+# sh glbp
+
+FastEthernet0/0.40 - Group 1
+  State is Standby
+    1 state change, last state change 00:02:02
+  Virtual IP address is 172.16.26.100
+  Hello time 3 sec, hold time 10 sec
+    Next hello sent in 2.720 secs
+  Redirect time 600 sec, forwarder time-out 14400 sec
+  Preemption disabled
+  Active is 172.16.26.6, priority 100 (expires in 11.360 sec)
+  Standby is local
+  Priority 100 (default)
+  Weighting 100 (default 100), thresholds: lower 1, upper 100
+  Load balancing: round-robin
+  Group members:
+    ca02.6150.0000 (172.16.26.2) local
+    ca06.618c.0000 (172.16.26.6)
+  There are 2 forwarders (1 active)
+  Forwarder 1
+    State is Listen
+    MAC address is 0007.b400.0101 (learnt)
+    Owner ID is ca06.618c.0000
+    Time to live: 14399.840 sec (maximum 14400 sec)
+    Preemption enabled, min delay 30 sec
+    Active is 172.16.26.6 (primary), weighting 100 (expires in 10.944 sec)
+  Forwarder 2
+    State is Active
+      1 state change, last state change 00:02:08
+    MAC address is 0007.b400.0102 (default)
+    Owner ID is ca02.6150.0000
+    Preemption enabled, min delay 30 sec
+    Active is local, weighting 100
+----
+
