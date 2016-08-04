@@ -1,0 +1,141 @@
+= Enhanced Object Tracking
+
+- separates definition of tracked object vs action to be taken when tracked object change
+- tracked object can be: interface, ip route or ip sla operation or list of objects
+
+
+== Interface Tracking
+
+- can be line protocol or ip route
+- may consider the carrier delay timer
+- may have a delay between the changes and the notification
+- may change the polling frequency
+
+
+=== Interface line protocol tracking
+
+
+.Task: Track the line protocol state of an interface
+----
+(config)# track <object-number> interface <type number> line protocol
+----
+
+=== Interface IP routing tracking
+
+- The IP routing State is up if 
+* ip routing is enable and active on the interface 
+* known  ip address ( static, dhcp , ppp/ipcp, unnumbered ) 
+* interface line protocol up 
+
+.Task: Track the IP routing state of an interface
+----
+(config)# track <object-number> interface <type number> ip routing
+----
+
+=== EOT support for carrier delay
+
+-  If a link fails, by default there is a two-second timer that must expire
+   before an interface and the associated routes are declared as being down. If
+   a link goes down and comes back up before the carrier delay timer expires,
+   the down state is effectively filtered, and the rest of the software on the
+   switch is not aware that a link-down event occurred. You can extend the
+   timer up to 60 seconds.
+
+- When EOT is configured on an interface, the tracking may detect the interface
+  is down before a configured carrier-delay timer has expired. This is because
+  EOT looks at the interface state and does not consider the carrier delay
+  timer.
+
+
+.Task: (optional) Enables EOT to consider the carrier-delay timer when tracking the status of an interface. 
+----
+(config-track)# carrier-delay
+----
+
+.Task: (Optional) Specifies a period of time (in seconds) to delay communicating state changes of a tracked object. 
+----
+(config-track)# delay {up <seconds> [down <seconds>] | down <seconds [up <seconds>]}
+----
+
+== IP route Tracking
+
+- Up if the route exists in the RIB and the route is accessible
+- polls the ip route state every 15 seconds
+
+
+.Task: Track an ip route
+----
+(config)# track <object-number> ip route <a.b.c.d/prefix> reachability
+----
+
+.Task:(Optional) Specifies the interval in which the tracking process polls the tracked object. 
+----
+(config)# track timer ip route { <seconds> | msec <milliseconds> } 
+----
+
+TODO: scaled metrics
+
+
+== IP SLA operation tracking
+
+- tracks the state or the reachability of IP SLA operations 
+-
+
+.Task: Track the reachability of an IP SLA host
+----
+(config)# track <object-number> ip sla <operation-number> reachability
+----
+
+.Example
+----
+# show track 3
+Device# show track 3
+
+Track 3
+   IP SLA 1 reachability
+   Reachability is Up
+     1 change, last change 00:00:47
+   Latest operation return code: over threshold
+   Latest RTT (millisecs) 4
+   Tracked by:
+     HSRP Ethernet0/1 3
+----
+
+
+== Tracked list
+
+- can be constructed with 
+
+* boolean expression
+* treshold and weight
+* treshold and percentage
+
+.Task: Configure tracked list object with a boolean expression
+----
+(config)# track <list-object-number> list boolean {and | or}
+(config-track)# object <object-number> [not]
+----
+
+
+.Task: Configure tracked list object with threshold and weight 
+----
+(config)# track <list-object-number> list treshold weight
+(config-track)# object <object-number> [weight <number]
+(config-track)# object <object-number> [weight <number]
+(config-track)# treshold weight {up <number> | down <number>| up <number> down <number>  }
+----
+
+
+
+.Task: Configure tracked list object with threshold and percentage 
+----
+(config)# track <list-object-number> list treshold percentage
+(config-track)# object <object-number> 
+(config-track)# object <object-number> 
+(config-track)# treshold percentage {up <number> | down <number>| up <number> down <number>  }
+----
+
+.Task: Configure tracked list default
+----
+(config-track)# default { delay | object <object-number> | treshold percentage }
+----

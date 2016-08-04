@@ -1,11 +1,16 @@
 = ARP
 
-== Information 
+- menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/15-mt/arp-15-mt-book.html[ARP] ]
+- https://wwwietf.org/rfc/rfc826.txt[RFC 826]
 
-=== Message format
+- Finds hardware address (MAC) of a host given IP address
+- maintains ARP cache 
+- ARP Ethernet protocol: 0x0806
+
+== Protocol
 
 .header format
-["packetdiag", target=""]
+["packetdiag", target="arp"]
 ----
 diagram {
   colwidth = 32
@@ -13,11 +18,11 @@ diagram {
   default_node_color = lightyellow
   default_fontsize = 12
 
-  * Hardware Type [len=16]
-  * Protocol Type [len=16]
-  * Hardware Address Length [len=8]
-  * Protocol Address Length [len=8]
-  * Opcode [len=16]
+  * Hardware Type (Ethernet=1) [len=16]
+  * Protocol Type (IP= 0x0800) [len=16]
+  * Hardware Address Length (6) [len=8]
+  * Protocol Address Length (4) [len=8]
+  * Opcode [len=16] 
   * Sender Hardware Address [len=48, color=lightgreen]
   * Sender Protocol Address [len=32, color=yellow]
   * Target Hardware Address [len=48, color=lightgreen]
@@ -25,54 +30,99 @@ diagram {
 }
 ----
 
-== Configuration tasks
+OpCode::
+- 1 for request
+- 2 for response
 
-Enable the interface encapsulation
 
+== Static ARP entries
+
+.Task: Enable the interface encapsulation
 ----
 (config-if)# arp {arpa | frame-relay | snap}
 ----
 
-Define static ARP entries
 
+.Task: Define static ARP entries
 ----
-arp <ip-address>  <hardware-address> <encapsulation-type> [<interface-type>]
-----
-
-
-Define static ARP entries for a specific VRF
-
-----
-arp vrf <name>  <hardware-address> <encapsulation-type> [<interface-type>]
+# arp <ip-address>  <hardware-address> <encapsulation-type> [<interface-type>]
 ----
 
-set an expiration time for dynamic entries in the arp cache
-
+.Task: Define static ARP entries for a specific VRF
 ----
-(config-if)# arp timeout <seconds>
+# arp vrf <name>  <hardware-address> <encapsulation-type> [<interface-type>]
 ----
 
-clear the entire ARP cache on an interface
+== Dynamic ARP entries
 
+- Stored in ARP cache 
+- timeout by default in 4 hours
+
+
+.Task: clear the entire ARP cache on an interface
 ----
 # clear arp interface <type-number>
 ----
 
-
-clear all dynamic entries from the ARP cache, the fast-switchig cache, 
-and the IP route cache
-
+.Task: clear all dynamic entries from the ARP cache, the fast-switchig cache, and the IP route cache
 ----
 # clear arp-cache
 ----
 
-Verify the ARP configuration
-
+.Task: set an expiration time for dynamic entries in the arp cache
 ----
-# show interfaces
+(config-if)# arp timeout <seconds>
+----
+
+.Task: Display the arp cache
+----
 # show arp
 # show ip arp 
-# show processes cpu | include (ARP|PID)
 ----
 
-== Troubleshooting
+----
+# show arp
+
+Protocol    Address            Age (min)   Hardware Addr      Type    Interface
+Internet    10.108.42.112      120         0000.a710.4baf     ARPA    Ethernet3
+AppleTalk   4028.5             29          0000.0c01.0e56     SNAP    Ethernet2
+Internet    110.108.42.114     105         0000.a710.859b     ARPA    Ethernet3
+AppleTalk   4028.9             -           0000.0c02.a03c     SNAP    Ethernet2
+Internet    10.108.42.121      42          0000.a710.68cd     ARPA    Ethernet3
+Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0
+----
+
+.Task: Display ARP and RARP processes
+----
+# sh processes cpu | include (ARP|PID)
+----
+
+== Proxy ARP
+
+- Same message as ARP
+- Allows response for IP address in remote subnet.
+- RFC 1027
+- Mostly replaced by DHCP nowadays
+
+.Task: disable Proxy ARP globally
+----
+# ip arp proxy disable
+----
+
+.Task: Disable Proxy ARP on an interface
+----
+(config-if)# no ip proxy-arp
+----
+
+== Gratuitous ARP
+
+- broadcast ARP messages where the SPA=TPA and THA=FF:FF:FF:FF:FF:FF
+
+- used to 
+
+** to detect IP address conflit 
+** to update other machine ARP table
+** to update mac table of the connected switche
+
+[TIP] If we see multiple gratitous ARPs from the same host frequently,
+it can be an indication of bad Ethernet NICs

@@ -12,7 +12,6 @@
 
 - IPP, IP DSCP, DS field, ToS byte, CoS,Frame Relay  DE, ATM CLP, MPLS EXP
 
-
 ===  IPP 
 
 image::ipp-vs-dscp.png[]

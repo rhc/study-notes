@@ -3,14 +3,13 @@
 :experimental:
 
 
-menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html[IRDP] ]
+- menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html[IRDP] ]
+- http://www.ietf.org/rfc/rfc1256.txt[RFC 1256]
 
-== Overview
 
 - ICMP Router Discovery Protocol allows hosts to locate routers
 that can be used as gateway to reach IP-based devices on other networks.
 
-- http://www.ietf.org/rfc/rfc1256.txt[RFC 1256]
 
 == Message format
 
@@ -23,8 +22,8 @@ that can be used as gateway to reach IP-based devices on other networks.
   default_node_color = lightyellow
   default_fontsize = 12
 
-  * Type [len=8]
-  * Code [len=8]
+  * Type = 9 [len=8]
+  * Code = 0[len=8]
   * Checksum [len=16]
   * Num Addrs [len=8]
   * Addr Entry Size [len=8]
@@ -34,8 +33,7 @@ that can be used as gateway to reach IP-based devices on other networks.
 }
 ------
 
-Type:: 9
-Code:: 0
+[horizontal]
 Checksum:: 
 The 16-bit one's complement of the one's complement sum of the ICMP message, 
 starting with the ICMP Type. 
@@ -49,26 +47,24 @@ Preference Level[i]:: Preferability of each Router Address[i] as a default route
 relative to other router addresses on the same subnet. Higher values more preferable.
 
 
-
 === ICMP Router Solicitation Message
 
-["packetdiag", target= 'icmp-router-advertisement']
-------
+["packetdiag", target= 'icmp-router-sollicitation']
+----
 {
   colwidth = 32
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
 
-  * Type [len=8]
-  * Code [len=8]
+  * Type = 10 [len=8]
+  * Code = 0  [len=8]
   * Checksum [len=16]
   * Reserved [len=32]
 }
-------
+----
 
-Type:: 10
-Code:: 0
+[horizontal]
 Checksum:: 
 The 16-bit one's complement of the one's complement sum of the ICMP message, 
 starting with the ICMP Type. 
@@ -77,10 +73,10 @@ Reserved:: Sent as 0; ignored on reception.
 
 == Configuration
 
-.Task: Configure a gateway to discover routers that transmit IRDP router updates after disabling IP routing
+.Task: Configure a host to discover routers that transmit IRDP router updates after disabling IP routing
 ----
-no ip routing
-ip gdp irdp [multicast]
+(config)# no ip routing
+(config-if)# ip gdp irdp [multicast]
 ----
 
 .Task: Enable IRDP on an interface 
@@ -113,11 +109,8 @@ ip irdp minadvertinterval <seconds>
 (config-if)# ip irdp preference <number>
 ----
 
-.Task: Specify an IRDP address and preference to prozy-advertise
+.Task: Specify an IRDP address and preference to proxy-advertise
 ----
 (config-if)# ip irdp address <a.b.c.d> <preference-level>
 ----
-
-
-
 

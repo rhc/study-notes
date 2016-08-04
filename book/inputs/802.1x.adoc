@@ -1,7 +1,8 @@
 = IEEE 802.1X 
 
-
-
+// describe 802.1x
+// 802.1x, eap, radius
+// mac authentication bypass
 
 == Definition
 

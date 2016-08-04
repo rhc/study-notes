@@ -2,12 +2,35 @@
 
 
 - RFC 791
+- IP Ethernet protocol: 0x0800
 
 == IP packet format
 
-.IP packet format
-image::ip-packet-format.png[]
+.IP header format
+["packetdiag", target="ospf-header-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
 
+  * Version [len=4]
+  * IHL [len=4]
+  * ToS [len=8]
+  * Total Length [len=16]
+  * Identification [len=16]
+  * Flags [len=3]
+  * Fragment offset [len=13]
+  * TTL [len=8]
+  * Protocol [len=8]
+  * Header Checksum [len=16]
+  * Source Address [len=32]
+  * Destination Address [len=32]
+  * Options (+ padding) [len=32]
+  * Data (variable) [len=64, color=green]
+}
+----
 
 IP Header Length (IHL)::
 Indicates the datagram header length in 32-bit words.
@@ -53,7 +76,7 @@ Contains upper-layer information.
 
 .Task: Assign an IP address to an interface
 ----
-(config-if)# ip address ip-address mask [secondary]
+(config-if)# ip address <a.b.c.d> <e.f.g.h> [secondary]
 ----
 
 .Task: Display the IP parameters for the interface
@@ -75,7 +98,7 @@ show ip route connected
 - Enable by default
 
 
-.Task: Disable classless addressing
+.Task: Enable classless addressing
 ----
 (config)# ip classless
 ----
@@ -133,4 +156,7 @@ show ip route connected
 (config)# ip classless
 (config-if)# ip address a.b.c.d 255.255.255.254
 ----
+
+
+
 

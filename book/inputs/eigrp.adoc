@@ -1,13 +1,11 @@
 = EIGRP
 
-
-== Overview
-
 - classless protocol (VLSM, summarization)
 - multiple routed protocol support (ipv4, ipx, appletalk, )
 - uses its own transport protocol
   ** IP protocol 88: RTP
   ** uses multicast to 224.0.0.10 and unicast
+- Administrative distance : 90 internal routes, 5 summary routes , 170 external routes
 - Forms active neighbor adjacencies
 - DUAL for loop-free topology and fast convergence
 - granular metric
@@ -18,6 +16,7 @@
 
 == EIGRP messages
 
+[horizontal]
 Hello::
 - multicast to 224.0.0.10
 - do not require acknowlegment
@@ -60,15 +59,14 @@ Request::
 debug ip eigrp packet [hello | ack | update } quey | reply]
 ----
 
-
 == Neighbors
 
 - discovered with Hello packets
 - must agree on
-  - primary IPv4 subnet
-  - Autonomous System Number
-  - authentication
-  - K values
+** primary IPv4 subnet
+** Autonomous System Number
+** authentication
+** K values
 
 - do not need to agree on timers
 
@@ -96,9 +94,6 @@ TIP: Check that the queue count is zero
 (config-router-af-interface)# no split-horizon 
 ----
 
-
-
-
 == DUAL feasibility condition
 
 
@@ -111,7 +106,6 @@ TIP: Check that the queue count is zero
     ** query the neighbors and put the route in active
 
 - Transport: IP protocol 88
-- Administrative distance : 90 internal routes, 5 summary routes , 170 external routes
 - Hello interval
 
 == Metric
@@ -140,7 +134,7 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 == EIGRP Autonomous System Configuration
 
 - created with the command  *router eigrp* <autonomous-system-number>
-- EIGRP VPNS can be configured only under IPv4 address family. A VRF instance and route distinguisher must be defined before the address family session can be created.
+- EIGRP VPNs can be configured only under IPv4 address family. A VRF instance and route distinguisher must be defined before the address family session can be created.
 - recommendation: configure the asn when the address family is configured by *router eigrp* <asn> *address-family* or seperately using the *autonomous-system* command.
 
 == EIGRP Named Configuration
@@ -149,7 +143,7 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 - interface params in *config-router-af-interface* mode 
 - wide-meric scaling automatic enabled
 
-- can* be configured in IPv4 and IPv6 named configuration
+- can be configured in IPv4 and IPv6 named configuration
 - VRF instance and a RD are optional
 - EIGRP IPv6 VRF-lite feature is available only in EIGRP named configuration
 - EIGRP VPNs can be configured. A VRF and RD must be defind before the address-family session can be created.
@@ -158,17 +152,15 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 .Task: Configure a basic EIGRP named configuration
 ----
 (config)# router eigrp <virtual-instance-name>
-(config-router)# address-family ipv4 [multicast] [umicast] [vrf vrf-name] autonomous-system asn
-(config-router-af)# network a.b.c.d
+(config-router)# address-family ipv4 [multicast] [umicast] [vrf <vrf-name>] autonomous-system <asn>
+(config-router-af)# network <a.b.c.d>
 ----
-
 
 == EIGRPv3
 
 ----
 (config-router)# address-family ipv6 [unicast] [vrf vrf-name] autonomous-system asn
 ----
-
 
 == EIGRP Neighbor Relationship Maintenance
 
@@ -178,13 +170,12 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 
 == DUAL Finite State Machine
 
-- a successor is a neighboring router that has a least-cost path to a
+- A successor is a neighboring router that has a least-cost path to a
   destination that is guarentedd not to be part of a routinf
 
 - Feasibility condition: RD < FD
 
 == Protocol-Dependent Modules
-
 
 
 
@@ -324,7 +315,4 @@ TODO
 show ip eigrp topology [all-links]
 show ip eigrp topology [prefix/len]
 ----
-
-
-
 

@@ -862,7 +862,7 @@ p { margin-bottom: 1rem; }
 <ul class="sectlevel2">
 <li><a href="#_concepts_6">12.1. Concepts</a></li>
 <li><a href="#_configuration_7">12.2. Configuration</a></li>
-<li><a href="#_troubleshooting_5">12.3. Troubleshooting</a></li>
+<li><a href="#_troubleshooting_4">12.3. Troubleshooting</a></li>
 <li><a href="#_questions_2">12.4. Questions</a></li>
 </ul>
 </li>
@@ -879,36 +879,83 @@ p { margin-bottom: 1rem; }
 <ul class="sectlevel1">
 <li><a href="#_device_security">15. Device security</a>
 <ul class="sectlevel2">
-<li><a href="#_snmp">15.1. SNMP</a></li>
+<li><a href="#_aaa">15.1. AAA</a></li>
 </ul>
 </li>
 <li><a href="#_network_security">16. Network security</a>
 <ul class="sectlevel2">
 <li><a href="#_switch_security">16.1. Switch security</a></li>
-<li><a href="#_router_security">16.2. Router security</a></li>
+<li><a href="#_access_control_list">16.2. Access control list</a></li>
+<li><a href="#_router_security">16.3. Router security</a></li>
+</ul>
+</li>
+<li><a href="#_ieee_802_1x">17. IEEE 802.1X</a>
+<ul class="sectlevel2">
+<li><a href="#_definition_2">17.1. Definition</a></li>
+<li><a href="#_port_security">17.2. Port security</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#_part_v_infrastructure_services">Part V : Infrastructure Services</a>
 <ul class="sectlevel1">
-<li><a href="#_system_management">17. System management</a></li>
-<li><a href="#_qos">18. QoS</a></li>
-<li><a href="#_network_services">19. Network services</a>
+<li><a href="#_system_management">18. System management</a>
 <ul class="sectlevel2">
-<li><a href="#_hsrp">19.1. HSRP</a></li>
-<li><a href="#_glbp">19.2. GLBP</a></li>
-<li><a href="#_vrrp">19.3. VRRP</a></li>
-<li><a href="#_idrp">19.4. IDRP</a></li>
-<li><a href="#_ntp">19.5. NTP</a></li>
-<li><a href="#_dhcp_3">19.6. DHCP</a></li>
-<li><a href="#_nat_2">19.7. NAT</a></li>
+<li><a href="#_telnet">18.1. Telnet</a></li>
+<li><a href="#_ssh">18.2. SSH</a></li>
+<li><a href="#_scp">18.3. SCP</a></li>
+<li><a href="#__t_ftp">18.4. [T]FTP</a></li>
+<li><a href="#_snmp">18.5. SNMP</a></li>
 </ul>
 </li>
-<li><a href="#_multicast_2">20. Multicast</a>
+</ul>
+</li>
+<li><a href="#_ntp">NTP</a>
+<ul class="sectlevel1">
+<li><a href="#_overview_12">19. Overview</a></li>
+<li><a href="#_ntp_associations">20. NTP associations</a>
 <ul class="sectlevel2">
-<li><a href="#_igmp">20.1. IGMP</a></li>
-<li><a href="#_pim">20.2. PIM</a></li>
+<li><a href="#_polled_based_associations">20.1. Polled-based associations</a></li>
+<li><a href="#_broadcast_based_associations">20.2. Broadcast-based associations</a></li>
+</ul>
+</li>
+<li><a href="#_ntp_access_groups">21. NTP access groups</a></li>
+<li><a href="#_ntp_authentication">22. NTP authentication</a></li>
+<li><a href="#_source_ip_address">23. Source IP address</a></li>
+<li><a href="#_authoritative_server">24. Authoritative server</a></li>
+<li><a href="#_panic_treshold">25. Panic treshold</a></li>
+<li><a href="#_orphan_mode">26. Orphan mode</a></li>
+<li><a href="#_external_reference_clock">27. external reference clock</a></li>
+<li><a href="#_software_clock">28. Software clock</a></li>
+<li><a href="#_hardware_clock">29. Hardware-clock</a></li>
+<li><a href="#_time_ranges">30. Time Ranges</a></li>
+<li><a href="#_vulnerability">31. Vulnerability</a></li>
+<li><a href="#_qos">32. QoS</a>
+<ul class="sectlevel2">
+<li><a href="#_mqc">32.1. MQC</a></li>
+<li><a href="#_rsvp">32.2. RSVP</a></li>
+</ul>
+</li>
+<li><a href="#_first_host_redundancy_protocols">33. First Host Redundancy Protocols</a>
+<ul class="sectlevel2">
+<li><a href="#_hsrp">33.1. HSRP</a></li>
+<li><a href="#_glbp">33.2. GLBP</a></li>
+<li><a href="#_vrrp">33.3. VRRP</a></li>
+<li><a href="#_idrp">33.4. IDRP</a></li>
+<li><a href="#_ipv6_ra_rs">33.5. IPv6 RA/RS</a></li>
+</ul>
+</li>
+<li><a href="#_multicast_2">34. Multicast</a>
+<ul class="sectlevel2">
+<li><a href="#_igmp">34.1. IGMP</a></li>
+<li><a href="#_pim">34.2. PIM</a></li>
+</ul>
+</li>
+<li><a href="#_network_optimization">35. Network optimization</a>
+<ul class="sectlevel2">
+<li><a href="#_ip_sla">35.1. IP SLA</a></li>
+<li><a href="#_enhanced_object_tracking">35.2. Enhanced Object Tracking</a></li>
+<li><a href="#_netflow">35.3. NetFlow</a></li>
 </ul>
 </li>
 </ul>
@@ -6666,15 +6713,18 @@ good first step when troubleshooting PPPoE connections.</p>
 <li>
 <p>RFC 791</p>
 </li>
+<li>
+<p>IP Ethernet protocol: 0x0800</p>
+</li>
 </ul>
 </div>
 <div class="sect3">
 <h4 id="_ip_packet_format">9.1.1. IP packet format</h4>
 <div class="imageblock">
 <div class="content">
-<img src="../images/ip-packet-format.png" alt="ip packet format">
+<img src="../images/ospf-header-format.png" alt="IP header format" width="896" height="376">
 </div>
-<div class="title">Figure 10. IP packet format</div>
+<div class="title">Figure 10. IP header format</div>
 </div>
 <div class="dlist">
 <dl>
@@ -6744,7 +6794,7 @@ Currently referred to as Differentiated Services Code Point (DSCP) (6 bits).</p>
 <div class="listingblock">
 <div class="title">Task: Assign an IP address to an interface</div>
 <div class="content">
-<pre>(config-if)# ip address ip-address mask [secondary]</pre>
+<pre>(config-if)# ip address &lt;a.b.c.d&gt; &lt;e.f.g.h&gt; [secondary]</pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6779,7 +6829,7 @@ routes for the purpose of reducing the size of the Internet routing table</p>
 </ul>
 </div>
 <div class="listingblock">
-<div class="title">Task: Disable classless addressing</div>
+<div class="title">Task: Enable classless addressing</div>
 <div class="content">
 <pre>(config)# ip classless</pre>
 </div>
@@ -6886,84 +6936,189 @@ routes for the purpose of reducing the size of the Internet routing table</p>
 </div>
 <div class="sect2">
 <h3 id="_arp">9.2. ARP</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">IP Addressing</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/15-mt/arp-15-mt-book.html">ARP</span></span> </a></p>
+</li>
+<li>
+<p><a href="https://wwwietf.org/rfc/rfc826.txt">RFC 826</a></p>
+</li>
+<li>
+<p>Finds hardware address (MAC) of a host given IP address</p>
+</li>
+<li>
+<p>maintains ARP cache</p>
+</li>
+<li>
+<p>ARP Ethernet protocol: 0x0806</p>
+</li>
+</ul>
+</div>
 <div class="sect3">
-<h4 id="_information">9.2.1. Information</h4>
-<div class="sect4">
-<h5 id="_message_format">Message format</h5>
+<h4 id="_protocol">9.2.1. Protocol</h4>
 <div class="imageblock">
 <div class="content">
-<img src="../images/.png" alt="header format" width="896" height="344">
+<img src="../images/arp.png" alt="header format" width="896" height="344">
 </div>
 <div class="title">Figure 11. header format</div>
 </div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">OpCode</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>1 for request</p>
+</li>
+<li>
+<p>2 for response</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configuration_tasks_4">9.2.2. Configuration tasks</h4>
-<div class="paragraph">
-<p>Enable the interface encapsulation</p>
-</div>
+<h4 id="_static_arp_entries">9.2.2. Static ARP entries</h4>
 <div class="listingblock">
+<div class="title">Task: Enable the interface encapsulation</div>
 <div class="content">
 <pre>(config-if)# arp {arpa | frame-relay | snap}</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Define static ARP entries</p>
+<div class="listingblock">
+<div class="title">Task: Define static ARP entries</div>
+<div class="content">
+<pre># arp &lt;ip-address&gt;  &lt;hardware-address&gt; &lt;encapsulation-type&gt; [&lt;interface-type&gt;]</pre>
+</div>
 </div>
 <div class="listingblock">
+<div class="title">Task: Define static ARP entries for a specific VRF</div>
 <div class="content">
-<pre>arp &lt;ip-address&gt;  &lt;hardware-address&gt; &lt;encapsulation-type&gt; [&lt;interface-type&gt;]</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Define static ARP entries for a specific VRF</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>arp vrf &lt;name&gt;  &lt;hardware-address&gt; &lt;encapsulation-type&gt; [&lt;interface-type&gt;]</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>set an expiration time for dynamic entries in the arp cache</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>(config-if)# arp timeout &lt;seconds&gt;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>clear the entire ARP cache on an interface</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre># clear arp interface &lt;type-number&gt;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>clear all dynamic entries from the ARP cache, the fast-switchig cache,
-and the IP route cache</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre># clear arp-cache</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Verify the ARP configuration</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre># show interfaces
-# show arp
-# show ip arp
-# show processes cpu | include (ARP|PID)</pre>
+<pre># arp vrf &lt;name&gt;  &lt;hardware-address&gt; &lt;encapsulation-type&gt; [&lt;interface-type&gt;]</pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_troubleshooting_4">9.2.3. Troubleshooting</h4>
+<h4 id="_dynamic_arp_entries">9.2.3. Dynamic ARP entries</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Stored in ARP cache</p>
+</li>
+<li>
+<p>timeout by default in 4 hours</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: clear the entire ARP cache on an interface</div>
+<div class="content">
+<pre># clear arp interface &lt;type-number&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: clear all dynamic entries from the ARP cache, the fast-switchig cache, and the IP route cache</div>
+<div class="content">
+<pre># clear arp-cache</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: set an expiration time for dynamic entries in the arp cache</div>
+<div class="content">
+<pre>(config-if)# arp timeout &lt;seconds&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Display the arp cache</div>
+<div class="content">
+<pre># show arp
+# show ip arp</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># show arp
 
+Protocol    Address            Age (min)   Hardware Addr      Type    Interface
+Internet    10.108.42.112      120         0000.a710.4baf     ARPA    Ethernet3
+AppleTalk   4028.5             29          0000.0c01.0e56     SNAP    Ethernet2
+Internet    110.108.42.114     105         0000.a710.859b     ARPA    Ethernet3
+AppleTalk   4028.9             -           0000.0c02.a03c     SNAP    Ethernet2
+Internet    10.108.42.121      42          0000.a710.68cd     ARPA    Ethernet3
+Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Display ARP and RARP processes</div>
+<div class="content">
+<pre># sh processes cpu | include (ARP|PID)</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_proxy_arp">9.2.4. Proxy ARP</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Same message as ARP</p>
+</li>
+<li>
+<p>Allows response for IP address in remote subnet.</p>
+</li>
+<li>
+<p>RFC 1027</p>
+</li>
+<li>
+<p>Mostly replaced by DHCP nowadays</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: disable Proxy ARP globally</div>
+<div class="content">
+<pre># ip arp proxy disable</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Disable Proxy ARP on an interface</div>
+<div class="content">
+<pre>(config-if)# no ip proxy-arp</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_gratuitous_arp">9.2.5. Gratuitous ARP</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>broadcast ARP messages where the SPA=TPA and THA=FF:FF:FF:FF:FF:FF</p>
+</li>
+<li>
+<p>used to</p>
+<div class="ulist">
+<ul>
+<li>
+<p>to detect IP address conflit</p>
+</li>
+<li>
+<p>to update other machine ARP table</p>
+</li>
+<li>
+<p>to update mac table of the connected switche</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>[TIP] If we see multiple gratitous ARPs from the same host frequently,
+it can be an indication of bad Ethernet NICs</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -8166,25 +8321,25 @@ waiting for its old lease to expire.</p>
 </div>
 <div class="sect2">
 <h3 id="_nat">9.4. NAT</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">IP Addressing</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/15-mt/nat-15-mt-book/iadnat-addr-consv.html#GUID-C79465FE-A23C-4341-88DC-E43E342D4977">NAT</span></span> </a></p>
+</li>
+<li>
+<p><a href="https://www.ietf.org/rfc/rfc1631.txt">RFC 1631</a></p>
+</li>
+</ul>
+</div>
 <div class="sect3">
 <h4 id="_purpose">9.4.1. Purpose</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>NAT allows the IP network of an organization to appear from
-the outside to use a different IP address space than what it is actually using.</p>
+<p>IPv4 address conservation</p>
 </li>
 <li>
-<p>Thus, NAT allows an organization with nonglobally routable addresses to connect
-to the Internet by translating those addresses into a globally routable address
-space.</p>
-</li>
-<li>
-<p>NAT also allows a graceful renumbering strategy for organizations that are changing service providers or voluntarily renumbering into classless
-interdomain routing (CIDR) blocks.</p>
-</li>
-<li>
-<p>RFC 1631.</p>
+<p>can be static, dynamic or pat</p>
 </li>
 </ul>
 </div>
@@ -8227,13 +8382,16 @@ Outside global address
 </tr>
 </table>
 </div>
+<div class="listingblock">
+<div class="title">Task: Display NAT translation information</div>
+<div class="content">
+<pre>show ip nat translations [verbose]
+show ip nat statistics</pre>
+</div>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_types_of_nat">9.4.3. Types of NAT</h4>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Static NAT</dt>
-<dd>
+<h4 id="_static_nat">9.4.3. Static NAT</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -8244,9 +8402,24 @@ Outside global address
 </li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">Dynamic NAT</dt>
-<dd>
+<div class="listingblock">
+<div class="title">Task: Configure static translation of inside source address</div>
+<div class="content">
+<pre>conf t
+ip nat inside source static &lt;local-ip&gt; &lt;global-ip&gt;
+
+interface &lt;type number&gt;
+  ip address &lt;ip-address&gt; &lt;mask&gt; [secondary]
+  ip nat inside
+
+interface type number
+  ip address &lt;ip-address&gt; &lt;mask&gt;
+  ip nat outside</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_dynamic_nat_without_pat">9.4.4. Dynamic NAT without PAT</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -8255,11 +8428,42 @@ Outside global address
 <li>
 <p>Does not conserve IP addresses.</p>
 </li>
+<li>
+<p>Timeout after period of nonuse</p>
+</li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">PAT</dt>
-<dd>
+<div class="listingblock">
+<div class="title">Task: Configure dynamic translation of inside source address</div>
+<div class="content">
+<pre>ip nat pool &lt;name&gt; &lt;start-ip&gt; &lt;end-ip&gt; {netmask &lt;mask&gt; | prefix-length &lt;length&gt;}
+access-list &lt;acl&gt; permit source [&lt;w.i.l.d&gt;]
+ip nat inside source list &lt;acl&gt; pool &lt;name&gt;
+
+interface &lt;type number&gt;
+  ip address &lt;ip-address&gt; &lt;mask&gt;
+  ip nat inside
+
+interface &lt;type number&gt;
+  ip address &lt;ip-address&gt; &lt;mask&gt;
+  ip nat outside</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Change timeouts value</div>
+<div class="content">
+<pre>ip nat translation &lt;seconds&gt;
+ip nat translation udp-timeout &lt;seconds&gt;
+ip nat translation dns-timeout &lt;seconds&gt;
+ip nat translation tcp-timeout &lt;seconds&gt;
+ip nat translation finrst-timeout &lt;seconds&gt;
+ip nat translation icmp-timeout &lt;seconds&gt;
+ip nat translation syn-timeout &lt;seconds&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_pat">9.4.5. PAT</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -8270,9 +8474,9 @@ Outside global address
 </li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">NAT for overlapping address</dt>
-<dd>
+</div>
+<div class="sect3">
+<h4 id="_nat_for_overlapping_address">9.4.6. NAT for overlapping address</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -8284,12 +8488,9 @@ enterprise to the Internet).</p>
 </li>
 </ul>
 </div>
-</dd>
-</dl>
-</div>
 </div>
 <div class="sect3">
-<h4 id="_tcp_load_distribution_for_nat">9.4.4. TCP load distribution for NAT</h4>
+<h4 id="_tcp_load_distribution_for_nat">9.4.7. TCP load distribution for NAT</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -8303,14 +8504,86 @@ enterprise to the Internet).</p>
 </div>
 <div class="title">Figure 14. NAT TCP load distribution</div>
 </div>
+<div class="listingblock">
+<div class="title">Task: Allow internal users access to the internet</div>
+<div class="content">
+<pre>ip nat pool &lt;name&gt; &lt;start-ip&gt; &lt;end-ip&gt; {netmask netmask | prefix-length prefix-length}
+access-list number permit a.b.c.d [e.f.g.h]
+ip nat inside source list number pool name overload
+
+interface type number
+  ip address ip-address mask
+  ip nat inside
+
+interface type number
+  ip address ip-address mask
+  ip nat outside
+end</pre>
+</div>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_nat_order_of_operations">9.4.5. NAT order of operations</h4>
+<h4 id="_overlapping_networks">9.4.8. Overlapping networks</h4>
+<div class="paragraph">
+<p>Configure dynamic translation of overlapping networks if your IP addresses in the stub network are
+legitimate IP addresses belonging to another network and you want to communicate with those hosts or
+routers using dynamic translation.</p>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure overlapping network</div>
+<div class="content">
+<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
+access-list access-list-number permit source [source-wildcard]
+ip nat outside source list access-list-number pool name
+
+interface type number
+  ip address ip-address mask
+  ip nat inside
+
+interface type number
+  ip address ip-address mask
+  ip nat outside</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_server_tcp_load_balancing">9.4.9. Server TCP load balancing</h4>
+<div class="listingblock">
+<div class="content">
+<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length} type rotary
+access-list access-list-number permit source [source-wildcard]
+ip nat inside destination-list access-list-number pool name
+
+interface type number
+  ip address ip-address mask
+  ip nat inside
+
+interface type number
+  ip address ip-address mask
+  ip nat outside</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Clear NAT entries before the timeout</div>
+<div class="content">
+<pre>clear ip nat translation inside global-ip local-ip outside local-ip global-ip
+clear ip nat translation outside global-ip local-i p
+clear ip nat translation protocol inside global-ip global-port local-ip local-port outside local-ip local-port-global-ip global-port
+clear ip nat translation {* | [forced] | [inside global-ip local-ip] [outside local-ip global-ip]}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Enable Syslog for logging NAT translations</div>
+<div class="content">
+<pre>ip nat log translations syslog
+no logging console</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_nat_order_of_operations">9.4.10. NAT order of operations</h4>
 <div class="sect4">
 <h5 id="_inside_to_outside">Inside-to-Outside</h5>
-<div class="paragraph">
-<p>Inside-to-Outside 	Outside-to-Inside</p>
-</div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -8413,138 +8686,8 @@ enterprise to the Internet).</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>Read more: <a href="http://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html#topic1NAT">order of operations</a></p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_configure_static_translation_of_inside_source_address">Configure static translation of inside source address</h5>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat inside source static local-ip global-ip
-
-interface type number
-  ip address ip-address mask [secondary]
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_configure_dynamic_translation_of_inside_source_address">Configure dynamic translation of inside source address</h5>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
-access-list access-list-number permit source [source-wildcard]
-ip nat inside source list access-list -number pool name
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_allow_internal_users_access_to_the_internet">9.4.6. Allow internal users access to the internet</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
-access-list number permit a.b.c.d [e.f.g.h]
-ip nat inside source list number pool name overload
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside
-end</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_change_timeouts_value">9.4.7. Change timeouts value</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat translation seconds
-ip nat translation udp-timeout seconds
-ip nat translation dns-timeout seconds
-ip nat translation tcp-timeout seconds
-ip nat translation finrst-timeout seconds
-ip nat translation icmp-timeout seconds
-ip nat translation syn-timeout seconds</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_configure_dynamic_translation_of_overlapping_networks">9.4.8. Configure dynamic translation of overlapping networks</h4>
-<div class="paragraph">
-<p>Configure dynamic translation of overlapping networks if your IP addresses in the stub network are
-legitimate IP addresses belonging to another network and you want to communicate with those hosts or
-routers using dynamic translation.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
-access-list access-list-number permit source [source-wildcard]
-ip nat outside source list access-list-number pool name
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_server_tcp_load_balancing">9.4.9. Server TCP load balancing</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length} type rotary
-access-list access-list-number permit source [source-wildcard]
-ip nat inside destination-list access-list-number pool name
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Display NAT translation information</div>
-<div class="content">
-<pre>show ip nat translations [verbose]
-show ip nat statistics</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Clear NAT entries before the timeout</div>
-<div class="content">
-<pre>clear ip nat translation inside global-ip local-ip outside local-ip global-ip
-clear ip nat translation outside global-ip local-i p
-clear ip nat translation protocol inside global-ip global-port local-ip local-port outside local-ip local-port-global-ip global-port
-clear ip nat translation {* | [forced] | [inside global-ip local-ip] [outside local-ip global-ip]}</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Enable Syslog for logging NAT translations</div>
-<div class="content">
-<pre>ip nat log translations syslog
-no logging console</pre>
+<p>Read more:
+<a href="http://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html#topic1NAT">Order of operations</a></p>
 </div>
 </div>
 </div>
@@ -9860,8 +10003,6 @@ when classful network boundaries are crossed.</p>
 </div>
 <div class="sect2">
 <h3 id="_eigrp">10.2. EIGRP</h3>
-<div class="sect3">
-<h4 id="_overview_11">10.2.1. Overview</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -9884,6 +10025,9 @@ when classful network boundaries are crossed.</p>
 </div>
 </li>
 <li>
+<p>Administrative distance : 90 internal routes, 5 summary routes , 170 external routes</p>
+</li>
+<li>
 <p>Forms active neighbor adjacencies</p>
 </li>
 <li>
@@ -9903,13 +10047,15 @@ when classful network boundaries are crossed.</p>
 </li>
 </ul>
 </div>
-</div>
 <div class="sect3">
-<h4 id="_eigrp_messages">10.2.2. EIGRP messages</h4>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Hello</dt>
-<dd>
+<h4 id="_eigrp_messages">10.2.1. EIGRP messages</h4>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Hello
+</td>
+<td class="hdlist2">
 <div class="ulist">
 <ul>
 <li>
@@ -9923,9 +10069,13 @@ when classful network boundaries are crossed.</p>
 </li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">Ack</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Ack
+</td>
+<td class="hdlist2">
 <div class="ulist">
 <ul>
 <li>
@@ -9936,9 +10086,13 @@ when classful network boundaries are crossed.</p>
 </li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">Update</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Update
+</td>
+<td class="hdlist2">
 <div class="ulist">
 <ul>
 <li>
@@ -9946,9 +10100,13 @@ when classful network boundaries are crossed.</p>
 </li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">Query</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Query
+</td>
+<td class="hdlist2">
 <div class="ulist">
 <ul>
 <li>
@@ -9956,9 +10114,13 @@ when classful network boundaries are crossed.</p>
 </li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">Reply</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Reply
+</td>
+<td class="hdlist2">
 <div class="ulist">
 <ul>
 <li>
@@ -9970,9 +10132,13 @@ because it has a FS</p>
 </li>
 </ul>
 </div>
-</dd>
-<dt class="hdlist1">Request</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Request
+</td>
+<td class="hdlist2">
 <div class="ulist">
 <ul>
 <li>
@@ -9986,8 +10152,9 @@ because it has a FS</p>
 </li>
 </ul>
 </div>
-</dd>
-</dl>
+</td>
+</tr>
+</table>
 </div>
 <div class="listingblock">
 <div class="title">Task: Exchange EIGRP packets only as unicast</div>
@@ -10009,7 +10176,7 @@ because it has a FS</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_neighbors_3">10.2.3. Neighbors</h4>
+<h4 id="_neighbors_3">10.2.2. Neighbors</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10017,7 +10184,8 @@ because it has a FS</p>
 </li>
 <li>
 <p>must agree on</p>
-</li>
+<div class="ulist">
+<ul>
 <li>
 <p>primary IPv4 subnet</p>
 </li>
@@ -10029,6 +10197,9 @@ because it has a FS</p>
 </li>
 <li>
 <p>K values</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>do not need to agree on timers</p>
@@ -10055,11 +10226,11 @@ Check that the queue count is zero
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eigrp_loop_prevention_techniques">10.2.4. EIGRP Loop prevention techniques</h4>
+<h4 id="_eigrp_loop_prevention_techniques">10.2.3. EIGRP Loop prevention techniques</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_split_horizon_2">10.2.5. Split horizon</h4>
+<h4 id="_split_horizon_2">10.2.4. Split horizon</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10081,11 +10252,11 @@ Check that the queue count is zero
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dual_feasibility_condition">10.2.6. DUAL feasibility condition</h4>
+<h4 id="_dual_feasibility_condition">10.2.5. DUAL feasibility condition</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_eigrp_reconvergence">10.2.7. EIGRP reconvergence</h4>
+<h4 id="_eigrp_reconvergence">10.2.6. EIGRP reconvergence</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10119,16 +10290,13 @@ Check that the queue count is zero
 <p>Transport: IP protocol 88</p>
 </li>
 <li>
-<p>Administrative distance : 90 internal routes, 5 summary routes , 170 external routes</p>
-</li>
-<li>
 <p>Hello interval</p>
 </li>
 </ul>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_metric">10.2.8. Metric</h4>
+<h4 id="_metric">10.2.7. Metric</h4>
 <div class="paragraph">
 <p>metric = 256 * [K1 x bandwidth + (k2 x bandwidth)/ (256 -load) + k3 x delay] x [k5 /( reliability + k4)]</p>
 </div>
@@ -10165,20 +10333,20 @@ Check that the queue count is zero
 </div>
 </div>
 <div class="sect3">
-<h4 id="_wide_metric">10.2.9. Wide Metric</h4>
+<h4 id="_wide_metric">10.2.8. Wide Metric</h4>
 <div class="paragraph">
 <p>Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total Latency) + (K6*Extended Attributes)]* [K5/(K4 + Reliability)]</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eigrp_autonomous_system_configuration">10.2.10. EIGRP Autonomous System Configuration</h4>
+<h4 id="_eigrp_autonomous_system_configuration">10.2.9. EIGRP Autonomous System Configuration</h4>
 <div class="ulist">
 <ul>
 <li>
 <p>created with the command  <strong>router eigrp</strong> &lt;autonomous-system-number&gt;</p>
 </li>
 <li>
-<p>EIGRP VPNS can be configured only under IPv4 address family. A VRF instance and route distinguisher must be defined before the address family session can be created.</p>
+<p>EIGRP VPNs can be configured only under IPv4 address family. A VRF instance and route distinguisher must be defined before the address family session can be created.</p>
 </li>
 <li>
 <p>recommendation: configure the asn when the address family is configured by <strong>router eigrp</strong> &lt;asn&gt; <strong>address-family</strong> or seperately using the <strong>autonomous-system</strong> command.</p>
@@ -10187,7 +10355,7 @@ Check that the queue count is zero
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eigrp_named_configuration">10.2.11. EIGRP Named Configuration</h4>
+<h4 id="_eigrp_named_configuration">10.2.10. EIGRP Named Configuration</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10200,7 +10368,7 @@ Check that the queue count is zero
 <p>wide-meric scaling automatic enabled</p>
 </li>
 <li>
-<p>can* be configured in IPv4 and IPv6 named configuration</p>
+<p>can be configured in IPv4 and IPv6 named configuration</p>
 </li>
 <li>
 <p>VRF instance and a RD are optional</p>
@@ -10220,13 +10388,13 @@ Check that the queue count is zero
 <div class="title">Task: Configure a basic EIGRP named configuration</div>
 <div class="content">
 <pre>(config)# router eigrp &lt;virtual-instance-name&gt;
-(config-router)# address-family ipv4 [multicast] [umicast] [vrf vrf-name] autonomous-system asn
-(config-router-af)# network a.b.c.d</pre>
+(config-router)# address-family ipv4 [multicast] [umicast] [vrf &lt;vrf-name&gt;] autonomous-system &lt;asn&gt;
+(config-router-af)# network &lt;a.b.c.d&gt;</pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eigrpv3">10.2.12. EIGRPv3</h4>
+<h4 id="_eigrpv3">10.2.11. EIGRPv3</h4>
 <div class="listingblock">
 <div class="content">
 <pre>(config-router)# address-family ipv6 [unicast] [vrf vrf-name] autonomous-system asn</pre>
@@ -10234,7 +10402,7 @@ Check that the queue count is zero
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eigrp_neighbor_relationship_maintenance">10.2.13. EIGRP Neighbor Relationship Maintenance</h4>
+<h4 id="_eigrp_neighbor_relationship_maintenance">10.2.12. EIGRP Neighbor Relationship Maintenance</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10247,11 +10415,11 @@ Check that the queue count is zero
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dual_finite_state_machine">10.2.14. DUAL Finite State Machine</h4>
+<h4 id="_dual_finite_state_machine">10.2.13. DUAL Finite State Machine</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>a successor is a neighboring router that has a least-cost path to a
+<p>A successor is a neighboring router that has a least-cost path to a
 destination that is guarentedd not to be part of a routinf</p>
 </li>
 <li>
@@ -10261,11 +10429,11 @@ destination that is guarentedd not to be part of a routinf</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_protocol_dependent_modules">10.2.15. Protocol-Dependent Modules</h4>
+<h4 id="_protocol_dependent_modules">10.2.14. Protocol-Dependent Modules</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_goodbye_message">10.2.16. Goodbye Message</h4>
+<h4 id="_goodbye_message">10.2.15. Goodbye Message</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10313,15 +10481,15 @@ destination that is guarentedd not to be part of a routinf</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_routing_metric_offset_lists">10.2.17. Routing Metric Offset Lists</h4>
+<h4 id="_routing_metric_offset_lists">10.2.16. Routing Metric Offset Lists</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_eigrp_cost_metrics">10.2.18. EIGRP Cost Metrics</h4>
+<h4 id="_eigrp_cost_metrics">10.2.17. EIGRP Cost Metrics</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_summarization_2">10.2.19. Summarization</h4>
+<h4 id="_summarization_2">10.2.18. Summarization</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10418,7 +10586,7 @@ destination that is guarentedd not to be part of a routinf</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eigrp_route_authentication">10.2.20. EIGRP Route Authentication</h4>
+<h4 id="_eigrp_route_authentication">10.2.19. EIGRP Route Authentication</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10458,15 +10626,15 @@ destination that is guarentedd not to be part of a routinf</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_hello_packets_and_the_hold_time_intervals">10.2.21. Hello Packets and the Hold-Time Intervals</h4>
+<h4 id="_hello_packets_and_the_hold_time_intervals">10.2.20. Hello Packets and the Hold-Time Intervals</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_split_horizon_3">10.2.22. Split Horizon</h4>
+<h4 id="_split_horizon_3">10.2.21. Split Horizon</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_link_bandwidth_percentage">10.2.23. Link Bandwidth Percentage</h4>
+<h4 id="_link_bandwidth_percentage">10.2.22. Link Bandwidth Percentage</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -10479,15 +10647,15 @@ destination that is guarentedd not to be part of a routinf</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eigrp_stub_routing">10.2.24. EIGRP Stub Routing</h4>
+<h4 id="_eigrp_stub_routing">10.2.23. EIGRP Stub Routing</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_eigrp_stub_routing_leak_map_support">10.2.25. EIGRP Stub Routing Leak Map Support</h4>
+<h4 id="_eigrp_stub_routing_leak_map_support">10.2.24. EIGRP Stub Routing Leak Map Support</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_eigrp_autonomous_system_configuration_2">10.2.26. EIGRP autonomous system configuration</h4>
+<h4 id="_eigrp_autonomous_system_configuration_2">10.2.25. EIGRP autonomous system configuration</h4>
 <div class="listingblock">
 <div class="title">Task: Create a basic EIGRP AS system configuration</div>
 <div class="content">
@@ -10507,7 +10675,7 @@ destination that is guarentedd not to be part of a routinf</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_verify_eigrp_topology">10.2.27. verify eigrp topology</h4>
+<h4 id="_verify_eigrp_topology">10.2.26. verify eigrp topology</h4>
 <div class="listingblock">
 <div class="content">
 <pre>show ip eigrp topology [all-links]
@@ -10522,7 +10690,7 @@ show ip eigrp topology [prefix/len]</pre>
 <p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">IP Routing</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/15-mt/iro-15-mt-book/configuring_ospf.html">OSPF</span></span> </a></p>
 </div>
 <div class="sect3">
-<h4 id="_overview_12">10.3.1. Overview</h4>
+<h4 id="_overview_11">10.3.1. Overview</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -12286,7 +12454,7 @@ Paths (External Paths preferred Over Internal) R Router ID (lowest)
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configuration_tasks_5">10.4.4. Configuration tasks</h4>
+<h4 id="_configuration_tasks_4">10.4.4. Configuration tasks</h4>
 <div class="sect4">
 <h5 id="_configuring_a_bgp_routing_process">Configuring a BGP Routing Process</h5>
 <div class="ulist">
@@ -13960,7 +14128,7 @@ interface FastEthernet0/1
 </div>
 </div>
 <div class="sect2">
-<h3 id="_troubleshooting_5">12.3. Troubleshooting</h3>
+<h3 id="_troubleshooting_4">12.3. Troubleshooting</h3>
 <div class="paragraph">
 <p>Three reasons for a GRE tunnel to shut down:</p>
 </div>
@@ -14171,12 +14339,169 @@ the mismatch encapsulation.</p>
 <h2 id="_device_security">15. Device security</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_snmp">15.1. SNMP</h3>
+<h3 id="_aaa">15.1. AAA</h3>
+<div class="sect3">
+<h4 id="_ppp_security">15.1.1. PPP security</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>implement device access control</p>
+<div class="ulist">
+<ul>
+<li>
+<p>lines</p>
+</li>
+<li>
+<p>password encryption</p>
+</li>
+<li>
+<p>management plane protection</p>
+</li>
+<li>
+<p>control plane protection</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_network_security">16. Network security</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_switch_security">16.1. Switch security</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_access_control_list">16.2. Access control list</h3>
+<div class="sect3">
+<h4 id="_references">16.2.1. References</h4>
+<div class="paragraph">
+<p>sec-data-acl</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_reflexive_acl">16.2.2. Reflexive ACL</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>sourcecontrol</p>
+</li>
+<li>
+<p>dhcp snooping</p>
+</li>
+<li>
+<p>ip source-guard</p>
+</li>
+<li>
+<p>dynamic arp inspection</p>
+</li>
+<li>
+<p>port-security</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_router_security">16.3. Router security</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>ipv4 access list</p>
+</li>
+<li>
+<p>ipv6 traffic filter</p>
+</li>
+<li>
+<p>unicast reverse path forwarding</p>
+</li>
+<li>
+<p>ipv6 first hop security</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ra guard</p>
+</li>
+<li>
+<p>dhcp guard</p>
+</li>
+<li>
+<p>binding table</p>
+</li>
+<li>
+<p>device tracking</p>
+</li>
+<li>
+<p>ND inspection/snooping</p>
+</li>
+<li>
+<p>source guard</p>
+</li>
+<li>
+<p>PACL</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ieee_802_1x">17. IEEE 802.1X</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_definition_2">17.1. Definition</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_port_security">17.2. Port security</h3>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<h1 id="_part_v_infrastructure_services" class="sect0">Part V : Infrastructure Services</h1>
+<div class="sect1">
+<h2 id="_system_management">18. System management</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_telnet">18.1. Telnet</h3>
+<div class="listingblock">
+<div class="title">Task: Description</div>
+<div class="content">
+<pre>(config)# ip telnet hidden addresses</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ssh">18.2. SSH</h3>
+<div class="sect3">
+<h4 id="_configurations">18.2.1. Configurations</h4>
+<div class="paragraph">
+<p>blabla
+xxxx</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_scp">18.3. SCP</h3>
+
+</div>
+<div class="sect2">
+<h3 id="__t_ftp">18.4. [T]FTP</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_snmp">18.5. SNMP</h3>
 <div class="paragraph">
 <p><span class="menuseq"><span class="menu">Configuration guides</span>&#160;&#9656; <span class="submenu">Network Management</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/snmp/configuration/15-mt/snmp-15-mt-book/nm-snmp-cfg-snmp-support.html">configuring SNMP support</span></span> </a></p>
 </div>
-<div class="sect3">
-<h4 id="_overview_13">15.1.1. Overview</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -14194,8 +14519,8 @@ the mismatch encapsulation.</p>
 </li>
 </ul>
 </div>
-<div class="sect4">
-<h5 id="_version_5">Version</h5>
+<div class="sect3">
+<h4 id="_version_5">18.5.1. Version</h4>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">v1</dt>
@@ -14213,8 +14538,8 @@ the mismatch encapsulation.</p>
 </dl>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_mib">MIB</h5>
+<div class="sect3">
+<h4 id="_mib">18.5.2. MIB</h4>
 <div class="paragraph">
 <p>MIB: dictionaries of OID</p>
 </div>
@@ -14225,16 +14550,16 @@ the mismatch encapsulation.</p>
 )</p>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_packet_format_2">Packet format</h5>
+<div class="sect3">
+<h4 id="_packet_format_2">18.5.3. Packet format</h4>
 <div class="imageblock">
 <div class="content">
 <img src="../images/snmp-header.png" alt="SNMP header format" width="896" height="376">
 </div>
 <div class="title">Figure 28. SNMP header format</div>
 </div>
-<div class="sect5">
-<h6 id="_snmp_pdu_types">SNMP PDU Types</h6>
+<div class="sect4">
+<h5 id="_snmp_pdu_types">SNMP PDU Types</h5>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -14262,9 +14587,8 @@ the mismatch encapsulation.</p>
 </div>
 </div>
 </div>
-</div>
 <div class="sect3">
-<h4 id="_configuration_8">15.1.2. Configuration</h4>
+<h4 id="_configuration_8">18.5.4. Configuration</h4>
 <div class="sect4">
 <h5 id="_configure_basic_system_information">Configure basic system information</h5>
 <div class="listingblock">
@@ -14309,7 +14633,7 @@ the mismatch encapsulation.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_traps">15.1.3. Traps</h4>
+<h4 id="_traps">18.5.5. Traps</h4>
 <div class="listingblock">
 <div class="title">Task: Send traps to NMS</div>
 <div class="content">
@@ -14318,7 +14642,7 @@ the mismatch encapsulation.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_snmp_v3">15.1.4. SNMP v3</h4>
+<h4 id="_snmp_v3">18.5.6. SNMP v3</h4>
 <div class="listingblock">
 <div class="title">Task: Configure SNMP v3 group</div>
 <div class="content">
@@ -14356,7 +14680,7 @@ the mismatch encapsulation.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_a_device_as_snmp_manager">15.1.5. Configure a device as SNMP manager</h4>
+<h4 id="_configure_a_device_as_snmp_manager">18.5.7. Configure a device as SNMP manager</h4>
 <div class="listingblock">
 <div class="title">Task: Configure the SNMP manager process</div>
 <div class="content">
@@ -14383,7 +14707,7 @@ the mismatch encapsulation.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_enable_the_snmp_shutdown_mechanism">15.1.6. Enable the SNMP shutdown mechanism</h4>
+<h4 id="_enable_the_snmp_shutdown_mechanism">18.5.8. Enable the SNMP shutdown mechanism</h4>
 <div class="listingblock">
 <div class="title">Task: Enable the SNMP shutdown mechanism</div>
 <div class="content">
@@ -14408,707 +14732,23 @@ the mismatch encapsulation.</p>
 <pre>(config)# no snmp-server</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Unresolved directive in book.adoc - include::syslog.adoc[leveloffset=+2]
+:leveloffset: +2</p>
 </div>
 </div>
+</div>
+</div>
+</div>
+<h1 id="_ntp" class="sect0">NTP</h1>
+<div class="openblock partintro">
+<div class="content">
+<span class="menuseq"><span class="menu">Configuration guides</span>&#160;&#9656; <span class="submenu">Network Management</span>&#160;&#9656; <span class="submenu">Basic System Management</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/configuration/15-mt/bsm-15-mt-book/bsm-time-calendar-set.html">Setting Time and Calendar Services</span></span> </a>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_network_security">16. Network security</h2>
+<h2 id="_overview_12">19. Overview</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_switch_security">16.1. Switch security</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_router_security">16.2. Router security</h3>
-<div style="page-break-after: always;"></div>
-</div>
-</div>
-</div>
-<h1 id="_part_v_infrastructure_services" class="sect0">Part V : Infrastructure Services</h1>
-<div class="sect1">
-<h2 id="_system_management">17. System management</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_qos">18. QoS</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_network_services">19. Network services</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_hsrp">19.1. HSRP</h3>
-<div class="paragraph">
-<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">First Hop Redundancy Protocols</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-hsrp-v2.html">HSRP Version 2</span></span> </a></p>
-</div>
-<div class="sect3">
-<h4 id="_understand">19.1.1. Understand</h4>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://www.ietf.org/rfc/rfc2281.txt">RFC 2281</a></p>
-</li>
-<li>
-<p>set of routes work in concert to present the illusion of a single virtual router to the hosts on the LAN</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_protocol">19.1.2. Protocol</h4>
-<div class="sect4">
-<h5 id="_hsrp_packet">HSRP packet</h5>
-<div class="paragraph">
-<p>MAC header | IP header | UDP packet | HSRP Packet</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../images/hsrp-packet.png" alt="HSRP packet" width="896" height="248">
-</div>
-<div class="title">Figure 29. HSRP packet</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Version</dt>
-<dd>
-<p>HSRP version</p>
-</dd>
-<dt class="hdlist1">Opcode</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>0: <strong>Hello</strong>: The router is running and is capable of becoming the active or standby router</p>
-</li>
-<li>
-<p>1: <strong>Coup</strong>: The router wishes to become the active router</p>
-</li>
-<li>
-<p>2: <strong>Resign</strong>: The router no longer wishes to be active router</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">State</dt>
-</dl>
-</div>
-<table class="tableblock frame-none grid-rows spread">
-<colgroup>
-<col style="width: 5%;">
-<col style="width: 15%;">
-<col style="width: 80%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Code</th>
-<th class="tableblock halign-left valign-top">State</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Initial</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">This is the starting state and indicates that HSRP is not running. This state is entered via a configuration change or when an interface first comes up.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Learn</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router has not determined the virtual IP address, and not yet seen an authenticated Hello message from the active router. In this state the router is still waiting to hear from the active router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Listen</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router knows the virtual IP address, but is neither the active router nor the standby router. It listens for Hello messages from those routers.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Speak</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router sends periodic Hello messages and is actively participating in the election of the active and/or standby router. A router cannot enter Speak state unless it has the virtual IP address.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Standby</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router is a candidate to become the next active router and sends periodic Hello messages. Excluding transient conditions, there MUST be at most one router in the group in Standby state.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Active</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router is currently forwarding packets that are sent to the group&#8217;s virtual MAC address. The router sends periodic Hello messages. Excluding transient conditions, there MUST be at most one router in Active state in the group.</p></td>
-</tr>
-</tbody>
-</table>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Hellotime</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>3 seconds by default</p>
-</li>
-<li>
-<p>only meaningful in Hello messages</p>
-</li>
-<li>
-<p>configured on the router or learned from authenticated Hello message from the active router</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">Holdtime</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>10 seconds by default</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">Priority</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>default value: 100</p>
-</li>
-<li>
-<p>The higher (priority || IP address) wins</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">Group</dt>
-<dt class="hdlist1">Authentication Data</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>contains clear text password or 0x63 0x69 0x73 0x63 0x6F 0x00 0x00 0x00.</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">Virtual IP address</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>configured or learned from active router</p>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_finite_state_machine">Finite state machine</h5>
-<div class="sect5">
-<h6 id="_events">Events</h6>
-<table class="tableblock frame-none grid-rows spread">
-<colgroup>
-<col style="width: 5%;">
-<col style="width: 95%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">#</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">a</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">HSRP is configured on an enabled interface.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">b</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">HSRP is disabled on an interface or the interface is disabled.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">c</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Active timer expiry. The Active timer was set to the Holdtime when the last Hello message was seen from the active router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">d</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Standby timer expiry. The Standby timer was set to the Holdtime when the last Hello message was seen from the standby router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">e</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Hello timer expiry. The periodic timer for sending Hello messages has expired.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">f</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Receipt of a Hello message of higher priority from a router in Speak state.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">g</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Receipt of a Hello message of higher priority from the active router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">h</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Receipt of a Hello message of lower priority from the active router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Receipt of a Resign message from the active router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">j</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Receipt of a Coup message from a higher priority router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">k</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Receipt of a Hello message of higher priority from the standby router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">l</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Receipt of a Hello message of lower priority from the standby router.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_actions">Actions</h5>
-<table class="tableblock frame-none grid-rows spread">
-<colgroup>
-<col style="width: 5%;">
-<col style="width: 15%;">
-<col style="width: 80%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">#</th>
-<th class="tableblock halign-left valign-top">Action Name</th>
-<th class="tableblock halign-left valign-top">Actions to be taken as part of the state machine</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Start Active Timer</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If this action occurred as the result of the receipt of a an authenticated Hello message from the active router, the Active timer is set to the Holdtime field in the Hello message. Otherwise the Active timer is set to the current Holdtime value in use by this router. The Active timer is then started.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">B</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Start Standby Timer</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If this action occurred as the result of the receipt of an authenticated Hello message from the standby router, the Standby timer is set to the Holdtime field in the Hello message. Otherwise the Standby timer is set to the current hold time value in use by this router. The Standby timer is then started.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">C</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stop Active Timer</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Active timer is stopped.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stop Standby Timer</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Standby timer is stopped.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">E</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Learn Parameters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">This action is taken when an authenticated message is received from the active router. If the virtual IP address for this group was not manually configured, the virtual IP address MAY be learned from the message. The router MAY learn Hellotime and Holdtime values from the message.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">F</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Send Hello Message</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router sends a Hello message with its current State, Hellotime and Holdtime.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">G</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Send Coup Message</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router sends a Coup message to inform the active router that there is a higher priority router available.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">H</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Send Resign Message</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router sends a Resign message to allow another router to become the active router.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">I</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Send Gratuitous ARP Message</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The router broadcasts an ARP response packet advertising the group&#8217;s virtual IP address and virtual MAC address. The packet is sent using the virtual MAC address as the source MAC address in the link layer header, as well as within the ARP packet.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect4">
-<h5 id="_transitions">Transitions</h5>
-<div class="imageblock">
-<div class="content">
-<img src="../images/hsrp-packet.png" alt="hsrp packet" width="1174" height="874">
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_hsrp_operations">HSRP operations</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Set of routers sharing one virtual IP address and one virtual MAC address</p>
-</li>
-<li>
-<p>elect one active router with the highest (priority, IP address)</p>
-</li>
-<li>
-<p>standy router takes over if Active router fails-</p>
-</li>
-<li>
-<p>elect new standby router if standby router fails or becomes the active router.</p>
-</li>
-<li>
-<p>to minimize network traffic, only the active and standby router send periodic HSRP messages.</p>
-</li>
-<li>
-<p>a router may participate in multiple groups with seperate state and timers for each group</p>
-</li>
-<li>
-<p>unique group id per vlan</p>
-</li>
-<li>
-<p>hsrp address = 0000.0c07.ACxx (where xx is the HSRP group id)</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_hsrp_features">HSRP features</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>preemption: the router with the highest priority becomes immediately the active router by sending a <strong>coup</strong> message,
-The previous active router changes to the <strong>speak</strong> state and sends a <strong>resign</strong> message.</p>
-</li>
-<li>
-<p>Preempt delay:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>delay preemption for a configurate time period allowing the router to populate its routing table</p>
-</li>
-<li>
-<p>delays starts when preemption starts in IOS &gt; 12.0(9) otherwise when the router is reloaded.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Interface tracking</p>
-<div class="ulist">
-<ul>
-<li>
-<p>reduce HSRP priority if the monitored interface goes down, allowing another HSRP router to become active if it has preemption enabled.</p>
-</li>
-<li>
-<p>cumulative reduction if multiple tracked interfaces are down</p>
-</li>
-<li>
-<p>configurable decrement value (default = 10)</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>ICMP redirects supports</p>
-<div class="ulist">
-<ul>
-<li>
-<p>disable ICMP redirects on HSRP interfaces in IOS &lt; 12.1(3)T</p>
-</li>
-<li>
-<p>HSRP router redirects the endstation to the virtual IP address instead of a particular IP address</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_configure">19.1.3. Configure</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_verify_3">19.1.4. Verify</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_debug">19.1.5. Debug</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_references">19.1.6. References</h4>
-<div class="paragraph">
-<p><a href="http://www.cisco.com/en/US/tech/tk648/tk362/technologies_tech_note09186a0080094a91.shtml#intro" class="bare">http://www.cisco.com/en/US/tech/tk648/tk362/technologies_tech_note09186a0080094a91.shtml#intro</a></p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_glbp">19.2. GLBP</h3>
-<div class="sect3">
-<h4 id="_concepts_8">19.2.1. Concepts</h4>
-<div class="paragraph">
-<p>AVG active virtual gateway
-AVF active virtual forwarder</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>AVG responds to all ARP requests with MAC from all particapating AVF</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Not with own MAC address like HSRP</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>load-balancing</p>
-<div class="ulist">
-<ul>
-<li>
-<p>round-robin (default)</p>
-</li>
-<li>
-<p>weigthed</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>UDP port 3222</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>!! GLBP configuration
-int f0/0.40
-  glbp 1 ip 172.16.26.100
-  glbp 1 authentication md5 key-string test</p>
-</div>
-<div class="listingblock">
-<div class="title">Task: Description</div>
-<div class="content">
-<pre># sh glbp
-
-FastEthernet0/0.40 - Group 1
-  State is Standby
-    1 state change, last state change 00:02:02
-  Virtual IP address is 172.16.26.100
-  Hello time 3 sec, hold time 10 sec
-    Next hello sent in 2.720 secs
-  Redirect time 600 sec, forwarder time-out 14400 sec
-  Preemption disabled
-  Active is 172.16.26.6, priority 100 (expires in 11.360 sec)
-  Standby is local
-  Priority 100 (default)
-  Weighting 100 (default 100), thresholds: lower 1, upper 100
-  Load balancing: round-robin
-  Group members:
-    ca02.6150.0000 (172.16.26.2) local
-    ca06.618c.0000 (172.16.26.6)
-  There are 2 forwarders (1 active)
-  Forwarder 1
-    State is Listen
-    MAC address is 0007.b400.0101 (learnt)
-    Owner ID is ca06.618c.0000
-    Time to live: 14399.840 sec (maximum 14400 sec)
-    Preemption enabled, min delay 30 sec
-    Active is 172.16.26.6 (primary), weighting 100 (expires in 10.944 sec)
-  Forwarder 2
-    State is Active
-      1 state change, last state change 00:02:08
-    MAC address is 0007.b400.0102 (default)
-    Owner ID is ca02.6150.0000
-    Preemption enabled, min delay 30 sec
-    Active is local, weighting 100</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_vrrp">19.3. VRRP</h3>
-<div class="paragraph">
-<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">First Hop Redundancy Protocols</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html">VRRP</span></span> </a></p>
-</div>
-<div class="sect3">
-<h4 id="_concepts_9">19.3.1. Concepts</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_configurations">19.3.2. Configurations</h4>
-
-</div>
-</div>
-<div class="sect2">
-<h3 id="_idrp">19.4. IDRP</h3>
-<div class="paragraph">
-<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">First Hop Redundancy Protocols</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html">IRDP</span></span> </a></p>
-</div>
-<div class="sect3">
-<h4 id="_overview_14">19.4.1. Overview</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>ICMP Router Discovery Protocol allows hosts to locate routers
-that can be used as gateway to reach IP-based devices on other networks.</p>
-</li>
-<li>
-<p><a href="http://www.ietf.org/rfc/rfc1256.txt">RFC 1256</a></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_message_format_2">19.4.2. Message format</h4>
-<div class="sect4">
-<h5 id="_icmp_router_advertisement_message">ICMP Router Advertisement Message</h5>
-<div class="imageblock">
-<div class="content">
-<img src="../images/icmp-router-advertisement.png" alt="icmp router advertisement" width="896" height="248">
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Type</dt>
-<dd>
-<p>9</p>
-</dd>
-<dt class="hdlist1">Code</dt>
-<dd>
-<p>0</p>
-</dd>
-<dt class="hdlist1">Checksum</dt>
-<dd>
-<p>The 16-bit one&#8217;s complement of the one&#8217;s complement sum of the ICMP message,
-starting with the ICMP Type.
-For computing the checksum, the Checksum field is set to 0.</p>
-</dd>
-<dt class="hdlist1">Num Addrs</dt>
-<dd>
-<p>Number of router addreses advertised in this message</p>
-</dd>
-<dt class="hdlist1">Addr Entry Size</dt>
-<dd>
-<p>Number of 32-bit words of information per router address (=2 for IPv4)</p>
-</dd>
-<dt class="hdlist1">Lifetime</dt>
-<dd>
-<p>Maximum number of seconds that the router adresses may be considered valid.</p>
-</dd>
-<dt class="hdlist1">Router Address[i]</dt>
-<dd>
-<p>Sending router&#8217;s addresses on the interface from which this message is sent.</p>
-</dd>
-<dt class="hdlist1">Preference Level[i]</dt>
-<dd>
-<p>Preferability of each Router Address[i] as a default router,
-relative to other router addresses on the same subnet. Higher values more preferable.</p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_icmp_router_solicitation_message">ICMP Router Solicitation Message</h5>
-<div class="imageblock">
-<div class="content">
-<img src="../images/icmp-router-advertisement.png" alt="icmp router advertisement" width="896" height="184">
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Type</dt>
-<dd>
-<p>10</p>
-</dd>
-<dt class="hdlist1">Code</dt>
-<dd>
-<p>0</p>
-</dd>
-<dt class="hdlist1">Checksum</dt>
-<dd>
-<p>The 16-bit one&#8217;s complement of the one&#8217;s complement sum of the ICMP message,
-starting with the ICMP Type.
-For computing the checksum, the Checksum field is set to 0.</p>
-</dd>
-<dt class="hdlist1">Reserved</dt>
-<dd>
-<p>Sent as 0; ignored on reception.</p>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_configuration_9">19.4.3. Configuration</h4>
-<div class="listingblock">
-<div class="title">Task: Configure a gateway to discover routers that transmit IRDP router updates after disabling IP routing</div>
-<div class="content">
-<pre>no ip routing
-ip gdp irdp [multicast]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Enable IRDP on an interface</div>
-<div class="content">
-<pre>(config-if)# ip irdp</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Send IRDP Advertisement to the all-systems multicast addresses</div>
-<div class="content">
-<pre>(config-if)# ip irdp multicast</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Set the IRDP period for which advertisements are valid.</div>
-<div class="content">
-<pre>(config-if)# ip irdp holdtime &lt;seconds&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Sets the IRDP maximum interval between advertisements.</div>
-<div class="content">
-<pre>ip irdp maxadvertinterval &lt;seconds&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Set the IRDP minimum interval between advertisements.</div>
-<div class="content">
-<pre>ip irdp minadvertinterval &lt;seconds&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Set the IRDP preference level of the device</div>
-<div class="content">
-<pre>(config-if)# ip irdp preference &lt;number&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify an IRDP address and preference to prozy-advertise</div>
-<div class="content">
-<pre>(config-if)# ip irdp address &lt;a.b.c.d&gt; &lt;preference-level&gt;</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_ntp">19.5. NTP</h3>
-<div class="paragraph">
-<p><span class="menuseq"><span class="menu">Configuration guides</span>&#160;&#9656; <span class="submenu">Network Management</span>&#160;&#9656; <span class="submenu">Basic System Management</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/configuration/15-mt/bsm-15-mt-book/bsm-time-calendar-set.html">Setting Time and Calendar Services</span></span> </a></p>
-</div>
-<div class="sect3">
-<h4 id="_overview_15">19.5.1. Overview</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -15139,8 +14779,10 @@ ip gdp irdp [multicast]</pre>
 </ul>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_ntp_associations">19.5.2. NTP associations</h4>
+</div>
+<div class="sect1">
+<h2 id="_ntp_associations">20. NTP associations</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -15189,8 +14831,8 @@ ip gdp irdp [multicast]</pre>
 <pre># debug ntp refclock</pre>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_polled_based_associations">Polled-based associations</h5>
+<div class="sect2">
+<h3 id="_polled_based_associations">20.1. Polled-based associations</h3>
 <div class="listingblock">
 <div class="content">
 <pre>(config)# ntp server &lt;ip-address&gt; [normal-sync] [version &lt;number&gt;] [key &lt;id&gt;] [prefer]
@@ -15198,8 +14840,8 @@ ip gdp irdp [multicast]</pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_broadcast_based_associations">Broadcast-based associations</h5>
+<div class="sect2">
+<h3 id="_broadcast_based_associations">20.2. Broadcast-based associations</h3>
 <div class="listingblock">
 <div class="content">
 <pre>(config-if)# ntp broadcast version &lt;number&gt;
@@ -15209,8 +14851,10 @@ ip gdp irdp [multicast]</pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_ntp_access_groups">19.5.3. NTP access groups</h4>
+</div>
+<div class="sect1">
+<h2 id="_ntp_access_groups">21. NTP access groups</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="title">Task: Grant/deny access privileges with ipv4 or ipv6 access-lists</div>
 <div class="content">
@@ -15256,8 +14900,10 @@ that is not compliant with the access-group policy.</p>
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_ntp_authentication">19.5.4. NTP authentication</h4>
+</div>
+<div class="sect1">
+<h2 id="_ntp_authentication">22. NTP authentication</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -15277,8 +14923,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_source_ip_address">19.5.5. Source IP address</h4>
+</div>
+<div class="sect1">
+<h2 id="_source_ip_address">23. Source IP address</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -15299,8 +14947,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_authoritative_server">19.5.6. Authoritative server</h4>
+</div>
+<div class="sect1">
+<h2 id="_authoritative_server">24. Authoritative server</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="title">Task:</div>
 <div class="content">
@@ -15308,8 +14958,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_panic_treshold">19.5.7. Panic treshold</h4>
+</div>
+<div class="sect1">
+<h2 id="_panic_treshold">25. Panic treshold</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="title">Task: Reject time updates greater than the panic threshold of 1000 seconds</div>
 <div class="content">
@@ -15317,8 +14969,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_orphan_mode">19.5.8. Orphan mode</h4>
+</div>
+<div class="sect1">
+<h2 id="_orphan_mode">26. Orphan mode</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -15337,8 +14991,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_external_reference_clock">19.5.9. external reference clock</h4>
+</div>
+<div class="sect1">
+<h2 id="_external_reference_clock">27. external reference clock</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
 <pre># line aux &lt;number&gt;
@@ -15346,8 +15002,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_software_clock">19.5.10. Software clock</h4>
+</div>
+<div class="sect1">
+<h2 id="_software_clock">28. Software clock</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
 <pre>(config)# clock timezone &lt;zone&gt; &lt;hours-offset&gt; [&lt;minutes-offset&gt;]
@@ -15358,8 +15016,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_hardware_clock">19.5.11. Hardware-clock</h4>
+</div>
+<div class="sect1">
+<h2 id="_hardware_clock">29. Hardware-clock</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -15380,8 +15040,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_time_ranges">19.5.12. Time Ranges</h4>
+</div>
+<div class="sect1">
+<h2 id="_time_ranges">30. Time Ranges</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="title">Task: Configure time ranges</div>
 <div class="content">
@@ -15397,8 +15059,10 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_vulnerability">19.5.13. Vulnerability</h4>
+</div>
+<div class="sect1">
+<h2 id="_vulnerability">31. Vulnerability</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -15414,681 +15078,222 @@ that is not compliant with the access-group policy.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_qos">32. QoS</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="_dhcp_3">19.6. DHCP</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Menu:Configuration guides[IP Addressing &gt; <a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/dhcp-overview.html">DHCP</a> ]</p>
-</li>
-</ul>
-</div>
+<h3 id="_mqc">32.1. MQC</h3>
 <div class="sect3">
-<h4 id="_overview_16">19.6.1. Overview</h4>
+<h4 id="_mqc_structure">32.1.1. MQC structure</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>Https://tools.ietf.org/html/rfc2131[RFC 2131]</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Dynamic Host Configuration Protocol</p>
+<p>define a traffic class with <strong>class map</strong></p>
 </li>
 <li>
-<p>Based on BOOTP</p>
+<p>create a traffic policy with <strong>policy map</strong></p>
 </li>
 <li>
-<p>Client/agent relay/server model</p>
+<p>attach the traffic policy to an interface with <strong>service-policy</strong></p>
 </li>
 <li>
-<p>UDP port 67</p>
+<p>restrictions: maximum of 256 classes in a single policy map</p>
 </li>
 </ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../images/dhcp-request.png" alt="DHCP request for an IP address from a DHCP Server">
-</div>
-<div class="title">Figure 30. DHCP request for an IP address from a DHCP Server</div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_protocol_operations_2">19.6.2. Protocol operations</h4>
+<h4 id="_fields_that_can_be_marked_for_qos_purposes">32.1.2. Fields that can be marked for QoS purposes</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>IPP, IP DSCP, DS field, ToS byte, CoS,Frame Relay  DE, ATM CLP, MPLS EXP</p>
+</li>
+</ul>
+</div>
+<div class="sect4">
+<h5 id="_ipp">IPP</h5>
 <div class="imageblock">
 <div class="content">
-<img src="../images/dhcp-message-format.png.png" alt="DHCP message" width="896" height="440">
+<img src="../images/ipp-vs-dscp.png" alt="ipp vs dscp">
 </div>
-<div class="title">Figure 31. DHCP message</div>
 </div>
 <table class="tableblock frame-none grid-rows spread">
+<caption class="title">Table 9. IPP and Class Selector DSCP values</caption>
 <colgroup>
-<col style="width: 9.0909%;">
-<col style="width: 9.0909%;">
-<col style="width: 81.8182%;">
+<col style="width: 50%;">
+<col style="width: 50%;">
 </colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">FIELD</th>
-<th class="tableblock halign-center valign-top">OCTETS</th>
-<th class="tableblock halign-left valign-top">DESCRIPTION</th>
-</tr>
-</thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">op</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Message op code / message type.   1 = BOOTREQUEST, 2 = BOOTREPLY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DSCP CS name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IPP names</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">htype</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Hardware address type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS0/Default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">routine</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">hlen</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Hardware address length</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">priority</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">hops</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client sets to zero, optionally used by relay agents when booting via a relay agent.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">immediate</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xid</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flash</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">secs</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Filled in by client, seconds elapsed since client began address acquisition or renewal process.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flash override</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">flags</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Flags</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">critical</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ciaddr</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond to ARP requests.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internetwork control</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">yiaddr</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">'your' (client) IP address.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">siaddr</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IP address of next server to use in bootstrap returned in DHCPOFFER, DHCPACK by server.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">giaddr</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Relay agent IP address, used in booting via a relay agent.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">chaddr</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">16</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client hardware address.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">sname</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">64</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Optional server host name, null terminated string.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">file</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">128</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boot file name, null terminated string; "generic" name or null in DHCPDISCOVER, fully qualified directory-path name in DHCPOFFER.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">options</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">var</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Optional parameters field.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">network control</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_dscp">DSCP</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>PHB: Per-hop Behavior</p>
+</li>
+<li>
+<p>Expedited Forwarding:</p>
+</li>
+<li>
+<p>packets given queunino</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 <div class="sect3">
-<h4 id="_dhcp_server_2">19.6.3. DHCP Server</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Accepts address assignment requests and renewals from clients</p>
-</li>
-<li>
-<p>Assign address, name server, gateways, &#8230;&#8203;</p>
-</li>
-<li>
-<p>Accepts broadcasts from local clients or relay agents</p>
-</li>
-<li>
-<p>Database as a tree used for attribute inheritance</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Root: address pool for natural networks</p>
-</li>
-<li>
-<p>Branches: subnetwork address pools</p>
-</li>
-<li>
-<p>Leaves: manual bindings</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Clear DHCP server variables</div>
-<div class="content">
-<pre>clear ip dhcp binding { &lt;address&gt; | * }
-clear ip dhcp conflict { &lt;address&gt; | * }
-clear ip dhcp server statistics</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Troubleshoot DHCP IP address assignments, lease expirations, and database chnages</div>
-<div class="content">
-<pre># debug ip dhcp server events</pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_database_agent_2">Database agent</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Host (ftp, tftp, rcp) or storage that stores the DHCP bindings database.</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Save automatic bindings on a remote host</div>
-<div class="content">
-<pre>ip dhcp database &lt;url&gt; [timeout &lt;seconds&gt;] [ write-dely &lt;seconds&gt;]</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p><strong>url</strong>: can be ftp,tftp, rcp, flash, disk</p>
-</li>
-<li>
-<p><strong>timeout</strong>: how long the DHCP server wait before aborting database transfer. default: 5 minutes</p>
-</li>
-<li>
-<p><strong>write-delay</strong>: how soon the DHCP server should send database updates. default:  5 minutes, minimum: 60 seconds</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="title">Task: Run DHCP server without database agent</div>
-<div class="content">
-<pre>(config)# no ip dhcp conflict logging</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>Not recommended</p>
-</li>
-<li>
-<p>TODO: add the reason</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_address_pool_2">Address Pool</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Specify which DHCP options to use for the client</p>
-<div class="ulist">
-<ul>
-<li>
-<p>If the client is not directly connected to the DHCP server (the giaddr field of the DHCPDISCOVER broadcast message is nonzero), the server matches the DHCPDISCOVER with the DHCP pool that has the subnet that contains the IP address in the giaddr field.</p>
-</li>
-<li>
-<p>If the client is directly connected to the DHCP server (the giaddr field is zero), the DHCP server matches the DHCPDISCOVER with DHCP pools that contain the subnets configured on the receiving interface. If the interface has secondary IP addresses, subnets associated with the secondary IP addresses are examined for possible allocation only after the subnet associated with the primary IP address (on the interface) is exhausted.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Create a pool</div>
-<div class="content">
-<pre>(config)# ip dhcp pool &lt;name&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the subnet network number and mask of the address pool</div>
-<div class="content">
-<pre>(dhcp-config)# network &lt;network-number&gt; [mask | prefix-length]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the secondary subnets</div>
-<div class="content">
-<pre>(dhcp-config)# network &lt;network-number&gt; [mask | prefix-length] secondary</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Exclude IP address</div>
-<div class="content">
-<pre>(config)# ip dhcp excluded-address &lt;low-address&gt; [&lt;high-address&gt;]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the domain name</div>
-<div class="content">
-<pre>(dhcp-config)# domain-name &lt;example.com&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the name server per order of preference</div>
-<div class="content">
-<pre>(dhcp-config)# dns-server &lt;address&gt; [&lt;address2&gt; ... &lt;address8&gt;]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the default boot image for a client</div>
-<div class="content">
-<pre>(dhcp-config)# bootfile &lt;filename&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the netbios server</div>
-<div class="content">
-<pre>(dhcp-config)# netbios-name-server &lt;address&gt; [&lt;address2&gt; ... &lt;address8&gt;]
-(dhcp-config)# netbios-node-type &lt;type&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the gateway</div>
-<div class="content">
-<pre>(dhcp-config)# default-router  &lt;address&gt; [&lt;address2&gt; ... &lt;address8&gt;]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify  a custom DHCP code</div>
-<div class="content">
-<pre>(dhcp-config)# option &lt;code&gt; [instance &lt;number&gt;] {ascii &lt;string&gt; | hex &lt;string&gt; | &lt;ip-address&gt;}</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure the duration of the lease</div>
-<div class="content">
-<pre>(dhcp-config)# lease &lt;days&gt; [&lt;hours&gt; [&lt;minutes&gt;] ]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the lease for ever</div>
-<div class="content">
-<pre>(dhcp-config)# lease infinite</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure the utilization mark of the current address pool size</div>
-<div class="content">
-<pre>(dhcp-config)# utilization mark high &lt;percentage-number&gt; [log]
-(dhcp-config)# utilization mark low &lt;percentage-number&gt; [log]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure a DHCP address pool with secondary subnets</div>
-<div class="content">
-<pre>(dhcp-config)# override default-router ??
-(dhcp-config)# override utilization high &lt;percentage&gt;
-(dhcp-config)# override utilization low &lt;percentage&gt;</pre>
-</div>
-</div>
+<h4 id="_elements_of_a_traffic_class">32.1.3. Elements of a traffic class</h4>
 <div class="paragraph">
-<p>TODO: add explanation</p>
+<p>A traffic class contains 3 major elts: a name, a series of <strong>match</strong> commands followed by <strong>match-all</strong> (default) or <strong>match-any</strong></p>
 </div>
-<div class="listingblock">
-<div class="title">Task: Verify the DHCP address pool configuration</div>
-<div class="content">
-<pre># show ip dhcp pool [name]
-# show ip dhcp binding [address]
-# show ip dhcp conflict [name]
-# show ip dhcp database [url]
-# show ip dhcp server statistics [type-number]</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_address_bindings_2">Address bindings</h5>
 <div class="ulist">
+<div class="title">match commands that can be used with MQC</div>
 <ul>
 <li>
-<p>Mapping between the IP address and MAC address of a client</p>
+<p>match access-group</p>
+</li>
+<li>
+<p>match any</p>
+</li>
+<li>
+<p>match class-map</p>
+</li>
+<li>
+<p>match cos</p>
+</li>
+<li>
+<p>match destination-address mac</p>
+</li>
+<li>
+<p>match discard-class</p>
+</li>
+<li>
+<p>match [ip] dscp</p>
+</li>
+<li>
+<p>match field</p>
+</li>
+<li>
+<p>match fr-dlci</p>
+</li>
+<li>
+<p>match input-interface</p>
+</li>
+<li>
+<p>match ip rtp</p>
+</li>
+<li>
+<p>match mpls experimental</p>
+</li>
+<li>
+<p>match mpls experimental topmost</p>
+</li>
+<li>
+<p>match not  // add a note here</p>
+</li>
+<li>
+<p>match packet length
+-</p>
+</li>
+<li>
+<p>etc</p>
 </li>
 </ul>
 </div>
-<div class="listingblock">
-<div class="title">Task: Display the current mapping</div>
-<div class="content">
-<pre># show ip dhcp binding</pre>
-</div>
-</div>
-<div class="sect5">
-<h6 id="_automatic_bindings_2">automatic bindings</h6>
-<div class="ulist">
-<ul>
-<li>
-<p>Dynamically maps hardware address to an IP address from a pool.</p>
-</li>
-<li>
-<p>Stored in volatile RAM and periodically copied to database agent</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect5">
-<h6 id="_manual_binding_2">manual binding</h6>
-<div class="ulist">
-<ul>
-<li>
-<p>MAC address of hosts are found in the DHCP database</p>
-</li>
-<li>
-<p>Stored in NVRAM</p>
-</li>
-<li>
-<p>Can be configured</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Individually and stored in NVRAM</p>
-</li>
-<li>
-<p>In batch from text files</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the IP address and subnet mask of the client</div>
-<div class="content">
-<pre>(dhcp-config)# host &lt;address&gt; [&lt;mask&gt;| &lt;/prefix-length]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the unique identifier for a DHCP client</div>
-<div class="content">
-<pre>(dhcp-config)# client-identifier &lt;unique-identifier&gt;</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Send with DHCP option 61</p>
-</li>
-<li>
-<p>Unique identifier</p>
-<div class="ulist">
-<ul>
-<li>
-<p>7-byte: 1byte for the media , 6 byte for the MAC address</p>
-</li>
-<li>
-<p>27-byte: vendor, MAC address, source interface of the client</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Determine the client identifier</div>
-<div class="content">
-<pre># debug ip dhcp server packet
-
-DHCPD:DHCPDISCOVER received from client 0b07.1134.a029 through relay 10.1.0.253.
-DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task:</div>
-<div class="content">
-<pre>(dhcp-config)# hardware-address &lt;hw-address&gt; [&lt;protocol-type&gt; | &lt;hw-number&gt;]</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>For client who can not send a client identifier in the packet</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task:</div>
-<div class="content">
-<pre>(dhcp-config)# client-name &lt;name&gt;</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Do not include the domain name</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_static_mapping_2">Static mapping</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>From customer-created text file that DHCP server reads at boot</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Short configuration: no need for several numerous host pools with manual bindings</p>
-</li>
-<li>
-<p>Reduce space required in NVRAM to maintain address pools</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>The file format has the following elements:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Database version number</p>
-</li>
-<li>
-<p>End-of-file designator</p>
-</li>
-<li>
-<p>Hardware type</p>
-</li>
-<li>
-<p>Hardware address</p>
-</li>
-<li>
-<p>IP address</p>
-</li>
-<li>
-<p>Lease expiration</p>
-</li>
-<li>
-<p>Time the file was created</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre>*time* Jan 21 2005 03:52 PM
-*version* 2
-!IP address    Type    Hardware address     Lease expiration
-10.0.0.4 /24   1       0090.bff6.081e       Infinite
-10.0.0.5 /28   id      00b7.0813.88f1.66    Infinite
-10.0.0.2 /21   1       0090.bff6.081d       Infinite
-*end*</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure the DHCP server to read a static mapping text file</div>
-<div class="content">
-<pre>(dhcp-config)# origin file &lt;url&gt;</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_pings_2">Pings</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>DHCP server pings an IP address twice before assigning it to a client.</p>
-</li>
-<li>
-<p>If the ping is unanswered after waiting for 2 seconds, the server assumes that the address is not in use.</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify the number of packets sent to a pool address before assigning it to a client</div>
-<div class="content">
-<pre>(config)# ip dhcp ping packets &lt;number&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Specify how long a DHCP server waits for a ping reply from an address pool</div>
-<div class="content">
-<pre>(config)# ip dhcp ping timeout &lt;milliseconds&gt;</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_bootp_interoperability_2">BOOTP interoperability</h5>
-<div class="listingblock">
-<div class="title">Task: Configure the DHCP server to not reply to any BOOTP requests.</div>
-<div class="content">
-<pre>(config)# ip dhcp boot ignore</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Forward ignored BOOTP request packets to another DHCP server</div>
-<div class="content">
-<pre>(config)# ip helper-address &lt;a.b.c.d&gt;</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_central_dhcp_server_2">Central DHCP server</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Updates specific DHCP options for remote DHCP server</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Import DHCP option parameters from central DHCP server</div>
-<div class="content">
-<pre>(dhcp-config)# import all
-(config)# interface &lt;type&gt; &lt;number&gt;
-(config-if)# ip address dhcp</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Display the options that are imported from the central DHCP server</div>
-<div class="content">
-<pre># sh ip dhcp import</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_option_82_3">Option 82</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>DHCP option contains information known by the relay agent</p>
-</li>
-<li>
-<p>For dynamic IP addresses allocation</p>
-</li>
-<li>
-<p>TOBECOMPLETED</p>
-</li>
-<li>
-<p>By default, OS DHCP server uses info provided by option 82</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Enable DHCP address allocation with option 82</div>
-<div class="content">
-<pre>(config)# ip dhcp use class</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Define a DHCP class and relay agent information patterns</div>
-<div class="content">
-<pre>(config)# ip dhcp class &lt;name&gt;
-(dhcp-class)# relay agent information
-(dhcp-class-info)# relay-information hex &lt;pattern&gt; [*] [bitmask &lt;mask&gt;]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Display DHCP class matching results</div>
-<div class="content">
-<pre># debug ip dhcp server class</pre>
-</div>
-</div>
-<div class="sect5">
-<h6 id="_static_route_with_the_next_hop_dynamically_obtained_through_dhcp_2">Static route with the next-hop dynamically obtained through DHCP</h6>
-<div class="paragraph">
-<p>TODO: explanation/context</p>
-</div>
-<div class="listingblock">
-<div class="title">Task: Assign a static route for the default next-hop device when the DHCP server is accessed for an IP address</div>
-<div class="content">
-<pre># ip route &lt;prefix&gt; &lt;mask&gt; {&lt;ip-address&gt; | &lt;interface-number&gt; [&lt;ip-number&gt;]} dhcp [&lt;distance&gt;]</pre>
-</div>
-</div>
+<table class="tableblock frame-none grid-rows spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Command</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the match criteria for a class map on the basis of the specified protocol.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol citrix</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Citrix traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol fasttrack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match FastTrack peer-to-peer traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol gnutella</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Gnutella peer-to-peer traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol http</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match HTTP traffic by URL, host,MIME type, or fields in HTTP packet headers.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol rtp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Real-Time Transport Protocol (RTP) traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match qos-group</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identifies a specific QoS group value as a match criterion.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match source-address mac</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses the source MAC address as a match criterion.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match start</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the match criteria for a class map on the basis of the datagram header (Layer 2) or the network header (Layer 3).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match tag</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies tag type as a match criterion.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -16096,914 +15301,1128 @@ DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.</pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>Ensure that the DHCP client and server are defined to supply a DHCP device option 3 of the DHCP packet.</p>
-</li>
-<li>
-<p>If the DHCP client is not able to obtain an IP address or the default device IP address, the static route is not installed in the routing table.</p>
-</li>
-<li>
-<p>If the lease has expired and the DHCP client cannot renew the address, the DHCP IP address assigned to the client is released and any associated static routes are removed from the routing table.</p>
-</li>
-</ul>
-</div>
+nbar cannot classify ipx
+nbar cannot classify multicast traffic
 </td>
 </tr>
 </table>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_elements_of_a_traffic_policy">32.1.4. Elements of a traffic policy</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>contains 3 elts: name, traffic class, command to enable the QoS feature</p>
+</li>
+</ul>
 </div>
+<table class="tableblock frame-none grid-rows spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Command</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">random-detect discard-class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the WRED parameters for a discard- class value for a class in a policy map.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">random-detect discard-class-based</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures  WRED on the basis of the discard class value of a packet.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">random-detect ecn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables explicit congestion notification (ECN).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">random-detect exponential-weighting-constant</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the exponential weight factor for the average queue size calculation for the queue reserved for a class.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">random-detect precedence</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configure the WRED parameters for a particular IP Precedence for a class policy in a policy map.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set atm-clp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the cell loss priority (CLP) bit when a policy map is configured.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set cos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the  Layer 2 class of service (CoS) value of an outgoing packet.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set discard-class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Marks a packet with a discard-class value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set [ip] dscp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Marks a packet by setting the differentiated services code point (DSCP) value in the type of service (ToS) byte.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set fr-de</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Changes the discard eligible (DE) bit setting in the address field of a Frame Relay frame to 1 for all traffic leaving an interface.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set mpls experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Designates the value to which the  MPLS bits are set if the packets match the specified policy map.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set precedence</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the precedence value in the packet header.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set qos-group</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets a  QoS group identifier (ID) that can be used later to classify packets.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shape</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Shapes traffic to the indicated bit rate according to the algorithm specified.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shape adaptive</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures a Frame  Relay interface or a point-to- point subinterface to estimate the available bandwidth by backward explicit congestion notification (BECN) integration while trafficommand</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shape fecn-adaptative</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">configures a Frame Relay interface to reflect FECN bits as BECN bits in Q.922 test response messages.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect4">
-<h5 id="_statistics_2">Statistics</h5>
+<h5 id="_service_policy">Service policy</h5>
 <div class="listingblock">
-<div class="title">Task: Display server statistics</div>
 <div class="content">
-<pre># show ip dhcp server statistics</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Reset all DHCP server counters to 0</div>
-<div class="content">
-<pre># clear ip dhcp server statistics</pre>
+<pre>(config-if)# service-policy {input | output } policy-map-name</pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dhcp_relay_agent_2">19.6.4. DHCP Relay Agent</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Forwards requests and replies between clients and servers not on the same physical subnet</p>
-</li>
-<li>
-<p>Sets the <strong>giaddr</strong> field and adds option 82</p>
-</li>
-<li>
-<p>DHCP server and relay agent are enabled by default</p>
-</li>
-</ul>
+<h4 id="_verification">32.1.5. Verification</h4>
+<div class="paragraph">
+<p>Display all class maps and their matching criteria</p>
 </div>
 <div class="listingblock">
-<div class="title">Task: Specify the packet forwarding address</div>
 <div class="content">
-<pre>(config-if)# ip helper-address &lt;a.b.c.d&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Reduce the frequency with which DHCP clients change their addresses and forwards client requests to the server that handle the previous request.</div>
-<div class="content">
-<pre>(config-if)# ip dhcp relay prefer known-good-server</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>The relay agent deletes the ARP entries for addresses offered to the client
-on unnumbered interfaces.</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="title">Task: Disable the DHCP relay agent service</div>
-<div class="content">
-<pre># no service dhcp</pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_option_82_4">Option 82</h5>
-<div class="imageblock">
-<div class="content">
-<img src="../images/dhcp-relay-agent-option-82.png" alt="dhcp relay agent option 82">
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Insert the DHCP relay agent information option in BOOTREQUEST messages forwarded to a DHCP server</div>
-<div class="content">
-<pre># ip dhcp relay information option</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>This function is disabled by default</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="title">Task: Check whethers the relay agent information option forwarded BOOTREPLY message is valid</div>
-<div class="content">
-<pre># ip dhcp relay information check</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure the reforwarding policy</div>
-<div class="content">
-<pre># ip dhcp relay information policy {drop | keep | replace }</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure all interfaces as trusted sources of the DHCP relay information option.</div>
-<div class="content">
-<pre># ip dhcp relay information trust-all</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure an interface as trusted sources of the DHCP relay information option.</div>
-<div class="content">
-<pre>(config-if)# ip dhcp relay information trusted</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Display all interfaces that are configure to be a trusted source for the DHCP relay information option.</div>
-<div class="content">
-<pre># show ip dhcp relay information trusted-sources</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure per-interface support for the relay agent information option</div>
-<div class="content">
-<pre>(config-if)# ip dhcp relay information option-insert [none]
-(config-if)# ip dhcp relay information check-reply [none]
-(config-if)# ip dhcp relay information policy-action {drop | keep | replace}</pre>
+<pre>&gt; show class-map</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>See more optional tasks
-<a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/config-dhcp-relay-agent.html#GUID-B4DA9D20-F7A3-44BC-8019-D120136458DC">here</a></p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_dhcp_client_2">19.6.5. DHCP Client</h4>
-<div class="listingblock">
-<div class="title">Task: Acquire an IP address on an interface from DHCP</div>
-<div class="content">
-<pre>(config-if)# ip address dhcp</pre>
-</div>
+<p>Display the configuration for the specified class of the specified policy map</p>
 </div>
 <div class="listingblock">
-<div class="title">Task: Display the DHCP packets sent and received during troubleshooting on the client side</div>
 <div class="content">
-<pre># debug dhcp detail</pre>
+<pre>&gt; show policy-map policy-name class class-name</pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="title">Task: Force a release of a DHCP lease</div>
-<div class="content">
-<pre># release dhcp</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
 <div class="paragraph">
-<p>The <strong>release dhcp</strong> command</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Starts the process to immediately release a DHCP lease for the specified interface.</p>
-</li>
-<li>
-<p>Does not deconfigure the <strong>ip address dhcp</strong> command specified in the configuration file for the interface.</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
+<p>Display the configuration of all classes for all existing policy maps</p>
 </div>
 <div class="listingblock">
-<div class="title">Task: Force a renewal of a DHCP lease</div>
 <div class="content">
-<pre># renew dhcp</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>The <strong>renew dhcp</strong> command advances the DHCP lease timer to the next stage,
-at which point one of the following occurs:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>If the lease is currently in a BOUND state, the lease is advanced to the RENEW state and a DHCP RENEW request is sent.</p>
-</li>
-<li>
-<p>If the lease is currently in a RENEW state, the timer is advanced to the REBIND state and a DHCP REBIND request is sent.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>If there is no response to the RENEW request,
-the interface remains in the RENEW state.
-In this case, the lease timer will advance to the REBIND state and subsequently send a REBIND request.</p>
-</li>
-<li>
-<p>If a NAK response is sent in response to the RENEW request, the interface is deconfigured.</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="sect4">
-<h5 id="_configurable_dhcp_client_feature_2">Configurable DHCP client feature</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Allows a client to use a user-specified client identifier, class identifier or suggested lease time when requesting an address from a DHCP server.</p>
-</li>
-<li>
-<p>Options available:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Option 33: configure a list of static routes in the client.</p>
-</li>
-<li>
-<p>Option 51: request a lease time for the IP address.</p>
-</li>
-<li>
-<p>Option 55: request certain options from the DHCP server</p>
-</li>
-<li>
-<p>Option 60: configure the vendor class identifier string to use in the DHCP interaction.</p>
-</li>
-<li>
-<p>Option 61: specify their unique identifier</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_forcerenew_message_handling_2">FORCERENEW Message Handling</h5>
-<div class="paragraph">
-<p>TODO: Explain the feature</p>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure FORCERENEW message handling</div>
-<div class="content">
-<pre>! Specify the key chain to be used in authenticating a request
-(config)# key chain &lt;name&gt;
-(config-keychain)# key &lt;id&gt;
-(config-keychain-key)# key-string &lt;text&gt;
-!
-! Specify the type of authentication
-(config)# interface &lt;type number&gt;
-(config-if)# ip dhcp client authentication key-chain &lt;name&gt;
-(config-if)# ip dhcp client authentication mode &lt;type&gt;
-!
-# ip dhcp-client forcerenew</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_accounting_and_security_2">19.6.6. Accounting and Security</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Address vulnerability in PWLAN</p>
-</li>
-</ul>
-</div>
-<div class="sect4">
-<h5 id="_dhcp_accounting_2">DHCP Accounting</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>add AAA and RADIUS support to DHCP configuration</p>
-</li>
-<li>
-<p>sends secure START/STOP accounting messages upon lease assignment/termination</p>
-</li>
-<li>
-<p>Restrictions:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>AAA and RADIUS must be enabled</p>
-</li>
-<li>
-<p>only for network pools with automatic bindings</p>
-</li>
-<li>
-<p><strong>clear ip dhcp binding</strong> or <strong>no service dhcp</strong> triggers accounting STOP messages</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Enable DHCP accounting if a specifier server group is configured to run RADIUS accounting</div>
-<div class="content">
-<pre>(dhcp-config)# accounting &lt;method-list-name&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Troubleshoot DHCP accounting</div>
-<div class="content">
-<pre>debug radius accounting
-debug ip dhcp server events
-debug aaa accounting
-debug aaa id</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_dhc_secured_ip_address_assignment_2">DHC secured IP address assignment</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Secures and synchronizes the MAC address of the client to the DHCP binding,
-preventing hackers form spoofing the DHCP server and taking over a DHCP lease of an authorized client</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Secure ARP table entries to DHCP leases in the DHCP database</div>
-<div class="content">
-<pre>(dhcp-config)# update arp</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>Existing active DHCP leases will not be secured until they are renewed.</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure the renewal policy for unknown clients</div>
-<div class="content">
-<pre>(dhcp-config)# renew deny unknown</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>In some usage scenarios, such as a wireless hotspot,
-where both DHCP and secure ARP are configured, a
-connected client device might go to sleep or suspend for
-a period of time. If the suspended time period is
-greater than the secure ARP timeout (default of 91
-seconds), but less than the DHCP lease time, the client
-can awake with a valid lease, but the secure ARP timeout
-has caused the lease binding to be removed because the
-client has been inactive. When the client awakes, the
-client still has a lease on the client side but is
-blocked from sending traffic. The client will try to
-renew its IP address but the DHCP server will ignore the
-request because the DHCP server has no lease for the
-client. The client must wait for the lease to expire
-before being able to recover and send traffic again.</p>
-</li>
-<li>
-<p>To remedy this situation, use the <strong>renew deny unknown</strong>
-command in DHCP pool configuration mode. This command
-forces the DHCP server to reject renewal requests from
-clients if the requested address is present at the
-server but is not leased. The DHCP server sends a
-DHCPNAK denial message to the client, which forces the
-client back to its initial state. The client can then
-negotiate for a new lease immediately, instead of
-waiting for its old lease to expire.</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_dhcp_per_interface_lease_limit_and_statistics_2">DHCP per interface lease limit and statistics</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Allows an ISP to limit the number of DHCP leases allowed on an interface.</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure a DHCP lease limit to control the number of subscribers on an interface</div>
-<div class="content">
-<pre>(config)#  ip dhcp limit lease log
-(config-if)# ip dhcp limit lease &lt;max-users&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Verify the DHCP lease limit configuration</div>
-<div class="content">
-<pre># show ip dhcp limit lease</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Clear the stored lease violation entries</div>
-<div class="content">
-<pre># clear ip dhcp limit lease</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_dhcp_authorized_arp_2">DHCP authorized ARP</h5>
-<div class="listingblock">
-<div class="title">Task: Disable dynamic ARP learning on an interface</div>
-<div class="content">
-<pre>(config-if)# arp authorized</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure how long an entry remains in the ARP cache</div>
-<div class="content">
-<pre>(config-if)# arp timeoute &lt;seconds&gt;</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task:</div>
-<div class="content">
-<pre># show arp</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_arp_auto_logoff_2">ARP auto-logoff</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>enhances DHCP authorized ARP by providing finer control and probing authorized clients to detect a logoff.</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Task: Configure an interval and number of probe retries for ARP</div>
-<div class="content">
-<pre>(config-if)# arp probe interval &lt;seconds&gt; count &lt;number&gt;</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_dhcp_snooping_2">DHCP snooping</h5>
-<div class="paragraph">
-<div class="title">TODO</div>
-<p>add information about option 82</p>
+<pre>&gt; show policy-map interface interface-name interface-number</pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_nat_2">19.7. NAT</h3>
+<h3 id="_rsvp">32.2. RSVP</h3>
 <div class="sect3">
-<h4 id="_purpose_2">19.7.1. Purpose</h4>
+<h4 id="_concepts_8">32.2.1. Concepts</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_configuration_tasks_5">32.2.2. Configuration tasks</h4>
+<div class="listingblock">
+<div class="content">
+<pre>ip rsvp bandwidth [interface-kbps [single-flow-kbps] ]</pre>
+</div>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>NAT allows the IP network of an organization to appear from
-the outside to use a different IP address space than what it is actually using.</p>
-</li>
-<li>
-<p>Thus, NAT allows an organization with nonglobally routable addresses to connect
-to the Internet by translating those addresses into a globally routable address
-space.</p>
-</li>
-<li>
-<p>NAT also allows a graceful renumbering strategy for organizations that are changing service providers or voluntarily renumbering into classless
-interdomain routing (CIDR) blocks.</p>
-</li>
-<li>
-<p>RFC 1631.</p>
+<p>default 75 % can be allocated by to RSVP and up to 75% of the total bandwidth is available for a single flow</p>
 </li>
 </ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_inside_and_outside_address_2">19.7.2. Inside and outside address</h4>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-Inside local address
-</td>
-<td class="hdlist2">
-<p>The (private) IP address that is assigned to a host on the inside network.</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-Inside global address
-</td>
-<td class="hdlist2">
-<p>A (public) IP address that represents one or more inside local IP addresses to the outside world.</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-Outside local address
-</td>
-<td class="hdlist2">
-<p>The (private) IP address of an outside host as it appears to the inside network.</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-Outside global address
-</td>
-<td class="hdlist2">
-<p>The (public) IP address assigned to a host on the outside network by the owner of the host.</p>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_types_of_nat_2">19.7.3. Types of NAT</h4>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Static NAT</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>Statically correlates the same local host to the same public IP address.</p>
-</li>
-<li>
-<p>Does not conserve IP addresses.</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">Dynamic NAT</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>One local host uses an available public IP address in a pool.</p>
-</li>
-<li>
-<p>Does not conserve IP addresses.</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">PAT</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>Like dynamic NAT but multiple local hosts share a single public address by multiplexing TCP/UDP ports.</p>
-</li>
-<li>
-<p>Conserves IP addresses.</p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1">NAT for overlapping address</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>Can be done with any of the first three types.</p>
-</li>
-<li>
-<p>Translates both source and destination addresses, instead of just the source (for packets going from
-enterprise to the Internet).</p>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_tcp_load_distribution_for_nat_2">19.7.4. TCP load distribution for NAT</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Round-robin allocation of a virtual host that coordinates load sharing among real hosts.</p>
-</li>
-</ul>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../images/nat-tcp-load-distribution.png" alt="nat tcp load distribution">
-</div>
-<div class="title">Figure 32. NAT TCP load distribution</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_nat_order_of_operations_2">19.7.5. NAT order of operations</h4>
-<div class="sect4">
-<h5 id="_inside_to_outside_2">Inside-to-Outside</h5>
-<div class="paragraph">
-<p>Inside-to-Outside 	Outside-to-Inside</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>If IPSec then check input access list</p>
-</li>
-<li>
-<p>decryption - for CET (Cisco Encryption Technology) or IPSec</p>
-</li>
-<li>
-<p>check input access list</p>
-</li>
-<li>
-<p>check input rate limits</p>
-</li>
-<li>
-<p>input accounting</p>
-</li>
-<li>
-<p>redirect to web cache</p>
-</li>
-<li>
-<p>policy routing</p>
-</li>
-<li>
-<p>routing</p>
-</li>
-<li>
-<p>NAT inside to outside (local to global translation)</p>
-</li>
-<li>
-<p>crypto (check map and mark for encryption)</p>
-</li>
-<li>
-<p>check output access list</p>
-</li>
-<li>
-<p>inspect (Context-based Access Control (CBAC))</p>
-</li>
-<li>
-<p>TCP intercept</p>
-</li>
-<li>
-<p>encryption</p>
-</li>
-<li>
-<p>Queueing</p>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_outside_to_inside_2">Outside-to-Inside</h5>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>If IPSec then check input access list</p>
-</li>
-<li>
-<p>decryption - for CET or IPSec</p>
-</li>
-<li>
-<p>check input access list</p>
-</li>
-<li>
-<p>check input rate limits</p>
-</li>
-<li>
-<p>input accounting</p>
-</li>
-<li>
-<p>redirect to web cache</p>
-</li>
-<li>
-<p>NAT outside to inside (global to local translation)</p>
-</li>
-<li>
-<p>policy routing</p>
-</li>
-<li>
-<p>routing</p>
-</li>
-<li>
-<p>crypto (check map and mark for encryption)</p>
-</li>
-<li>
-<p>check output access list</p>
-</li>
-<li>
-<p>inspect CBAC</p>
-</li>
-<li>
-<p>TCP intercept</p>
-</li>
-<li>
-<p>encryption</p>
-</li>
-<li>
-<p>Queueing</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>Read more: <a href="http://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html#topic1NAT">order of operations</a></p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_configure_static_translation_of_inside_source_address_2">Configure static translation of inside source address</h5>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat inside source static local-ip global-ip
-
-interface type number
-  ip address ip-address mask [secondary]
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_configure_dynamic_translation_of_inside_source_address_2">Configure dynamic translation of inside source address</h5>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
-access-list access-list-number permit source [source-wildcard]
-ip nat inside source list access-list -number pool name
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_allow_internal_users_access_to_the_internet_2">19.7.6. Allow internal users access to the internet</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
-access-list number permit a.b.c.d [e.f.g.h]
-ip nat inside source list number pool name overload
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside
-end</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_change_timeouts_value_2">19.7.7. Change timeouts value</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat translation seconds
-ip nat translation udp-timeout seconds
-ip nat translation dns-timeout seconds
-ip nat translation tcp-timeout seconds
-ip nat translation finrst-timeout seconds
-ip nat translation icmp-timeout seconds
-ip nat translation syn-timeout seconds</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_configure_dynamic_translation_of_overlapping_networks_2">19.7.8. Configure dynamic translation of overlapping networks</h4>
-<div class="paragraph">
-<p>Configure dynamic translation of overlapping networks if your IP addresses in the stub network are
-legitimate IP addresses belonging to another network and you want to communicate with those hosts or
-routers using dynamic translation.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
-access-list access-list-number permit source [source-wildcard]
-ip nat outside source list access-list-number pool name
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_server_tcp_load_balancing_2">19.7.9. Server TCP load balancing</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length} type rotary
-access-list access-list-number permit source [source-wildcard]
-ip nat inside destination-list access-list-number pool name
-
-interface type number
-  ip address ip-address mask
-  ip nat inside
-
-interface type number
-  ip address ip-address mask
-  ip nat outside</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Display NAT translation information</div>
-<div class="content">
-<pre>show ip nat translations [verbose]
-show ip nat statistics</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Clear NAT entries before the timeout</div>
-<div class="content">
-<pre>clear ip nat translation inside global-ip local-ip outside local-ip global-ip
-clear ip nat translation outside global-ip local-i p
-clear ip nat translation protocol inside global-ip global-port local-ip local-port outside local-ip local-port-global-ip global-port
-clear ip nat translation {* | [forced] | [inside global-ip local-ip] [outside local-ip global-ip]}</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Task: Enable Syslog for logging NAT translations</div>
-<div class="content">
-<pre>ip nat log translations syslog
-no logging console</pre>
-</div>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_multicast_2">20. Multicast</h2>
+<h2 id="_first_host_redundancy_protocols">33. First Host Redundancy Protocols</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_igmp">20.1. IGMP</h3>
+<h3 id="_hsrp">33.1. HSRP</h3>
+<div class="paragraph">
+<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">First Hop Redundancy Protocols</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-hsrp-v2.html">HSRP Version 2</span></span> </a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.ietf.org/rfc/rfc2281.txt">RFC 2281</a></p>
+</li>
+<li>
+<p>Set of routers sharing one virtual IP address and one virtual MAC address</p>
+</li>
+<li>
+<p>elect one active router with the highest (priority, IP address)</p>
+</li>
+<li>
+<p>standy router takes over if Active router fails</p>
+</li>
+<li>
+<p>elect new standby router if standby router fails or becomes the active router.</p>
+</li>
+<li>
+<p>to minimize network traffic, only the active and standby router send periodic HSRP messages.</p>
+</li>
+<li>
+<p>a router may participate in multiple groups with seperate state and timers for each group</p>
+</li>
+<li>
+<p>unique group id per vlan</p>
+</li>
+<li>
+<p>hsrp address = 0000.0c07.AC<em>xy</em> (where xy is the HSRP group number in Hex)</p>
+</li>
+<li>
+<p>send multicast 224.0.0.2 for v1 and 224.0.0.102 for v2</p>
+</li>
+<li>
+<p>UDP port 1985</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_packet">33.1.1. HSRP packet</h4>
+<div class="paragraph">
+<p>MAC header | IP header | UDP packet port 1985 | HSRP Packet</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../images/hsrp-packet.png" alt="HSRP packet" width="896" height="248">
+</div>
+<div class="title">Figure 29. HSRP packet</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_version">33.1.2. HSRP version</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>version 1 by default</p>
+</li>
+<li>
+<p>version 2 doesn&#8217;t interoperate with HSRPv1 on the same interface.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>v1 and v2 can run on different physical interfaces of the same router</p>
+</li>
+<li>
+<p>v1 cannot advertise and learn millisecond timers</p>
+</li>
+<li>
+<p>v1 uses multicast 224.0.0.2 and v2 224.0.0.102</p>
+</li>
+<li>
+<p>v2 uses jitter timers (negative for hellotimes and positive for holdtimes)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>group number: 0..255 for v1 and 0..4095 for v2</p>
+</li>
+<li>
+<p>different virtual MAC address</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Change HSRP version</div>
+<div class="content">
+<pre>(config-if)# standby version {1 | 2}</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_opcode">33.1.3. HSRP OpCode</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Uses the Opcode field for preemption</p>
+<div class="ulist">
+<ul>
+<li>
+<p>0: <strong>Hello</strong>: The router is running and is capable of becoming the active or standby router</p>
+</li>
+<li>
+<p>1: <strong>Coup</strong>: The router wishes to become the active router</p>
+</li>
+<li>
+<p>2: <strong>Resign</strong>: The router no longer wishes to be active router</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>no preemption by default</p>
+</li>
+<li>
+<p>preemption: the router with the highest priority becomes immediately the active router by sending a <strong>coup</strong> message,
+The previous active router changes to the <strong>speak</strong> state and sends a <strong>resign</strong> message.</p>
+</li>
+<li>
+<p>can specify a delay before take over to allow the router to populate its routing table</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>minimum</strong> seconds after the last restart:</p>
+</li>
+<li>
+<p><strong>reload</strong> seconds after the first interface-up event after the device has reloaded, if such an event occurs within 360 seconds from reload. ???</p>
+</li>
+<li>
+<p><strong>sync</strong> seconds: for IP redundancy clients only ???</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure HSRP preemption</div>
+<div class="content">
+<pre>(config-if)# standby [ &lt;group-number&gt; ] preempt [ delay{ [ minimum &lt;seconds&gt; ] [ reload &lt;seconds&gt; ] [ sync &lt;seconds&gt; ] } ]</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_state">33.1.4. HSRP State</h4>
+<table class="tableblock frame-none grid-rows spread">
+<colgroup>
+<col style="width: 5%;">
+<col style="width: 15%;">
+<col style="width: 80%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">State</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Initial</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This is the starting state and indicates that HSRP is not running. This state is entered via a configuration change or when an interface first comes up.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Learn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The router has not determined the virtual IP address, and not yet seen an authenticated Hello message from the active router. In this state the router is still waiting to hear from the active router.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Listen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The router knows the virtual IP address, but is neither the active router nor the standby router. It listens for Hello messages from those routers.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Speak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The router sends periodic Hello messages and is actively participating in the election of the active and/or standby router. A router cannot enter Speak state unless it has the virtual IP address.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standby</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The router is a candidate to become the next active router and sends periodic Hello messages. Excluding transient conditions, there MUST be at most one router in the group in Standby state.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Active</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The router is currently forwarding packets that are sent to the group&#8217;s virtual MAC address. The router sends periodic Hello messages. Excluding transient conditions, there MUST be at most one router in Active state in the group.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_priority_2">33.1.5. Priority</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>default value: 100</p>
+</li>
+<li>
+<p>The higher (priority || IP address) wins</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure HSRP priority</div>
+<div class="content">
+<pre>(config-if)# standby [group-number] priority &lt;number&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_timers">33.1.6. HSRP timers</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Hellotime</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>3 seconds by default</p>
+</li>
+<li>
+<p>only meaningful in Hello messages</p>
+</li>
+<li>
+<p>configured on the router or learned from authenticated Hello message from the active router</p>
+<div class="ulist">
+<ul>
+<li>
+<p>not learned if HSRP hellos &lt; 1 second</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Holdtime</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>10 seconds by default</p>
+</li>
+<li>
+<p>&gt;= 3 * hellotime</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="title">Task: configure HSRP timers</div>
+<div class="content">
+<pre>(config-if)# standby [group-number] timers[msec] &lt;hellotime&gt; [msec] &lt;holdtime&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_authentication">33.1.7. HSRP authentication</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>clear-text or MD5 encryption</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure HSRP clear-text authentication</div>
+<div class="content">
+<pre>(config-if)# standby [group-number] authentication text &lt;string&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure HSRP MD5 authentication</div>
+<div class="content">
+<pre>(config-if)# standby [group-number] authentication  md5 { key-string [ 0 | 7 ] key [ timeout seconds ] | key-chain &lt;name-of-chain&gt; }</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Debug HSRP authentication</div>
+<div class="content">
+<pre># debug standby errors</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_interface_or_object_tracking">33.1.8. HSRP Interface or Object tracking</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>reduce HSRP priority if the monitored interface goes down, allowing another HSRP router to become active if it has preemption enabled.</p>
+</li>
+<li>
+<p>cumulative reduction if multiple tracked interfaces are down</p>
+</li>
+<li>
+<p>configurable decrement value (default = 10)</p>
+</li>
+<li>
+<p>can shutdown/change the HSRP group to the Init state on the basis of the  tracked object&#8217;s state</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure interface tracking</div>
+<div class="content">
+<pre>(config-if)# standby track { &lt;object-number&gt; [&lt;priority-decrement&gt;] | interface-type &lt;interface-number&gt; [ decrement &lt;priority-decrement&gt; ] } [shutdown]</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_support_for_icmp_redirects">33.1.9. HSRP support for ICMP redirects</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>enabled by default with advertisement every 60 seconds and holddown of 180 seconds</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<div class="title">Why?</div>
+<p>When HSRP is running, preventing hosts from discovering the interface (or
+real) IP addresses of devices in the HSRP group is important. If a host is
+redirected by ICMP to the real IP address of a device, and that device later
+fails, then packets from the host will be lost.</p>
+</div>
+<div class="ulist">
+<div class="title">How?</div>
+<ul>
+<li>
+<p>looks up the next hop IP address in its table of real IP addresses vs virtual IP address</p>
+</li>
+<li>
+<p>if match found, replaces the real IP address by the virtual IP addresses in the gateway field of the redirect packet</p>
+</li>
+<li>
+<p>if no match (unknown), send the redirect packet to go out unchanged</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<div class="title">Restrictions</div>
+<ul>
+<li>
+<p>Do not redirect to passive HSRP devices</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Enable ICMP redirects on an interface</div>
+<div class="content">
+<pre>(config-if)# standby redirect [timers &lt;advertisement&gt; &lt;holddown&gt;] [unknown]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Disable ICMP redirects on an interface</div>
+<div class="content">
+<pre>(config-if)# standby redirect [timers &lt;advertisement&gt; &lt;holddown&gt;] [unknown]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: configure ICMP redirect messages with HSRP virtual IP address as the gateway IP address</div>
+<div class="content">
+<pre>(config)# standby redirects [enable | disable]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Debug HSRP support for ICMP redirects</div>
+<div class="content">
+<pre># debug standby events icmp
+
+10:43:08: HSRP: ICMP redirect not sent to 10.0.0.4 for dest 10.0.1.2
+10:43:08: HSRP: could not uniquely determine IP address for mac 00d0.bbd3.bc22</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_hsrp_virtual_ip_address_and_group">33.1.10. HSRP virtual IP address and group</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>can have a name (no longer than 25 chars)</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure the virtual IP address</div>
+<div class="content">
+<pre>(config-if)# standby [&lt;group-number&gt;] ip [ &lt;a.b.c.d&gt;  [secondary]]</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>by default, send one gratuitous ARP when a group becomes active and then another two and four seconds later.</p>
+</li>
+<li>
+<p>When HSRP is on the Active state on an interface,
+Proxy ARP requests are answered with the MAC address of the HSRP group.
+otherwise, they are ignored.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure the number of gratuitous ARP packets sent by HSRP group when it transitions to the active state, and how often the ARP packets are sent</div>
+<div class="content">
+<pre>(config-if)# standby arp gratuitous [count &lt;number=&gt; interval &lt;seconds&gt;]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: configure the name of the standby group</div>
+<div class="content">
+<pre>(config-if)# standby name &lt;group-name&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_glbp">33.2. GLBP</h3>
+<div class="paragraph">
+<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">First Hop Redundancy Protocols</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/Configuring-GLBP.html">Gateway Load Balancing Protocol</span></span> </a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>one AVG (active virtual gateway) per group</p>
+</li>
+<li>
+<p>up to 4 primary AVFs (active virtual forwarder)</p>
+</li>
+<li>
+<p>AVG responds to all ARP requests with MAC from all particapating AVF</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Not with own MAC address like HSRP</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>load-balancing</p>
+<div class="ulist">
+<ul>
+<li>
+<p>round-robin (default)</p>
+</li>
+<li>
+<p>host-dependent</p>
+</li>
+<li>
+<p>weigthed</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Multicast, 224.0.0.102, UDP port 3222</p>
+</li>
+<li>
+<p>virtual MAC address 0007.B400.xxyy, where xx the group and yy in (00-03)</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_glbp_packet_type">33.2.1. GLBP Packet Type</h4>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Hello
+</td>
+<td class="hdlist2">
+<p>advertise protocol info, multicast, sent by any AVG or AVF in [Speak, Standby, Active] State</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Request
+</td>
+<td class="hdlist2">
+<p>request virtual MAC, unicast sent to AVG</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Reply
+</td>
+<td class="hdlist2">
+<p>get virtual MAC, unicast sent from AVG</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_active_virtual_gateway">33.2.2. Active Virtual Gateway</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>elected for each group max( priority, IP address )</p>
+</li>
+<li>
+<p>assigns up to 4 virtual MAC address to AVFs</p>
+</li>
+<li>
+<p>reponds to ARP request for the virtual IP address of the group</p>
+</li>
+<li>
+<p>if failed, new AVG election from AVG in listen State</p>
+</li>
+<li>
+<p>by default, no AVG preemption</p>
+</li>
+<li>
+<p>load balancing methods</p>
+<div class="ulist">
+<ul>
+<li>
+<p>round-robin: by default, each AVF in turn is used for ARP</p>
+</li>
+<li>
+<p>host-dependent: use same AVF based on the host MAC</p>
+</li>
+<li>
+<p>weighted: use the weight value advertised by the gateway</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure GLBP virtual ip address</div>
+<div class="content">
+<pre>(config-if)# glbp &lt;group:0..1023 &gt; ip [&lt;virtual-ip-address&gt; [secondary]]</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When the glbp ip command is enabled on an interface,
+the handling of proxy ARP requests is changed
+(unless proxy ARP was disabled).
+the AVG intercepts the ARP requests and replies to the ARP on behalf of the connected nodes.
+If a forwarder in the GLBP group is active, proxy ARP requests are answered using the MAC address of the first active
+forwarder in the group.
+If no forwarder is active, proxy ARP responses are suppressed.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure GLBP priority</div>
+<div class="content">
+<pre>(config-if)# glbp [&lt;group&gt;] priority &lt;level=100&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure GLBP preemption</div>
+<div class="content">
+<pre>(config-if)# glbp [&lt;group&gt;] preempt [delay minimum &lt;seconds&gt;]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure GLBP load balancing</div>
+<div class="content">
+<pre>(config-if)# glbp &lt;group&gt; load-balancing [ &lt;host-dependent&gt; | &lt;round-robin&gt; | &lt;weighted&gt; ]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure the time during which the AVG continues to redirect clients to a secondary AVF</div>
+<div class="content">
+<pre>(config-if)# glbp &lt;group&gt; timers redirect &lt;redirect-seconds=60&gt; &lt;timeout-seconds=1440&gt;</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>The redirect timer sets the time delay between a forwarder failing on the
+network and the AVG assuming that the forwarder will not return. The virtual
+MAC address to which the forwarder was responsible for replying is still
+given out in Address Resolution Protocol (ARP) replies, but the forwarding
+task is handled by another router in the GLBP group.</p>
+</li>
+<li>
+<p>The timeout interval is the time delay between a forwarder failing on the
+network and the MAC address for which the forwarder was responsible becoming
+inactive on all of the routers in the GLBP group. After the timeout
+interval, packets sent to this virtual MAC address will be lost. The timeout
+interval must be long enough to allow all hosts to refresh their ARP cache
+entry that contained the virtual MAC address.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Task: Display glbp status</div>
+<div class="content">
+<pre># sh glbp
+
+FastEthernet0/0.40 - Group 1
+  State is Standby
+    1 state change, last state change 00:02:02
+  Virtual IP address is 172.16.26.100
+  Hello time 3 sec, hold time 10 sec
+    Next hello sent in 2.720 secs
+  Redirect time 600 sec, forwarder time-out 14400 sec
+  Preemption disabled
+  Active is 172.16.26.6, priority 100 (expires in 11.360 sec)
+  Standby is local
+  Priority 100 (default)
+  Weighting 100 (default 100), thresholds: lower 1, upper 100
+  Load balancing: round-robin
+  Group members:
+    ca02.6150.0000 (172.16.26.2) local
+    ca06.618c.0000 (172.16.26.6)
+  There are 2 forwarders (1 active)
+  Forwarder 1
+    State is Listen
+    MAC address is 0007.b400.0101 (learnt)
+    Owner ID is ca06.618c.0000
+    Time to live: 14399.840 sec (maximum 14400 sec)
+    Preemption enabled, min delay 30 sec
+    Active is 172.16.26.6 (primary), weighting 100 (expires in 10.944 sec)
+  Forwarder 2
+    State is Active
+      1 state change, last state change 00:02:08
+    MAC address is 0007.b400.0102 (default)
+    Owner ID is ca02.6150.0000
+    Preemption enabled, min delay 30 sec
+    Active is local, weighting 100</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_active_virtual_forwarder">33.2.3. Active Virtual Forwarder</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>primary AVF gets virtual MACs from AVG</p>
+</li>
+<li>
+<p>secondary AVF learns virtual MACs from hellos</p>
+</li>
+<li>
+<p>Virtual forwarder preemptive is enabled by default with 30 seconds delay</p>
+</li>
+<li>
+<p>uses weighting and object tracking to determine the forwarding capacity of each device in the GLBP group</p>
+<div class="ulist">
+<ul>
+<li>
+<p>decrement or increments the weight when the interface goes down or up</p>
+</li>
+<li>
+<p>stops being AVF if value below lower threshold</p>
+</li>
+<li>
+<p>resumes being AVF if value greater then upper threshold</p>
+</li>
+<li>
+<p>When multiple tracked interfaces are down, the configured weighting decrements are cumulative.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Specify GLBP initial weighting value</div>
+<div class="content">
+<pre>(config-if)# glbp &lt;group-number&gt; weighting &lt;maximum&gt; [lower &lt;low-value&gt; ] [upper &lt;up-value&gt;]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: specify a tracking object where GLBP weighting changes based on the availability of the object being tracked</div>
+<div class="content">
+<pre>(config-if)# glbp &lt;group&gt; weighting track &lt;object-number&gt; [decrement &lt;value&gt;]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: configure a router to take over as (AVF) group if the current AVF falls below its low weighting threshold</div>
+<div class="content">
+<pre>(config-if)# glbp &lt;group&gt; preempt forwarder [delay minimum &lt;seconds&gt;]</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_authentication_2">33.2.4. Authentication</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>supports no authentication, plain-text, or MD5 authentication</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: configure glbp authentication</div>
+<div class="content">
+<pre>(config-if)# glbp authentication { text &lt;string&gt; | key-chain &lt;name&gt; }</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_vrrp">33.3. VRRP</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">First Hop Redundancy Protocols</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html">VRRP</span></span> </a></p>
+</li>
+<li>
+<p><a href="https://wwwietf.org/rfc/rfc3768.txt">RFC 3768</a></p>
+</li>
+<li>
+<p>similar to HSRP</p>
+</li>
+<li>
+<p>multicast virtual MAC address (0000.5E00.01xx, where xx is the hex VRRP group number).</p>
+</li>
+<li>
+<p>Uses the IOS object tracking feature, rather than its own internal tracking mechanism, to track interface states for failover purposes.</p>
+</li>
+<li>
+<p>preemption by default</p>
+</li>
+<li>
+<p>the group IP address is the interface IP address of one of the VRRP routers.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_configuration_9">33.3.1. Configuration</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Similar than HSRP</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: enable VRRP</div>
+<div class="content">
+<pre>(config-if)# vrrp &lt;group&gt; []</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: verify VRRP configuration</div>
+<div class="content">
+<pre># sh vrrp</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: customize VRRP</div>
+<div class="content">
+<pre>conf t
+interface &lt;type number&gt;
+  ip address ip-address mask
+  vrrp &lt;group&gt; description text
+  vrrp &lt;group&gt; priority level
+  vrrp &lt;group&gt; preempt [delay minimum seconds]
+  vrrp &lt;group&gt; timers learn</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_idrp">33.4. IDRP</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">First Hop Redundancy Protocols</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html">IRDP</span></span> </a></p>
+</li>
+<li>
+<p><a href="http://www.ietf.org/rfc/rfc1256.txt">RFC 1256</a></p>
+</li>
+<li>
+<p>ICMP Router Discovery Protocol allows hosts to locate routers
+that can be used as gateway to reach IP-based devices on other networks.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_message_format">33.4.1. Message format</h4>
+<div class="sect4">
+<h5 id="_icmp_router_advertisement_message">ICMP Router Advertisement Message</h5>
+<div class="imageblock">
+<div class="content">
+<img src="../images/icmp-router-advertisement.png" alt="icmp router advertisement" width="896" height="248">
+</div>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Checksum
+</td>
+<td class="hdlist2">
+<p>The 16-bit one&#8217;s complement of the one&#8217;s complement sum of the ICMP message,
+starting with the ICMP Type.
+For computing the checksum, the Checksum field is set to 0.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Num Addrs
+</td>
+<td class="hdlist2">
+<p>Number of router addreses advertised in this message</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Addr Entry Size
+</td>
+<td class="hdlist2">
+<p>Number of 32-bit words of information per router address (=2 for IPv4)</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Lifetime
+</td>
+<td class="hdlist2">
+<p>Maximum number of seconds that the router adresses may be considered valid.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Router Address[i]
+</td>
+<td class="hdlist2">
+<p>Sending router&#8217;s addresses on the interface from which this message is sent.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Preference Level[i]
+</td>
+<td class="hdlist2">
+<p>Preferability of each Router Address[i] as a default router,
+relative to other router addresses on the same subnet. Higher values more preferable.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_icmp_router_solicitation_message">ICMP Router Solicitation Message</h5>
+<div class="imageblock">
+<div class="content">
+<img src="../images/icmp-router-sollicitation.png" alt="icmp router sollicitation" width="896" height="184">
+</div>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Checksum
+</td>
+<td class="hdlist2">
+<p>The 16-bit one&#8217;s complement of the one&#8217;s complement sum of the ICMP message,
+starting with the ICMP Type.
+For computing the checksum, the Checksum field is set to 0.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Reserved
+</td>
+<td class="hdlist2">
+<p>Sent as 0; ignored on reception.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_configuration_10">33.4.2. Configuration</h4>
+<div class="listingblock">
+<div class="title">Task: Configure a host to discover routers that transmit IRDP router updates after disabling IP routing</div>
+<div class="content">
+<pre>(config)# no ip routing
+(config-if)# ip gdp irdp [multicast]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Enable IRDP on an interface</div>
+<div class="content">
+<pre>(config-if)# ip irdp</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Send IRDP Advertisement to the all-systems multicast addresses</div>
+<div class="content">
+<pre>(config-if)# ip irdp multicast</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Set the IRDP period for which advertisements are valid.</div>
+<div class="content">
+<pre>(config-if)# ip irdp holdtime &lt;seconds&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Sets the IRDP maximum interval between advertisements.</div>
+<div class="content">
+<pre>ip irdp maxadvertinterval &lt;seconds&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Set the IRDP minimum interval between advertisements.</div>
+<div class="content">
+<pre>ip irdp minadvertinterval &lt;seconds&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Set the IRDP preference level of the device</div>
+<div class="content">
+<pre>(config-if)# ip irdp preference &lt;number&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Specify an IRDP address and preference to proxy-advertise</div>
+<div class="content">
+<pre>(config-if)# ip irdp address &lt;a.b.c.d&gt; &lt;preference-level&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ipv6_ra_rs">33.5. IPv6 RA/RS</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_multicast_2">34. Multicast</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_igmp">34.1. IGMP</h3>
 <div class="paragraph">
 <p><span class="menuseq"><span class="menu">Configuration guides</span>&#160;&#9656; <span class="submenu">Multicast</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipmulti_igmp/configuration/15-mt/imc-igmp-15-mt-book.htm">IGMP</span></span> </a></p>
 </div>
@@ -17012,7 +16431,7 @@ no logging console</pre>
 <a href="http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swigmp.html#pgfId-1027678">Catalyst configuration guides</a></p>
 </div>
 <div class="sect3">
-<h4 id="_concepts_10">20.1.1. Concepts</h4>
+<h4 id="_concepts_9">34.1.1. Concepts</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -17026,7 +16445,7 @@ existence of members on their directly connected networks and to allow them to s
 </div>
 </div>
 <div class="sect3">
-<h4 id="_messages">20.1.2. Messages</h4>
+<h4 id="_messages">34.1.2. Messages</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -17062,7 +16481,7 @@ existence of members on their directly connected networks and to allow them to s
 </div>
 </div>
 <div class="sect3">
-<h4 id="_default_igmp_configuration">20.1.3. Default IGMP configuration</h4>
+<h4 id="_default_igmp_configuration">34.1.3. Default IGMP configuration</h4>
 <table class="tableblock frame-none grid-rows spread">
 <colgroup>
 <col style="width: 54.5454%;">
@@ -17250,7 +16669,7 @@ hosts for the group on the subnet.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_join_the_club">20.1.4. Join the club</h4>
+<h4 id="_join_the_club">34.1.4. Join the club</h4>
 <div class="listingblock">
 <div class="title">Task: Join a specified group</div>
 <div class="content">
@@ -17297,7 +16716,7 @@ as evidenced by lack of an L (local) flag in the multicast route entry.
 </div>
 </div>
 <div class="sect3">
-<h4 id="_leave_process">20.1.5. Leave process</h4>
+<h4 id="_leave_process">34.1.5. Leave process</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -17353,7 +16772,7 @@ Can also be in global mode but not combined with the interface mode
 </div>
 </div>
 <div class="sect3">
-<h4 id="_igmp_message_restriction">20.1.6. IGMP message restriction</h4>
+<h4 id="_igmp_message_restriction">34.1.6. IGMP message restriction</h4>
 <div class="listingblock">
 <div class="title">Task: Restrict receivers on a subnet to join only certain multicast groups</div>
 <div class="content">
@@ -17368,13 +16787,13 @@ Can also be in global mode but not combined with the interface mode
 </div>
 </div>
 <div class="sect3">
-<h4 id="_igmp_proxy">20.1.7. IGMP proxy</h4>
+<h4 id="_igmp_proxy">34.1.7. IGMP proxy</h4>
 <div class="paragraph">
 <p>TODO</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_igmp_snooping">20.1.8. IGMP snooping</h4>
+<h4 id="_igmp_snooping">34.1.8. IGMP snooping</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -17396,7 +16815,7 @@ Can also be in global mode but not combined with the interface mode
 </ul>
 </div>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 9. Default IGMP snooping configuration</caption>
+<caption class="title">Table 10. Default IGMP snooping configuration</caption>
 <colgroup>
 <col style="width: 54.5454%;">
 <col style="width: 45.4546%;">
@@ -17646,7 +17065,7 @@ this flooding might exceed the capacity of the link and cause packet loss.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_mvr">20.1.9. MVR</h4>
+<h4 id="_mvr">34.1.9. MVR</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -17674,7 +17093,7 @@ this flooding might exceed the capacity of the link and cause packet loss.</p>
 </ul>
 </div>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 10. Default MVR configuration</caption>
+<caption class="title">Table 11. Default MVR configuration</caption>
 <colgroup>
 <col style="width: 66.6666%;">
 <col style="width: 33.3334%;">
@@ -17906,9 +17325,9 @@ is sent to all source ports on the switch and all interested receiver ports.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_igmp_filtering_and_throttling">20.1.10. IGMP filtering and throttling</h4>
+<h4 id="_igmp_filtering_and_throttling">34.1.10. IGMP filtering and throttling</h4>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 11. Default IGMP filtering configuration</caption>
+<caption class="title">Table 12. Default IGMP filtering configuration</caption>
 <colgroup>
 <col style="width: 66.6666%;">
 <col style="width: 33.3334%;">
@@ -17975,9 +17394,9 @@ is sent to all source ports on the switch and all interested receiver ports.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_pim">20.2. PIM</h3>
+<h3 id="_pim">34.2. PIM</h3>
 <div class="sect3">
-<h4 id="_understanding">20.2.1. Understanding</h4>
+<h4 id="_understanding">34.2.1. Understanding</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -18077,7 +17496,7 @@ group would be (194.1.1.1, 224.1.1.1).</p>
 <div class="content">
 <img src="../images/pim-shortest-path-tree.png" alt="pim shortest path tree">
 </div>
-<div class="title">Figure 33. Host A Shortest-Path Tree</div>
+<div class="title">Figure 30. Host A Shortest-Path Tree</div>
 </div>
 <div class="paragraph">
 <p>If Host B is also sending traffic to group 224.1.1.1 and Hosts A and C are
@@ -18137,7 +17556,7 @@ tree, the special notation (*, 224.2.2.2) describes this shared tree.</p>
 <div class="content">
 <img src="../images/pim-shared-distribution-tree.png" alt="pim shared distribution tree">
 </div>
-<div class="title">Figure 34. Shared Distribution Tree</div>
+<div class="title">Figure 31. Shared Distribution Tree</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -18180,7 +17599,7 @@ distribution to group members joined to the shared tree.</p>
 <div class="content">
 <img src="../images/pim-trees.png" alt="pim trees">
 </div>
-<div class="title">Figure 35. PIM trees</div>
+<div class="title">Figure 32. PIM trees</div>
 </div>
 <div class="paragraph">
 <p>If the data rate warrants, leaf routers (routers without any downstream
@@ -18392,7 +17811,7 @@ routing table to perform the RPF check.</p>
 <div class="content">
 <img src="../images/pim-rpf-check.png" alt="pim rpf check">
 </div>
-<div class="title">Figure 36. RPF Check</div>
+<div class="title">Figure 33. RPF Check</div>
 </div>
 <div class="paragraph">
 <p>PIM uses both source trees and RP-rooted shared trees to forward datagrams ; the RPF check is performed differently for each:</p>
@@ -18543,7 +17962,7 @@ BSR.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configuration_tasks_6">20.2.2. Configuration tasks</h4>
+<h4 id="_configuration_tasks_6">34.2.2. Configuration tasks</h4>
 <div class="sect4">
 <h5 id="_configure_basic_multicast_routing">Configure basic multicast routing</h5>
 <div class="paragraph">
@@ -18811,7 +18230,7 @@ receive PIMv2 BSR messages on this interface as shown in Figure <a href="#bsr-bo
 <div class="content">
 <img src="../images/pim-constraining-bsr-messages.png" alt="pim constraining bsr messages">
 </div>
-<div class="title">Figure 37. Constraining PIMv2 BSR Messages</div>
+<div class="title">Figure 34. Constraining PIMv2 BSR Messages</div>
 </div>
 </div>
 <div class="sect4">
@@ -18981,7 +18400,7 @@ tree. In this case, the DR is the device with the highest IP address.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_verify_4">Verify</h5>
+<h5 id="_verify_3">Verify</h5>
 <div class="paragraph">
 <p>Display information about interfaces configured for PIM.</p>
 </div>
@@ -19065,7 +18484,7 @@ tree. In this case, the DR is the device with the highest IP address.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_troubleshoot_3">20.2.3. Troubleshoot</h4>
+<h4 id="_troubleshoot_3">34.2.3. Troubleshoot</h4>
 <div class="paragraph">
 <p>When debugging interoperability problems between PIMv1 and PIMv2, check these
 in the order shown:</p>
@@ -19088,12 +18507,12 @@ register-stops and forwarding decapsulated data packets from registers).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_misc">20.2.4. Misc</h4>
+<h4 id="_misc">34.2.4. Misc</h4>
 <div class="paragraph">
 <p>TODO To be added in the text</p>
 </div>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 12. PIM type code</caption>
+<caption class="title">Table 13. PIM type code</caption>
 <colgroup>
 <col style="width: 10%;">
 <col style="width: 90%;">
@@ -19261,7 +18680,7 @@ networks.</p>
 <div class="content">
 <img src="../images/multicast-administratively-scoped-boundaries.png" alt="multicast administratively scoped boundaries">
 </div>
-<div class="title">Figure 38. Administratively-Scoped Boundaries</div>
+<div class="title">Figure 35. Administratively-Scoped Boundaries</div>
 </div>
 <div class="paragraph">
 <p>You can define an administratively-scoped boundary on a routed interface for
@@ -19287,11 +18706,595 @@ organizations. The addresses would be considered local, not globally unique.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_network_optimization">35. Network optimization</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ip_sla">35.1. IP SLA</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><span class="menuseq"><span class="menu">Configuration Guides</span>&#160;&#9656; <span class="submenu">Network Mgt</span>&#160;&#9656; <span class="menuitem"><a href="http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipsla/configuration/15-mt/sla-15-mt-book.html">IP SLA</span></span> </a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To implement IP SLAs network performance measurement,</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Enable the IP SLAs responder</p>
+</li>
+<li>
+<p>Configure the required IP SLAs operation type</p>
+</li>
+<li>
+<p>Configure any options available</p>
+</li>
+<li>
+<p>Configure threshold conditions</p>
+</li>
+<li>
+<p>Schedule the operation</p>
+</li>
+<li>
+<p>Run the operation for a period of time to gather statistics</p>
+</li>
+<li>
+<p>Display and interpret the results with Cisco CLI or NMS with SNMP</p>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="_ip_slas_operation_types">35.1.1. IP SLAs Operation types</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>ICMP echo, jitter, path echo , path jitter</p>
+</li>
+<li>
+<p>TCP connect</p>
+</li>
+<li>
+<p>UDP echo, jitter</p>
+</li>
+<li>
+<p>VoIP RTP, UDP jitter, gatekeeper registration delay, post-dial delay</p>
+</li>
+<li>
+<p>HTTP, FTP, DNS, DHCP</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure basic IP SLAs ICMP echo operation on the source device</div>
+<div class="content">
+<pre>(config)# ip sla &lt;operation-number&gt;
+(config-ip-sla)# icmp-echo {&lt;destination-ip-address&gt;| &lt;destination-hostname&gt;}
+                    [source-ip {&lt;src-ip&gt; | src-hostname} | source-interface &lt;interface-name&gt;]
+(config-ip-sla-echo)# frequency &lt;seconds&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ip_slas_responder">35.1.2. IP SLAs Responder</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>for Cisco device only</p>
+</li>
+<li>
+<p>listens on specific port for control protol messages send by IP SLA operation</p>
+</li>
+<li>
+<p>on receipt of the control, open specified TCP or UDP port for specified duration</p>
+</li>
+<li>
+<p>disables the port after reponding to the IP SLA packet or specified timeout</p>
+</li>
+<li>
+<p>may use MD5 authentication for control message</p>
+</li>
+<li>
+<p>takes two timestamps at the target devices to eliminate processing time</p>
+</li>
+<li>
+<p>can track one-way delay, jitter, and directional packet loss</p>
+</li>
+<li>
+<p>requires NTP synchronization except for one-way jitter measurement</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../images/ip-sla-responder-timestamps.png" alt="IP SLA Responder Time Stamping">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ip_slas_operation_scheduling">35.1.3. IP SLAs Operation scheduling</h4>
+<div class="listingblock">
+<div class="title">Task: schedule IP SLA operation</div>
+<div class="content">
+<pre>(config)# ip sla schedule &lt;operation-number&gt;
+                          [ life {forever} | &lt;seconds&gt; ]
+                          [start-time {now | pending | after &lt;hh:mm:ss&gt; | [&lt;hh:mm:ss&gt;]}] [month day | day month } ]
+                          [ageout &lt;seconds&gt;]
+                          [recurring]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Verify IP SLA configuration</div>
+<div class="content">
+<pre># sh ip sla configuration</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can create a multioperation group</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The frequency of all operations scheduled must be the same</p>
+</li>
+<li>
+<p>The list of operation ID numbers must be limited to a max of 125 chars including commas</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: schedule a group of IP SLA Operations</div>
+<div class="content">
+<pre>(config)# ip sla group schedule &lt;group-operation-number&gt; &lt;operation-id-numbers&gt;
+                          { schedule-period &lt;schedule-period-range | schedule-together }
+                          [ frequency &lt;group-operation-frequency&gt; ]
+                          [ life {forever} | &lt;seconds&gt; ]
+                          [start-time {now | pending| after &lt;hh:mm:ss&gt; | [&lt;hh:mm:ss&gt;]}] [month day | day month } ]
+                          [ageout &lt;seconds&gt;]
+                          [recurring]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Verify IP SLA multioperation configuration</div>
+<div class="content">
+<pre># sh ip sla group schedule</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ip_slas_operation_threshold_monitoring">35.1.4. IP SLAs Operation Threshold Monitoring</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>can send SNMP traps that are triggered by connection loss, timeout, round-trip time threshold,
+average jitter threshold, one-way packet loss, one-way jitter, one-way mean opinion score, one-way latency</p>
+</li>
+<li>
+<p>can trigger another IP SLA operation</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_mpls_vpn_awareness">35.1.5. MPLS VPN awareness</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>IP SLA operations can be configured for a specific VPN</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_history_statistics">35.1.6. History Statistics</h4>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Aggregated statistics
+</td>
+<td class="hdlist2">
+<p>By default, two hours of aggregated
+statistics for each operation. Value from each operation cycle is aggregated
+with the previously available data within a given hour.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Operation snapshot history
+</td>
+<td class="hdlist2">
+<p>snapshot of data for each
+operation instance that matches a configurable filter, such as all, over
+threshold, or failures. The entire dataset is available and no aggregation
+takes place.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Distribution statistics
+</td>
+<td class="hdlist2">
+<p>frequency distribution over
+configurable intervals. Each time IP SLAs starts an operation, a new history
+bucket is created until the number of history buckets matches the specified
+size or the lifetime of the operation expires. By default, the history for an
+IP SLAs operation is not collected. If history is collected, each bucket
+contains one or more history entries from the operation. History buckets do not
+wrap.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_troubleshooting_tips">35.1.7. Troubleshooting tips</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>If IP SLAs operation is not running and not generating stats,
+add the <strong>verify-data</strong> command in ip sla configuration mode</p>
+</li>
+<li>
+<p>Use <strong>debug ip sla trace</strong> and <strong>debug ip sla error</strong> commands</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_enhanced_object_tracking">35.2. Enhanced Object Tracking</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>separates definition of tracked object vs action to be taken when tracked object change</p>
+</li>
+<li>
+<p>tracked object can be: interface, ip route or ip sla operation or list of objects</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_interface_tracking">35.2.1. Interface Tracking</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>can be line protocol or ip route</p>
+</li>
+<li>
+<p>may consider the carrier delay timer</p>
+</li>
+<li>
+<p>may have a delay between the changes and the notification</p>
+</li>
+<li>
+<p>may change the polling frequency</p>
+</li>
+</ul>
+</div>
+<div class="sect4">
+<h5 id="_interface_line_protocol_tracking">Interface line protocol tracking</h5>
+<div class="listingblock">
+<div class="title">Task: Track the line protocol state of an interface</div>
+<div class="content">
+<pre>(config)# track &lt;object-number&gt; interface &lt;type number&gt; line protocol</pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_interface_ip_routing_tracking">Interface IP routing tracking</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>The IP routing State is up if</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ip routing is enable and active on the interface</p>
+</li>
+<li>
+<p>known  ip address ( static, dhcp , ppp/ipcp, unnumbered )</p>
+</li>
+<li>
+<p>interface line protocol up</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Track the IP routing state of an interface</div>
+<div class="content">
+<pre>(config)# track &lt;object-number&gt; interface &lt;type number&gt; ip routing</pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_eot_support_for_carrier_delay">EOT support for carrier delay</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>If a link fails, by default there is a two-second timer that must expire
+before an interface and the associated routes are declared as being down. If
+a link goes down and comes back up before the carrier delay timer expires,
+the down state is effectively filtered, and the rest of the software on the
+switch is not aware that a link-down event occurred. You can extend the
+timer up to 60 seconds.</p>
+</li>
+<li>
+<p>When EOT is configured on an interface, the tracking may detect the interface
+is down before a configured carrier-delay timer has expired. This is because
+EOT looks at the interface state and does not consider the carrier delay
+timer.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: (optional) Enables EOT to consider the carrier-delay timer when tracking the status of an interface.</div>
+<div class="content">
+<pre>(config-track)# carrier-delay</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: (Optional) Specifies a period of time (in seconds) to delay communicating state changes of a tracked object.</div>
+<div class="content">
+<pre>(config-track)# delay {up &lt;seconds&gt; [down &lt;seconds&gt;] | down &lt;seconds [up &lt;seconds&gt;]}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ip_route_tracking">35.2.2. IP route Tracking</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Up if the route exists in the RIB and the route is accessible</p>
+</li>
+<li>
+<p>polls the ip route state every 15 seconds</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Track an ip route</div>
+<div class="content">
+<pre>(config)# track &lt;object-number&gt; ip route &lt;a.b.c.d/prefix&gt; reachability</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task:(Optional) Specifies the interval in which the tracking process polls the tracked object.</div>
+<div class="content">
+<pre>(config)# track timer ip route { &lt;seconds&gt; | msec &lt;milliseconds&gt; }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>TODO: scaled metrics</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ip_sla_operation_tracking">35.2.3. IP SLA operation tracking</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>tracks the state or the reachability of IP SLA operations
+-</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Track the reachability of an IP SLA host</div>
+<div class="content">
+<pre>(config)# track &lt;object-number&gt; ip sla &lt;operation-number&gt; reachability</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre># show track 3
+Device# show track 3
+
+Track 3
+   IP SLA 1 reachability
+   Reachability is Up
+     1 change, last change 00:00:47
+   Latest operation return code: over threshold
+   Latest RTT (millisecs) 4
+   Tracked by:
+     HSRP Ethernet0/1 3</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_tracked_list">35.2.4. Tracked list</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>can be constructed with</p>
+<div class="ulist">
+<ul>
+<li>
+<p>boolean expression</p>
+</li>
+<li>
+<p>treshold and weight</p>
+</li>
+<li>
+<p>treshold and percentage</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure tracked list object with a boolean expression</div>
+<div class="content">
+<pre>(config)# track &lt;list-object-number&gt; list boolean {and | or}
+(config-track)# object &lt;object-number&gt; [not]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure tracked list object with threshold and weight</div>
+<div class="content">
+<pre>(config)# track &lt;list-object-number&gt; list treshold weight
+(config-track)# object &lt;object-number&gt; [weight &lt;number]
+(config-track)# object &lt;object-number&gt; [weight &lt;number]
+(config-track)# treshold weight {up &lt;number&gt; | down &lt;number&gt;| up &lt;number&gt; down &lt;number&gt;  }</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure tracked list object with threshold and percentage</div>
+<div class="content">
+<pre>(config)# track &lt;list-object-number&gt; list treshold percentage
+(config-track)# object &lt;object-number&gt;
+(config-track)# object &lt;object-number&gt;
+(config-track)# treshold percentage {up &lt;number&gt; | down &lt;number&gt;| up &lt;number&gt; down &lt;number&gt;  }</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure tracked list default</div>
+<div class="content">
+<pre>(config-track)# default { delay | object &lt;object-number&gt; | treshold percentage }</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_netflow">35.3. NetFlow</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Cisco IOS application</p>
+</li>
+<li>
+<p>provides statistics on packets flowing through the routing</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_netflow_flows">35.3.1. NetFlow flows</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>unidirectional stream of packets between a given source and destination</p>
+</li>
+<li>
+<p>combination of 7 fields: source/destination IP address/Port number, layer 3 protocol type, ToS, input logical interface</p>
+</li>
+<li>
+<p>can include accounting fields (such as AS number in v5)</p>
+</li>
+<li>
+<p>stored/captured in <strong>netflow cache</strong></p>
+</li>
+<li>
+<p>exported to the flow collector (NetFlow Collection Engine)</p>
+</li>
+<li>
+<p>prerequisites</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ip routing</p>
+</li>
+<li>
+<p>cef, dcef or fast switching</p>
+</li>
+<li>
+<p>enough CPU and memory</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>data capture</p>
+<div class="ulist">
+<ul>
+<li>
+<p>from ingress: ip-to-ip, ip-to-mpls, FR and ATM terminated packets</p>
+</li>
+<li>
+<p>for egress: ip-to-ip(with Netflow Accounting), mpls-to-ip (NetFlow MPLS Egress)</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_netflow_version">35.3.2. NetFlow version</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">v5</dt>
+<dt class="hdlist1">v9</dt>
+<dd>
+<p>-</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_netflow_capture">35.3.3. NetFlow Capture</h4>
+<div class="listingblock">
+<div class="title">Task: Enable NetFlow Capture</div>
+<div class="content">
+<pre>(config-if)# ip flow { ingress | egress }</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Verify that NetFlow is operational</div>
+<div class="content">
+<pre># sh ip cache [verbose] flow</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_netflow_data_export">35.3.4. NetFlow Data Export</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Send NetFlow cache entries to workstation running NetFlow Collection Engine</p>
+</li>
+<li>
+<p>supports only two export destinations</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Export NetFlow information to a workstation</div>
+<div class="content">
+<pre>(config)# ip flow-export destination {&lt;ip-address | hostname} &lt;udp-port&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: (optional) Use version 9 Export Format</div>
+<div class="content">
+<pre>(config)# ip flow-export version 9</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: verify that NetFlow data export is operational</div>
+<div class="content">
+<pre># sh ip flow export</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2016-07-26 12:38:01 SAST
+Last updated 2016-08-04 15:42:09 SAST
 </div>
 </div>
 <script type="text/x-mathjax-config">

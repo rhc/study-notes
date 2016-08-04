@@ -1,28 +1,93 @@
 = GLBP
 
-== Concepts
+menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/Configuring-GLBP.html[Gateway Load Balancing Protocol] ]
 
-AVG active virtual gateway
-AVF active virtual forwarder
-
+- one AVG (active virtual gateway) per group
+- up to 4 primary AVFs (active virtual forwarder) 
 
 - AVG responds to all ARP requests with MAC from all particapating AVF
   * Not with own MAC address like HSRP
 - load-balancing
   * round-robin (default)
+  * host-dependent
   * weigthed  
 
-- UDP port 3222
+- Multicast, 224.0.0.102, UDP port 3222
+- virtual MAC address 0007.B400.xxyy, where xx the group and yy in (00-03)
+
+== GLBP Packet Type
+
+[horizontal]
+Hello:: advertise protocol info, multicast, sent by any AVG or AVF in [Speak, Standby, Active] State
+Request:: request virtual MAC, unicast sent to AVG
+Reply:: get virtual MAC, unicast sent from AVG
+
+== Active Virtual Gateway
+
+- elected for each group max( priority, IP address )
+- assigns up to 4 virtual MAC address to AVFs
+- reponds to ARP request for the virtual IP address of the group
+- if failed, new AVG election from AVG in listen State
+- by default, no AVG preemption
+- load balancing methods
+* round-robin: by default, each AVF in turn is used for ARP
+* host-dependent: use same AVF based on the host MAC
+* weighted: use the weight value advertised by the gateway
+
+.Task: Configure GLBP virtual ip address
+----
+(config-if)# glbp <group:0..1023 > ip [<virtual-ip-address> [secondary]] 
+----
+
+NOTE: When the glbp ip command is enabled on an interface, 
+the handling of proxy ARP requests is changed 
+(unless proxy ARP was disabled). 
+the AVG intercepts the ARP requests and replies to the ARP on behalf of the connected nodes. 
+If a forwarder in the GLBP group is active, proxy ARP requests are answered using the MAC address of the first active
+forwarder in the group. 
+If no forwarder is active, proxy ARP responses are suppressed. 
+
+
+.Task: Configure GLBP priority
+----
+(config-if)# glbp [<group>] priority <level=100>
+----
+
+.Task: Configure GLBP preemption
+----
+(config-if)# glbp [<group>] preempt [delay minimum <seconds>]
+----
+
+.Task: Configure GLBP load balancing
+----
+(config-if)# glbp <group> load-balancing [ <host-dependent> | <round-robin> | <weighted> ] 
+----
 
 
 
-!! GLBP configuration
-int f0/0.40
-  glbp 1 ip 172.16.26.100
-  glbp 1 authentication md5 key-string test
+.Task: Configure the time during which the AVG continues to redirect clients to a secondary AVF
+----
+(config-if)# glbp <group> timers redirect <redirect-seconds=60> <timeout-seconds=1440>
+----
+[NOTE]
+====
 
+- The redirect timer sets the time delay between a forwarder failing on the
+  network and the AVG assuming that the forwarder will not return. The virtual
+  MAC address to which the forwarder was responsible for replying is still
+  given out in Address Resolution Protocol (ARP) replies, but the forwarding
+  task is handled by another router in the GLBP group.  
 
-.Task: Description
+-  The timeout interval is the time delay between a forwarder failing on the
+   network and the MAC address for which the forwarder was responsible becoming
+   inactive on all of the routers in the GLBP group. After the timeout
+   interval, packets sent to this virtual MAC address will be lost. The timeout
+   interval must be long enough to allow all hosts to refresh their ARP cache
+   entry that contained the virtual MAC address. 
+ 
+====
+
+.Task: Display glbp status
 ----
 # sh glbp
 
@@ -57,5 +122,49 @@ FastEthernet0/0.40 - Group 1
     Owner ID is ca02.6150.0000
     Preemption enabled, min delay 30 sec
     Active is local, weighting 100
+----
+
+== Active Virtual Forwarder
+
+- primary AVF gets virtual MACs from AVG
+- secondary AVF learns virtual MACs from hellos
+- Virtual forwarder preemptive is enabled by default with 30 seconds delay
+- uses weighting and object tracking to determine the forwarding capacity of each device in the GLBP group
+* decrement or increments the weight when the interface goes down or up 
+* stops being AVF if value below lower threshold
+* resumes being AVF if value greater then upper threshold
+* When multiple tracked interfaces are down, the configured weighting decrements are cumulative. 
+
+
+.Task: Specify GLBP initial weighting value 
+----
+(config-if)# glbp <group-number> weighting <maximum> [lower <low-value> ] [upper <up-value>]
+----
+
+.Task: specify a tracking object where GLBP weighting changes based on the availability of the object being tracked
+----
+(config-if)# glbp <group> weighting track <object-number> [decrement <value>]
+----
+
+.Task: configure a router to take over as (AVF) group if the current AVF falls below its low weighting threshold
+----
+(config-if)# glbp <group> preempt forwarder [delay minimum <seconds>]
+----
+
+
+
+
+
+
+
+
+== Authentication 
+
+- supports no authentication, plain-text, or MD5 authentication
+
+
+.Task: configure glbp authentication
+----
+(config-if)# glbp authentication { text <string> | key-chain <name> }
 ----
 

@@ -1,0 +1,62 @@
+= NetFlow
+
+- Cisco IOS application
+- provides statistics on packets flowing through the routing
+
+
+== NetFlow flows
+
+- unidirectional stream of packets between a given source and destination
+- combination of 7 fields: source/destination IP address/Port number, layer 3 protocol type, ToS, input logical interface
+- can include accounting fields (such as AS number in v5)
+- stored/captured in *netflow cache*
+- exported to the flow collector (NetFlow Collection Engine) 
+- prerequisites
+* ip routing 
+* cef, dcef or fast switching
+* enough CPU and memory
+- data capture 
+* from ingress: ip-to-ip, ip-to-mpls, FR and ATM terminated packets
+* for egress: ip-to-ip(with Netflow Accounting), mpls-to-ip (NetFlow MPLS Egress)
+
+== NetFlow version
+
+v5::
+
+v9::
+- 
+
+== NetFlow Capture
+
+.Task: Enable NetFlow Capture
+----
+(config-if)# ip flow { ingress | egress }
+----
+
+.Task: Verify that NetFlow is operational
+----
+# sh ip cache [verbose] flow
+----
+
+
+== NetFlow Data Export 
+
+- Send NetFlow cache entries to workstation running NetFlow Collection Engine
+- supports only two export destinations
+
+.Task: Export NetFlow information to a workstation
+----
+(config)# ip flow-export destination {<ip-address | hostname} <udp-port>
+----
+
+.Task: (optional) Use version 9 Export Format
+----
+(config)# ip flow-export version 9
+----
+
+.Task: verify that NetFlow data export is operational
+----
+# sh ip flow export
+----
+
+

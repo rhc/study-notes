@@ -4,21 +4,19 @@
 
 menu:Configuration guides[Network Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/snmp/configuration/15-mt/snmp-15-mt-book/nm-snmp-cfg-snmp-support.html[configuring SNMP support] ]
 
-== Overview
-
 //TODO start here with the pictures
 
 - Application-layer protocol between SNMP managers and agents 
 ** SNMP manager running NMS software:i UDP port 162 open for traps/informs messages
 ** SNMP managed devices running SNMP agent: UDP 161 open for GET/SET messages  
 
-=== Version 
+== Version 
 
 v1:: original specs, weak authentication with community string  
 v2c:: 64-bit counters, getBulkRequest, informsRequest 
 v3:: authentication, encryption
 
-=== MIB
+== MIB
 
 MIB: dictionaries of OID
 
@@ -28,7 +26,7 @@ OID: hierarchical identifiers in numerical format that represent MIB variables.
 )
 
 
-=== Packet format
+== Packet format
 
 .SNMP header format
 ["packetdiag", target="snmp-header"]
@@ -48,7 +46,7 @@ diagram {
 }
 ----
 
-==== SNMP PDU Types
+=== SNMP PDU Types
 
 . SetRequest
 . GetRequest
@@ -176,10 +174,8 @@ diagram {
 (config)# snmp-server tftp-server-list <acl>
 ----
 
-
 .Task: Disable SNMP agent
 ----
 (config)# no snmp-server
 ----
-
 

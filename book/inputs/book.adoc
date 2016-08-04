@@ -51,7 +51,6 @@ include::pagp.adoc[leveloffset=+2]
 include::span.adoc[leveloffset=+1]
 
 
-
 == WAN
 include::hdlc.adoc[leveloffset=+2]
 include::ppp.adoc[leveloffset=+2]
@@ -90,14 +89,51 @@ include::ipsec.adoc[leveloffset=+1]
 
 == Device security
 
-include::snmp.adoc[leveloffset=+2]
+include::aaa.adoc[leveloffset=+2]
+
+- implement device access control
+** lines
+** password encryption
+** management plane protection
+** control plane protection
 
 == Network security
 
+
 === Switch security
+
+include::acl.adoc[leveloffset=+2]
+
+- sourcecontrol
+- dhcp snooping
+- ip source-guard
+- dynamic arp inspection
+- port-security
+
 
 
 === Router security
+
+- ipv4 access list 
+- ipv6 traffic filter
+- unicast reverse path forwarding
+
+- ipv6 first hop security
+** ra guard
+** dhcp guard
+** binding table
+** device tracking
+** ND inspection/snooping
+** source guard
+** PACL
+
+include::802.1x.adoc[leveloffset=+1]
+
+
+
+
+
+
 
 
 <<< 
@@ -105,21 +141,37 @@ include::snmp.adoc[leveloffset=+2]
 
 == System management 
 
+include::telnet.adoc[leveloffset=+2]
+include::ssh.adoc[leveloffset=+2]
+include::scp.adoc[leveloffset=+2]
+include::tftp.adoc[leveloffset=+2]
+include::snmp.adoc[leveloffset=+2]
+include::syslog.adoc[leveloffset=+2]
+include::ntp.adoc[leveloffset=+2]
+
 == QoS
 
-== Network services
+include::mqc.adoc[leveloffset=+2]
+include::rsvp.adoc[leveloffset=+2]
+
+
+== First Host Redundancy Protocols
 
 include::hsrp.adoc[leveloffset=+2]
 include::glbp.adoc[leveloffset=+2]
 include::vrrp.adoc[leveloffset=+2]
 include::irdp.adoc[leveloffset=+2]
-include::ntp.adoc[leveloffset=+2]
-include::dhcp.adoc[leveloffset=+2]
-include::nat.adoc[leveloffset=+2]
+include::ipv6-rs-ra.adoc[leveloffset=+2]
+
 
 == Multicast
 
 include::igmp.adoc[leveloffset=+2]
 include::pim.adoc[leveloffset=+2]
 
-// == Network optimization
+== Network optimization
+
+include::ip-sla.adoc[leveloffset=+2]
+include::eot.adoc[leveloffset=+2]
+include::netflow.adoc[leveloffset=+2]
+
