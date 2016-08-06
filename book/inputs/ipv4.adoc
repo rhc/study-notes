@@ -1,6 +1,5 @@
 = IPv4
 
-
 - RFC 791
 - IP Ethernet protocol: 0x0800
 
@@ -32,8 +31,9 @@ diagram {
 }
 ----
 
+[horizontal]
 IP Header Length (IHL)::
-Indicates the datagram header length in 32-bit words.
+datagram header length in 32-bit words.
 
 Type-of-Service::
 Specifies how an upper-layer protocol would like a current datagram to be handled, and assigns datagrams various levels of importance.
@@ -149,7 +149,6 @@ show ip route connected
 - Conserve IP address space
 - Since RFC 3021
 - only on point-to-point WAN interfaces
-
 
 .Task: Use a 31-bit prefix on point-to-point WAN interfaces
 ----

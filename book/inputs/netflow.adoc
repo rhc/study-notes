@@ -19,15 +19,6 @@
 * from ingress: ip-to-ip, ip-to-mpls, FR and ATM terminated packets
 * for egress: ip-to-ip(with Netflow Accounting), mpls-to-ip (NetFlow MPLS Egress)
 
-== NetFlow version
-
-v5::
-
-v9::
-- 
-
-== NetFlow Capture
-
 .Task: Enable NetFlow Capture
 ----
 (config-if)# ip flow { ingress | egress }
@@ -36,6 +27,133 @@ v9::
 .Task: Verify that NetFlow is operational
 ----
 # sh ip cache [verbose] flow
+----
+
+== NetFlow version
+
+[horizontal]
+v5:: 
+-
+- 
+v9::
+- flexible and extensible 
+- template based
+- uses 2 flow record type: template flowset, and data flowset
+
+
+- v5 and v9 use the same packet structure
+
+["graphviz", target= 'netflow-packet']
+----
+digraph g {
+  node [shape = record,height=.1];
+  node0[label = "IP Header | UDP Header | NetFlow Header | Flow Record | Flow Record | .. | Flow Record"];
+}
+----
+
+=== Version 5
+
+.NetFlow header format  
+["packetdiag", target="netflow-header-v5",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Version=5 [len=16]
+  * Count [len=16]
+  * System Uptime [len=32]
+  * Unix seconds [len=32]
+  * Unix nanoseconds [len=32]
+  * Flow Sequence Number [len=32]
+  * Engine  Type [len=8]
+  * Engine  ID [len=8]
+  * Reserved [len=16]
+  * n x Flow Records [len=32, color=green, stacked]
+}
+----
+
+.Flow Record format 
+["packetdiag", target="flow-record-v5",size=50]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Source IP [len=32, color=orange]
+  * Destination IP [len=32, color=orange]
+  * Next Hop [len=32]
+  * Input Interface SNMP index [len=16, color=orange]
+  * Output Interface SNMP index [len=16]
+  * dPkts [len=16]
+  * dOctets [len=16]
+  * First System Uptime [len=16]
+  * Last System Uptime [len=16]
+  * Unix nanoseconds [len=32]
+  * Src port [len=8, color=orange]
+  * Dst port [len=8, color=orange]
+  * Padding 1 [len=4]
+  * TCP flags [len=4]
+  * Protocol L4  [len=4]
+  * ToS [len=4, color=orange]
+  * Src AS [len=8]
+  * Dst AS [len=8]
+  * Src mask [len=4]
+  * Dst mask [len=4]
+  * Padding 2 [len=8]
+}
+----
+
+=== Version 9
+
+.NetFlow header format  
+["packetdiag", target="netflow-header-v9",size=100]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Version=9 [len=16]
+  * Count [len=16]
+  * System Uptime [len=32]
+  * Unix seconds [len=32]
+  * Package Sequence [len=32]
+  * Source ID [len=32]
+  * n x Flow Records [len=32, color=green, stacked]
+}
+----
+
+
+== NetFlow Cache
+
+- contains flow record for all active flows.
+- up to 64K flow entries, each cache entry requires 64 bytes  
+- removes flows if
+  * flow transport is completed (TCP  FIN or RST )
+  * flow cache full
+  * flow becomes inactive after 15 seconds
+  * flow active for more than 30 minutes
+
+
+.Task: Configure the size of the NetFlow cache
+----
+(config)# ip flow-cache entries <size=64000>
+----
+
+.Task: Configure the flow cache timeout for inactive flow
+----
+(config)# ip flow-cache timeout inactive <seconds=15>
+----
+
+.Task: Configure the flow cache timeout for active flows
+----
+(config)# ip flow-cache timeout active <minutes=30>
 ----
 
 
@@ -47,6 +165,11 @@ v9::
 .Task: Export NetFlow information to a workstation
 ----
 (config)# ip flow-export destination {<ip-address | hostname} <udp-port>
+----
+
+.Task: (optional) Use version 5 Export Format
+----
+(config)# ip flow-export version 5
 ----
 
 .Task: (optional) Use version 9 Export Format

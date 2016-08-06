@@ -1,6 +1,5 @@
 = Normal and Extended VLANs
 
-== concepts
 
 - administratively defined subset of switch ports that are in the same broadcast domain
 - best practice: one VLAN, one IP subnet
@@ -9,10 +8,9 @@
 - can span multiple physical switches over "trunks"
 
 
-=== VLAN numbering
+== VLAN numbering
 
 - VLAN ID = 12 bits 
-
 
 Reserved [0, 4095] ::
 
@@ -32,7 +30,7 @@ Extended-range [1006-4094] ::
 ** configured only in VTP transparent mode
 ** stored only in the running configuration
 
-=== VLAN Trunks
+== VLAN Trunks
 
 - trunk: point-to-point links for multiple VLANs between devices
 - trunking add ISL or 802.1q headers to include VLAN id.
@@ -40,11 +38,7 @@ Extended-range [1006-4094] ::
   * 802.1q: IEEE standard, 4-byte tag except for native VLAN, modifies original frame
 
 
-
-
-== Configuration tasks
-
-=== Basic configuration
+== Basic configuration
 
 Configuring VLANs requires few steps:
 

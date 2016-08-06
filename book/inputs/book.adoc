@@ -28,7 +28,7 @@ include::cdp.adoc[leveloffset=+2]
 include::lldp.adoc[leveloffset=+2]
 include::udld.adoc[leveloffset=+2]
 
-== VLAN
+== VLANs and Trunking
 
 include::vlan.adoc[leveloffset=+2]
 include::voice-vlan.adoc[leveloffset=+2]
@@ -174,4 +174,12 @@ include::pim.adoc[leveloffset=+2]
 include::ip-sla.adoc[leveloffset=+2]
 include::eot.adoc[leveloffset=+2]
 include::netflow.adoc[leveloffset=+2]
+
+<<< 
+= Part VI : Evolving Technologies
+
+include::cloud.adoc[leveloffset=+1]
+include::sdn.adoc[leveloffset=+1]
+include::iot.adoc[leveloffset=+1]
+
 
