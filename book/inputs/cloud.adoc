@@ -1,1 +1,104 @@
 = cloud
+
+IT resources and sces that are abstracted from the underlying infrastructure
+and provided *on-demand* and *at scale* in a *multitenant* environment.
+
+
+== Compare and contrast Cloud deployment models
+
+- Public
+- Private
+- virtual Private
+- inter-cloud
+
+=== Infrastructure, platform, and software services [XaaS]
+
+- SaaS : Application sces 
+- PaaS: run-time environment and software development frameworks and components  presented as API
+- IaaS: compute, network and storage 
+- IT foundation: basic building blocks, core technologies 
+
+
+=== Performance and reliability
+
+add comparisons table here 
+
+=== Security and privacy
+
+add comparison table here
+
+=== Scalability and interoperability
+
+add comparison table here
+
+== Describe Cloud implementations and operations
+
+How to connect to the cloud
+
+- Private WAN (like MPLS L3VPN)
+- Internet Exchange Point (IXP)
+- Internet VPN
+
+
+
+=== Automation and orchestration
+
+Automation: single task
+Orchestration: process/workflow ordered set of tasks glued together with conditions
+
+
+=== Workload mobility
+
+- share workloads accross a collection of resources
+- different from VM mobility
+
+
+=== Troubleshooting and management
+
+- Scripting languages: Python, Ruby, 
+
+
+- NETCONF 
+* transport protocol by which configurations are installed and changed
+* RFC 6241 
+
+- YANG
+* modeling language used represent device configuration and state (~ XML)
+* RFC 6020
+
+
+
+
+=== OpenStack components
+
+TODO: change this to a table
+
+[horizontal]
+Compute (Nova):: Fabric controller (the main part of an IaaS system). Manages pools of computer resources. A compute resource could be a VM, container, or bare metal server. Side note: Containers are similar to VMs except they share a kernel. They are otherwise independent, like VMs, and are considered a lighter-weight yet secure alternative to VMs.
+Networking (Neutron):: Manages networks and IP addresses. Ensures the network is not a bottleneck or otherwise limiting factor in a production environment. This is technology-agnostic network abstraction which allows the user to create custom virtual networks, topologies, etc. For example, virtual network creation includes adding a subnet, gateway address, DNS, etc.
+Block Storage (Cinder):: Manages creation, attaching, and detaching of block storage devices to servers. This is not an implementation of storage itself, but provides as API to access that storage. Many storage appliance vendors often have a Cinder plug-in for OpenStack integration; this ultimately abstracts the vendor-specific user interfaces from the management process. Storage volumes can be detached and moved between instances (an interesting form of file transfer, file example) to share information and migrate data between projects.
+Identity (Keystone):: Directory service contains users mapped to services they can access. Somewhat similar to group policies applied in corporate deployments. Tenants are stored here which allows them to access resources/services within OpenStack; commonly this is access to the OpenStack Dashboard (Horizon) to manage an OpenStack environment.
+Image (Glance):: Provides discovery, registration, and delivery services. These images are like ordinary images to template new virtual services.
+Object Storage (Swift):: Storage system with built-in data replication and integrity. Objects and files are written to disk using this interface which manages the I/O details. Scalable and resilient storage for all objects like files, photos, etc. This means the customer doesn’t have to deploy a block-storage solution themselves, then manage the storage protocols (iSCSI, NFS, etc).
+Dashboard (Horizon):: The GUI for administrators and users to access, provision, and automate resources. The dashboard is based on Python Django framework and is layered on top of service APIs. Logging in relies on Keystone for identity management which secures access to the GUI. The dashboard supports different tenants (business units, groups/teams, customers, etc) with separate permissions and credentials; this is effectively role-based access control. The GUI provides the most basic/common functionality for users without needing CLI access, which is supported for advanced functions. “Security group” abstractions to enforce access control (often need to configure this before being able to access the new instances).
+Orchestration (Heat):: Service to orchestrate multiple cloud applications via templates using a variety of APIs.
+Workflow (Mistral):: Manages user-created workflows which can be triggered manually or by some event.
+Telemetry (Ceilometer):: Provides a Single Point of Contact for billing systems used within the cloud environment.
+Database (Trove):: This is a Database-as-a-service provisioning engine.
+Elastic Map Reduce (Sahara):: Automated way to provision Hadoop clusters, like a wizard.
+Bare Metal (Ironic):: Provisions bare metal machines rather than virtual machines.
+Messaging (Zaqar):: Cloud messaging service for Web Developments (full RESTful API) used to communicate between SaaS and mobile applications.
+Shared File System (Manila):: Provides an API to manage shares in a vendor agnostic fashion (create, delete, grant/deny access, etc).
+DNS (Designate):: Multi-tenant REST API for managing DNS (DNS-as-a-service).
+Search (Searchlight):: Provides search capabilities across various cloud services and is being integrated into the Dashboard.
+Key Manager (Barbican):: Provides secure storage, provisioning, and management of secrets (passwords).
+
+=== Resources and References
+
+- http://www.cisco.com/c/dam/en_us/solutions/industries/docs/gov/CiscoCloudComputing_WP.pdf
+- https://en.wikipedia.org/wiki/OpenStack#Components[Open Stack Components] 
+- http://www.cisco.com/c/en/us/solutions/cloud/overview.html[Cloud Overview]
+- http://www.unleashingit.com/
+- http://www.cisco.com/go/cloud
+- https://www.openstack.org/software/
+- http://getcloudify.org/2014/07/18/openstack-wiki-open-cloud.html[Designing Networks and Services for the Cloud]

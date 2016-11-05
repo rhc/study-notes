@@ -1,0 +1,25 @@
+= SDN
+
+== Describe functional elements of network programmability  and how they interact
+
+SDN: network programmability
+
+- distributed
+- augmented
+- hybrid
+- centralized
+
+=== Controllers
+
+- responsible for programming forwarding tables of data-plane devices
+
+=== APIs
+=== Scripting
+=== Agents
+=== Northbound vs. Southbound protocols
+== Describe aspects of virtualization and automation in network environments
+=== DevOps methodologies, tools and workflows
+=== Network/application function virtualization [NFV, AFV]
+=== Service function chaining
+=== Performance, availability, and scaling considerations
+

@@ -1,4 +1,4 @@
-= CCIE Routing and Switching study notes 
+= CCIE Routing and Switching study notes
 Christian Kyony <ckyony@changamuka.com>
 v1.0, 2015-10-12
 :doctype: book
@@ -49,6 +49,7 @@ include::lacp.adoc[leveloffset=+2]
 include::pagp.adoc[leveloffset=+2]
 
 include::span.adoc[leveloffset=+1]
+include::vss.adoc[leveloffset=+1]
 
 
 == WAN
@@ -62,13 +63,18 @@ include::ppp.adoc[leveloffset=+2]
 == IP addressing
 
 include::ipv4.adoc[leveloffset=+2]
-include::arp.adoc[leveloffset=+2] 
+include::arp.adoc[leveloffset=+2]
 include::dhcp.adoc[leveloffset=+2]
 include::nat.adoc[leveloffset=+2]
 include::nhrp.adoc[leveloffset=+2]
 include::ipv6.adoc[leveloffset=+2]
 
-== IP routing 
+== IP Switching
+
+include::cef.adoc[leveloffset=+2]
+
+
+== IP routing
 
 include::rip.adoc[leveloffset=+2]
 include::eigrp.adoc[leveloffset=+2]
@@ -114,7 +120,7 @@ include::acl.adoc[leveloffset=+2]
 
 === Router security
 
-- ipv4 access list 
+- ipv4 access list
 - ipv6 traffic filter
 - unicast reverse path forwarding
 
@@ -131,15 +137,10 @@ include::802.1x.adoc[leveloffset=+1]
 
 
 
-
-
-
-
-
-<<< 
+<<<
 = Part V : Infrastructure Services
 
-== System management 
+== System management
 
 include::telnet.adoc[leveloffset=+2]
 include::ssh.adoc[leveloffset=+2]
@@ -175,7 +176,7 @@ include::ip-sla.adoc[leveloffset=+2]
 include::eot.adoc[leveloffset=+2]
 include::netflow.adoc[leveloffset=+2]
 
-<<< 
+<<<
 = Part VI : Evolving Technologies
 
 include::cloud.adoc[leveloffset=+1]

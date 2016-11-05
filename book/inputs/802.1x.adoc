@@ -1,10 +1,21 @@
-= IEEE 802.1X 
+= IEEE 802.1X
 
 // describe 802.1x
 // 802.1x, eap, radius
 // mac authentication bypass
 
 == Definition
+
+- Port-based authentication
+
+- until the client is authenticated,
+ allows only EAPoL (Extensible Authentication Protocol over LAN), CDP and STP traffic
+
+
+- supplicant: client workstation running 802.1x compliant software
+- authenticator: edge switch or wireless access point
+- authentication server: performs the actual authentication (Radius with EAP)
+
 
 
 

@@ -1,206 +1,20 @@
 = SPAN , RSPAN and ERSPAN
 
-- SPAN (Switch Port Analyzer) mirrors monitored (TX,RX or Both) traffic  on 
-source ports or VLANs 
-to a destination port for analysis.
+- SPAN (Switch Port Analyzer) mirrors monitored (TX,RX or Both) traffic
+on source ports or VLANs to a destination port for analysis.
+
 
 == Local SPAN sessions
 
 - Source and destination on the same switch
-
-=== Source 
-
-- can not mix source ports and source VLANs in a single session
-- monitored traffic directions can be  
-** Rx :  before any modification or processing by ACL or QoS or VACL
-** Tx : after all modification and processing performed by the switch. 
-** Both: by default
-
-.Task: configure  span source ports/VLANs 
-----
-monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | tx]
-----
-[NOTE]
-====
-- (Optional) [, | -] Specify a series or range of interfaces. Enter a space before and after the comma; enter a space before and after the hyphen.
-- A single session can include multiple sources (ports or VLANs), defined in a series of commands, but you cannot combine source ports and source VLANs in one session.
-====
-
-==== Source ports 
-
-- Valid interfaces include physical interfaces and port-channel logical interfaces. Valid port-channel numbers are 1 to 48.
-- can be port-channel logical interfaces with port-channel numbers in (1..48)
-- can be an access port, trunk port, routed port, or voice VLAN port.
-- cannot be a destination port
-
-==== Source VLANs
-
-- All active ports in the source VLAN are included as source ports and can be monitored in either or both directions.
-- On a given port, only traffic on the monitored VLAN is sent to the destination port.
-- If a destination port belongs to a source VLAN, it is excluded from the source list and is not monitored.
-- If ports are added to or removed from the source VLANs, the traffic on the source VLAN received by those ports is added to or removed from the sources being monitored.
-- You cannot use filter VLANs in the same session with VLAN sources.
-- You can monitor only Ethernet VLANs. 
-
-=== destination port
-
-- must be a physical port
-- cannot be a source port 
-- by default, send packets untagged
-** can replicate the source interface encapsulation  
-- by default, disable the ingress traffic forwarding
-** can accept incoming packets with dot1q, isl or untagged
-
-- only on SPAN/RSPAN session can send traffic to a single destination port, cannot be used by two SPAN sessions
-- only monitored traffic passes through the SPAN destination port 
-
-- Entering SPAN configuration commands does not remove previously configured SPAN parameters. You must enter the no monitor session {session_number | all | local | remote} global configuration command to delete configured SPAN parameters.
-- For local SPAN, outgoing packets through the SPAN destination port carry the original encapsulation headers—untagged, ISL, or IEEE 802.1Q—if the encapsulation replicate keywords are specified. If the keywords are not specified, the packets are sent in native form. For RSPAN destination ports, outgoing packets are not tagged.
-- You can configure a disabled port to be a source or destination port, but the SPAN function does not start until the destination port and at least one source port or source VLAN are enabled.
-- You can limit SPAN traffic to specific VLANs by using the filter vlan keyword. If a trunk port is being monitored, only traffic on the VLANs specified with this keyword is monitored. By default, all VLANs are monitored on a trunk port.
-- You cannot mix source VLANs and filter VLANs within a single SPAN session.
-
-.Task: Configure the destination port for a SPAN session
-----
-(config)# monitor <session-number> destination interface <interface-id> 
-                                   [encapsulation replicate]
-                                   [ingress {dot1q vlan <vlan-id> | isl | untagged vlan <vlan-id>} ]
-----
-
-=== VLAN Filtering
-
-- To limit SPAN traffic monitoring on trunk source ports to specific VLANs by using VLAN filtering.
-
-- applies only to trunk ports or to voice VLAN ports.
-- applies only to port-based sessions 
-- not  allowed in sessions with VLAN sources.
-- When a VLAN filter list is specified, only those VLANs in the list are monitored on trunk ports or on voice VLAN access ports.
-- SPAN traffic coming from other port types is not affected by VLAN filtering; that is, all VLANs are allowed on other ports.
-- VLAN filtering affects only traffic forwarded to the destination SPAN port and does not affect the switching of normal traffic. 
-
-.Task: Limit SPAN source to specific VLANs
-----
-(config)# monitor <session-number> filter vlan <vlan-ids>
-----
-
-== Remote SPAN sessions
-
-RSPAN consists of at least one RSPAN source session, an RSPAN VLAN, and at least one RSPAN destination session. 
-
-.Restrictions  and considerations
-- When RSPAN is enabled, each packet being monitored is transmitted twice, once
-  as normal traffic and once as a monitored packet. Therefore monitoring a
-  large number of ports or VLANs could potentially generate large amounts of
-  network traffic.
-
-=== RSPAN VLAN
-
-- Can be propagated to all switches by VTP if RSPAN VLAN < 1005
-- must be created manually on extended-range VLAN  
-- can not be vlan 1, 1002-1005
-- can served multiple rspan source/destination sessions 
-
-.Restrictions
-- You can apply an output ACL to RSPAN traffic to selectively filter or monitor specific packets. Specify these ACLs on the RSPAN VLAN in the RSPAN source switches.
-- For RSPAN configuration, you can distribute the source ports and the destination ports across multiple switches in your network.
-- RSPAN does not support BPDU packet monitoring or other Layer 2 switch protocols.
-- The RSPAN VLAN is configured only on trunk ports and not on access ports. To avoid unwanted traffic in RSPAN VLANs, make sure that the VLAN remote-span feature is supported in all the participating switches.
-- Access ports (including voice VLAN ports) on the RSPAN VLAN are put in the inactive state.
-- RSPAN VLANs are included as sources for port-based RSPAN sessions when source trunk ports have active RSPAN VLANs. RSPAN VLANs can also be sources in SPAN sessions. However, since the switch does not monitor spanned traffic, it does not support egress spanning of packets on any RSPAN VLAN identified as the destination of an RSPAN source session on the switch.
-
-.Task: Configure RSPAN VLAN on all participating switches 
-----
-(config)# vlan <rspan-vlan-id>
-(config-vlan)# remote-span 
-----
-
-=== RSPAN source session
-
-- Must be configured on the monitored port's switch
-
-.Task: Configure the RSPAN source session 
-----
-monitor session <session-number> source {interface interface-id | vlan vlan-id} [, | -] [both | rx | tx] 
-monitor session session_number destination remote vlan <rspan-vlan-id>
-----
-
-=== RSPAN destination session
-
-- takes all packets received on the RSPAN VLAN, strips off the VLAN tagging, and presents them on the destination port. 
-- excludes Layer 2 control
- 
-.Task: Configure the RSPAN destination session on a different switch (not the switch on which the source session was configured)
-----
-(config)# monitor session <session-number> source remote vlan <rspan-vlan-id>
-(config)#  monitor session <session-number> destination interface <interface-id>  
-----
-
-== Interaction with other features
-
-Routing ::
-- SPAN does not monitor routed traffic. 
-- VSPAN only monitors traffic that enters or exits the switch, not traffic that is routed between VLANs. 
-For example, if a VLAN is being Rx-monitored and the switch routes traffic from another VLAN to the monitored VLAN,
-that traffic is not monitored and not received on the SPAN destination port.
-
-STP::
-- A destination port does not participate in STP while its SPAN or RSPAN session is active. 
-- The destination port can participate in STP after the SPAN or RSPAN session is disabled. 
-- On a source port, SPAN does not affect the STP status. STP can be active on trunk ports carrying an RSPAN VLAN.
-
-CDP::
-- A SPAN destination port does not participate in CDP while the SPAN session is active. 
-- After the SPAN session is disabled, the port again participates in CDP.
-
-VTP::
-- You can use VTP to prune an RSPAN VLAN between switches.
-
-VLAN and trunking::
-- You can modify VLAN membership or trunk settings for source or destination ports at any time. 
-- However, changes in VLAN membership or trunk settings for a destination port do not take effect until you remove the SPAN destination configuration. 
-- Changes in VLAN membership or trunk settings for a source port immediately take effect, and the respective SPAN sessions automatically adjust accordingly.
-
-EtherChannel::
-- You can configure an EtherChannel group as a source port but not as a SPAN destination port. 
-- When a group is configured as a SPAN source, the entire group is monitored.
-- If a physical port is added to a monitored EtherChannel group, the new port is added to the SPAN source port list. 
-- If a port is removed from a monitored EtherChannel group, it is automatically removed from the source port list.
-- A physical port that belongs to an EtherChannel group can be configured as a SPAN source port and still be a part of the EtherChannel. 
-- In this case, data from the physical port is monitored as it participates in the EtherChannel. 
-However, if a physical port that belongs to an EtherChannel group is configured as a SPAN destination, it is removed from the group. 
-After the port is removed from the SPAN session, it rejoins the EtherChannel group. 
-Ports removed from an EtherChannel group remain members of the group, but they are in the inactive or suspended state.
-- If a physical port that belongs to an EtherChannel group is a destination port and the EtherChannel group is a source,
-the port is removed from the EtherChannel group and from the list of monitored ports.
-
-Multicasting::
-- Multicast traffic can be monitored. 
-- For egress and ingress port monitoring, only a single unedited packet is sent to the SPAN destination port. 
-- It does not reflect the number of times the multicast packet is sent.
-
-Private VLAN::
-- A private-VLAN port cannot be a SPAN destination port.
-
-Secure port::
-- A secure port cannot be a SPAN destination port.
-+
-- For SPAN sessions, do not enable port security on ports with monitored egress when ingress forwarding is enabled on the destination port. 
-For RSPAN source sessions, do not enable port security on any ports with monitored egress.
-+
-- An IEEE 802.1x port can be a SPAN source port. 
-You can enable IEEE 802.1x on a port that is a SPAN destination port; however, 
-IEEE 802.1x is disabled until the port is removed as a SPAN destination.
-+
-- For SPAN sessions, do not enable IEEE 802.1x on ports with monitored egress when ingress forwarding is enabled on the destination port. 
-For RSPAN source sessions, do not enable IEEE 802.1x on any ports that are egress monitored. 
-
+image::span-topology.png[SPAN Topology]
 
 .Task: Display SPAN  status
 ----
 Switch# show monitor session
 
 Session 1
-========== 
+==========
 
 Type              : Local Session
 Source Ports      :
@@ -220,11 +34,205 @@ Filter VLANs      : None
 Dest RSPAN VLAN   : None
 ----
 
+=== Source
+
+- Can not mix source ports and source VLANs in a single session
+- Monitored traffic directions can be
+** Rx :  before any modification or processing by ACL or QoS or VACL
+** Tx : after all modification and processing performed by the switch.
+** Both: by default
+
+.Task: Configure span source ports/VLANs
+----
+monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | tx]
+----
+[NOTE]
+====
+- (Optional) [, | -] Specify a series or range of interfaces. Enter a space before and after the comma; enter a space before and after the hyphen.
+- A single session can include multiple sources (ports or VLANs), defined in a series of commands, but you cannot combine source ports and source VLANs in one session.
+====
+
+==== Source ports
+
+- Can be physical interfaces
+- Can be port-channel logical interfaces with port-channel numbers in (1..48)
+- Can be an access port, trunk port, routed port, or voice VLAN port.
+- Cannot be a destination port
+
+==== Source VLANs
+
+- All active ports in the source VLAN are included as source ports and can be monitored in either or both directions.
+- On a given port, only traffic on the monitored VLAN is sent to the destination port.
+- If a destination port belongs to a source VLAN, it is excluded from the source list and is not monitored.
+- If ports are added to or removed from the source VLANs, the traffic on the source VLAN received by those ports is added to or removed from the sources being monitored.
+- You cannot use filter VLANs in the same session with VLAN sources.
+- You can monitor only Ethernet VLANs.
+- Ignores CDP, BPDU, VTP,, DTP and PAgP frames unless *encapsulation replicate* is configured
+
+=== Destination port
+
+- Must be a physical port
+- Cannot be a source port
+- By default, send packets untagged
+** can replicate the source interface encapsulation
+- By default, disable the ingress traffic forwarding
+** can accept incoming packets with dot1q, isl or untagged
+
+- Only one SPAN/RSPAN session can send traffic to a single destination port, cannot be used by two SPAN sessions
+- Only monitored traffic passes through the SPAN destination port
+
+- Entering SPAN configuration commands does not remove previously configured SPAN parameters.
+  Enter the *no monitor session {session_number | all | local | remote}* global configuration command to delete configured SPAN parameters.
+- For local SPAN, outgoing packets through the SPAN destination port carry the original encapsulation headers—untagged, ISL, or IEEE 802.1Q
+  If the encapsulation replicate keywords are specified.
+  If the keywords are not specified, the packets are sent in native form.
+  For RSPAN destination ports, outgoing packets are not tagged.
+- You can configure a disabled port to be a source or destination port,
+  but the SPAN function does not start until the destination port and at least one source port or source VLAN are enabled.
+- You cannot mix source VLANs and filter VLANs within a single SPAN session.
+- Up to 64 SPAN destination ports can be configured on a switch
+
+//NOTE
+
+.Task: Configure the destination port for a SPAN session
+----
+(config)# monitor <session-number> destination interface <interface-id>
+                                   [encapsulation replicate]
+                                   [ingress {dot1q vlan <vlan-id> | isl | untagged vlan <vlan-id>} ]
+----
+
+=== VLAN Filtering
+
+- To limit SPAN traffic monitoring on trunk source ports to specific VLANs by using VLAN filtering.
+
+- Applies only to trunk ports or to voice VLAN ports.
+- Applies only to port-based sessions
+- Not  allowed in sessions with VLAN sources.
+- When a VLAN filter list is specified, only those VLANs in the list are monitored on trunk ports or on voice VLAN access ports.
+- SPAN traffic coming from other port types is not affected by VLAN filtering; that is, all VLANs are allowed on other ports.
+- VLAN filtering affects only traffic forwarded to the destination SPAN port and does not affect the switching of normal traffic.
+
+.Task: Limit SPAN source to specific VLANs
+----
+(config)# monitor <session-number> filter vlan <vlan-ids>
+----
+
+== Remote SPAN sessions
+
+RSPAN consists of at least one RSPAN source session, an RSPAN VLAN, and at least one RSPAN destination session.
+
+image::rspan-topology.png[RSPAN Topology]
+
+.Restrictions and considerations
+When RSPAN is enabled, each packet being monitored is transmitted twice,
+once as normal traffic and once as a monitored packet.
+Therefore monitoring a large number of ports or VLANs could potentially generate large amounts of network traffic.
+
+=== RSPAN VLAN
+
+- Can be propagated to all switches by VTP if RSPAN VLAN < 1005
+- Must be created manually on extended-range VLAN
+- Can not be vlan 1, 1002-1005
+- Can served multiple RSPAN source/destination sessions
+
+.Restrictions
+- You can apply an output ACL to RSPAN traffic to selectively filter or monitor specific packets. Specify these ACLs on the RSPAN VLAN in the RSPAN source switches.
+- For RSPAN configuration, you can distribute the source ports and the destination ports across multiple switches in your network.
+- RSPAN does not support BPDU packet monitoring or other Layer 2 switch protocols.
+- The RSPAN VLAN is configured only on trunk ports and not on access ports.
+  To avoid unwanted traffic in RSPAN VLANs,
+  make sure that the VLAN remote-span feature is supported in all the participating switches.
+- Access ports (including voice VLAN ports) on the RSPAN VLAN are put in the inactive state.
+- RSPAN VLANs are included as sources for port-based RSPAN sessions when source trunk ports have active RSPAN VLANs. RSPAN VLANs can also be sources in SPAN sessions. However, since the switch does not monitor spanned traffic, it does not support egress spanning of packets on any RSPAN VLAN identified as the destination of an RSPAN source session on the switch.
+
+.Task: Configure RSPAN VLAN on all participating switches
+----
+(config)# vlan <rspan-vlan-id>
+(config-vlan)# remote-span
+----
+
+=== RSPAN source session
+
+- Must be configured on the monitored port's switch
+
+.Task: Configure the RSPAN source session
+----
+monitor session <session-number> source {interface interface-id | vlan vlan-id} [, | -] [both | rx | tx]
+monitor session session_number destination remote vlan <rspan-vlan-id>
+----
+
+=== RSPAN destination session
+
+- Takes all packets received on the RSPAN VLAN, strips off the VLAN tagging, and presents them on the destination port.
+- Excludes Layer 2 control
+
+.Task: Configure the RSPAN destination session on a different switch (not the switch on which the source session was configured)
+----
+(config)# monitor session <session-number> source remote vlan <rspan-vlan-id>
+(config)#  monitor session <session-number> destination interface <interface-id>
+----
+
+== Interaction with other features
+
+Routing ::
+- SPAN does not monitor routed traffic.
+- RSPAN only monitors traffic that enters or exits the switch, not traffic that is routed between VLANs.
+
+STP::
+- A destination port does not participate in STP while its SPAN or RSPAN session is active.
+- The destination port can participate in STP after the SPAN or RSPAN session is disabled.
+- On a source port, SPAN does not affect the STP status. STP can be active on trunk ports carrying an RSPAN VLAN.
+
+CDP::
+- A SPAN destination port does not participate in CDP while the SPAN session is active.
+- After the SPAN session is disabled, the port again participates in CDP.
+
+VTP::
+- You can use VTP to prune an RSPAN VLAN between switches.
+
+VLAN and trunking::
+- You can modify VLAN membership or trunk settings for source or destination ports at any time.
+- However, changes in VLAN membership or trunk settings for a destination port do not take effect until you remove the SPAN destination configuration.
+- Changes in VLAN membership or trunk settings for a source port immediately take effect, and the respective SPAN sessions automatically adjust accordingly.
+
+EtherChannel::
+- You can configure an EtherChannel group as a source port but not as a SPAN destination port.
+- When a group is configured as a SPAN source, the entire group is monitored.
+- If a physical port is added to a monitored EtherChannel group, the new port is added to the SPAN source port list.
+- If a port is removed from a monitored EtherChannel group, it is automatically removed from the source port list.
+- A physical port that belongs to an EtherChannel group can be configured as a SPAN source port and still be a part of the EtherChannel.
+- In this case, data from the physical port is monitored as it participates in the EtherChannel.
+However, if a physical port that belongs to an EtherChannel group is configured as a SPAN destination, it is removed from the group.
+After the port is removed from the SPAN session, it rejoins the EtherChannel group.
+Ports removed from an EtherChannel group remain members of the group, but they are in the inactive or suspended state.
+- If a physical port that belongs to an EtherChannel group is a destination port and the EtherChannel group is a source,
+the port is removed from the EtherChannel group and from the list of monitored ports.
+
+Multicasting::
+- Multicast traffic can be monitored.
+- For egress and ingress port monitoring, only a single unedited packet is sent to the SPAN destination port.
+- It does not reflect the number of times the multicast packet is sent.
+
+Private VLAN::
+- A private-VLAN port cannot be a SPAN destination port.
+
+Secure port::
+- A secure port cannot be a SPAN destination port.
++
+- For SPAN sessions, do not enable port security on ports with monitored egress when ingress forwarding is enabled on the destination port.
+For RSPAN source sessions, do not enable port security on any ports with monitored egress.
++
+- An IEEE 802.1x port can be a SPAN source port.
+You can enable IEEE 802.1x on a port that is a SPAN destination port; however,
+IEEE 802.1x is disabled until the port is removed as a SPAN destination.
++
+- For SPAN sessions, do not enable IEEE 802.1x on ports with monitored egress when ingress forwarding is enabled on the destination port.
+For RSPAN source sessions, do not enable IEEE 802.1x on any ports that are egress monitored.
+
 == Encapsulated RSPAN
 
--  ERSPAN consists of an ERSPAN source session, routable ERSPAN GRE
-   encapsulated traffic, and an ERSPAN destination session. 
-- supported only on high end switch
+- ERSPAN consists of an ERSPAN source session, routable ERSPAN GRE encapsulated traffic, and an ERSPAN destination session.
+- Supported only on high-end switch
 
 image::erspan.png[]
 
@@ -234,8 +242,8 @@ image::erspan.png[]
 ----
 (config)# monitor session <id> type erspan-source
 (config-mon-erspan-src)# source { interface <interface-id> | vlan <vlan-ids> [rx|tx|both]}
-(config-mon-erspan-src)# destination 
-(config-mon-erspan-src-dst)# erspan-id <erspan-flow-id> 
+(config-mon-erspan-src)# destination
+(config-mon-erspan-src-dst)# erspan-id <erspan-flow-id>
 (config-mon-erspan-src-dst)# mtu <size>
 (config-mon-erspan-src-dst)# origin ip address <a.b.c.d> [force]
 (config-mon-erspan-src-dst)# no shutdown
@@ -246,9 +254,9 @@ image::erspan.png[]
 .Task: Configure ERSPAN destination session
 ----
 (config)# monitor session <id> type erspan-destination
-(config-mon-erspan-dst)# destination interface <interface-id> 
-(config-mon-erspan-dst)# source 
-(config-mon-erspan-dst-src)# erspan-id <erspan-flow-id> 
+(config-mon-erspan-dst)# destination interface <interface-id>
+(config-mon-erspan-dst)# source
+(config-mon-erspan-dst-src)# erspan-id <erspan-flow-id>
 (config-mon-erspan-dst-src)# mtu <size>
 (config-mon-erspan-dst-src)# ip address <a.b.c.d> [force]
 (config-mon-erspan-dst-src)# no shutdown
@@ -256,12 +264,12 @@ image::erspan.png[]
 
 === ESPAN dummy MAC address rewrite
 
-- supports customizaed MAC value for WAN interface and tunnel interface
-- monitor the traffic going through WAN interface
+- Supports customizaed MAC value for WAN interface and tunnel interface
+- Monitor the traffic going through WAN interface
 
-.Task: configirue ESPAN dummy MAC address 
+.Task: Configure ESPAN dummy MAC address
 ----
-(config)# monitor session <session-id> type erspan-source 
+(config)# monitor session <session-id> type erspan-source
 (config-mon-erspan-src-dst)# s-mac <mac-address>
 (config-mon-erspan-src-dst)# d-mac <mac-address>
 ----

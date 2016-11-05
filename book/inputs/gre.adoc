@@ -1,16 +1,18 @@
 = GRE
 // ft:asciidoc
 
-== Concepts 
+- tunnelling protocol developed by Cisco
+- IP protocol 47
+- https://tools.ietf.org/html/rfc2784[RFC 2784]
+- https://tools.ietf.org/html/rfc2345[RFC 2345]
+- https://tools.ietf.org/html/rfc1234[RFC 1234]
 
-=== Tunneling
+== Tunneling
 
-- Tunneling encapsulates data packets from one protocol inside a different
-protocol and transports the data packets unchanged across a foreign network.
-Unlike encapsulation, tunneling allows a lower-layer protocol, or same-layer
-protocol, to be carried through the tunnel. 
-
-Components:
+- Tunneling uses encapsulates data packets with from one protocol inside a different protocol
+and transports the data packets unchanged across a foreign network.
+- Unlike encapsulation, tunneling allows a lower-layer protocol, or same-layer protocol,
+to be carried through the tunnel.
 
 - *Passenger protocol* : The protocol that you are encapsulating. Examples: AppleTalk, IP, IPX.
 - *Carrier protocol* : The protocol that does the encapsulating. Examples: GRE, IP-in-IP, L2TP,MPLS, STUN,DLSw+.
@@ -19,17 +21,7 @@ Components:
 .IP Tunneling Terminology and Concepts
 image::ip-tunneling-concepts.png[]
 
-
-
-
-=== GRE
-
-- IP protocol 47
-- https://tools.ietf.org/html/rfc2784[RFC 2784]  
-- https://tools.ietf.org/html/rfc2345[RFC 2345]  
-- https://tools.ietf.org/html/rfc1234[RFC 1234]  
-
-==== GRE header
+== GRE header
 
 ["packetdiag", target= 'gre-header-format.png']
 ----
@@ -39,27 +31,38 @@ image::ip-tunneling-concepts.png[]
   default_node_color = lightyellow
   default_fontsize = 12
 
-  0-0   : C
-  1-12  : Reserved0
-  13-15 : Ver
-  16-31 : Protocol Type
-  32-47 : Checksum (optional)
-  48-63 : Reserved1 (optional)
-
-}
+	 * C [len = 1]
+	 * K  [len=1]
+	 * S  [len=1]
+	 * Reserved0  [len=9]
+	 * Version = 0 [len= 4]
+	 * Protocol Type [len= 16]
+	 * Checksum (optional) [len=16]
+	 * Reserved1 (optional) [len=16]
+   * Key (optional) [len=32]
+   * Sequence Number (optional) [len=32]
+ }
 ----
 
-Checksum present::
-- bit 0
-- indicates that the checksum and the Reserved1 field are present
+[horizontal]
+
+C::
+
+- Checksum present
+- Set to 1 if the checksum and the Reserved1 field are present
+
+K::
+- Key bit. Set to 1 if
 
 Reserved0::
-- 12 bits
-- if any of bits 1-5 are non-zero, a receiver must discard the packet 
-  unless receiver implements RFC1701 
+- if any of bits 1-5 are non-zero, a receiver must discard the packet
+  unless receiver implements RFC1701
+
+Protocol Type::
+- Ether protocol type (e.g. IPv4 -> 0x800)
 
 
-==== GRE keepalive
+=== GRE keepalive
 
 The GRE tunnel keepalive mechanism gives the ability for one side to originate
 and receive keepalive packets to and from a remote router even if the remote
@@ -75,27 +78,36 @@ side, where keepalives are not configured, remains up even if the other side of
 the tunnel is down. The tunnel can become a black-hole for packets directed
 into the tunnel from the side that did not have keepalives configured.
 
+Specifies the number of times that the device will continue to send keepalive
+packets without response before bringing the tunnel interface protocol down.
+
+GRE keepalive packets may be configured either on only one side of the tunnel or on both.
+If GRE keepalive is configured on both sides of the tunnel, the period and retries arguments can be different at each side of the link.
+
+This command is supported only on GRE point-to-point tunnels.
+
+.Task: Configure GRE keepalives
+----
+(config-if)# keepalive [ period [retries]]
+----
 
 
-== Configuration
-
-
-=== Configure a GRE tunnel
+== GRE tunnel
 
 To build a tunnel, a tunnel interface must be defined on each of two routers
-and the tunnel interfaces must reference each other. 
-At each router, the tunnel interface must be configured with a L3 address. 
-The tunnel endpoints, tunnel source, and tunnel destination must be defined, 
-and the type of tunnel must be selected. 
+and the tunnel interfaces must reference each other.
+At each router, the tunnel interface must be configured with a L3 address.
+The tunnel endpoints, tunnel source, and tunnel destination must be defined,
+and the type of tunnel must be selected.
 
-Optional steps can be performed to customize the tunnel.  
+Optional steps can be performed to customize the tunnel.
 
-Remember to configure the router at each end of the tunnel. 
-If only one side of a tunnel is configured, 
+Remember to configure the router at each end of the tunnel.
+If only one side of a tunnel is configured,
 the tunnel interface may still come up and stay up (unless
 keepalive is configured), but packets going into the tunnel will be dropped.
 
-.summary steps
+.Task: Summary steps
 ----
 interface tunnel number
   bandwidth kbps
@@ -103,67 +115,18 @@ interface tunnel number
   tunnel source {ip-address | interface-type interface-number}
   tunnel destination {hostname | ip-address}
   tunnel key key-number
-  tunnel mode {gre ip| gre multipoint}
+  tunnel mode [gre {ip | multipoint} | dvmrp | ipip | mpls | nos]
   ip mtu bytes
   ip tcp mss mss-value
   tunnel path-mtu-discovery [age-timer {aging-mins| infinite}]
 ----
 
-==== Create a tunnel interface 
-
-----
-interface tunnel number 
-----
-
-==== Specify a source interface for the tunnel.
-
-The tunnel source interface can be a local physical or logical local interface,
-and not just an IP address
-
-
-----
-tunnel source {a.b.c.d | source-interface }
----- 
-
-
-
-
-==== Specify the destination IP address for the tunnel
-
 [TIP]
-The router should have a route to this address, but not through the tunnel interface.
-
-----
-tunnel destination ip-address 
-----
-
-
-==== Specify the tunnel mode 
-
-The default tunnel mode is *gre ip*.
-
-----
-tunnel mode [gre {ip | multipoint} | dvmrp | ipip | mpls | nos] 
-----
-
-==== Adjust the GRE keepalive
-
-Specifies the number of times that the device will continue to send keepalive
-packets without response before bringing the tunnel interface protocol down.
-
-GRE keepalive packets may be configured either on only one side of the tunnel or on both.
-If GRE keepalive is configured on both sides of the tunnel, the period and retries arguments can be different at each side of the link.
-
-This command is supported only on GRE point-to-point tunnels. 
-
-----
-(config-if)# keepalive [ period [retries]]
-----
-
+The router should have a route to the destination address, but not through the tunnel interface.
 
 === Configuration example
 
-Note that Ethernet interface 0/1 is the tunnel source for Router A and the tunnel destination for Router B. 
+Note that Ethernet interface 0/1 is the tunnel source for Router A and the tunnel destination for Router B.
 Fast Ethernet interface 0/1 is the tunnel source for Router B and the tunnel destination for Router A.
 
 
@@ -194,7 +157,6 @@ interface FastEthernet0/1
 ----
 
 == Troubleshooting
-
 
 Three reasons for a GRE tunnel to shut down:
 
@@ -239,4 +201,4 @@ d.  It is the interface that maps to the physical tunnel port.
 e.  It is not used today
 
 //todo: import questionnaire from
-http://ptgmedia.pearsoncmg.com/9781587201509/samplechapter/158720150X_CH14.pdf 
+http://ptgmedia.pearsoncmg.com/9781587201509/samplechapter/158720150X_CH14.pdf

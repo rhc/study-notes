@@ -1,8 +1,6 @@
 = Access control list
 
-
-
-== References 
+== References
 
 sec-data-acl
 

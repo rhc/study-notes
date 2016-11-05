@@ -1,0 +1,68 @@
+= Virtual Switch System
+
+image::vss.png[Virtual Switch System]
+
+- VSS makes two physical switches to act and appear as one single logical network element.
+- VSS manages the redundant links from access switches  as single Multi-chassis Etherchannel
+  ** No need for spanning-tree to block one of the links
+  ** two active links instead of one 1/10/40b interfaces
+
+== VSS Active and Standby Switch
+
+- Uses VLSP to negotiate the active and standby roles at start
+
+.Task: Configure VSS domain number and switch number
+----
+(config)# switch virtual domain <1..255>
+(config-vs-domain)# switch [1 | 2]
+----
+
+.Task: Configure VSS switch priority
+----
+(config-vs-domain)# switch [1 | 2 ] priority [<number>]
+----
+NOTE 1 lowest priority 255 highest priority 100 default
+
+== Virtual Switch Link
+
+image::vss-logical.png[Virtual Switch Link]
+
+- Normally built as etherchannel with up to 8 links
+- carries system control information
+  (
+  hot-standby supervisor programming,
+  line card status,
+  Distributed Forwarding Card (DFC) card programming,
+  system management, diagnostics, ...
+  )
+- carries user data traffic when necessary
+
+.Task: Create VSL
+----
+(config)#interface port channel 5
+(config-if)# switchport
+(config-if)# switch virtual link 1
+(config-if)# no shut
+(config-if)# exit
+#! add physical interface to port channel
+(config)# interface range gi 7/4 - 5
+(config-if)# channel group 5 mode one
+(config-if)# exit
+----
+
+.Task: Convert the switch to virtual
+----
+(config)# switch convert mode virtual
+----
+
+.Task: Displays the VSS information
+----
+# sh switch virtual [role | link]
+----
+
+
+
+
+
+
+

@@ -26,6 +26,7 @@
 }
 ----
 
+[horizontal]
 Label:: Locally significant to the router
 EXP:: Experimental, class of service
 S:: Bottom-of-Stack flag 
