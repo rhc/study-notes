@@ -1,33 +1,32 @@
 = ISL
 
-== Overview 
+== Overview
 
 - Inter-Switch Link
 - Cisco proprietary
 - Provides VLAN trunking
-- Supports up to 1000 VLANs  (check ???)
+- Supports normal and extended VLANs
 - Encapsulates the original header with 26-byte header
-- Removes the header at the receiving end 
-
+- Removes the header at the receiving end
 
 == Frame
 
-The ISL frame consists of three fields: the ISL header( 26 bytes), the original frame and the FCS (4 bytes)
+The ISL frame consists of three fields:
+the ISL header( 26 bytes), the original frame and the FCS (4 bytes)
 
 image::isl-frame.png[height=100]
-
 
 === Field descriptions
 
 DA—Destination Address::
 
-- 40-bit 
-- Multicast address: "0100-0C00-00" or "0300-0C00-00". 
+- 40-bit
+- Multicast address: "0100-0C00-00" or "0300-0C00-00".
 - The first 40 bits of the DA field signal the receiver that the packet is in ISL format. ???
 
 TYPE—Frame Type::
 - 4 bits
-- Indicates the type of the original frame 
+- Indicates the type of the original frame
 ** 0000: 	Ethernet
 ** 0001: 	Token Ring
 ** 0010: 	FDDI
@@ -50,23 +49,23 @@ provided.
 
 SA—Source Address::
 
-- 48 bits set to set MAC address of the switch port that transmits the frame. 
+- 48 bits set to set MAC address of the switch port that transmits the frame.
 - May be ignored by the receiving device
 
 LEN—Length::
 
-- 16 bits set to the length of the packet in bytes 
-with the exclusion of the DA, TYPE, USER, SA, LEN, and FCS fields. 
+- 16 bits set to the length of the packet in bytes
+with the exclusion of the DA, TYPE, USER, SA, LEN, and FCS fields.
 
 AAAA03 (SNAP)—Subnetwork Access Protocol (SNAP) and Logical Link Control (LLC)::
 
 - 24 bits set to "0xAAAA03".
 
 HSA—High Bits of Source Address::
-- 24 bits set to 0x00-00-0C (Cisco OUI) of the SA field. 
+- 24 bits set to 0x00-00-0C (Cisco OUI) of the SA field.
 
 VLAN—Destination Virtual LAN ID::
-- 15 bits set to the VLAN ID of the frame 
+- 15 bits set to the VLAN ID of the frame
 
 BPDU—BPDU and CDP Indicator::
 - 1 bit set when STP or CDP encapsulates an ISL packet
@@ -78,8 +77,8 @@ INDX—Index::
 
 RES—Reserved for Token Ring and FDDI::
 - 16 bits used when Token Ring or FDDI packets are encapsulated with an ISL frame
-* In the case of Token Ring frames, the Access Control (AC) and Frame Control (FC) fields are placed here. 
-* In the case of FDDI, the FC field is placed in the Least Significant Byte (LSB) of this field. 
+* In the case of Token Ring frames, the Access Control (AC) and Frame Control (FC) fields are placed here.
+* In the case of FDDI, the FC field is placed in the Least Significant Byte (LSB) of this field.
 - For Ethernet packets, the RES field should be set to all zeros.
 
 ENCAP FRAME—Encapsulated Frame::
@@ -89,8 +88,5 @@ ENCAP FRAME—Encapsulated Frame::
 FCS—Frame Check Sequence::
 - 4 bytes set by the sending MAC and recalculated by the receiving bridge
 - New FCS calculated over the entire ISL packet
-
-
-
 
 

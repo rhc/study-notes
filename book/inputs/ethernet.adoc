@@ -9,22 +9,37 @@
 
 // TODO: Add the reference to 802.2 later
 // image::ethernet-framing-options.png["Ethernet framing options"]
-
 .Ethernet (DIX) and Revised (1997) IEEE 802.3
 ["graphviz", target= 'ethernet-dix-and-revised-802.3']
 ----
 digraph g {
-  node [shape = record,height=.1];
-  node0 [label = "8\nPreamble | 6\nDA | 6\nSA | 2\nType/Length | 46-1500\nData and Padding | 4\nFCS"];
+        node[shape=record]
+        node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Type/Length} |{46\-1500|Data\ and\ Padding}|{4|FCS}"];
 }
 ----
+
+
+// .Ethernet (DIX) and Revised (1997) IEEE 802.3
+// ["graphviz", target= 'testing-record.png']
+// ----
+// digraph structs {
+//         node[shape=record]
+//         struct1 [label="<f0> left|<f1> mid\ dle|<f2> right"];
+//         struct2 [label="{<f0> one|<f1> two\n\n\n}" shape=Mrecord];
+//         struct3 [label="hello\nworld |{ b |{c|<here> d|e}| f}|{add|magic}| h"];
+//         struct1:f1 -> struct2:f0;
+//         struct1:f0 -> struct3:f1;
+// }
+// ----
+//
+
 
 .Original IEEE 802.3
 ["graphviz", target= 'ethernet-ieee802.3-extended']
 ----
 digraph g {
-  node [shape = record,height=.1];
-  node0[label = "7\nPreamble | 1\nSD | 6\nDA | 6\nSA | 2\nLength | 1\nDSAP | 1\nSSAP| 1-2\nControl| 43-1500\nData and Padding | 4\nFCS"];
+  node [shape=record,height=.1];
+  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Length}|{1|DSAP}|{1|SSAP}|{1-2|Control}|{43\-1500|Data\ and\ Padding}|{4|FCS}"];
 }
 ----
 
@@ -33,7 +48,7 @@ digraph g {
 ----
 digraph g {
   node [shape = record,height=.1];
-  node0[label = "7\nPreamble | 1\nSD | 6\nDA | 6\nSA | 2\nLength | 1\nDSAP | 1\nSSAP| 1-2\nControl| 3\nOUI | 2\nType|   38-1500\nData and Padding | 4\nFCS"];
+  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Length}|{1|DSAP}|{1|SSAP}|{1-2|Control}|{3|OUI}|{2|Type}|{43\-1500|Data\ and\ Padding}|{4|FCS}"];
 }
 ----
 
@@ -231,15 +246,82 @@ Multicast: Floods frame identically to unknown unicasts, unless multicast optimi
 802.1s , MST
 802.1w , Rapid STP
 802.1ax, LACP (formerly 802.3ad)
-
 802.2 , Logical Link Control
 802.3u, Fast ethernet over copper and optical cable
 802.3z, Gigabit ethernet over optical cable
 802.3ab, Gigabit ethernet over copper cable
 |====
 
+// Replace the image by a table
+image::ethernet-cabling-standards.png[Cabling Standards]
+
 == Troubleshooting
 
 - Add something about excessive collisions, late collisions, runts, re: duplex mismatches
 
 
+[horizontal]
+Runts::
+- Runts are frames smaller than 64 bytes.
+
+CRC errors::
+- The frame’s cyclic redundancy checksum value does not match the one calculated by the switch or router.
+
+Frames::
+- Frame errors have a CRC error and contain a noninteger number of octets.
+
+Alignment::
+- Alignment errors have a CRC error and an odd number of octets.
+
+Collisions::
+- Look for collisions on a full-duplex interface (meaning that the interface operated in half-duplex mode at some point in the past), or excessive collisions on a half-duplex interface.
+
+Late collisions on a half-duplex interface::
+- A late collision occurs after the first 64 bytes of a frame.
+
+
+=== Problem and approches
+
+[cols="20a,30a,50a"]
+|====
+| Problem | Questions? | Commands
+
+| Lack of reachability to devices in the same VLAN
+|
+- Layer 1 issues ?
+- VLAN exists on the switch?
+- Interface assigned to the correct VLAN?
+- VLAN allowed on the trunk?
+|
+- show interface
+- show vlan
+- show interface switchport
+- traceroute mac source-mac destination-mac
+- show interface trunk
+
+| Intermittent reachability to devices in the same VLAN
+|
+- Excessive interface traffic?
+- Unidirectional links?
+- Spanning-tree problems such as BPDU floods or flapping MAC addresses?
+|
+- show interface
+- show spanning-tree show spanning-tree root show mac address-table
+
+
+| No connectivity between switches
+|
+- Trunk links active?
+- EtherChannels active?
+- BPDU Guard is not enabled on a trunk interface?
+|
+- show interfaces status err-disabled
+- show interfaces trunk
+- show etherchannel summary
+- show spanning-tree detail
+
+| Poor performance across a link
+| - Duplex mismatch?
+| - show interface
+
+|====

@@ -3,8 +3,9 @@
 
 == Dynamic trunk protocol
 
-- negotiate trunk status 
+- negotiate trunk status
 - default to *dynamic auto*
+- both sides must be on the same VTP domain or one must be in the NULL domain
 
 .Trunking configuration options that lead to a working trunk
 [cols="20,10,40,20", format="dsv", options="header", grid="rows"]
@@ -18,7 +19,7 @@ switchport mode access: Access: Never trunks; sends DTP to help other side reach
 switchport mode access; switchport nonegotiate : Access (with nonegotiate): Never trunks; does not send DTP messages: (Never trunks)
 |===
 
-.Task: Configure an inter-switch links to be in dynamic desirable state  
+.Task: Configure an inter-switch link to be in dynamic desirable state
 ----
 (config-if)# switchport mode dynamic desirable
 ----
@@ -29,7 +30,7 @@ switchport mode access; switchport nonegotiate : Access (with nonegotiate): Neve
 (config-if)# switchport nonegotiate
 ----
 
-.Task: Put the interface into permanent nontrunking mode 
+.Task: Put the interface into permanent nontrunking mode
 ----
 (config-if)# switchport mode access
 ----
@@ -41,7 +42,7 @@ show interface trunk: Summary of trunk-related information
 
 .Task: List trunking details for a specified interface
 ----
-show interface <type number> trunk 
+show interface <type number> trunk
 ----
 
 .Task: List nontrunking details for a particular interface
@@ -51,7 +52,7 @@ show interface <type number> switchport
 
 .Task: Display DTP information for the switch
 ----
-# show dtp 
+# show dtp
 ----
 
 .Task: Display DTP information for a specific interface
@@ -59,6 +60,14 @@ show interface <type number> switchport
 ----
 # show dtp interface <type slot/number>
 ----
+
+== Trunking between a switch and a Router
+
+Because  DTP is not supported on Router
+
+- on the router, create a sub-interface for each desired vlan
+- on the switch, disable DTP and manually configure the trunk
+
 
 .Task: Enable trunking but disable DTP for routers
 ----
@@ -72,12 +81,12 @@ int e0/0
 ! R1
 conf t
 int e0/0.1
-  enc dot1q 123
+  enc dot1q <vlan-id> [native]
 ----
 
 == Verify
 
-What is TOS/TAT in 
+What is TOS/TAT in
 
 ----
 sh dtp interface fa 0/19

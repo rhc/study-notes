@@ -5,12 +5,14 @@ v1.0, 2015-10-12
 :producer: asciidoctor
 :toc: left
 :toclevels: 2
-:icons: font
 :experimental:
+:icons: font
+:stem:
 :imagesdir: ../images
 :frame: none
 :grid: rows
 :stylesheet: ../stylesheets/asciidoctor.css
+
 
 [dedication]
 = Dedication
@@ -37,6 +39,7 @@ include::vtp.adoc[leveloffset=+2]
 include::dtp.adoc[leveloffset=+2]
 include::isl.adoc[leveloffset=+2]
 include::802.1q.adoc[leveloffset=+2]
+include::802.1q-in-q.adoc[leveloffset=+2]
 
 == Spanning tree
 include::spanning-tree-protocol.adoc[leveloffset=+2]
@@ -53,9 +56,11 @@ include::vss.adoc[leveloffset=+1]
 
 
 == WAN
+
 include::hdlc.adoc[leveloffset=+2]
 include::ppp.adoc[leveloffset=+2]
-
+include::pppoe.adoc[leveloffset=+2]
+include::ewan.adoc[leveloffset=+2]
 
 <<<
 = Part II : Layer 3 Technologies
@@ -79,6 +84,7 @@ include::cef.adoc[leveloffset=+2]
 include::rip.adoc[leveloffset=+2]
 include::eigrp.adoc[leveloffset=+2]
 include::ospf.adoc[leveloffset=+2]
+include::is-is.adoc[leveloffset=+2]
 include::bgp.adoc[leveloffset=+2]
 include::redistribution.adoc[leveloffset=+2]
 
@@ -147,8 +153,10 @@ include::ssh.adoc[leveloffset=+2]
 include::scp.adoc[leveloffset=+2]
 include::tftp.adoc[leveloffset=+2]
 include::snmp.adoc[leveloffset=+2]
+include::rmon.adoc[leveloffset=+2]
 include::syslog.adoc[leveloffset=+2]
 include::ntp.adoc[leveloffset=+2]
+include::http.adoc[leveloffset=+2]
 
 == QoS
 
@@ -175,6 +183,7 @@ include::pim.adoc[leveloffset=+2]
 include::ip-sla.adoc[leveloffset=+2]
 include::eot.adoc[leveloffset=+2]
 include::netflow.adoc[leveloffset=+2]
+include::eem.adoc[leveloffset=+2]
 
 <<<
 = Part VI : Evolving Technologies

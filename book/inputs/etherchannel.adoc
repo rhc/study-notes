@@ -2,15 +2,13 @@
 :icons: font
 :experimental:
 
-== Overview
 
-- EtherChannel aggregates bandwidth of up to 8 physical links 
+- EtherChannel aggregates bandwidth of up to 8 physical links
 - Consists of two parts:
   * Port-channel interface: logical interface representing the bundle
   * Member interfaces: physical links part of the bundle
 
-- Channel can be any type of interface:
-  * Layer 2 access, trunk, tunnel or layer 3 routed
+- can be any type of interface: Layer 2 access, trunk, tunnel or layer 3 routed
 
 - Configured as either Layer 2 or Layer 3 interfaces.
 
@@ -22,30 +20,30 @@
 * On a single switch, each port in a PortChannel must have the same STP cost per VLAN on all links in the PortChannel
 * No ports with SPAN configured
 
-- When several EtherChannel bundles exist between two switches, 
-STP blocks one of the bundles to prevent redundant links. 
-When spanning tree blocks one of the redundant links, it blocks one EtherChannel, 
-thus blocking all the ports belonging to this EtherChannel link. 
+- When several EtherChannel bundles exist between two switches,
+STP blocks one of the bundles to prevent redundant links.
+When spanning tree blocks one of the redundant links, it blocks one EtherChannel,
+thus blocking all the ports belonging to this EtherChannel link.
 
-- Where there is only one EtherChannel link, 
+- Where there is only one EtherChannel link,
 all physical links in the EtherChannel are active because STP sees only one (logical) link.
 
-- If a link within an EtherChannel fails, 
-traffic previously carried over that failed link changes to the remaining links within the EtherChannel. 
-A trap is sent for a failure, identifying the switch, the EtherChannel, and the failed link. 
+- If a link within an EtherChannel fails,
+traffic previously carried over that failed link changes to the remaining links within the EtherChannel.
+A trap is sent for a failure, identifying the switch, the EtherChannel, and the failed link.
 Inbound broadcast and multicast packets on one link in an EtherChannel are blocked from returning on any other link of the EtherChannel.
 
-- Each EtherChannel has a logical port-channel interface numbered from 1 to 64. 
-The channel groups are also numbered from 1 to 64. 
+- Each EtherChannel has a logical port-channel interface numbered from 1 to 64.
+The channel groups are also numbered from 1 to 64.
 
-- When a port joins an EtherChannel, the physical interface for that port is shut down. 
-- When the port leaves the port-channel, its physical interface is brought up, 
-  and it has the same configuration as it had before joining the EtherChannel. 
+- When a port joins an EtherChannel, the physical interface for that port is shut down.
+- When the port leaves the port-channel, its physical interface is brought up,
+  and it has the same configuration as it had before joining the EtherChannel.
 
 == Link aggregation protocol
 
 - PAgP
-  * Maximum 8 ports 
+  * Maximum 8 ports
 - LACP
   * Maximum 16 ports
   * Maximum 8 active ports and 8 standby ports
@@ -57,13 +55,13 @@ The channel groups are also numbered from 1 to 64.
 
 .Task: Specify the link aggregation protocol globally
 ----
-(config-if)# channel-protocol {pagp | lacp} 
+(config-if)# channel-protocol {pagp | lacp}
 ----
 
 [NOTE]
 ====
 - The *channel-group* interface configuration command can also set the mode for the EtherChannel
-- If you set the protocol by using *channel-protocol*, 
+- If you set the protocol by using *channel-protocol*,
   the setting is not overriden by the *channel-group* interface configuration command.
 ====
 
@@ -105,19 +103,20 @@ interface <type id>
 ====
 
 
-.Relationship of Physical Ports, Logical Port Channels, and Channel Groups 
+.Relationship of Physical Ports, Logical Port Channels, and Channel Groups
 image::etherchannel-relationships.png[height=150]
 
 == EtherChannel modes
 
 .EtherChannel modes
-[format="dsv", options="header", cols="15,15,70"]
+[format="dsv" cols="15,15,70"]
 |===
-Cisco PAgP:  802.1AD LACP: Description
-on: on: disable negotiation and forces the port into the portChannel
-off: off: disable negotiation and prevents the ports to be part of the portChannel
-desirable: active: initiates the negotiation
-auto: passive: waits on other side to start negotiation
+Cisco PAgP : 802.1AD LACP : Description
+
+on         : on           : disable negotiation and forces the port into the portChannel
+off        : off          : disable negotiation and prevents the ports to be part of the portChannel
+desirable  : active       : initiates the negotiation
+auto       : passive      : waits on other side to start negotiation
 |===
 
 .Task: Display EtherChannel status
@@ -125,16 +124,16 @@ auto: passive: waits on other side to start negotiation
 # show etherchannel [group-number]
 ----
 
-=== PAgP and LACP Interaction with Other Features 
+=== PAgP and LACP Interaction with Other Features
 
-- DTP and CDP send and receive packets over the physical interfaces in the EtherChannel. 
+- DTP and CDP send and receive packets over the physical interfaces in the EtherChannel.
 - PAgP and LACP transmit PDUs on the lowest numbered VLAN on the interfaces enable for (desirable,auto or active,passive)
 - STP sends packets over the first interface in the Etherchannel
 - The MAC address of a Layer 3 EtherChannel is the MAC address of the first interface in the port-channel.
 
 === Load balancing and forwarding modes
 
-- Load balancing between member interface based on a combination of 
+- Load balancing between member interface based on a combination of
   * Source MAC address
   * Destination MAC address
   * Source IP address
@@ -146,9 +145,9 @@ auto: passive: waits on other side to start negotiation
 (config)# port-channel load-balance { dst-ip | dst-mac | src-dst-ip | src-dst-mac | src-ip | src-mac}
 ----
 
-.Task: Display the EtherChannel load-balancing method 
+.Task: Display the EtherChannel load-balancing method
 ----
-# show etherchannel load-balance 
+# show etherchannel load-balance
 
 EtherChannel Load-Balancing Configuration:
 src-mac
@@ -159,12 +158,21 @@ IPv4: Source MAC address
 IPv6: Source MAC address
 ----
 
+== EtherChannel Misconfiguration guard
 
-== Misconfiguration guard 
+- This mechanism makes an assumption that if multiple ports are correctly bundled
+into a Port-channel at the neighbor side, all BPDUs received over links in this
+Port-channel must have the same source MAC address in their Ethernet header, as
+the Port-channel interface inherits the MAC address of one of its physical
+member ports. If BPDUs sourced from different MAC addresses are received on a
+Port-channel interface, it is an indication that the neighbor is still treating
+the links as individual, and the entire Port-channel will be err-disabled
+- Enabled by default
 
-TODO
 
-
-
+.Task: Deactivate EtherChannal misconfig guard
+----
+(config)# no spanning-tree etherchan- nel guard misconfig
+----
 
 

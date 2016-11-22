@@ -1,1 +1,6 @@
 = EIGRPv6
+
+
+----
+(config-router)# address-family ipv6 [unicast] [vrf vrf-name] autonomous-system asn
+----

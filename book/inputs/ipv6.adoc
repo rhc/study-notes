@@ -46,8 +46,8 @@ diagram {
   * Payload Length [len=16]
   * Next Header [len=8]
   * Hop Limit [len=8]
-  * Source Address [len=128]
-  * Destination Address [len=128]
+  * Source Address (128 bits) [len=32]
+  * Destination Address (128 bits) [len=32]
 }
 ----
 
@@ -86,23 +86,21 @@ following order:
 - Upper-layer header
 
 ,===
-Header Type, Next Header Value, Description
+Header Type                                     , Next Header Value , Description
 
-Hop-by-Hop Options Header, 0, Read by all devices in transit network
-Destination Option Header, 60,  Read by the final destination device
-Routing Header, 43, Support routing decision making
-Fragment Header, 44, Contains parameters of datagram fragmentation
-Authentication Header (RFC 1826) and ESP Header (RFC 1827), 51,
-Encapsulating Security Payload, 50, Carries encrypted data for secure communication.
-Upper-Layer Header, 6, (TCP),
-Upper-Layer Header,  17, (UDP),
-Mobility Header (currently without upper layer),  135, Used with Mobile IPv6
+Hop-by-Hop Options Header                       , 0                 , Read by all devices in transit network
+Destination Option Header                       , 60                , Read by the final destination device
+Routing Header                                  , 43                , Support routing decision making
+Fragment Header                                 , 44                , Contains parameters of datagram fragmentation
+Authentication Header                           , 51                ,
+Encapsulating Security Payload                  , 50                , Carries encrypted data for secure communication.
+Upper-Layer Header                              , 6                 , (TCP)                                            ,
+Upper-Layer Header                              , 17                , (UDP)                                            ,
+Mobility Header (currently without upper layer) , 135               , Used with Mobile IPv6
 ,===
 
 
-- Value 59 means No Next Header
-
-
+- Value 59 means *No Next Header*
 
 == Addressing
 
@@ -177,13 +175,11 @@ image::ipv6-unicast-address-format.png[height=150]
 ===== Assign an IPv6 unicast address to a router interface
 
 .Task: Enable ipv6 on the router
-
 ----
 (config)# ipv6 unicast-routing
 ----
 
 .Task: Configure a global unicast address
-
 ----
 (config-if)# ipv6 address 2014:10:12::19:66/64
 ----
@@ -357,7 +353,6 @@ By default, a Cisco router running IPv6 on an interface advertises itself as a c
 
 
 .Task: Prevent router to advertise itself as a default candidate but do not hide its presence
-
 ----
 ipv6 nd ra-lifetime 0
 ----

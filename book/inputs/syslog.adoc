@@ -1,1 +1,9 @@
 = Syslog
+
+- RFC 5424
+- Clear-text protocol that provides event notifications without requiring difficult, time-intensive configuration or opening attack vectors.
+
+.Steps
+- Install a Syslog server on a workstation with a fixed IP address.
+- Configure the logging process to send events to the Syslog server’s IP address using the *logging host* command.
+- Configure any options, such as which severity levels (0–7) you want to send to the Syslog server using the logging trap command.

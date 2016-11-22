@@ -2,16 +2,15 @@
 
 - menu:Configuration Guides[Network Mgt > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipsla/configuration/15-mt/sla-15-mt-book.html[IP SLA] ]
 
-To implement IP SLAs network performance measurement, 
+To implement IP SLAs network performance measurement,
 
 . Enable the IP SLAs responder
 . Configure the required IP SLAs operation type
 . Configure any options available
 . Configure threshold conditions
-. Schedule the operation 
+. Schedule the operation
 . Run the operation for a period of time to gather statistics
 . Display and interpret the results with Cisco CLI or NMS with SNMP
-
 
 == IP SLAs Operation types
 
@@ -24,12 +23,12 @@ To implement IP SLAs network performance measurement,
 .Task: Configure basic IP SLAs ICMP echo operation on the source device
 ----
 (config)# ip sla <operation-number>
-(config-ip-sla)# icmp-echo {<destination-ip-address>| <destination-hostname>} 
+(config-ip-sla)# icmp-echo {<destination-ip-address>| <destination-hostname>}
                     [source-ip {<src-ip> | src-hostname} | source-interface <interface-name>]
 (config-ip-sla-echo)# frequency <seconds>
 ----
 
-== IP SLAs Responder 
+== IP SLAs Responder
 
 - for Cisco device only
 - listens on specific port for control protol messages send by IP SLA operation
@@ -46,9 +45,9 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
 
 .Task: schedule IP SLA operation
 ----
-(config)# ip sla schedule <operation-number> 
-                          [ life {forever} | <seconds> ] 
-                          [start-time {now | pending | after <hh:mm:ss> | [<hh:mm:ss>]}] [month day | day month } ] 
+(config)# ip sla schedule <operation-number>
+                          [ life {forever} | <seconds> ]
+                          [start-time {now | pending | after <hh:mm:ss> | [<hh:mm:ss>]}] [month day | day month } ]
                           [ageout <seconds>]
                           [recurring]
 ----
@@ -64,10 +63,10 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
 
 .Task: schedule a group of IP SLA Operations
 ----
-(config)# ip sla group schedule <group-operation-number> <operation-id-numbers> 
+(config)# ip sla group schedule <group-operation-number> <operation-id-numbers>
                           { schedule-period <schedule-period-range | schedule-together }
                           [ frequency <group-operation-frequency> ]
-                          [ life {forever} | <seconds> ] 
+                          [ life {forever} | <seconds> ]
                           [start-time {now | pending| after <hh:mm:ss> | [<hh:mm:ss>]}] [month day | day month } ]
                           [ageout <seconds>]
                           [recurring]
@@ -85,7 +84,6 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
 average jitter threshold, one-way packet loss, one-way jitter, one-way mean opinion score, one-way latency
 - can trigger another IP SLA operation
 
-
 == MPLS VPN awareness
 
 - IP SLA operations can be configured for a specific VPN
@@ -95,7 +93,7 @@ average jitter threshold, one-way packet loss, one-way jitter, one-way mean opin
 [horizontal]
 Aggregated statistics:: By default, two hours of aggregated
 statistics for each operation. Value from each operation cycle is aggregated
-with the previously available data within a given hour. 
+with the previously available data within a given hour.
 
 Operation snapshot history::  snapshot of data for each
 operation instance that matches a configurable filter, such as all, over
@@ -110,9 +108,8 @@ IP SLAs operation is not collected. If history is collected, each bucket
 contains one or more history entries from the operation. History buckets do not
 wrap.
 
-
 == Troubleshooting tips
 
-- If IP SLAs operation is not running and not generating stats, 
+- If IP SLAs operation is not running and not generating stats,
 add the *verify-data* command in ip sla configuration mode
-- Use *debug ip sla trace* and *debug ip sla error* commands 
+- Use *debug ip sla trace* and *debug ip sla error* commands

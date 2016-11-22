@@ -3,19 +3,18 @@
 - Cisco IOS application
 - provides statistics on packets flowing through the routing
 
-
 == NetFlow flows
 
 - unidirectional stream of packets between a given source and destination
 - combination of 7 fields: source/destination IP address/Port number, layer 3 protocol type, ToS, input logical interface
 - can include accounting fields (such as AS number in v5)
 - stored/captured in *netflow cache*
-- exported to the flow collector (NetFlow Collection Engine) 
+- exported to the flow collector (NetFlow Collection Engine)
 - prerequisites
-* ip routing 
+* ip routing
 * cef, dcef or fast switching
 * enough CPU and memory
-- data capture 
+- data capture
 * from ingress: ip-to-ip, ip-to-mpls, FR and ATM terminated packets
 * for egress: ip-to-ip(with Netflow Accounting), mpls-to-ip (NetFlow MPLS Egress)
 
@@ -32,11 +31,11 @@
 == NetFlow version
 
 [horizontal]
-v5:: 
+v5::
 -
-- 
+-
 v9::
-- flexible and extensible 
+- flexible and extensible
 - template based
 - uses 2 flow record type: template flowset, and data flowset
 
@@ -53,7 +52,7 @@ digraph g {
 
 === Version 5
 
-.NetFlow header format  
+.NetFlow header format
 ["packetdiag", target="netflow-header-v5",size=200]
 ----
 diagram {
@@ -75,7 +74,7 @@ diagram {
 }
 ----
 
-.Flow Record format 
+.Flow Record format
 ["packetdiag", target="flow-record-v5",size=50]
 ----
 diagram {
@@ -110,7 +109,7 @@ diagram {
 
 === Version 9
 
-.NetFlow header format  
+.NetFlow header format
 ["packetdiag", target="netflow-header-v9",size=100]
 ----
 diagram {
@@ -133,7 +132,7 @@ diagram {
 == NetFlow Cache
 
 - contains flow record for all active flows.
-- up to 64K flow entries, each cache entry requires 64 bytes  
+- up to 64K flow entries, each cache entry requires 64 bytes
 - removes flows if
   * flow transport is completed (TCP  FIN or RST )
   * flow cache full
@@ -157,7 +156,7 @@ diagram {
 ----
 
 
-== NetFlow Data Export 
+== NetFlow Data Export
 
 - Send NetFlow cache entries to workstation running NetFlow Collection Engine
 - supports only two export destinations
@@ -181,5 +180,6 @@ diagram {
 ----
 # sh ip flow export
 ----
+
 
 

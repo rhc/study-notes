@@ -33,7 +33,7 @@ diagram {
 
 [horizontal]
 IP Header Length (IHL)::
-datagram header length in 32-bit words.
+Datagram header length in 32-bit words.
 
 Type-of-Service::
 Specifies how an upper-layer protocol would like a current datagram to be handled, and assigns datagrams various levels of importance.
@@ -64,15 +64,15 @@ Options::
 Allows IP to support various options, such as security.
 
 Data::
-Contains upper-layer information. 
+Contains upper-layer information.
 
 //Use the packet format as the structure of the document
 
 == IP address
 
 - 32-bits written in "dotted decimal"
-- classes: A,B,C,D,E
-- classless : prefix + host 
+- Classes: A,B,C,D,E
+- Classless : prefix + host
 
 .Task: Assign an IP address to an interface
 ----
@@ -89,11 +89,11 @@ show ip interface
 show ip route connected
 ----
 
-=== CIDR
+== CIDR
 
 - Classless interdomain routing
-- defined in RFS 1517-1520
-- administrative assigment of large address blocks and the related summarized
+- Defined in RFS 1517-1520
+- Administrative assigment of large address blocks and the related summarized
   routes for the purpose of reducing the size of the Internet routing table
 - Enable by default
 
@@ -115,31 +115,31 @@ show ip route connected
 (config-line)# term ip netmask-format {bitcount | decimal | hexadecimal}
 ----
 
-=== Private addressing
+== Private addressing
 
 - RFC 1918
 - 10.0.0.0/8
 - 172.16.0.0/12
 - 192.168.0.0/16
 
-=== VLSM
+== VLSM
 
 - Variable length subnet mask
 
-=== Subnet zero
+== Subnet zero
 
-.Task: Allow IP subnet zero 
+.Task: Allow IP subnet zero
 ----
 (config)# ip subnet-zero
 ----
 
-=== Unnumbered interfaces
+== Unnumbered interfaces
 
 - Borrow the IP address of another interface
-- only point-to-point (non-multiaccess) WAN interfaces
-- You cannot reboot a IOS image over an ip unnumbered interface 
+- Only point-to-point (non-multiaccess) WAN interfaces
+- You cannot reboot a IOS image over an ip unnumbered interface
 
-.Task: configure unnumbered interfaces on point-to-point WAN interfaces 
+.Task: configure unnumbered interfaces on point-to-point WAN interfaces
 ----
 (config-if)# ip unnumbered <interface-type interface-id>
 ----
@@ -148,7 +148,7 @@ show ip route connected
 
 - Conserve IP address space
 - Since RFC 3021
-- only on point-to-point WAN interfaces
+- Only on point-to-point WAN interfaces
 
 .Task: Use a 31-bit prefix on point-to-point WAN interfaces
 ----

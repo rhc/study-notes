@@ -3,8 +3,8 @@
 - menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/15-mt/arp-15-mt-book.html[ARP] ]
 - https://wwwietf.org/rfc/rfc826.txt[RFC 826]
 
-- Finds hardware address (MAC) of a host given IP address
-- maintains ARP cache 
+- Finds MAC address of a host given IP address
+- maintains ARP cache
 - ARP Ethernet protocol: 0x0806
 
 == Protocol
@@ -22,7 +22,7 @@ diagram {
   * Protocol Type (IP= 0x0800) [len=16]
   * Hardware Address Length (6) [len=8]
   * Protocol Address Length (4) [len=8]
-  * Opcode [len=16] 
+  * Opcode [len=16]
   * Sender Hardware Address [len=48, color=lightgreen]
   * Sender Protocol Address [len=32, color=yellow]
   * Target Hardware Address [len=48, color=lightgreen]
@@ -42,7 +42,6 @@ OpCode::
 (config-if)# arp {arpa | frame-relay | snap}
 ----
 
-
 .Task: Define static ARP entries
 ----
 # arp <ip-address>  <hardware-address> <encapsulation-type> [<interface-type>]
@@ -55,7 +54,7 @@ OpCode::
 
 == Dynamic ARP entries
 
-- Stored in ARP cache 
+- Stored in ARP cache
 - timeout by default in 4 hours
 
 
@@ -76,8 +75,7 @@ OpCode::
 
 .Task: Display the arp cache
 ----
-# show arp
-# show ip arp 
+# show ip arp
 ----
 
 ----
@@ -118,11 +116,37 @@ Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0
 
 - broadcast ARP messages where the SPA=TPA and THA=FF:FF:FF:FF:FF:FF
 
-- used to 
+- used to
 
-** to detect IP address conflit 
+** to detect IP address conflit
 ** to update other machine ARP table
 ** to update mac table of the connected switche
 
-[TIP] If we see multiple gratitous ARPs from the same host frequently,
+TIP: If we see multiple gratitous ARPs from the same host frequently,
 it can be an indication of bad Ethernet NICs
+
+
+== RARP and BootP as DHCP precursors
+
+image::rarp-bootp.png[RARP and BootP before DHCP]
+
+- A RARP request is a host’s attempt to find its own IP address. So RARP uses the
+  same old ARP message, but the ARP request lists a MAC address target of its own
+  MAC address and a target IP address of 0.0.0.0. A preconfigured RARP server,
+  which must be on the same subnet as the client, receives the request and
+  performs a table lookup in its configuration. If that target MAC address listed
+  in the ARP request is configured on the RARP server, the RARP server sends an
+  ARP reply, after entering the configured IP address in the Source IP address
+  field.
+
+
+- BOOTP was defined in part to improve IP address assignment features of RARP.
+  BOOTP uses a completely different set of messages, defined by RFC 951, with the
+  commands encapsulated inside an IP and UDP header. With the correct router
+  configuration, a router can forward the BOOTP packets to other subnets—allowing
+  the deployment of a centrally located BOOTP server. Also, BOOTP supports the
+  assignment of many other tidbits of information, including the subnet mask,
+  default gateway, DNS addresses, and its namesake, the IP address of a boot (or
+  image) server. However, BOOTP does not solve the configuration burden of RARP,
+  still requiring that the server be preconfigured with the MAC addresses and IP
+  addresses of each client.

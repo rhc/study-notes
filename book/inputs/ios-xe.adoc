@@ -1,1 +1,8 @@
 = IOS-XE
+
+- runs IOS as a process on top of Linux OS
+- modular -> extensibility
+- high availability
+  ** Can upgrade one package without rebooting the whole device
+- separates control plane (Forwarding and Feature Manager)
+  and data plane (Forwarding Engine Driver)

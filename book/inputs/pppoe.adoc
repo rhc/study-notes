@@ -1,33 +1,75 @@
 = PPPoE
 
+- used for digital subscriber line (DSL) Internet access
+because the public telephone network uses ATM for its transport protocol;
+therefore, Ethernet frames must be encapsulated in a protocol supported over both Ethernet and ATM.
 
- - used for digital subscriber line (DSL) Internet access 
- because the public telephone network uses ATM for its transport protocol;
- therefore, Ethernet frames must be encapsulated in a protocol supported over both Ethernet and ATM.  
+- The PPP Client feature permits a Cisco IOS router, rather than an endpoint host, to serve as the client
+in a network. This permits multiple hosts to connect over a single PPPoE connection.
 
--  The PPP Client feature permits a Cisco IOS router, rather than an endpoint host, to serve as the client
- in a network. This permits multiple hosts to connect over a single PPPoE connection.
+- In a DSL environment, PPP interface IP addresses are derived from an upstream DHCP server
+using IP Configuration Protocol (IPCP). Therefore, IP address negotiation must be enabled on the
+router’s dialer interface. This is done using the ip address negotiated command in the dialer
+interface configuration.
 
- - In a DSL environment, PPP interface IP addresses are derived from an upstream DHCP server
- using IP Configuration Protocol (IPCP). Therefore, IP address negotiation must be enabled on the
- router’s dialer interface. This is done using the ip address negotiated command in the dialer
- interface configuration.
+- Because of the 8-byte PPP header, the MTU for PPPoE is usually set to 1492 bytes so that the
+entire encapsulated frame fits within the 1500-byte Ethernet frame. A maximum transmission unit
+(MTU) mismatch prevents a PPPoE connection from coming up. Checking the MTU setting is a
+good first step when troubleshooting PPPoE connections.
 
- - Because of the 8-byte PPP header, the MTU for PPPoE is usually set to 1492 bytes so that the
- entire encapsulated frame fits within the 1500-byte Ethernet frame. A maximum transmission unit
- (MTU) mismatch prevents a PPPoE connection from coming up. Checking the MTU setting is a
- good first step when troubleshooting PPPoE connections.
+- Because PPPoE introduces an 8-byte overhead (2 bytes for the PPP header and 6
+  bytes for PPPoE), the MTU for PPPoE is usually decreased to 1492 bytes so
+  that the entire encapsulated frame fits within the 1500-byte Ethernet frame.
+  Additionally, for TCP sessions, the negotiated Maximum Segment Size is
+  clamped down to 1452 bytes, allowing for 40 bytes in TCP and IP headers and 8
+  bytes in the PPPoE, totaling 1500 bytes that must fit into an ordinary
+  Ethernet frame. A maximum transmission unit (MTU) mismatch can prevent a
+  PPPoE connection from coming up or from properly carrying large datagrams.
+  Checking the MTU setting is a good first step when troubleshooting PPPoE connections.
+
+== PPPoE server
+
+- on the ISP side
+
+TODO: Replace the task below with step-by-step instructions
+
+.Task: Create a Broad Band Aggregation group
+----
+(config)# bba-group pppoe <name>
+(config-bba-group)# virtual-template 1
+----
+
+.Task: Limit the number of sessions on the associated MAC
+----
+(config-bba-group)# sessions per-mac limit <number>
+----
+
+.Task: Create the virtual template interface
+----
+(config)# interface virtual-template 1
+(config-if)# ip address 10.0.0.1 255.255.255.0
+(config-if)# peer default ip address pool <pool-name>
+
+(config)# ip local pool <pool-name> <ip-start> <ip-finish>
+----
 
 
-== Configuration tasks
+.Task: Enable PPPoE group on the interface
+----
+(config-if)#
+(config)# interface f0/0
+(config-if)# no ip address
+(config-if)# pppoe enable group MyGroup
+(config-if)# no shutdown
+----
 
-Example
+
+
+== PPPOE client
 
 image::pppoe-topology-example.png[height=150]
 
-
-Example of config on the Edge router
-
+.Example of config on the Edge router
 ----
 # conf t
 (config)# interface fa0/1
@@ -54,15 +96,19 @@ Example of config on the Edge router
 (config)# ip route 0.0.0.0 0.0.0.0 dialer1
 ----
 
-Verify PPPoE connectivity 
-
+.Task: Verify PPPoE connectivity
 ----
 show pppoe session
 ----
 
-Debug 
-
+.Task: Debug
 ----
 debug pppoe [data | errors | events | packets]
 ----
+
+== PPPoE authentication
+
+TODO: Add section from configuration guides
+
+
 

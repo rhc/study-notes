@@ -1,34 +1,29 @@
 = 802.1Q-in-Q tunneling
 
-
-== Concepts
-
-- adds a metro tag or PE-VLAN to the 802.1q tagged packets
-- expands the VLAN space by double-tagging frames
-- allows Service Providers 
+- Adds a metro tag or PE-VLAN to the 802.1q tagged packets
+- Expands the VLAN space by double-tagging frames
+- Allows Service Providers
  * to preserve 802.1Q VLAN tags accross WAN links.
  * to provide services such as Internet access on specific VLANs for specific customers,
-yet providing other services on other VLANs 
-
+   yet providing other services on other VLANs
 
 .Q-in-Q: basic operation
 image::q-in-q-basic-operations.png[height=150]
 
-
-== Frame 
+== Frame
 
 image::q-in-q-frame.png[802.1Q-in-Q frame]
 
 === Frame size
 
-- recommended minimum MTU: 1504 bytes 
+- Recommended minimum MTU: 1504 bytes
   * default MTU: 1500 bytes
   * outer VLAN tag: 4 bytes
 
 === TPID
 
-- contains the modified tag protocol identifier
-- set to 0x8100 for IEEE 802.1q
+- Contains the modified tag protocol identifier
+- Set to 0x8100 for IEEE 802.1q
 
 
 The QinQ frame contains the modified tag protocol identifier (TPID) value of

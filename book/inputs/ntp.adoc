@@ -4,24 +4,22 @@
 
 menu:Configuration guides[Network Management > Basic System Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/configuration/15-mt/bsm-15-mt-book/bsm-time-calendar-set.html[Setting Time and Calendar Services] ]
 
-== Overview
-
-* Version 3 https://tools.ietf.org/html/rfc1305[RFC 1305] 
+* Version 3 https://tools.ietf.org/html/rfc1305[RFC 1305]
 * UDP port 123
 * IOS does not support stratum 1 service, cannot be linked to stratum 0 atomic clock
 * Accuracy < milliseconds with 1 NTP packet per minute
-* Stratum 
+* Stratum
 ** 0 : atomic clock
 ** 8 : default value
 
 == NTP associations
 
-* Polled-based: better accuracy and reliability
-** Client mode: *ntp server* 
-** Symmetric active mode: *ntp peer*
-* Broadcast-based: less manual configuration on LAN 
-** Server: *ntp broadcast* 
-** Client: *ntp broadcast client*
+* Polled-based    : better accuracy and reliability
+    ** Client mode           : *ntp server*
+    ** Symmetric active mode : *ntp peer*
+* Broadcast-based : less manual configuration on LAN
+    ** Server                : *ntp broadcast*
+    ** Client                : *ntp broadcast client*
 
 .Task: Verify NTP status
 ----
@@ -57,7 +55,7 @@ menu:Configuration guides[Network Management > Basic System Management > http://
 
 .Task: Grant/deny access privileges with ipv4 or ipv6 access-lists
 ----
-(config)# ntp access-group [ipv4 | ipv6] <options>  <access-list-id> [kod] 
+(config)# ntp access-group [ipv4 | ipv6] <options>  <access-list-id> [kod]
 ----
 
 [NOTE]
@@ -65,18 +63,18 @@ menu:Configuration guides[Network Management > Basic System Management > http://
 * _options_ per increasing order of restrictions are:
 
 ** *peer*: synchronize itself to systems whose address passes access list criteria
-** *serve*: allows time requests and NTP control queries but no synchronization 
+** *serve*: allows time requests and NTP control queries but no synchronization
 ** *serve-only*: allows only time requests
 ** *query-only*: allows only NTP control queries
 
-* *kod* sends the kiss-of-death packet to any host that tries to send a packet 
-that is not compliant with the access-group policy. 
+* *kod* sends the kiss-of-death packet to any host that tries to send a packet
+that is not compliant with the access-group policy.
 ====
 
 
 == NTP authentication
 
-* Use cryptographic checksum keys 
+* Use cryptographic checksum keys
 * Encryption/decryption are CPU-intensive and may degrade accuracy
 
 ----
@@ -86,28 +84,28 @@ that is not compliant with the access-group policy.
 (config)# ntp server <ip-address> key <id>
 ----
 
-== Source IP address 
+== Source IP address
 
 * Default to NTP packet outgoing interface
 
 .Task: Change the source IP address for all destinations
 ----
-(config)# ntp source interface 
+(config)# ntp source interface
 ----
 
 .Task: Change the source for a specific association
 ----
-(config)# ntp {server|peer} source 
+(config)# ntp {server|peer} source
 ----
 
 == Authoritative server
 
-.Task: 
+.Task:
 ----
 (config)# ntp master
 ----
 
-== Panic treshold 
+== Panic treshold
 
 .Task: Reject time updates greater than the panic threshold of 1000 seconds
 ----
@@ -138,7 +136,7 @@ that is not compliant with the access-group policy.
 (config)# clock timezone <zone> <hours-offset> [<minutes-offset>]
 (config)# summer-time <zone> recurring [<week day month hh:mm> [<offset>]]
 (config)# summer-time <zone> date [<date month year hh:mm> [<offset>]]
-# clock set <hh:mm:ss date month year> 
+# clock set <hh:mm:ss date month year>
 # show clock
 ----
 
@@ -147,7 +145,7 @@ that is not compliant with the access-group policy.
 - different from software-clock
 
 ----
-# calendar set <hh:mm:ss date month year> 
+# calendar set <hh:mm:ss date month year>
 (config)# clock calendar-valid
 # clock read-calendar
 # clock update-calendar
@@ -175,5 +173,4 @@ that is not compliant with the access-group policy.
 
 * DoS for version <= 4.2.4p7
 * No workaround, disable NTP on the device
-* Symptoms: 
 

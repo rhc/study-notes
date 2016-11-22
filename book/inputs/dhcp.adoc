@@ -2,16 +2,12 @@
 :experimental:
 :icons: font
 
-* Menu:Configuration guides[IP Addressing > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/dhcp-overview.html[DHCP] ]
+menu:Configuration guides[IP Addressing > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/dhcp-overview.html[DHCP] ]
 
-
-
-== Overview
-
-* Https://tools.ietf.org/html/rfc2131[RFC 2131]
+* https://tools.ietf.org/html/rfc2131[RFC 2131]
 
 - Dynamic Host Configuration Protocol
-- Based on BOOTP
+- Based on BOOTP (itself based on RARP)
 - Client/agent relay/server model
 - UDP port 67
 
@@ -72,7 +68,7 @@ diagram {
 - Assign address, name server, gateways, ...
 - Accepts broadcasts from local clients or relay agents
 - Database as a tree used for attribute inheritance
-** Root: address pool for natural networks 
+** Root: address pool for natural networks
 ** Branches: subnetwork address pools
 ** Leaves: manual bindings
 
@@ -80,7 +76,7 @@ diagram {
 ----
 clear ip dhcp binding { <address> | * }
 clear ip dhcp conflict { <address> | * }
-clear ip dhcp server statistics 
+clear ip dhcp server statistics
 ----
 
 .Task: Troubleshoot DHCP IP address assignments, lease expirations, and database chnages
@@ -92,7 +88,7 @@ clear ip dhcp server statistics
 
 - Host (ftp, tftp, rcp) or storage that stores the DHCP bindings database.
 
-.Task: Save automatic bindings on a remote host 
+.Task: Save automatic bindings on a remote host
 ----
 ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
 ----
@@ -104,14 +100,14 @@ ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
 - *write-delay*: how soon the DHCP server should send database updates. default:  5 minutes, minimum: 60 seconds
 =====
 
-.Task: Run DHCP server without database agent 
+.Task: Run DHCP server without database agent
 ----
 (config)# no ip dhcp conflict logging
 ----
 
 [NOTE]
 ====
-- Not recommended 
+- Not recommended
 - TODO: add the reason
 ====
 
@@ -119,7 +115,7 @@ ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
 
 - Specify which DHCP options to use for the client
 ** If the client is not directly connected to the DHCP server (the giaddr field of the DHCPDISCOVER broadcast message is nonzero), the server matches the DHCPDISCOVER with the DHCP pool that has the subnet that contains the IP address in the giaddr field.
-** If the client is directly connected to the DHCP server (the giaddr field is zero), the DHCP server matches the DHCPDISCOVER with DHCP pools that contain the subnets configured on the receiving interface. If the interface has secondary IP addresses, subnets associated with the secondary IP addresses are examined for possible allocation only after the subnet associated with the primary IP address (on the interface) is exhausted. 
+** If the client is directly connected to the DHCP server (the giaddr field is zero), the DHCP server matches the DHCPDISCOVER with DHCP pools that contain the subnets configured on the receiving interface. If the interface has secondary IP addresses, subnets associated with the secondary IP addresses are examined for possible allocation only after the subnet associated with the primary IP address (on the interface) is exhausted.
 
 .Task: Create a pool
 ----
@@ -128,7 +124,7 @@ ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
 
 .Task: Specify the subnet network number and mask of the address pool
 ----
-(dhcp-config)# network <network-number> [mask | prefix-length] 
+(dhcp-config)# network <network-number> [mask | prefix-length]
 ----
 
 .Task: Specify the secondary subnets
@@ -148,7 +144,7 @@ ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
 
 .Task: Specify the name server per order of preference
 ----
-(dhcp-config)# dns-server <address> [<address2> ... <address8>] 
+(dhcp-config)# dns-server <address> [<address2> ... <address8>]
 ----
 
 .Task: Specify the default boot image for a client
@@ -159,24 +155,24 @@ ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
 
 .Task: Specify the netbios server
 ----
-(dhcp-config)# netbios-name-server <address> [<address2> ... <address8>] 
+(dhcp-config)# netbios-name-server <address> [<address2> ... <address8>]
 (dhcp-config)# netbios-node-type <type>
 ----
 
 .Task: Specify the gateway
 ----
-(dhcp-config)# default-router  <address> [<address2> ... <address8>] 
+(dhcp-config)# default-router  <address> [<address2> ... <address8>]
 ----
 
 
-.Task: Specify  a custom DHCP code 
+.Task: Specify  a custom DHCP code
 ----
 (dhcp-config)# option <code> [instance <number>] {ascii <string> | hex <string> | <ip-address>}
 ----
 
-.Task: Configure the duration of the lease 
+.Task: Configure the duration of the lease
 ----
-(dhcp-config)# lease <days> [<hours> [<minutes>] ]  
+(dhcp-config)# lease <days> [<hours> [<minutes>] ]
 ----
 
 .Task: Specify the lease for ever
@@ -226,14 +222,14 @@ TODO: add explanation
 ==== manual binding
 
 * MAC address of hosts are found in the DHCP database
-* Stored in NVRAM 
-* Can be configured 
+* Stored in NVRAM
+* Can be configured
 ** Individually and stored in NVRAM
-** In batch from text files  
+** In batch from text files
 
 .Task: Specify the IP address and subnet mask of the client
 ----
-(dhcp-config)# host <address> [<mask>| </prefix-length] 
+(dhcp-config)# host <address> [<mask>| </prefix-length]
 ----
 
 .Task: Specify the unique identifier for a DHCP client
@@ -242,11 +238,11 @@ TODO: add explanation
 ----
 
 - Send with DHCP option 61
-- Unique identifier 
-** 7-byte: 1byte for the media , 6 byte for the MAC address 
+- Unique identifier
+** 7-byte: 1byte for the media , 6 byte for the MAC address
 ** 27-byte: vendor, MAC address, source interface of the client
 
-.Task: Determine the client identifier  
+.Task: Determine the client identifier
 ----
 # debug ip dhcp server packet
 
@@ -254,19 +250,19 @@ DHCPD:DHCPDISCOVER received from client 0b07.1134.a029 through relay 10.1.0.253.
 DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.
 ----
 
-.Task: 
+.Task:
 ----
 (dhcp-config)# hardware-address <hw-address> [<protocol-type> | <hw-number>]
 ----
 
-- For client who can not send a client identifier in the packet 
+- For client who can not send a client identifier in the packet
 
-.Task: 
+.Task:
 ----
-(dhcp-config)# client-name <name> 
+(dhcp-config)# client-name <name>
 ----
 
-- Do not include the domain name 
+- Do not include the domain name
 
 
 === Static mapping
@@ -275,14 +271,14 @@ DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.
 * Short configuration: no need for several numerous host pools with manual bindings
 * Reduce space required in NVRAM to maintain address pools
 
-- The file format has the following elements: 
+- The file format has the following elements:
 ** Database version number
 ** End-of-file designator
 ** Hardware type
 ** Hardware address
 ** IP address
 ** Lease expiration
-** Time the file was created 
+** Time the file was created
 
 .Example
 ----
@@ -311,7 +307,7 @@ DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.
 (config)# ip dhcp ping packets <number>
 ----
 
-.Task: Specify how long a DHCP server waits for a ping reply from an address pool 
+.Task: Specify how long a DHCP server waits for a ping reply from an address pool
 ----
 (config)# ip dhcp ping timeout <milliseconds>
 ----
@@ -331,7 +327,7 @@ DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.
 
 === Central DHCP server
 
-- Updates specific DHCP options for remote DHCP server 
+- Updates specific DHCP options for remote DHCP server
 
 
 .Task: Import DHCP option parameters from central DHCP server
@@ -351,7 +347,7 @@ DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.
 
 - DHCP option contains information known by the relay agent
 - For dynamic IP addresses allocation
-- TOBECOMPLETED 
+- TOBECOMPLETED
 - By default, OS DHCP server uses info provided by option 82
 
 .Task: Enable DHCP address allocation with option 82
@@ -375,7 +371,7 @@ DHCPD:assigned IP address 10.1.0.3 to client 0b07.1134.a029.
 
 TODO: explanation/context
 
-.Task: Assign a static route for the default next-hop device when the DHCP server is accessed for an IP address 
+.Task: Assign a static route for the default next-hop device when the DHCP server is accessed for an IP address
 ----
 # ip route <prefix> <mask> {<ip-address> | <interface-number> [<ip-number>]} dhcp [<distance>]
 ----
@@ -384,7 +380,7 @@ TODO: explanation/context
 ====
 - Ensure that the DHCP client and server are defined to supply a DHCP device option 3 of the DHCP packet.
 - If the DHCP client is not able to obtain an IP address or the default device IP address, the static route is not installed in the routing table.
-- If the lease has expired and the DHCP client cannot renew the address, the DHCP IP address assigned to the client is released and any associated static routes are removed from the routing table. 
+- If the lease has expired and the DHCP client cannot renew the address, the DHCP IP address assigned to the client is released and any associated static routes are removed from the routing table.
 ====
 
 === Statistics
@@ -392,13 +388,13 @@ TODO: explanation/context
 
 .Task: Display server statistics
 ----
-# show ip dhcp server statistics 
+# show ip dhcp server statistics
 ----
 
 
 .Task: Reset all DHCP server counters to 0
 ----
-# clear ip dhcp server statistics 
+# clear ip dhcp server statistics
 ----
 
 == DHCP Relay Agent
@@ -420,7 +416,7 @@ TODO: explanation/context
 
 [NOTE]
 ====
-- The relay agent deletes the ARP entries for addresses offered to the client 
+- The relay agent deletes the ARP entries for addresses offered to the client
   on unnumbered interfaces.
 ====
 
@@ -439,7 +435,7 @@ image::dhcp-relay-agent-option-82.png[]
 # ip dhcp relay information option
 ----
 
-[NOTE] 
+[NOTE]
 ====
 - This function is disabled by default
 ====
@@ -476,7 +472,7 @@ image::dhcp-relay-agent-option-82.png[]
 (config-if)# ip dhcp relay information policy-action {drop | keep | replace}
 ----
 
-See more optional tasks 
+See more optional tasks
 http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/config-dhcp-relay-agent.html#GUID-B4DA9D20-F7A3-44BC-8019-D120136458DC[here]
 
 
@@ -497,12 +493,12 @@ http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt
 # release dhcp
 ----
 
-[NOTE] 
+[NOTE]
 ====
-The *release dhcp* command 
+The *release dhcp* command
 
-- Starts the process to immediately release a DHCP lease for the specified interface. 
-- Does not deconfigure the *ip address dhcp* command specified in the configuration file for the interface. 
+- Starts the process to immediately release a DHCP lease for the specified interface.
+- Does not deconfigure the *ip address dhcp* command specified in the configuration file for the interface.
 ====
 
 .Task: Force a renewal of a DHCP lease
@@ -511,18 +507,18 @@ The *release dhcp* command
 ----
 
 [NOTE]
-==== 
-- The *renew dhcp* command advances the DHCP lease timer to the next stage, 
+====
+- The *renew dhcp* command advances the DHCP lease timer to the next stage,
   at which point one of the following occurs:
 
     ** If the lease is currently in a BOUND state, the lease is advanced to the RENEW state and a DHCP RENEW request is sent.
     ** If the lease is currently in a RENEW state, the timer is advanced to the REBIND state and a DHCP REBIND request is sent.
 
-- If there is no response to the RENEW request, 
-the interface remains in the RENEW state. 
+- If there is no response to the RENEW request,
+the interface remains in the RENEW state.
 In this case, the lease timer will advance to the REBIND state and subsequently send a REBIND request.
 
-- If a NAK response is sent in response to the RENEW request, the interface is deconfigured. 
+- If a NAK response is sent in response to the RENEW request, the interface is deconfigured.
 ====
 
 === Configurable DHCP client feature
@@ -546,7 +542,7 @@ TODO: Explain the feature
 (config-keychain)# key <id>
 (config-keychain-key)# key-string <text>
 !
-! Specify the type of authentication 
+! Specify the type of authentication
 (config)# interface <type number>
 (config-if)# ip dhcp client authentication key-chain <name>
 (config-if)# ip dhcp client authentication mode <type>
@@ -564,7 +560,7 @@ TODO: Explain the feature
 - sends secure START/STOP accounting messages upon lease assignment/termination
 - Restrictions:
   ** AAA and RADIUS must be enabled
-  ** only for network pools with automatic bindings 
+  ** only for network pools with automatic bindings
   ** *clear ip dhcp binding* or *no service dhcp* triggers accounting STOP messages
 
 .Task: Enable DHCP accounting if a specifier server group is configured to run RADIUS accounting
@@ -580,7 +576,7 @@ debug aaa accounting
 debug aaa id
 ----
 
-=== DHC secured IP address assignment 
+=== DHC secured IP address assignment
 
 - Secures and synchronizes the MAC address of the client to the DHCP binding,
 preventing hackers form spoofing the DHCP server and taking over a DHCP lease of an authorized client
@@ -590,7 +586,7 @@ preventing hackers form spoofing the DHCP server and taking over a DHCP lease of
 (dhcp-config)# update arp
 ----
 
-[NOTE] 
+[NOTE]
 ====
 - Existing active DHCP leases will not be secured until they are renewed.
 ====
@@ -601,7 +597,7 @@ preventing hackers form spoofing the DHCP server and taking over a DHCP lease of
 ----
 
 [NOTE]
-==== 
+====
 - In some usage scenarios, such as a wireless hotspot,
   where both DHCP and secure ARP are configured, a
   connected client device might go to sleep or suspend for
@@ -626,7 +622,7 @@ preventing hackers form spoofing the DHCP server and taking over a DHCP lease of
   DHCPNAK denial message to the client, which forces the
   client back to its initial state. The client can then
   negotiate for a new lease immediately, instead of
-  waiting for its old lease to expire. 
+  waiting for its old lease to expire.
 ====
 
 
@@ -656,7 +652,7 @@ preventing hackers form spoofing the DHCP server and taking over a DHCP lease of
 
 === DHCP authorized ARP
 
-.Task: Disable dynamic ARP learning on an interface 
+.Task: Disable dynamic ARP learning on an interface
 ----
 (config-if)# arp authorized
 ----

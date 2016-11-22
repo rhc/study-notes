@@ -1,10 +1,14 @@
 = EIGRP
 
+
+
+
+
 - classless protocol (VLSM, summarization)
 - multiple routed protocol support (ipv4, ipx, appletalk, )
 - uses its own transport protocol
   ** IP protocol 88: RTP
-  ** uses multicast to 224.0.0.10 and unicast
+  ** Uses multicast to 224.0.0.10 and unicast
 - Administrative distance : 90 internal routes, 5 summary routes , 170 external routes
 - Forms active neighbor adjacencies
 - DUAL for loop-free topology and fast convergence
@@ -14,25 +18,134 @@
 - Supports MD5 based authentication
 
 
+== EIGRP Packet Format
+
+.EIGRP packet format
+[packetdiag, target="eigrp-header-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Version = 2[len=4]
+  * Opcode [len=4]
+  * Checksum [len=24]
+  * Flags [len=32]
+  * Sequence Number [len=32]
+  * Acknowledgement Number [len=32]
+  * Virtual Router Id [len=16]
+  * Autonomous System Number [len=16]
+  * TLV(s) [len=32, stacked, color=orange]
+}
+----
+
+Opcode:: EIGRP packet type
+- 1 = Update, 3 = Query, 4 = Reply, 5 = Hello/Ack, 10 = SIA Query, 11 = SIA Reply.
+- Other types have been allocated for different, mostly unimplemented
+  purposes, or are obsolete
+
+Checksum::
+- based on the entire EIGRP packet excluding the IP header.
+
+Flags::
+- 0x1 = Init (used during initial adjacency buildup)
+- 0x2 = Conditional Receive (used by RTP to allow this message to be received only by a subset of receivers)
+- 0x4 = Restart (indicates that a router has restarted)
+- 0x8 = End-of-Table (indicates that the transmission of the entire EIGRP database is complete).
+
+Sequence::
+- Facilates orderly delivery of packets
+
+Acknowledgement::
+- sequence number of the last packet heard from the neighbor to which this
+packet is being sent.
+- A Hello packet with a nonzero ACK field  will be treated as an ACK packet rather than as a Hello.
+- only unicast because acknowledgments are never multicasted.
+
+TLV::
+- Field used to carry route entries as well as provide EIGRP DUAL information.
+
+* 0x0001 EIGRP Parameters (General TLV Types)
+* 0x0002 Authentication Type (General TLV Types)
+* 0x0003 Sequence (General TLV Types)
+* 0x0004 Software Version (General TLV Types)
+* 0x0005 Next Multicast Sequence (General TLV Types)
+* 0x0102 IPv4 Internal Routes (IP*Specific TLV Types)
+* 0x0103 IPv4 External Routes (IP*Specific TLV Types)
+* 0x0402 IPv6 Internal Routes (IP*Specific TLV Types)
+* 0x0403 IPv6 External Routes (IP*Specific TLV Types)
+* 0x0602 Multi Protocol Internal Routes (AFI*Specific TLV Types)
+* 0x0603 Multi Protocol External Routes (AFI*Specific TLV Types)
+
+
+
 == EIGRP messages
+
+
+.Task: Show Statistics about messages sent and received
+----
+# show ip eigrp traffic
+
+EIGRP-IPv4 VR(CCIE) Address-Family Traffic Statistics for AS(1)
+  Hellos sent/received: 1132/6090
+  Updates sent/received: 169/428
+  Queries sent/received: 0/0
+  Replies sent/received: 0/0
+  Acks sent/received: 74/191
+  SIA-Queries sent/received: 0/0
+  SIA-Replies sent/received: 0/0
+  Hello Process ID: 246
+  PDM Process ID: 244
+  Socket Queue: 0/10000/7/0 (current/max/highest/drops)
+  Input Queue: 0/2000/7/0 (current/max/highest/drops)
+----
 
 [horizontal]
 Hello::
-- multicast to 224.0.0.10
-- do not require acknowlegment
-- can be used as Ack if sent without data
+- Opcode = 5
+- Multicast to 224.0.0.10
+- Do not require acknowlegment
+- Can be used as Ack if sent without data
+- every 5 seconds or 60 seconds on NBMA interfaces with < 1 Mbps bandwidth
+- Non-reliable
+
 
 Ack::
-- unicast
-- contains a nonzero acknowledgement number
+- unicast in response to Update, Query, Reply, SIA-Query, and SIA-Reply packets
+- contains a nonzero acknowledgement number set to the Sequence number of the reliable packet being acknowledged.
+- uses the same Opcode as the Hello packet
+- Non-reliable
+
+NOTE: it is allowed to use any unicast reliable packet to also carry an acknowledgment number.
+If a router has both a unicast reliable packet to send to a neighbor and also needs to acknowledge a previously received reliable packet from that neighbor,
+the sequence number of the received reliable packet can be sent along with the outbound reliable packet in its Acknowledgment number field.
+It is not necessary to send a standalone ACK in this case;
+the unicast reliable packet carrying a nonzero Acknowledgment number field will be processed by its recipient both by its true type and as an ACK.
+
 
 Update::
 - multicast or unicast
 
+
+* unicast during a new adjacency buildup, Update packets are unicasted between the
+  newly discovered neighbors.
+
+  ** In specific cases, when multiple new neighbors are detected on a single multiaccess interface in a short time span,
+  EIGRP might choose to synchronize to them using multicasts for efficiency reasons
+  (for example, when a hub router in a DMVPN network starts and detects tens or hundreds of spoke routers).
+
+* multicast after routers have fully synchronized
+* unicast if a neighbor does not acknowledge the arrival of an Update packet
+* always unicasts on point-to-point interfaces and for statically configured neighbors
+
 Query::
+- Opcode = 3
 - multicast unless in response to a received query
 
 Reply::
+- Opcode = 4
 - unicast
 - indicates that it does not need to go into Active state
 because it has a FS
@@ -42,16 +155,28 @@ Request::
 - get specific info from neighbors
 - used in route server applications
 
+SIA-Query::
+- Opcode = 10
+- unicast
+- used during a prolonged diffusing computation to verify whether a neighbor
+  that has not yet sent a Reply to a Query is truly reachable and still engaged
+  in the corresponding diffusing computation. The SIA-Query packet is used to
+  ask a particular neighbor to confirm that it is still working on the original
+  Query. If the neighbor is reachable and is still engaged in the diffusing
+  computation for the destination specified in the SIA-Query, it will
+  immediately respond with an SIA-Reply packet.  As a result, the timer that
+  governs the maximum time a diffusing computation is allowed to run is reset,
+  giving the computation extra time to finish
 
-.Task: Exchange EIGRP packets only as unicast
-----
-(config-router)# neighbor <a.b.c.d> <interface-id>
-----
+SIA-Request::
+- Opcode = 10
+- unicast
 
-.Task: Exchange EIGRP packets only as unicast
-----
-(config-router-af-interface)# neighbor <a.b.c.d> <interface-id>
-----
+
+- Unreliable packets: Hello and Ack
+- Reliable packets: Update, Query/Reply, SIA-Query/SIA-Reply
+ * Must be ACK
+ * are retransmitted at most 16 times
 
 
 .Task: debug EIGRP
@@ -61,75 +186,256 @@ debug ip eigrp packet [hello | ack | update } quey | reply]
 
 == Neighbors
 
-- discovered with Hello packets
+- Discovered with Hello packets
+- can be set manually
 - must agree on
-** primary IPv4 subnet
+** Primary IPv4 subnet
 ** Autonomous System Number
-** authentication
+** Authentication
 ** K values
 
-- do not need to agree on timers
+- Do not need to agree on timers
+** The hold time is included in the hello packets so each neighbor should stay alive even though the hello interval and hold timers do not match.
+
+IMPORTANT: After a static neighbor is defined, all EIGRP multicasts on the
+interface through which the neighbor is reachable will be disabled. As a
+result, EIGRP-enabled routers will not establish an adjacency if one router is
+configured to use unicast (static) while another uses multicast (dynamic) on
+the same link. Here’s another way of putting this rule: Either all neighbors on
+a common network segment are statically configured for each other, or none of
+them are.
+
+.Task: Adjust EIGRP Hello interval
+----
+(config-if)# ip hello-interval eigrp <asn> <seconds>
+----
+
+.Task: Adjust EIGRP Holdown time
+----
+(config-if)# ip hold-time eigrp <asn> <seconds>
+----
+NOTE: Changing the Hello interval does not result in automatic recalculation
+of the Hold time. This can, under certain circumstances, result in problems
+with flapping adjacencies if the Hello interval is manually configured to be
+close or even higher than the default Hold time, without changing the Hold
+timer itself.
+
 
 .Task: Verify neighbor adjacencies
 ----
 # sh ip eigrp neighbors [detail]
+
+IP-EIGRP neighbors for process 1
+H  Address    Interface  Hold Uptime    SRTT   RTO  Q  Seq
+                         (sec)           (ms)       Cnt Num
+1  10.10.10.3 Fa0/0       11   00:00:08    87   522  0   6
+0  10.10.10.2 Fa0/0       14   00:01:54  1300  5000  0   3
 ----
 
-TIP: Check that the queue count is zero
+IMPORTANT: Q Cnt indicates the number of enqueued reliable packets, that is, packets that
+have been prepared for sending and even possibly sent but for which no ACK has been received yet from the neighbor. In a stable network, the Q Cnt value must be zero; non- zero values are normal during initial router database synchronization or during network convergence. If the Q Cnt value remains nonzero for prolonged periods of time, however, it indicates a communication problem with the neighbor.
 
+.Task: Exchange EIGRP packets only as unicast
+----
+(config-router)# neighbor <a.b.c.d> <interface-id>
+----
+
+.Task: Exchange EIGRP packets only as unicast in named configuration
+----
+(config-router-af-interface)# neighbor <a.b.c.d> <interface-id>
+----
+
+=== Adjancency creation
+
+image::eigrp-adjacency-creation.png[EIGRP Adjacency Formation]
+
+NOTE: :EIGRP does not build peer relationships over secondary addresses. All EIGRP traffic is sourced from the primary address of the interface.
 
 == EIGRP Loop prevention techniques
 
-== Split horizon
+=== Split horizon
 
-- Enable by default on all interfaces
+- Enabled by default on all interfaces
 
 .Task: Disable split horizon for EIGRP
 ----
-(config-if)# no ip split-horizon eigrp <asn> 
+(config-if)# no ip split-horizon eigrp <asn>
 ----
 
 .Task: Disable split horizon in named configuration
 ----
-(config-router-af-interface)# no split-horizon 
+(config-router-af-interface)# no split-horizon
 ----
 
-== DUAL feasibility condition
-
-
-== EIGRP reconvergence
-
-- if the successor becomes unreachable,
-  * if there is a feasible successor
-    ** use the FS without local computation
-  * else
-    ** query the neighbors and put the route in active
-
-- Transport: IP protocol 88
-- Hello interval
 
 == Metric
 
-metric = 256 * [K1 x bandwidth + (k2 x bandwidth)/ (256 -load) + k3 x delay] x [k5 /( reliability + k4)]
+asciimath:[Metric = 256 * ((K_1 * B\a\n\dwidth + (K_2 * B\a\n\dwidth)/(256 - Load) + K_3 * Delay)) * ( K_5 / (Reliability + K_4) )]
 
-- bandwith: 10^7^ / minimum bandwidth in Kbps
-- delay: in tens-of-microseconds
-- reliability: likelihood of successful packet transmission with 0 means 0% and 255 means 100%
-- load : effective load of the route with 255 means 100% loading
-- mtu : minimum Maximum transmission unit
-
-- default values: k1,k2,k3,k4,k5 = 1,0,1,0,0
-- the values of K must match for the neighbors to become adjacents
+- Default Values: k1,k2,k3,k4,k5 = 1,0,1,0,0
+- The values of K must match for the neighbors to become adjacents
+- EIGRP uses integer division while calculating the metric
 
 .Task: Description
 ----
 (config-router)# metric weights
 ----
 
+=== Bandwith Metric Component
+
+* asciimath:[frac {10^(7)} { "minimum Bandwidth in Kbps"} ]
+* Range: 1 Mbps to 10 Gpbs
+
+
+.Task: Configure the bandwidth of an interface
+----
+(config-if)# bandwidth <kbps>
+----
+
+=== Delay Metric Component
+
+* in tens-of-microseconds
+* sum of delay on the path to the destination
+* Range: 1..167,772,14
+* EIGRP split horizon with poison reverse, route withdrawal uses max delay 167,772,15 to indicate an  unreachable network
+* CAUTION: *show ip interface* displays delay in micro-seconds
+
+.Task: Configure the delay of an interface
+----
+(config-if)# delay <tens-of-microseconds>
+----
+
+=== Reliability Metric Component
+
+* likelihood of successful packet transmission with 0 means 0% and 255 means 100%
+* Minimum value along the path
+* EIGRP does not send a new update every time the reliability changes along the path
+* The reliability metric of a route is just a snapshot of its then-current reliability when it was last advertised.
+
+=== Load Metric Component
+
+* Maximum effective Txload of the route with 255 means 100% loading
+
+* To account for large differences in the momentary load caused by bursty traffic,
+IOS actually computes an exponentially weighted average over the
+momentary load that smooths out short-lived load swings.
+
+* Because an interface can be differently utilized in the ingress and egress data flow direction,
+IOS maintains two independent load metric counters, the Txload for outgoing traffic and Rxload for incoming traffic.
+
+* EIGRP does not send a new update every time the load changes along the path
+* The load metric of a route is just a snapshot of its then-current load when it was last advertised.
+
+
+=== MTU Metric Component
+
+* minimum Maximum transmission unit
+* not factored into the composite metric calculation and does not impact the best-path selection in any way
+
+
+=== Hop Count Metric Component
+
+* Default max value: 100, can be set to 255
+* not factored into the composite metric calculation and does not impact the best-path selection in any way
+
+=== Routing Metric Offset Lists
+
+TODO
+
+[IMPORTANT]
+====
+When trying to manually influence EIGRP path selection through interface bandwidth/delay configuration,
+the modification of bandwidth is discouraged for following reasons:
+
+- The change will only affect the path selection
+  if the configured value is the low- est bandwidth over the entire path. Changing the bandwidth can have
+  impact beyond affecting the EIGRP metrics. For example, QoS also looks at the bandwidth on an interface.
+
+- EIGRP by default throttles to use 50 percent of the configured bandwidth.
+  Lowering the bandwidth can cause problems like starving EIGRP neighbors from
+  getting packets because of the throttling back. Configuring an excessively
+  high bandwidth can lead EIGRP to consume more bandwidth than physically
+  avail- able, leading to packet drops.
+
+- Changing the delay does not impact other protocols nor does it cause EIGRP to
+  throttle back, and because, as it’s the sum of all delays, has a direct
+  effect on path selection.
+
+====
+
 
 == Wide Metric
 
-Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total Latency) + (K6*Extended Attributes)]* [K5/(K4 + Reliability)] 
+Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total Latency) + (K6*Extended Attributes)]* [K5/(K4 + Reliability)]
+
+- Use one of the following commands to confirm wide metric support:
+
+* *sh eigrp plugins*
+* *sh eigrp tech-support*
+* *sh ip protocols*
+
+TODO:
+.Task: Change the scale
+----
+(config-router)# metric rib-scale <1..255>
+----
+
+- throughput -> bandwidth
+
+=== Latency Metric Component
+
+- ~ delay
+- On interfaces physically operating on speeds of 1 Gbps and lower without bandwidth and delay commands,
+  the interface delay is simply its IOS-based default delay converted to picoseconds.
+- On interfaces physically operating on speeds over 1 Gbps without bandwidth and delay commands, the interface delay is computed as 10^13^ / interface default bandwidth.
+- On interfaces configured with the explicit bandwidth command and without the delay command, regardless of their physical operating speed,
+  the interface delay is the IOS-based default delay converted to picoseconds.
+- On interfaces configured with explicit delay command, regardless of their physical operating speed and the bandwidth setting,
+  the interface delay is computed as its specified delay value converted to picoseconds, that is, 10^7^ * value of the delay command
+  (recall that the delay command defines the delay in tens of microseconds)
+
+
+== Reliable Transport Protocol
+
+- guarantees delivery in order
+- Update, Query, Reply, SIA-Query, SIA-Request packets
+- uses Conditional Receive for reliable and efficient multicast
+* partition all its neighbors on a multiaccess interface into two groups: a
+ group of well-behaved neighbors that have been able to acknowledge all
+ multicast messages sent so far and a group of “lagging” routers that have
+ failed to acknowledge at least one transmitted reliable EIGRP packet and that
+ must be handled individually. If EIGRP wants to continue sending the
+ multicast packets in parallel with retransmitting the unacknowledged packets
+ to the lagging routers as unicasts, it has to send the in-order multicast
+ packets with a special flag saying “this packet is only for those routers
+ that have received all multicast packets so far.”
+
+* accomplished by the sender first transmitting a Hello packet with two
+ specific TLVs called the Sequence TLV and the Next Multicast Sequence TLV,
+ often called a Sequenced Hello. The Next Multicast Sequence TLV contains the
+ upcoming sequence number of the next reliable multicasted message. The
+ Sequence TLV contains a list of all lagging neighbors by their IP address, in
+ effect saying “whoever finds himself in this list, ignore the next multicast
+ message with the indicated sequence number.” A neighbor receiving this
+ Sequenced Hello packet and not finding itself in the Sequence TLV will know
+ that it is expected to receive the upcoming multicast packet, and will put
+ itself into a so-called Conditional Receive mode (CR-mode). A neighbor
+ receiving this Sequenced Hello packet and finding itself in the Sequence TLV,
+ or a neighbor not receiving this Hello packet at all for whatever reason will
+ not put itself into the CR-mode.  Afterward, the sending router will send the
+ next multicast packet with the CR flag set in its Flags field. Routers in
+ CR-mode will process this packet as usual and then exit the CR-mode; routers
+ not in CR-mode will ignore it. As a result, the router is able to continue
+ using multicast with those routers that have no issues receiving and
+ acknowledging it, while making sure that the lagging neighbors won’t process
+ the multicasts until they are able to catch up. Each lagging neighbor that has
+ not acknowledged one or more multicast packets will be sent these packets as
+ unicasts in their proper sequence.
+
+* multicast flow timer: time to wait for an ACK before declaring a neighbor as lagging and switching from multicast to unicast
+* RTO (Retransmission Time Out): the time between the subsequent unicasts
+* SRTT (Smooth Round Trip Time): is average elapsed time, measured in milliseconds, between the transmission of a reliable packet to the neighbor and the receipt of an acknowledgment.
+
 
 == EIGRP Autonomous System Configuration
 
@@ -140,7 +446,7 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 == EIGRP Named Configuration
 
 - Global params under SAFI or in *config-router-topology base* mode
-- interface params in *config-router-af-interface* mode 
+- interface params in *config-router-af-interface* mode
 - wide-meric scaling automatic enabled
 
 - can be configured in IPv4 and IPv6 named configuration
@@ -156,33 +462,543 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 (config-router-af)# network <a.b.c.d>
 ----
 
-== EIGRPv3
+.Task: Convert Classic Configuration to EIGRP named configuration
+----
+# eigrp upgrade-cli name
+----
+
+=== Address Family Section
 
 ----
-(config-router)# address-family ipv6 [unicast] [vrf vrf-name] autonomous-system asn
+(config-router-af)# ?
+Address Family configuration commands:
+  af-interface        : Enter Address Family interface configuration
+  default             : Set a command to its defaults
+  eigrp               : EIGRP Address Family specific commands
+  exit-address-family : Exit Address Family configuration mode
+  maximum-prefix      : Maximum number of prefixes acceptable in aggregate
+  metric              : Modify metrics and parameters for advertisement
+  neighbor            : Specify an IPv4 neighbor router
+  network             : Enable routing on an IP network
+  shutdown            : Shutdown address family
+  timers              : Adjust peering based timers
+  topology            : Topology configuration mode
+
 ----
 
-== EIGRP Neighbor Relationship Maintenance
+=== Per-AF-Interface Section
 
-- Hellos
-- adjancency
+----
+(config-router-af-interface)# ?
+Address Family Interfaces configuration commands:
+
+add-paths          : Advertise add paths
+authentication     : authentication subcommands
+bandwidth-percent  : Set percentage of bandwidth percentage limit
+bfd                : Enable Bidirectional Forwarding Detection
+dampening-change   : Percent interface metric must change to cause update
+dampening-interval : Time in seconds to check interface metrics
+default            : Set a command to its defaults
+exit-af-interface  : Exit from Address Family Interface configuration mode
+hello-interval     : Configures hello interval
+hold-time          : Configures hold time
+next-hop-self      : Configures EIGRP next-hop-self
+passive-interface  : Suppress address updates on an interface
+shutdown           : Disable Address-Family on interface
+split-horizon      : Perform split horizon
+summary-address    : Perform address summarization
+----
+
+=== Per-AF-Topology Configuration Section
+
+Within the context of Multi Topology Routing, a topology is defined as a subset
+of rout- ers and links in a network for which a separate set of routes is
+calculated. The entire net- work itself, for which the usual set of routes is
+calculated, is known as the base topology. The base topology is the default
+routing environment that exists prior to enabling MTR. Any additional
+topologies are known as class-specific topologies and are a subset of the base
+topology. Each class-specific topology carries a class of traffic and is
+characterized by an independent set of Network Layer Reachability Information
+(NLRI) that is used to maintain separate routing tables and FIB databases. This
+design allows the router to per- form independent route calculation and
+forwarding for each topology. Multiple topolo- gies can be used to segregate
+different classes of traffic, such as data, voice, and video, and carry them
+over different links in the same physical network, or to keep separate and
+independent topologies for IPv4 and IPv6 routing. Multiple topologies are not
+equivalent to Virtual Routing and Forwarding (VRF) tables because they share
+the common address space, and they are not intended to provide address
+conservation or reuse.
+
+EIGRP is capable of keeping separate routing information for different
+topologies, and its behavior per specific topology within an address family can
+be configured in the per-AF- topology section. On routers without MTR support,
+only the topology base command will be available; on routers supporting MTR,
+the topology command will allow referenc- ing a particular separate topology
+table definition by its name.
+
+----
+(config-router-af-topology)# ?
+Address Family Topology configuration commands:
+
+auto-summary        : Enable automatic network number summarization
+default             : Set a command to its defaults
+default-information : Control distribution of default information
+default-metric      : Set metric of redistributed routes
+distance            : Define an administrative distance
+distribute-list     : Filter entries in eigrp updates
+eigrp               : EIGRP specific commands
+exit-af-topology    : Exit from Address Family Topology configuration mode
+maximum-paths       : Forward packets over multiple paths
+metric              : Modify metrics and parameters for advertisement
+offset-list         : Add or subtract offset from EIGRP metrics
+redistribute        : Redistribute IPv4 routes from another routing protocol
+snmp                : Modify snmp parameters
+summary-metric      : Specify summary to apply metric/filtering
+timers              : Adjust topology specific timers
+traffic-share       : How to compute traffic share over alternate paths
+variance            : Control load balancing variance
+----
 
 
-== DUAL Finite State Machine
+== DUAL
 
-- A successor is a neighboring router that has a least-cost path to a
-  destination that is guarentedd not to be part of a routinf
+
+=== Topology Table
+
+.Task: Display EIGRP topology table
+----
+# show ip eigrp topology [as-number | [[ip-address] mask]] [active | all-links | pending | summary | zero-successors]
+
+IP-EIGRP Topology Table for process 77
+
+Codes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,
+      r - Reply status
+
+P 172.16.90.0 255.255.255.0, 2 successors, FD is 0
+         via 172.16.80.28 (46251776/46226176), Ethernet0
+         via 172.16.81.28 (46251776/46226176), Ethernet1
+         via 172.16.80.31 (46277376/46251776), Serial0
+P 172.16.81.0 255.255.255.0, 1 successors, FD is 307200
+         via Connected, Ethernet1
+         via 172.16.81.28 (307200/281600), Ethernet1
+         via 172.16.80.28 (307200/281600), Ethernet0
+         via 172.16.80.31 (332800/307200), Serial0
+----
+
+P - Passive:: No EIGRP computations are being performed for this destination.
+A - Active:: EIGRP computations are being performed for this destination.
+U - Update:: Indicates that an update packet was sent to this destination.
+Q - Query:: Indicates that a query packet was sent to this destination.
+R - Reply:: Indicates that a reply packet was sent to this destination.
+r - Reply:: status Flag that is set after the software has sent a query and is waiting for a reply.
+
+RD:: Reported Distance
+CD:: Computed Distance
+
+
+FD:: Feasible Distance
+- record of the lowest known distance since the last transition
+from the Active to Passive state.
+* In other words, FD is a historical record, or a historical copy, of the smallest known CD toward a particular destination,
+with the history starting anew with the last Active-to-Passive transition.
+
+* Being a record of the smallest known CD since the route entered the Passive
+state for the last time, FD is not necessarily equal to the current best CD
+to a destination.
+
+* By its definition, in the Passive state, after the FD has
+been initialized, it can only decrease (if the current best CD happens to fall
+below the current value of FD) or remain at its current value (if the current
+best CD rises but the route remains Passive).
+
+* There is exactly one FD per each destination, regardless of the number of neighbors.
+* FD is an internal variable maintained for each network known to EIGRP
+whose value is never advertised to another router.
+
+
+- lowest bandwidth on the path to this destination as reported by the upstream neighbor
+- total delay
+- path reliability
+- path loading
+- minimum path maximum transmission unit (MTU)
+- feasible distance
+- reported distance
+- route source (external routes are marked)
+
+=== Feasibility condition
 
 - Feasibility condition: RD < FD
+* it is a sufficient condition but not a necessary condition
+* not every loop-free path satisfies the FC
+* proven by Dr. J. J. Garcia-Luna-Aceves
+* also called the Source Node Condition
+
+
+- Feasible Successor: Neighbor that satisfy the FC
+- successor: Feasible Successor with the least CD
+
+=== Topology Changes
+
+- A topology change occurs whenever the distance to a network changes or a new neighbor comes online that advertises the network.
+* The distance change can be detected either through receiving an Update, Query, Reply, SIA- Query, or SIA-Reply packet from a neighbor that carries updated
+metric information about the network, or because a local interface metric has changed.
+* Also, the event of a neighbor going down is processed by setting the CD/RD of all networks reachable through that neighbor to infinity.
+
+- Whenever EIGRP detects a topology change,
+
+* it first records the change into the topology table and updates the RD and CD of the neighbor that advertised
+the change (in case of a received EIGRP message) or was influenced by it (in case of a link metric change).
+
+* From among all neighbors that advertise the network, EIGRP identifies the one
+that provides the least CD, taking into account the updated CDs. Note that the
+FC is not invoked at this step.
+
+- Only after identifying the neighbor offering the least CD, EIGRP verifies
+whether this neighbor meets the FC and is therefore a Feasible Successor. If it
+is, EIGRP will promote it to the Successor and start using it right away. If,
+however, that neighbor does not meet the FC, EIGRP will put the route into the
+Active state and send out Queries, asking its neighbors to assist in locating
+the best route.
+
+=== Local Computation
+
+- After a topology changes, if the best path is through a Feasible Successor,
+do the following:
+
+. The Feasible Successor providing the least CD is made the new Successor.
+. If the CD over the new Successor is less than the current FD, the FD will be updated to the new CD; otherwise it stays at its current value.
+. The routing table is updated to point toward the new Successor.
+. If the current distance to the destination has changed as a result of switching to a new Successor, an Update packet is sent to all neighbors, advertising the router’s updated distance to the destination.
+
+=== Diffusing Computation
+
+If after a topology changes , if the router finds out that the new shortest path is provided by a neighbor that is not a Feasible Successor,
+do the following:
+
+1. The entry in the routing table, still pointing to the current unchanged Successor, is locked: It must not be removed nor its next hop changed until the diffusing compu- tation is finished and the route has been moved to the Passive state again.
+2. The FD is set to the current (possibly increased) CD through the current unchanged Successor. Also, if this router ever needs to advertise its distance to the network while in the Active state, it will also use the value of the current CD through the Successor.
+3. The network is put into the Active state and the router sends out a Query packet to all its neighbors. This Query packet contains the Active network’s prefix and the router’s current CD toward it.
+
+
+==== One single topology change
+
+Each neighbor receiving a Query packet will process it by updating its own
+topology table using the distance information advertised in the Query and
+reevaluating its own choice of Successors and Feasible Successors.
+Two possibilities now exist: Either the neighbor still has its own Feasible
+Successor or a Successor that provides it with the least- cost loop-free path,
+or the information contained in the Query causes the neighbor to stop
+considering the path through its current Successor the shortest available and
+none of its own neighbors that offer the shortest path are a Feasible
+Successor.
+
+
+=== Multiple topology changes
+
+- Uses DUAL Finite State Machine to handle multiple topology changes occuring a simple diffusing computation
+
+image::eigrp-dual-fsm.png[DUAL finite state machine]
+
+States::
+- P : Passive
+- A0: Local Origin with Distance Increase
+- A1: Local Origin
+- A2: Multiple Origins
+- A3: Successor Origin
+
+Rules::
+
+- Unless a change in distance occurs such that the neighbor providing the least CD fails to meet the FC,
+  the route remains passive.
+
+- If a Query is received from the current Successor and, after processing the
+  distance indicated in this Query, the neighbor that provides the least
+  CD fails to meet the FC, the route will enter the A3 active state.
+  * The router will send out Queries and wait for Replies.
+  * If no further distance increase is detected while waiting for the Replies,
+  the last Reply allows the router to
+  transition back to the Passive state,
+  reinitialize the FD,
+  and choose any neighbor that provides the least CD as the new Successor.
+
+- If a distance change caused by other means than a Query from a Successor is
+  detected (this can be caused by receiving an Update, changing an interface
+  metric, or losing a neighbor) and after processing the change, the neighbor
+  that provides the least Computed Distance fails to meet the Feasibility
+  Condition, the route will enter the A1 active state, also called the Local
+  Origin Active State. The router will send out Queries and wait for Replies.
+  If no further distance increase or Query from the current Successor is
+  received while waiting for the Replies, the last Reply allows the router to
+  transition back to the Passive state, reinitialize the Feasible Distance, and
+  choose any neighbor that provides the least Computed Distance as the new
+  Successor.
+
+- If during the stay in the A3 (Successor Origin) or A1 (Local Origin) active
+  states, another distance increase caused by other means than the Successor’s
+  Query is detected, another topology change during the diffusing computation
+  has occurred.  Because the router cannot advertise this updated distance
+  while it is in the Active state, other routers might not be informed about it
+  and their Replies might not take this new increased distance into account.
+  Therefore, extra scrutiny is applied to the received Replies instead of
+  simply choosing the neighbor that provides the least Computed Distance.  This
+  is accomplished first by changing the state from A3 (Successor Origin) to A2
+  (called Multiple Origins), or from A1 (Local Origin) to A0 (no official name;
+  we will call it Local Origin with Distance Increase) states.  In A2 or A0
+  states, the router waits to receive all remaining Replies. When the last
+  Reply arrives, the router will first check whether the neighbor providing the
+  least Computed Distance passes the Feasible Condition check using the
+  Feasibility Distance value set when the route entered the Active state
+  (recall that it was set to the increased distance through the current
+  Successor at the moment of transition- ing to the Active state). This extra
+  check essentially mimics a situation in which the router is actually using
+  the path through the current Successor and has just detected the distance
+  increase, so it uses the current value of Feasibility Distance to verify
+  whether the neighbor providing the least Computed Distance passes the
+  Feasibility Condition. If it does, the route becomes Passive again, and the
+  neighbor is chosen as the Successor. If it does not, however, the route will
+  return from A0 (Local Origin with Distance Increase) to A1 (Local Origin) or
+  from A2 (Multiple Origins) to A3 (Successor Origin) and the router will
+  commence another diffusing computation by again sending a Query.
+
+- If during the stay in A1 (Local Origin) or A0 (Local Origin with Distance
+  Increase) active states a Query from the Successor is received, another
+  topology change dur- ing the diffusing computation has occurred. Because the
+  router cannot advertise this updated distance while it is in the Active
+  state, other routers might not be informed about it and their Replies might
+  not take this new increased distance into account. Therefore, extra scrutiny
+  is applied to the received Replies. This is accomplished by changing the
+  state to A2 (Multiple Origins) and then proceeding from that state just like
+  in the previous case
+
+
+.Task: Display details on EIGRP Active States
+----
+# sh ip eigrp topology active
+----
+
+
+
+
+
+=== Stuck-In-Active
+
+- when all expected Replies are not received before the *Active* timer ( default= 3 minutes ) expires after first Query
+
+* The neighbors that did not reply will be removed from the neighbor table and
+their adjacencies torn down, and the diffusing computation will consider these neighbors to have responded with an infinite metric.
+
+- If a neighbor does not respond to a Query message with its Reply within half of
+the Active timer time, the router will send the neighbor a SIA-Query message.
+The SIA- Query stands for a message saying “Are you still working on my Query?”
+If the neigh- bor is able to receive and process this SIA-Query, it will
+immediately respond with the SIA-Reply message. The contents of the SIA-Reply
+can either say “Yes, I still expect my own neighbors to send me the Replies
+I’ve asked them for” or “No, the computation is finished; this is my current
+metric to the destination.” In any case, the SIA-Reply is sent immediately as a
+response to the SIA-Query message; there is nothing to wait for. Receiving an
+SIA-Reply allows the Active timer to be reset, giving the diffusing computa-
+tion an additional time to complete. At most three SIA-Queries can be sent,
+each after half of the Active timer. If the diffusing computation is not
+finished by the time the third SIA-Query was replied to by an SIA-Reply and the
+half of the Active timer expired again, the adjacency to the neighbor will be
+dropped. The same will happen if an SIA-Query
+is not responded to by an SIA-Reply within the next half of the Active timer.
+With the default setting of the Active timer to 180 seconds, three consecutive
+SIA-Query packets allow extending the diffusing computation to a maximum of 4 ×
+90 = 360 seconds (90 seconds to the first SIA-Query, plus each SIA-Query buying
+another 90 seconds).
+
+.Task: Control the time that the router waits (after sending a query) before declaring the route to be in the stuck in active state.
+----
+(config-router)# timers active-time [<minutes>| disabled]
+----
+NOTE: default wait time = 3 minutes
+
+- Reasons a router doesn't respond to EIGRP Query:
+
+* The neighbor router’s CPU is overloaded and the router either cannot respond in time or is even unable to process all incoming packets including the EIGRP packets.
+* Quality issues on the link are causing packets to be lost.
+* Low-bandwidth links are congested and packets are being delayed or dropped.
+* The network topology is excessively large or complex, either requiring the Query to propagate to a significant depth or causing an inordinate number of prefixes to be impacted by a single link or node failure.
+
+
+- Troubleshooting SIA routes is generally a three-step process:
+. Find the routes that are consistently being reported as SIA.
+. Find the router that is consistently failing to answer queries for these routes
+. Find the reason that router is not receiving or answering queries.
+
+The first step should be fairly easy.
+If you are logging console messages, a quick perusal of the log indicates which routes are most frequently marked SIA.
+
+The second step is more difficult. The command to gather this information is show ip eigrp topology active:
+
+----
+Codes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,
+       r - Reply status
+
+A 10.2.4.0/24, 0 successors, FD is 512640000, Q
+    1 replies, active 00:00:01, query-origin: Local origin
+         via 10.1.2.2 (Infinity/Infinity), Serial1
+    1 replies, active 00:00:01, query-origin: Local origin
+         via 10.1.3.2 (Infinity/Infinity), r, Serial3
+    Remaining replies:
+         via 10.1.1.2, r, Serial0
+----
+
+Any neighbors that show an R have yet to reply (the active timer shows how long
+the route has been active). Note that these neighbors may not show up in the
+Remaining replies section; they may appear among the other RDBs. Pay particular
+attention to routes that have outstanding replies and have been active for some
+time, generally two to three minutes. Run this command several times and you
+begin to see which neighbors are not responding to queries (or which interfaces
+seem to have a lot of unanswered queries). Examine this neighbor to see if it
+is consistently waiting for replies from any of its neighbors. Repeat this
+process until you find the router that is consistently not answering queries.
+You can look for problems on the link to this neighbor, memory or CPU
+utilization, or other problems with this neighbor.
+
+If you run into a situation where it seems that the query range is the problem,
+it is always best to reduce the query range rather than increasing the SIA
+timer.
+
+== Stub Routing
+
+TODO Better explanation of this feature
+
+- improves network scalability and stability.
+- commonly used in hub-and-spoke networks.
+- configured only on spoke routers.
+- announces its stub router status using an additional TLV in its EIGRP Hello messages.
+
+The results of configuring a router as a stub are multifold:
+
+- A stub router does not propagate routes learned through EIGRP to its neighbors, with the exception of *leak-map* routes .
+ This prevents a stub router from ever being considered a Feasible Successor for remote networks by its
+neighbors and possibly becoming a transit router at some point in the future.
+
+- A stub router advertises only a subset of its own EIGRP-enabled networks to
+its neighbors. This subset can be defined in the *eigrp stub* command using the
+*summary*, *connected*, *static*, *redistributed*, and *receive-only* keywords.
+
+- Neighbors of a stub router aware of its stub status (thanks to the specific
+TLV in the stub router’s Hello packets) will never send a Query packet to a
+stub router. This prevents the neighbors from converging through a stub
+router to reach networks that are remote to the stub router.
+
+
+The following rules summarize the stub router behavior with respect to handling Query packets:
+
+- Originating Query packets is not modified in any way. Rules for entering the
+  Active state and sending Queries are precisely the same.
+
+- Processing received Query packets depends on what network was queried for. If
+  the network in the received Query is a network the stub router is allowed to
+  adver- tise, meaning that it falls under the configured category of summary,
+  connected, static, or redistributed, the router will process the Query
+  normally (even possi- bly causing the stub router to become Active itself)
+  and send back an appropriate Reply. The same is valid for an EIGRP-learned
+  network that is allowed to be further advertised using a leak-map—a Query for
+  such a network would be processed and responded to in the usual way. If the
+  Query contains a network that the stub router knows about but is not allowed
+  to advertise (the network does not fall under the configured category, or is
+  learned through EIGRP but not allowed for further adver- tisement by a
+  leak-map), it will be processed in the usual way as described earlier, but
+  the Reply will always indicate infinite distance, regardless of what the stub
+  router truly knows about the network. Receiving a Query for an unknown
+  network will immediately cause the router to respond with a Reply and an
+  infinite distance; how- ever, this is regular EIGRP behavior not related to
+  the stub feature.
+
+- At this point, you might ask why a stub router would receive a Query, as its
+stub status should instruct its neighbors to avoid sending Queries to it. There
+are two primary rea- sons why even a stub router might receive a Query. First,
+a stub router’s neighbor might be running an old IOS that does not recognize
+the stub TLV yet. Such a neighbor will cre- ate an adjacency to a stub router
+just fine, but it will also happily send Queries to it, not knowing that the
+router is a stub router. Second, if there are multiple routers on a com- mon
+segment and all of them are configured as stub routers, if any of these stub
+routers need to send a Query, it will also send it to all its stub neighbors.
+This is done to support multihomed branch offices that usually have two branch
+routers configured as stubs. Each of these branch routers is connected to the
+headquarters through its own uplink, and they are also connected together by a
+common intra-site link. If the uplink on one of the branch routers fails, the
+affected router needs to converge through its neighbor branch router, and this
+might require a permission to send Queries to its fellow stub neighbor.
+Therefore, on a common segment with all routers configured as stubs, Queries
+are sent as usual.
+
+- In case of multiaccess segments with mixed neighbors (stub and nonstub), EIGRP
+solves the problem of sending Queries only to nonstub neighbors in two ways:
+Either it sends the Queries as unicasts to the nonstub neighbors or it uses the
+Conditional Receive mode in RTP to send multicast Queries in such a way that
+only nonstub routers will process them. The choice of a particular mechanism
+depends on the number of nonstub neighbors. While mixing stub and nonstub
+routers on a common segment is not a recom- mended practice, it is inevitable,
+for example, in cases where the hubs and spokes are interconnected by a DMVPN
+or a VPLS service.
+
+.Task: Configure EIGRP stub
+----
+(config-router)# eigrp stub {[received-only] | [connected] [static] [ leak-map <name>] [redistributed] [summary]
+----
+[NOTE]
+====
+receive-only:: does not advertise any prefixes.
+- only receives prefixes advertised to it by its neighbors.
+- either static routing on its neighbors or NAT/PAT on the stub router is
+  required in this case to allow the networks behind the stub router to
+  communicate with the outside world.
+- cannot be used with any other keywords when configuring stub routing.
+
+leak-map:: Allows some prefix to be advertised
+- crucial in scenarios where a branch office uses a pair of interconnected
+routers configured as stub routers. If these routers are to provide backup
+connectivity to each other, they must be allowed to readvertise EIGRP-learned
+routes to each other, even in stub mode.
+
+connected:: Advertises connected subnets.
+- directly connected interfaces will not be advertised automatically;
+it is still necessary to add them to EIGRP using the usual *network* command
+- option enabled by default
+
+static:: Advertises static routes.
+- The static routes need to be redistributed into EIGRP to be advertised.
+
+summary:: Advertises Summary routes
+- summary routes can be created manually (*summary-address*)  or automatically at a major network border router (*auto-summary*).
+- option enabled by default
+
+redistributed:: Advertises redistributed routes
+
+====
+
+NOTE: the stub router feature has no impact on what routes the hub router
+will advertise to its stub spokes. Without an additional configuration on the
+hub router, the spokes will be populated with full routing tables. Considering
+the fact that in a hub-and-spoke network, any other network beyond the branch
+networks is reachable through the hub, having full routing tables on spoke
+routers with most of their entries pointing toward the hub router is not
+particularly useful. Therefore, in these networks, the stub feature on spokes
+is usually combined with route filtering and summarization on the hub router.
+The hub router can be configured to advertise only the default route to the
+spoke router(s), filtering out all other more specific route entries,
+effectively reducing the routing table on the spoke to a single EIGRP-learned
+default route entry.
+
+
+
+== EIGRP Stub Routing Leak Map Support
+
 
 == Protocol-Dependent Modules
 
+TODO
 
-
-== Goodbye Message
+== Goodbye Message and Graceful Shutdown
 
 - broadcast when an EIGRP routing process is shut down
 - Speeds convergence as peers don't have to wait the hold timer expiration
+- Hello Message with all K-values set to 255
 
 - Normal message displayed by routers that support Good Bye message
 ----
@@ -201,14 +1017,15 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 ** The sending and receiving routers will converge normally after the sender reloads
 
 
-== Routing Metric Offset Lists
-
-== EIGRP Cost Metrics
-
 
 == Summarization
 
 - All subnets are suppressed
+- Creates boundary for Query propagation
+
+* If a router receives a Query for a network it does not have in its topology
+table, it will immediately send back a Reply indicating an unreachable
+destination, without itself going active and propagating the Query further.
 
 .Task: Enable auto-summarization
 ----
@@ -239,6 +1056,21 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 - All subnets will be suppressed because all IPv4 networks are subnet of 0/0
 ====
 
+.Task: Configure a fixed metric for EIGRP summary address
+----
+(config-router)# summary-metric <network-address> <subnet-mask>
+                                { <bandwidth> <delay> <reliability> <load> <mtu> [ distance <ad>  ] | distance  <ad>}
+----
+NOTE: When EIGRP creates a summary route, it includes a metric with the route in
+order to advertise it. EIGRP searches for components of the summary to be
+suppressed and represented by the summary. EIGRP finds the component with the
+best metric and copies the metric from the component into the summary.
+Components of the summary may change often, which means that every time the
+best component metric changes, the summary needs to be readvertised to all its
+peers. Even if the best component metric is not the one that changed, EIGRP
+still has to search every topology entry to make sure the summary is not
+affected. This can add a significant processing overhead.
+
 === Leak map
 
 .Task: Advertise specific subnets of a EIGRP summary
@@ -249,19 +1081,18 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 === Floating Summary Routes
 
 TODO
-- By default, summarization install a route to Null0 to match the summary 
+- By default, summarization install a route to Null0 to match the summary
   to prevent forwarding traffic for unreachable destinations.
-- 
+-
 
 === Poisoned Floating Summarization
 
 TODO
 
-
 == EIGRP Route Authentication
 
 - Supports MD5 in classic mode
-- supports MD5 and SHA-256 in multi-af mode
+- Supports MD5 and SHA-256 in multi-af mode
 
 .Task: Use MD5 password in EIGRP classic mode
 ----
@@ -272,18 +1103,18 @@ TODO
 .Task: Use MD5 password in EIGRP named mode
 ----
 (config-router-af-interface)# authentication mode md5
-(config-router-af-interface)# authentication key-chain <sesame> 
+(config-router-af-interface)# authentication key-chain <sesame>
 ----
 
-.Task: Authenticate EIGRP neighbor with SHA-256 password  
+.Task: Authenticate EIGRP neighbor with SHA-256 password
 ----
 (config-router-af-interface)# authenticate mode hmac-sha-256 <password>
 ----
 
-- can be applied at the *af-interface-default* in multi-af mode
+- Can be applied at the *af-interface-default* in multi-af mode
 
-== Hello Packets and the Hold-Time Intervals
-== Split Horizon
+
+
 
 == Link Bandwidth Percentage
 
@@ -292,27 +1123,189 @@ TODO
 
 
 
-== EIGRP Stub Routing
-== EIGRP Stub Routing Leak Map Support
-
-
 
 == EIGRP autonomous system configuration
 
-.Task: Create a basic EIGRP AS system configuration 
+.Task: Create a basic EIGRP AS system configuration
 ----
 (config)# router eigrp asn
 (config-router)# network a.b.c.d [e.f.g.h]
 ----
 
 - A maximum of 30 EIGRP can be configured
-- EIGRP sends updates only interfaces in the specified networks 
+- EIGRP sends updates only interfaces in the specified networks
 
-
-== verify eigrp topology
-
+.Task: Verify eigrp topology
 ----
 show ip eigrp topology [all-links]
 show ip eigrp topology [prefix/len]
 ----
+
+
+== Router ID
+
+- Used to avoid routing loops
+- Advertised inside internal and external routes (in later IOS)
+- same rule as OSPF
+
+
+.Task: Specify the EIGRP Router ID
+----
+(config-router)# eigrp router-id <a.b.c.d>
+----
+NOTE: 0.0.0.0 and 255.255.255.255 are not allowed
+
+
+== Unequal Load Balancing
+
+
+If CD is the Computed Distance, then the eligible Feasible successor must satisfy the inequality below:
+
+ CD  via Successor < CD via Feasible Successor < variance * CD via Successor
+
+The amount of traffic flowing over a particular path can be computed as this ratio:
+
+  Highest Installed Path Metric / Path Metric
+
+- The unequal-cost paths installed into the routing table also count toward the
+maximum number of parallel paths to a destination configured using the
+maximum-paths command. Depending on your network topology and requirements, it
+might be necessary to modify this setting.
+
+.Task: Enable EIGRP unequal load balancing
+----
+(config-router)# variance <number>
+----
+
+.Task: Enable EIGRP unequal load balancing in named configuration
+----
+(config-router-topology)# variance <number>
+----
+
+== Add-Path Support
+
+- Allow a Hub (dual-homed in DMVPN) to advertise multiple-equal cost routes to the same destination
+* must have the multiple equal-cost installed in its routing table
+* must disable Split Horizon on the tunnel towards the spokes
+* must have variance = 1, no unequal load balancing on the hub and the spokes
+* must desactived *next-self-hop [no-ecmp-mode]*
+* must be configured in the af-interface section of the  named mode configuration
+
+* In certain scenarios, such as DMVPN deployments in
+which multiple branch offices are dual homed, hub routers usually have
+information about both routes to a particular dual-homed branch office, and can
+perform equal-cost load balanc ing on their end. However, without an
+additional mechanism, a hub is unable to advertise these equal-cost routes to
+other spoke routers. As a result, the other spokes only see a single route to
+the dual-homed branch office without an ability to perform load balancing over
+multiple paths, and if the single route they know about fails, they need to go
+over the usual reconvergence process in EIGRP to learn about the other route.
+
+* Spoke routers do not need to be specifically configured for the
+ Add-Path feature, apart from possible tuning of the maximum-paths command to
+ be allowed to insert multiple equal-cost paths into their routing tables.
+
+== Passive Interface
+
+- Suppresses EIGRP hello packets and routing updates on interfaces
+* Doesn't form adjancencies
+* Includes the interface addresses in the topology database
+
+.Task: Configure EIGRP passive interfaces
+----
+(config-router)# passive-interface [default] [<interface-type>  <interface-number>]
+----
+
+== EIGRP Over The Top
+
+- Enables a single end-to-end routing domain between two or more EIGRP sites
+that are connected using a private or a public WAN connection.
+- Relies on LISP
+
+- Benefits:
+* no dependency on the type of WAN connection used.
+* no dependency on the service provider to transfer routes.
+* no security threat because the underlying WAN has no knowledge of enterprise routes.
+* simplifies dual carrier deployments and designs by eliminating the need to configure and manage EIGRP-BGP route distribution and route filtering between customer sites.
+* allows easy transition between different service providers.
+* supports both IPv4 and IPv6 environments.
+
+
+=== LISP
+
+- Locator/Identifier Seperation Protocol
+- Separate the identity and location into two independent entities, each of
+ them represented by a complete address, and provide a mapping service so that
+ the address representing the identity of a host can be resolved into the
+ address that represents its location.
+- Uses EID (EndPoints Identifiers) and RLOC (Routing Locator)
+-
+
+image::lisp.png[LISP]
+
+- LISP hence has both a control and a data plane. The control plane in LISP
+comprises the registration protocol and procedures by which the tunnel routers
+R1 and R2 register the EIDs they are responsible for along with their RLOCs in
+a LISP-mapping service, and using these registrations they map EIDs into RLOCs.
+The data plane defines the actual tunnel encapsulation used between Routers R1
+and R2 when two hosts from each LISP sites communicate.
+
+- In OTP, EIGRP serves as the replacement for LISP control plane protocols.
+  Instead of doing dynamic EID-to-RLOC mappings in native LISP-mapping
+  services, EIGRP routers running OTP over a service provider cloud create
+  targeted sessions, use the IP addresses provided by the service provider as
+  RLOCs, and exchange routes as EIDs.
+
+- OTP is based on creating targeted EIGRP sessions between customer edge
+  routers, and using the routing information carried by EIGRP to populate both
+  routing tables and LISP mapping tables. The edge routers do not exchange any
+  routing information with the ser- vice provider routers. Thus, this solution
+  is fully controlled by a customer and requires no cooperation with the
+  service provider, apart from providing full IP connectivity between customer routers
+
+
+=== OTP CE
+
+.Task: Configure EIGRP OTP on CE
+----
+(config)# router eigrp test
+(config-router)# address-family ipv4 unicast autonomous-system 100
+(config-router-af)# neighbor 10.0.0.2 gigabitethernet 0/0/1 remote 3 lisp-encap 1
+(config-router-af)# network 192.168.0.0
+(config-router-af)# network 192.168.1.0
+----
+
+=== OTP Route Reflectors
+
+.Task: Configure EIGRP Route Reflectors
+----
+(config)# router eigrp test
+(config-router)# address-family ipv4 unicast autonomous-system 100
+(config-router-af)# af-interface gigabitethernet 0/0/1
+(config-router-af-interface)# no next-hop-self
+(config-router-af-interface)# no split-horizon
+(config-router-af-interface)# exit
+(config-router-af)# remote-neighbors source gigabitethernet 0/0/1 unicast-listen lisp-encap 1
+(config-router-af)# network 192.168.0.0
+----
+
+
+=== EIGRP Logging and Reporting
+
+.Task: Display the contents of the EIGRP log
+----
+# sh ei address-family {ipv4 | ipv6} events
+----
+
+
+.Task: configure EIGRP logging
+----
+Router(config-router)# eigrp ?
+event-log-size : Set max log size (default=500)
+event-logging  : Log IP-EIGRP routing events (default)
+log-neighbor-changes : enable IP-EIGRP neighbor logging (default)
+log-neighbor-warnings :  Enable/Disable IP-EIGRP neighbor warnings (default=every 10seconds)
+----
+
+
 
