@@ -1,0 +1,7 @@
+= Syslog
+
+- RFC 5424
+- Clear-text protocol that provides event notifications without requiring difficult, time-intensive configuration or opening attack vectors.
+
+// Possibly move this chapter in System management
+system-message-logging.adoc

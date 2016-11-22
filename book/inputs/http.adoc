@@ -1,0 +1,47 @@
+= HHTP
+
+
+Cisco IOS routers and switches support web access for administration, through
+both HTTP and HTTPS. Enabling HTTP access requires the ip http server global
+configura- tion command. HTTP access defaults to TCP port 80. You can change
+the port used for HTTP by configuring the ip http port command. You can
+restrict HTTP access to a rout- er using the ip http access-class command,
+which applies an extended access list to con- nection requests. You can also
+specify a unique username and password for HTTP access using the ip http client
+username and ip http client password commands. If you choose, you can also
+configure HTTP access to use a variety of other access-control methods,
+including AAA, using ip http authentication [aaa | local | enable | tacacs].
+
+
+You can also configure a Cisco IOS router or switch for Secure Sockets Layer
+(SSL) access. By default, HTTPS uses TCP port 443, and the port is configurable
+in much the same way as it is with HTTP access. Enabling HTTPS access requires
+the ip http secure- server command. When you configure HTTPS access in most IOS
+Release 12.4 ver- sions, the router or switch automatically disables HTTP
+access, if it has been configured. However, you should disable it manually if
+the router does not do it for you.
+
+HTTPS router access also gives you the option of specifying the cipher suite of
+your choice. This is the combination of encryption methods that the router will
+enable for HTTPS access. By default, all methods are enabled
+
+.Task: Display HTTP secure server status
+----
+# sh ip http server secure status
+
+HTTP secure server status                 : Enabled
+HTTP secure server port                   : 443
+HTTP secure server ciphersuite            : 3des-ede-cbc-sha des-cbc-sha rc4-128-md5 rc4-128-sha
+HTTP secure server client authentication  : Disabled
+HTTP secure server trustpoint             :
+HTTP secure server active session modules : ALL
+----
+
+
+
+
+
+
+
+
+
