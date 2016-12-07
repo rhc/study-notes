@@ -1,0 +1,15 @@
+= Congestion Management and Avoidance
+
+congestion when hardware queue is full
+
+== Queues
+
+hardware queues
+
+software queues
+
+
+== CBWFQ
+
+== LLQ
+

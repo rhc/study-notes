@@ -1,6 +1,5 @@
 = RSVP
 
-== Concepts
 
 
 
@@ -10,5 +9,6 @@
 ip rsvp bandwidth [interface-kbps [single-flow-kbps] ]
 ----
 
-- default 75 % can be allocated by to RSVP and up to 75% of the total bandwidth is available for a single flow
+- default 75 % can be allocated by to RSVP and up to 75% of the total bandwidth
+  is available for a single flow
 

@@ -930,8 +930,11 @@ p { margin-bottom: 1rem; }
 </li>
 <li><a href="#_qos">21. QoS</a>
 <ul class="sectlevel2">
-<li><a href="#_mqc">21.1. MQC</a></li>
-<li><a href="#_rsvp">21.2. RSVP</a></li>
+<li><a href="#_classification_and_marking">21.1. Classification And Marking</a></li>
+<li><a href="#_congestion_management_and_avoidance">21.2. Congestion Management and Avoidance</a></li>
+<li><a href="#_shaping_policing_and_link_fragmentation">21.3. Shaping, Policing and Link Fragmentation</a></li>
+<li><a href="#_mqc">21.4. MQC</a></li>
+<li><a href="#_rsvp">21.5. RSVP</a></li>
 </ul>
 </li>
 <li><a href="#_first_host_redundancy_protocols">22. First Host Redundancy Protocols</a>
@@ -20416,33 +20419,35 @@ HTTP secure server active session modules : ALL</pre>
 <div class="sect1">
 <h2 id="_qos">21. QoS</h2>
 <div class="sectionbody">
+<div class="literalblock">
+<div class="title">Blueprint Topics</div>
+<div class="content">
+<pre>6.2.a Implement and troubleshoot end-to-end QoS
+6.2.a [i] CoS and DSCP mapping
+6.2.b Implement, optimize and troubleshoot QoS using MQC
+6.2.b [i] Classification
+6.2.b [ii] Network based application recognition [NBAR]
+6.2.b [iii] Marking using IP precedence, DSCP, CoS, ECN
+6.2.b [iv] Policing, shaping
+6.2.b [v] Congestion management [queuing]
+6.2.b [vi] HQoS, sub-rate ethernet link
+6.2.b [vii] Congestion avoidance [WRED]
+6.2.c Describe layer 2 QoS
+6.2.c [i] Queuing, scheduling
+6.2.c [ii] Classification, marking</pre>
+</div>
+</div>
 <div class="sect2">
-<h3 id="_mqc">21.1. MQC</h3>
+<h3 id="_classification_and_marking">21.1. Classification And Marking</h3>
 <div class="sect3">
-<h4 id="_mqc_structure">21.1.1. MQC structure</h4>
+<h4 id="_fields_that_can_be_marked_for_qos_purposes">21.1.1. Fields that can be marked for QoS purposes</h4>
 <div class="ulist">
 <ul>
 <li>
-<p>define a traffic class with <strong>class map</strong></p>
+<p>Layer 3:  IPP, IP DSCP, DS field, ToS byte</p>
 </li>
 <li>
-<p>create a traffic policy with <strong>policy map</strong></p>
-</li>
-<li>
-<p>attach the traffic policy to an interface with <strong>service-policy</strong></p>
-</li>
-<li>
-<p>restrictions: maximum of 256 classes in a single policy map</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_fields_that_can_be_marked_for_qos_purposes">21.1.2. Fields that can be marked for QoS purposes</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>IPP, IP DSCP, DS field, ToS byte, CoS,Frame Relay  DE, ATM CLP, MPLS EXP</p>
+<p>Layer 2:  Ethernet CoS,Frame Relay  DE, ATM CLP, MPLS EXP</p>
 </li>
 </ul>
 </div>
@@ -20459,11 +20464,13 @@ HTTP secure server active session modules : ALL</pre>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DSCP CS name</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IPP names</p></td>
+<th class="tableblock halign-left valign-top">DSCP CS name</th>
+<th class="tableblock halign-left valign-top">IPP names</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">CS0/Default</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">routine</p></td>
@@ -20504,20 +20511,619 @@ HTTP secure server active session modules : ALL</pre>
 <div class="ulist">
 <ul>
 <li>
-<p>PHB: Per-hop Behavior</p>
+<p>PHB: Per-Hop Behavior</p>
 </li>
 <li>
-<p>Expedited Forwarding:</p>
+<p>Expedited Forwarding (EF):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Queue EF packets so that they get scheduled quickly, to give them low latency.</p>
 </li>
 <li>
-<p>packets given queunino</p>
+<p>Police the EF packets so that they do not consume all bandwidth on the link or starve other queues.</p>
+</li>
+<li>
+<p>Binary value: 101110 Decimal value: 46</p>
+</li>
+<li>
+<p>packets given queue priority</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Assured Forwarding (AF)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>defines 4 queues with 3 drop priorities</p>
+</li>
+<li>
+<p>\$AFx_1y_1 &gt; AFx_2y_2 if x_1 &gt; x_2 or (x_1 = x_2 and y_1 &lt; y_2)\$</p>
+</li>
+<li>
+<p>AFxy &#8594; 8x + 2y = decimal value</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_ethernet_lan_class_of_service">Ethernet LAN Class of Service</h5>
+<div class="imageblock">
+<div class="content">
+<img src="../images/ethernet-cos.png" alt="Ethernet CoS">
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_wan_2">WAN</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Frame Relay DE (Discard Eligibility), 1-bit</p>
+</li>
+<li>
+<p>ATM CLP (Cell Loss Priority ), 1-bit</p>
+</li>
+<li>
+<p>MPLS EXP (Exprimental), 3-bit</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_elements_of_a_traffic_class">21.1.3. Elements of a traffic class</h4>
+<h4 id="_nbar">21.1.2. NBAR</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Network-Based Application Recognition</p>
+</li>
+<li>
+<p>Deep-packet classification  from Layer 4 through Layer 7:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Statically assigned TCP and UDP port numbers.</p>
+</li>
+<li>
+<p>Non-TCP and non-UDP IP protocols.</p>
+</li>
+<li>
+<p>Dynamically assigned TCP and UDP port numbers.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>requires stateful inspection: inspect a protocol across multiple packets during packet classification.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Subport classification or classification based on deep-packet inspection.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>URL, Hostname, or MIME type</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>uses MQC match protocol</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-none grid-rows spread">
+<caption class="title">Table 13. NBAR match protocol</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Command</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the match criteria for a class map on the basis of the specified protocol.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol citrix</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Citrix traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol fasttrack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match FastTrack peer-to-peer traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol gnutella</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Gnutella peer-to-peer traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol http</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match HTTP traffic by URL, host,MIME type, or fields in HTTP packet headers.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol rtp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Real-Time Transport Protocol (RTP) traffic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match qos-group</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identifies a specific QoS group value as a match criterion.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match source-address mac</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses the source MAC address as a match criterion.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match start</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the match criteria for a class map on the basis of the datagram header (Layer 2) or the network header (Layer 3).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">match tag</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies tag type as a match criterion.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist">
+<div class="title">Restrictions</div>
+<ul>
+<li>
+<p>NBAR cannot classify ipx</p>
+</li>
+<li>
+<p>NBAR cannot classify multicast traffic</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Configure DSCP-Based Layer 3 Custom Applications</div>
+<div class="content">
+<pre>(config)# ip nbar custom &lt;name&gt; transport {tcp| udp } id &lt;id&gt;
+(config-custom)# dscp {ef | af }</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Display the current protocol-to-port mappings in use by NBAR.</div>
+<div class="content">
+<pre># sh ip nbar port-mapping [&lt;protocol-name&gt;]
+
+port-map bgp      udp 179
+port-map bgp      tcp 179
+port-map cuseeme  udp 7648 7649
+port-map cuseeme  tcp 7648 7649
+port-map dhcp     udp 67 68
+port-map dhcp     tcp 67 68</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_cb_marking">21.1.3. CB Marking</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>requires CEF</p>
+</li>
+<li>
+<p>Mark as close to the ingress edge of the network as possible, but not so close
+to the edge that the marking is made by an untrusted device.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For any class inside the policy map for which there is no set command, packets in that class are not marked.</p>
+</div>
+<table class="tableblock frame-none grid-rows spread">
+<caption class="title">Table 14. Recommended Values for Traffic Marking</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Traffic Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IP Precedence</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IP DSCP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class of Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Voice payload</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Video payload</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AF41</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Voice and video signaling</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AF31 3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High priority data</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AF21 AF22 AF23</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium priority data</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AF11 AF12 AF13</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All other traffic</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Task: Set the DSCP value in the ToS Byte</div>
+<div class="content">
+<pre>(config-pmap-c)#set ip dscp {&lt;0-63&gt; | AF&lt;xy&gt; | CS&lt;x&gt; | EF | default}</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_qos_pre_classification">21.1.4. QoS Pre-Classification</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>enabled on VPN endpoint routers permit the router to make egress QoS decisions based on the original traffic,
+before encapsulation, rather than just the encapsulating tunnel header.</p>
+</li>
+<li>
+<p>works by keeping the original, unencrypted traffic in memory until the egress QoS actions are taken.</p>
+</li>
+<li>
+<p>enables in tunnel interface configuration mode, virtual-template configuration mode, or crypto map configuration mode</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Enable QoS pre-classification</div>
+<div class="content">
+<pre>(config-if)# qos pre-classification</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_autoqos">21.1.5. AutoQoS</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>macro that helps automate class-based QoS configuration.</p>
+</li>
+<li>
+<p>creates and applies QoS configurations based on Cisco best-practice recommendations.</p>
+</li>
+<li>
+<p>provides the following benefits:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Simpler QoS deployment.</p>
+</li>
+<li>
+<p>Less operator error, because most steps are automated.</p>
+</li>
+<li>
+<p>Cheaper QoS deployment because less staff time is involved in analyzing network traffic and determining QoS configuration.</p>
+</li>
+<li>
+<p>Faster QoS deployment because there are dramatically fewer commands to issue.</p>
+</li>
+<li>
+<p>Companies can implement QoS without needing an in-depth knowledge of QoS concepts</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Display the interface AutoQoS configuration</div>
+<div class="content">
+<pre>&gt; sh auto qos</pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_autoqos_for_voip">AutoQoS for VOIP</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>for voice and video applications</p>
+</li>
+<li>
+<p>enables on individual interfaces, but creates both interface and global configuration</p>
+</li>
+<li>
+<p>uses CDP on access ports to detect presence or absence of softphone</p>
+</li>
+<li>
+<p>trusts COS or DSCP values on trunk or uplink ports</p>
+</li>
+</ul>
+</div>
+<div class="sect6">
+<h7 id="_autoqos_on_switches">AutoQoS on switches</h7>
+<div class="ulist">
+<ul>
+<li>
+<p>no need to enable QoS globally.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>After it is enabled for any interface, the command starts a macro that:</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Globally enables QoS.</p>
+</li>
+<li>
+<p>Creates COS-to-DCSP mappings and DSCP-to-COS mappings.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>As the traffic enters the switch, the frame header containing the COS value is removed.</p>
+</li>
+<li>
+<p>The switch uses the COS value in the frame header to assign a DSCP value to the packet.</p>
+</li>
+<li>
+<p>If the packet exits a trunk port, the internal DSCP value is mapped back to a COS value.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Enables priority or expedite ingress and egress queues.</p>
+</li>
+<li>
+<p>Creates mappings of COS values to ingress and egress queues and thresholds.</p>
+</li>
+<li>
+<p>Creates mappings of DSCP values to ingress and egress queues and thresholds.</p>
+</li>
+<li>
+<p>Creates class maps and policy maps to identify, prioritize, and police voice traffic.</p>
+</li>
+<li>
+<p>Applies those policy maps to the interface.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For best results, enable AutoQoS before configuring any other QoS on the
+switch. You can then go back and modify the default configuration if needed to
+fit your specific requirements.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Task: Enable AutoQoS on an access port</div>
+<div class="content">
+<pre>(config-if)# auto qos voip {cisco- phone | cisco-softphone}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Enable AutoQoS on uplink port</div>
+<div class="content">
+<pre>(config-if)# auto qos voip trust</pre>
+</div>
+</div>
+</div>
+<div class="sect6">
+<h7 id="_autoqos_on_routers">AutoQoS on routers</h7>
+<div class="listingblock">
+<div class="title">Task: Enable AutoQoS on router port</div>
+<div class="content">
+<pre>(config-if)# auto qos voip [trust]</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Make sure that the interface bandwidth is configured before giving this
+command.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you change it later, the QoS configuration will not change.  When you issue the <strong>auto qos voip</strong> command on an individual data circuit, the
+configuration it creates differs depending on the bandwidth of the circuit
+itself.</p>
+</li>
+<li>
+<p>Compression and fragmentation are enabled on links of 768 kbps
+bandwidth and lower. They are not enabled on links faster than 768 kbps.</p>
+</li>
+<li>
+<p>The router additionally configures traffic shaping and applies an AutoQoS service
+policy regardless of the bandwidth.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>When you issue the command on a serial interface with a bandwidth of 768 kbps
+or less, the router changes the interface encapsulation to PPP. It creates a
+PPP Multilink interface and enables Link Fragmentation and Interleave (LFI) on
+the interface. Serial interfaces with a configured bandwidth greater than 768
+kbps keep their configured encapsulation, and the router merely applies an
+AutoQoS service policy to the interface.</p>
+</li>
+<li>
+<p>If you use the <strong>trust</strong> keyword in the command, the router creates class maps that
+group traffic based on its DSCP values. It associates those class maps with a
+created policy map and assigns it to the interface. You would use this keyword
+when QoS markings are assigned by a trusted device.</p>
+</li>
+<li>
+<p>If you do not use the <strong>trust</strong> keyword, the router creates access lists that match
+voice and video data and call control ports. It associates those access lists
+with class maps with a created policy map that marks the traffic appropriately.
+Any traffic not matching those access lists is marked with DSCP 0. You would
+use this command if the traffic either arrives at the router unmarked or
+arrives marked by an untrusted device.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_autoqos_for_enterprise">AutoQoS for Enterprise</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>supported on Cisco routers.</p>
+</li>
+<li>
+<p>The main difference between it and AutoQoS VoIP is that it automates the QoS configuration for VoIP
+plus other network applications, and is meant to be used for WAN links.</p>
+</li>
+<li>
+<p>can be used for Frame Relay and ATM subinterfaces only if they are point-to-point links.</p>
+</li>
+<li>
+<p>detects the types and amounts of network traffic with NBAR and then creates
+policies based on that.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Task: Enable Traffic Discovery</div>
+<div class="content">
+<pre>(config-if)# auto discovery qos [trust]</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Make sure that CEF is enabled, that the interface
+bandwidth is configured, and that no QoS configuration is on the interface
+before giving the command.</p>
+</li>
+<li>
+<p>Use the <strong>trust</strong> keyword if the traffic arrives at the
+router already marked, and if you trust those markings, because the AutoQoS
+policies will use those markings during the configuration stage.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Task: Generate the AutoQoS configuration for Enterprise</div>
+<div class="content">
+<pre>(config-if)# auto qos</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Show auto discovery qos</div>
+<div class="content">
+<pre># sh auto discovery qos</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../images/autoqos-for-enterprise.png" alt="AutoQoS for Enterprise Classes and DSCP Values">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_congestion_management_and_avoidance">21.2. Congestion Management and Avoidance</h3>
+<div class="paragraph">
+<p>congestion when hardware queue is full</p>
+</div>
+<div class="sect3">
+<h4 id="_queues">21.2.1. Queues</h4>
+<div class="paragraph">
+<p>hardware queues</p>
+</div>
+<div class="paragraph">
+<p>software queues</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_cbwfq">21.2.2. CBWFQ</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_llq">21.2.3. LLQ</h4>
+
+</div>
+</div>
+<div class="sect2">
+<h3 id="_shaping_policing_and_link_fragmentation">21.3. Shaping, Policing and Link Fragmentation</h3>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mqc">21.4. MQC</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Define a traffic class with <strong>class map</strong></p>
+</li>
+<li>
+<p>Define PHB actions(marking, queuing, )  with <strong>policy map</strong></p>
+</li>
+<li>
+<p>Attach the traffic policy to an interface with <strong>service-policy</strong></p>
+</li>
+<li>
+<p>restrictions: maximum of 256 classes in a single policy map</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_traffic_class_2">21.4.1. Traffic Class</h4>
 <div class="paragraph">
 <p>A traffic class contains 3 major elts: a name, a series of <strong>match</strong> commands followed by <strong>match-all</strong> (default) or <strong>match-any</strong></p>
 </div>
@@ -20573,78 +21179,20 @@ HTTP secure server active session modules : ALL</pre>
 <li>
 <p>etc</p>
 </li>
+<li>
+<p>Packets that do not explicitly match a defined class are considered to have matched a special class called <strong>class-default</strong>.</p>
+</li>
 </ul>
 </div>
-<table class="tableblock frame-none grid-rows spread">
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 75%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Command</th>
-<th class="tableblock halign-left valign-top">Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the match criteria for a class map on the basis of the specified protocol.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol citrix</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Citrix traffic.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol fasttrack</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match FastTrack peer-to-peer traffic.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol gnutella</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Gnutella peer-to-peer traffic.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol http</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match HTTP traffic by URL, host,MIME type, or fields in HTTP packet headers.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match protocol rtp</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Configures NBAR to match Real-Time Transport Protocol (RTP) traffic.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match qos-group</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Identifies a specific QoS group value as a match criterion.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match source-address mac</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Uses the source MAC address as a match criterion.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match start</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Configures the match criteria for a class map on the basis of the datagram header (Layer 2) or the network header (Layer 3).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">match tag</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies tag type as a match criterion.</p></td>
-</tr>
-</tbody>
-</table>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-nbar cannot classify ipx
-nbar cannot classify multicast traffic
-</td>
-</tr>
-</table>
+<div class="listingblock">
+<div class="title">Task: Display all class maps and their matching criteria</div>
+<div class="content">
+<pre>&gt; sh class-map</pre>
+</div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_elements_of_a_traffic_policy">21.1.4. Elements of a traffic policy</h4>
+<h4 id="_elements_of_a_traffic_policy">21.4.2. Elements of a traffic policy</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -20657,13 +21205,11 @@ nbar cannot classify multicast traffic
 <col style="width: 25%;">
 <col style="width: 75%;">
 </colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Command</th>
-<th class="tableblock halign-left valign-top">Purpose</th>
-</tr>
-</thead>
 <tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Command</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Purpose</p></td>
+</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">random-detect discard-class</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Configures the WRED parameters for a discard- class value for a class in a policy map.</p></td>
@@ -20730,51 +21276,33 @@ nbar cannot classify multicast traffic
 </tr>
 </tbody>
 </table>
-<div class="sect4">
-<h5 id="_service_policy">Service policy</h5>
 <div class="listingblock">
+<div class="title">Task: Display the configuration for the specified class of the specified policy map</div>
+<div class="content">
+<pre>&gt; show policy-map &lt;policy-name&gt; class &lt;class-name&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Display the configuration of all classes for all existing policy maps</div>
+<div class="content">
+<pre>&gt; show policy-map interface &lt;name number&gt;</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_service_policy">21.4.3. Service policy</h4>
+<div class="listingblock">
+<div class="title">Task: Enable a traffic Policy on an interface</div>
 <div class="content">
 <pre>(config-if)# service-policy {input | output } policy-map-name</pre>
 </div>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_verification">21.1.5. Verification</h4>
-<div class="paragraph">
-<p>Display all class maps and their matching criteria</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>&gt; show class-map</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Display the configuration for the specified class of the specified policy map</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>&gt; show policy-map policy-name class class-name</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Display the configuration of all classes for all existing policy maps</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>&gt; show policy-map interface interface-name interface-number</pre>
-</div>
-</div>
-</div>
-</div>
 <div class="sect2">
-<h3 id="_rsvp">21.2. RSVP</h3>
+<h3 id="_rsvp">21.5. RSVP</h3>
 <div class="sect3">
-<h4 id="_concepts_3">21.2.1. Concepts</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_configuration_tasks">21.2.2. Configuration tasks</h4>
+<h4 id="_configuration_tasks">21.5.1. Configuration tasks</h4>
 <div class="listingblock">
 <div class="content">
 <pre>ip rsvp bandwidth [interface-kbps [single-flow-kbps] ]</pre>
@@ -20783,7 +21311,8 @@ nbar cannot classify multicast traffic
 <div class="ulist">
 <ul>
 <li>
-<p>default 75 % can be allocated by to RSVP and up to 75% of the total bandwidth is available for a single flow</p>
+<p>default 75 % can be allocated by to RSVP and up to 75% of the total bandwidth
+is available for a single flow</p>
 </li>
 </ul>
 </div>
@@ -21790,7 +22319,7 @@ Layer 3 network in one data stream.</p>
 <div class="sect3">
 <h4 id="_multicast_ip_addressing">23.1.1. Multicast IP addressing</h4>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 13. Multicast Address ranges and their use</caption>
+<caption class="title">Table 15. Multicast Address ranges and their use</caption>
 <colgroup>
 <col style="width: 30%;">
 <col style="width: 70%;">
@@ -21833,7 +22362,7 @@ Layer 3 network in one data stream.</p>
 </tbody>
 </table>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 14. Well-known Multicast Addresses</caption>
+<caption class="title">Table 16. Well-known Multicast Addresses</caption>
 <colgroup>
 <col style="width: 30%;">
 <col style="width: 70%;">
@@ -22798,7 +23327,7 @@ forwarding table.</p>
 </ul>
 </div>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 15. Default IGMP snooping configuration</caption>
+<caption class="title">Table 17. Default IGMP snooping configuration</caption>
 <colgroup>
 <col style="width: 54.5454%;">
 <col style="width: 45.4546%;">
@@ -23064,7 +23593,7 @@ this flooding might exceed the capacity of the link and cause packet loss.</p>
 </ul>
 </div>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 16. Default MVR configuration</caption>
+<caption class="title">Table 18. Default MVR configuration</caption>
 <colgroup>
 <col style="width: 66.6666%;">
 <col style="width: 33.3334%;">
@@ -23263,7 +23792,7 @@ is sent to all source ports on the switch and all interested receiver ports.</p>
 <p>== IGMP filtering and throttling</p>
 </div>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 17. Default IGMP filtering configuration</caption>
+<caption class="title">Table 19. Default IGMP filtering configuration</caption>
 <colgroup>
 <col style="width: 66.6666%;">
 <col style="width: 33.3334%;">
@@ -24383,7 +24912,7 @@ register-stops and forwarding decapsulated data packets from registers).</p>
 <p>TODO To be added in the text</p>
 </div>
 <table class="tableblock frame-none grid-rows spread">
-<caption class="title">Table 18. PIM type code</caption>
+<caption class="title">Table 20. PIM type code</caption>
 <colgroup>
 <col style="width: 10%;">
 <col style="width: 90%;">
@@ -25577,7 +26106,7 @@ Key Manager (Barbican)
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2016-11-30 16:06:52 SAST
+Last updated 2016-12-07 10:45:30 SAST
 </div>
 </div>
 <script type="text/x-mathjax-config">

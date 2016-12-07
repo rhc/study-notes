@@ -160,6 +160,25 @@ include::http.adoc[leveloffset=+2]
 
 == QoS
 
+.Blueprint Topics
+  6.2.a Implement and troubleshoot end-to-end QoS
+  6.2.a [i] CoS and DSCP mapping
+  6.2.b Implement, optimize and troubleshoot QoS using MQC
+  6.2.b [i] Classification
+  6.2.b [ii] Network based application recognition [NBAR]
+  6.2.b [iii] Marking using IP precedence, DSCP, CoS, ECN
+  6.2.b [iv] Policing, shaping
+  6.2.b [v] Congestion management [queuing]
+  6.2.b [vi] HQoS, sub-rate ethernet link
+  6.2.b [vii] Congestion avoidance [WRED]
+  6.2.c Describe layer 2 QoS
+  6.2.c [i] Queuing, scheduling
+  6.2.c [ii] Classification, marking
+
+
+include::qos-classification-and-marking.adoc[leveloffset=+2]
+include::qos-congestion-management-and-avoidance.adoc[leveloffset=+2]
+include::qos-shaping-policing-and-link-fragmentation.adoc[leveloffset=+2]
 include::mqc.adoc[leveloffset=+2]
 include::rsvp.adoc[leveloffset=+2]
 
