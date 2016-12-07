@@ -175,6 +175,7 @@ include::ipv6-rs-ra.adoc[leveloffset=+2]
 
 == Multicast
 
+include::ip-multicast-introduction.adoc[leveloffset=+2]
 include::igmp.adoc[leveloffset=+2]
 include::pim.adoc[leveloffset=+2]
 
@@ -192,4 +193,10 @@ include::cloud.adoc[leveloffset=+1]
 include::sdn.adoc[leveloffset=+1]
 include::iot.adoc[leveloffset=+1]
 
+<<<
+= Appendices
 
+== Lab Equipment and IOS releases
+
+- Cisco ISR 2900 Series routers running IOS version 15.3T Universal Software release
+- Catalyst 3560X Series switches running IOS version 15.0SE Universal (IP Services) Software release

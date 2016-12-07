@@ -1,72 +1,50 @@
-= IP multicast introduction
+= IP Multicast
 
-
-== Definitions
 
 IP multicasting::
 Sending a message from a single source to selected multiple destinations across a
 Layer 3 network in one data stream.
-If you want to send a message from one source to one destination, you could send a unicast
 
 
 == Multicast IP addressing
 
-Multicast applications always use a multicast IP address. This multicast address represents the
-multicast application and is referred to as a multicast group. Unlike a unicast IP address, which
-uniquely identifies a single IP host, a multicast address used as a destination address on an IP
-packet signifies that the packet is carrying traffic for a specific multicast application. For example,
-if a multicast packet is traveling over a network with a destination address 225.5.5.5, it is
-proclaiming to the network devices that, “I am carrying traffic for the multicast application that
-uses multicast group address 225.5.5.5; do you want it?” A multicast address is never assigned to
-a network device, so it is never used as a source address. The source address on a multicast packet,
-or any IP packet, should always be a unicast address.
-
-=== Multicast Address Range and Structure
-
-The Internet Assigned Numbers Authority (IANA) has assigned class D IP addresses to multicast
-applications. The first 4 bits of the first octet for a class D address are always 1110. IP multicast
-addresses range from 224.0.0.0 through 239.255.255.255. As these addresses are used to represent
-multicast groups (applications) and not hosts, there is no need for a subnet mask for multicast
-addresses because they are not hierarchical. In other words, there is only one requirement for a
-multicast address: The first 4 bits of the first octet must be 1110. The last 28 bits are unstructured.
-
-
-=== Well-known multicast addresses
-
 .Multicast Address ranges and their use
-[format="dsv", cols="30,70"]
-|====
-Multicast Address :  Range Usage
-224.0.0.0 to 239.255.255.255:  This range represents the entire IPv4 multicast address space. It is reserved for multicast applications.
-224.0.0.0 to 224.0.0.255 : permanent groups; Addresses from this range are assigned by IANA for network protocols on a local segment. Routers do not forward packets with destination addresses used from this range.
-224.0.1.0 to 224.0.1.255 : permanent groups; Addresses from this range are assigned by IANA for the network protocols that are forwarded in the entire network. Routers forward packets with destination addresses used from this range.
-232.0.0.0 to 232.255.255.255:  This range is used for SSM applications.
-233.0.0.0 to 233.255.255.255 : This range is called the GLOP addressing. It is used for automatically allocating 256 multicast addresses to any enterprise that owns a registered ASN.
-239.0.0.0 to 239.255.255.255 : This range is used for private multicast domains. These addresses are called administratively scoped addresses.
-Remaining ranges of addresses : transient groups; Any enterprise can allocate a multicast address from the transient groups for a global multicast application and should release it when the application is no longer in use.
-|====
+[cols="30,70"]
+,===
+Range                         ,  Usage
+
+224.0.0.0 to 239.255.255.255  , IPv4 class D reserved for multicast applications
+224.0.0.0 to 224.0.0.255      , permanent groups; Assigned by IANA for network protocols on a local segment. Routers do not forward packets with destination addresses used from this range.
+224.0.1.0 to 224.0.1.255      , permanent groups; Assigned by IANA for the network protocols that are forwarded in the entire network. Routers forward packets with destination addresses used from this range.
+232.0.0.0 to 232.255.255.255  , for SSM applications.
+233.0.0.0 to 233.255.255.255  , GLOP addressing. It is used for automatically allocating 256 multicast addresses to any enterprise that owns a registered ASN.
+239.0.0.0 to 239.255.255.255  , Administratively scoped addresses; for private multicast domains
+Remaining ranges of addresses , transient groups; Any enterprise can allocate a multicast address from the transient groups for a global multicast application and should release it when the application is no longer in use.
+,===
 
 
+.Well-known Multicast Addresses
+[cols="30,70"]
+:===
+Address    : Usage
 
-[format="dsv", cols="30,70"]
-|====
-Address:  Usage
-224.0.0.1     : All multicast hosts
-224.0.0.2     : All multicast routers
-224.0.0.4     : DVMRP routers
-224.0.0.5     : All OSPF routers
-2224.0.0.9    : RIPv2 routers
-224.0.0.10    : EIGRP routers
-224.0.0.13    : PIM routers
-224.0.0.22    : IGMPv3
-224.0.0.25    : RGMP
-224.0.1.39    : Cisco-RP-Announce
-224.0.1.40    : Cisco-RP-Discovery
-|====
+224.0.0.1  : All multicast hosts
+224.0.0.2  : All multicast routers
+224.0.0.4  : DVMRP routers
+224.0.0.5  : All OSPF routers
+2224.0.0.9 : RIPv2 routers
+224.0.0.10 : EIGRP routers
+224.0.0.13 : PIM routers
+224.0.0.22 : IGMPv3
+224.0.0.25 : RGMP
+224.0.1.39 : Cisco-RP-Announce
+224.0.1.40 : Cisco-RP-Discovery
+:===
 
 
-=== Mapping IP multicast address to MAC addresses
+== Mapping IP multicast address to MAC addresses
 
 ip -> mac address = (0x01005E) + 0 bit + last 23 bits of the IP address
 
+image::mcast-ip-to-mac.png[IP -> MAC]
 

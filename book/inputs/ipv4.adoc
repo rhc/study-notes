@@ -89,6 +89,7 @@ show ip interface
 show ip route connected
 ----
 
+
 == CIDR
 
 - Classless interdomain routing
