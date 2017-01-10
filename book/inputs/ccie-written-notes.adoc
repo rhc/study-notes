@@ -1,0 +1,44 @@
+= CCIE Written Exam
+
+
+
+outlines
+
+- stp
+  - 802.1d
+  - 802.1w
+  - 802.1s
+  - loop guard
+  - root guard
+  - bpdu guard
+  - storm control
+  - unicast flooding
+  - port roles, failure propagation and loop guard operation
+
+- vlan
+  - vlan
+  - vtp
+
+- Trunking
+
+- Ethernet
+
+
+
+== General Networking Theory
+
+=== OSI Reference
+
+- OSI (open systems interconnection) reference model 
+- developed by ISO (Internation Standards Organisation) in 1984
+
+- 7 layers
+  . Application
+  . Presentation
+  . Session
+  . Network
+  . Data link 
+  . Physical 
+
+
+

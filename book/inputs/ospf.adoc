@@ -1,0 +1,905 @@
+= OSPF
+:icons: font
+:stem:
+:experimental:
+
+menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/15-mt/iro-15-mt-book/configuring_ospf.html[OSPF] ]
+
+- link-state interior gateway protocol
+- RFC 2328
+- Dijkstra short path first algorithm
+- classless protocol
+- Transport via IP protocol 89
+* multicasts to 224.0.0.5 for AllSPF routers and to 224.0.0.6 for Designated Routers
+* unicasts
+- equal-cost multipath
+- hierarchical design to reduce traffic
+- authentication updates
+
+== Neighbors
+
+To form adjacency neighbors must agree on
+
+- unique router ID
+- unique interface IP address
+  * primary IP address for OSPFv2
+  * link-local address for OSPFv3
+- common attributes
+  * interface area-id
+  * authentication
+  * hello and dead timers
+  * area type (normal, stub, NSSA, )
+  * interface MTU
+  * other optional capabilities
+
+== Router Id
+
+Determined by these rules in order of preference at boot or ospf process restart:
+
+- manually configured router id
+- highest IP address of an up/up loopback not used by other OSPF process
+- highest IP address of an up/up non-loopack interfaces  not used by other OSPF process
+
+.Task: Set the Router-Id
+----
+(config-router)# router-id <a.b.c.d>
+----
+
+== DR Election
+
+- There is no pre-emption in ospf
+  * Router must wait for the failure of the current DR
+  * Use the WAIT timer = DEAD timer
+
+- on hub-and-spoke, best practice is to have hub as DR and spokes not eligible as DR with priority=0
+
+.Task: Priority
+----
+(config-if)# ip ospf priority <0-255>
+----
+
+.Task: Set the WAIT Timer
+----
+(config-if)# ip ospf dead-timer <seconds>
+----
+
+== Ospf Cost
+
+stem:["Cost" = 10^8 / "Bandwidth(bps)"]
+
+.Task: Description
+----
+(config-router)# auto-cost reference-bandwitch <bps>
+----
+
+== OSPF Packet Format
+
+=== Common OSPF Packet Header
+
+.OSPF Header Format
+["packetdiag", target="ospf-header-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Version = 2 [len=8]
+  * Type [len=8]
+  * Packet Length [len=16]
+  * Router ID [len=32]
+  * Area ID [len=32]
+  * Checksum [len=16]
+  * AuType [len=16]
+  * Authentication [len=64]
+}
+----
+
+[horizontal]
+
+Type:: Hello (1), database description (2), Link-State Request (3), Link-State Update (4), or Link-State Acknowledgment (5).
+
+Packet length:: Length of the protocol packet in bytes including the OSPF header.
+
+Router ID:: The ID of the router originating the packet.
+
+Area ID:: The area that the packet is being sent into.
+
+Checksum:: standard IP checksum of the entire contents of the packet, excluding the 64-bit authentication field.
+
+AuType:: Identifies the authentication scheme to be used for the packet.
+
+- 0: no authentication
+- 1: plain-text authentication
+- 2: cryptographic authentication
+
+Authentication:: 64-bit field for use by the authentication scheme.
+
+=== Hello Packet
+
+- Sent from the primary IP address ( not the secondary addresses )
+- Every 10 seconds (Ethernet), 30 seconds (Non-broadcast)
+
+NOTE: OSPF neighbors will become fully adjacent if one or both of the neighbors are using
+unnumbered interfaces for the connection between them.
+
+
+.OSPF Hello Packet Format
+["packetdiag", target="ospf-hello-packet-format"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * OSPF packet header (24 bytes) [len=32, style=dotted, color=white]
+  * Network mask [len=32]
+  * Dead interval [len=16]
+  * Hello interval [len=8]
+  * Priority [len=8]
+  * Designated Router [len=32]
+  * Backup Designated Router [len=32]
+  * Neighbor(s) [len=32, stacked]
+}
+----
+
+.Task: Configure OSPF Hello Interval
+----
+(config-if)# ip ospf hello-interval <seconds>
+----
+
+.Task: Set the Interval During Which at Least One OSPF Hello Packet Must Be Received from a Neighbor Before the Router Declares That Neighbor Down
+----
+(config-if)# ip ospf dead-interval {<seconds> | minimal hello-multiplier <number>}
+----
+
+
+=== Database Description Packet
+
+
+- Uses an OSPF-defined simple error-recovery process.
+
+* Each DD packet, which can contain several LSA headers, has a sequence number assigned.
+* The receiver acknowledges a received DD packet by sending a DD packet with the identical sequence number back to the sender.
+* The sender uses a window size of one packet and then waits for the acknowledgment before sending the next DD packet.
+
+- Only the master is allowed to send DD packets on its own accord as well as to set and increase their sequence numbers.
+- A slave is allowed to send a DD packet only as a response to a DD packet received from master router, and must use the
+same sequence number. In effect, a slave is polled by the master and only responds to it.
+* If a slave has more DD than the master, he uses the M flag
+
+.OSPF DD Packet Format
+["packetdiag", target="ospf-database-description-message-format"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * OSPF packet header (24 bytes) [len=32, style=dotted, color=white]
+  * Interface MTU [len=16]
+  * Options [len=8]
+  * Reserved [len=5]
+  * I [len=1]
+  * M [len=1]
+  * MS [len=1]
+  * DD sequence number [len=32]
+  * LSA header (20 bytes) [len=32, stacked]
+}
+----
+
+[horizontal]
+
+Interface MTU:: Size of the largest IP message that can be sent on this router's interface
+without fragmentation
+
+Options:: For optional OSPF capabilities
+
+I-bit:: Initial for the first in a sequence of DD messages
+
+M-bit:: More DD follow this one
+
+MS-bit:: if this message is sent by the master in the communication
+
+
+=== Link State Request
+
+.OSPF Link State Request Format
+["packetdiag", target="ospf-link-state-request-message-format"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LS type [len=32]
+  * Link State ID [len=32]
+  * Advertising router [len=32]
+  * ... [len=32]
+}
+----
+
+=== Link State Update
+
+.OSPF Link State Update Format
+["packetdiag", target="ospf-link-state-update-message-format"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Number of LSAs [len=32]
+  * LSAs [len=32, stacked]
+}
+----
+
+
+=== Link State Acknowledgment
+
+.OSPF Link State Acknowledgment Format
+["packetdiag", target="ospf-link-state-ack-message-format"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LSA headers [len=32, stacked]
+}
+----
+
+LSA headers:: Contains LSA headers to identify the LSAs acknowledged.
+
+=== Link-State Packets
+
+- only a router that has originated a particular LSA is allowed to modify it or withdraw it.
+* Other routers must process and flood this LSA within its defined flooding scope if they recognize the LSA’s type and contents,
+  but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired.
+- has a unique LSID (Link State Identifier)
+
+[horizontal]
+
+Type 1:: Router LSA
+  - one per router per area
+  - lists the RouterID,  the IP Addresses and neighbors for each interface in that area
+  - represents Stub networks (subnet on which a router has not formed any neighbor relationships )
+  - flooded only within the same area
+  - LSID = Router ID
+
+Type 2::  Network LSA
+  - one per transit network
+  * network over which two or more OSPF routers have become neighors and elected a DR
+    so that traffic can transit between them
+  * except for point-to-point connection treated as a combination of p2p link and a stub IP network
+    (to facilate unnumbered p2p links)
+  - generated by DR
+  - describes the set of routers attached to a particular network
+  - describes the subnet and the router interfaces connected to the subnet
+  - flooded only within the area that contains the network
+  - LSID = DR's interface IP Address on that subnet
+
+
+Type 3:: Summary inter-area LSA
+  - Generated by ABR
+  - describes inter-area routes to network
+  * represents networks present in one area when being advertised into another area.
+  * Defines the subnets in the origin area, and cost, but no topology data.
+  - Flooded only within its area of origin; reoriginated on ABRs.
+
+
+Type 4:: Summary inter-area LSA
+  - Generated by ABR
+  - Flooded by ABR to all areas except the area containing the ASBR
+  - describes routes to ASBR
+  * tells other routers in the area how to get to the advertising router of an external route
+  - Flooded all areas except the area containing the ASBR
+
+Type 5:: AS external LSA
+  - originated by ASBR
+  - describes routes to destinations external to the AS
+  - flooded all over except stub areas
+
+Type 6:: Group Membership LSA
+  - defined for MOSPF
+  - Not supported by Cisco
+
+Type 7:: NSSA External LSA
+  - Created by ASBRs inside an NSSA, instead of a type 5 LSA.
+  - Flooded only within its area of origin;
+  - converted to type 5 LSA on an ABR toward other areas.
+
+Type 8:: External Attributes LSA
+  - Created by ASBRs during BGP-to-OSPF redistribution to preserve BGP attributes of redistributed networks.
+  - Not implemented in Cisco routers
+
+
+Type 9-11:: Opaque LSA
+  - Used as generic LSAs to allow for easy future extension of OSPF;
+    * for example, type 10 has been adapted for MPLS traffic engineering.
+  - have different flooding scope:
+    * Type 9 has link-local flooding scope,
+    * type 10 has area-local flooding scope,
+    * type 11 has autonomous system flooding scope equivalent to the flooding scope of type 5 LSAs
+    (not flooded into stubby areas and NSSAs).
+
+. OSPF'S SPF Algorithm Links Different Pieces Of Information Together.
+****
+For a router in Area 1 to reach the external route in Area 3,
+it has to look at the Type-5 that represents the external route.
+Then it has to look at the Type-4 representing the ABR on the area that the ASBR lives in.
+Then we have to look at the Type-3 to get to that remote ABR.
+Finally we look at the Type-1 and Type-2 LSAs in our area to determine how to get to our closest ABR.
+
+Read more
+https://supportforums.cisco.com/document/133976/reading-and-understanding-ospf-database#sthash.qdHPgN1P.dpuf[here].
+****
+
+.Task: Display the OSPF Database
+----
+# sh ip ospf database
+----
+
+
+
+== Backbone
+
+ABR:: Router actively connected to multiple areas *including* Area 0
+* has one LSDB for each area
+* runs the SPF for each LSDB then combines the result in a single routing table
+* can summarize and filter routes
+* ignores type 3 LSAs learned in a nonbackbone area during SPF calculation,
+  which prevents an ABR from choosing a route that goes into a nonbackbone area and then back into the backbone.
+
+
+== Stubby Areas
+
+All stubby area types
+- block Type 4/5 LSA
+- automatically inject default routes except NSSA
+
+
+=== Stubby Area
+
+- Doesn't have an ASBR
+
+.Task: Configure a Stubby Area
+----
+(config-router)# area <id> stub
+----
+
+=== Totally Stubby
+
+- Stubby areas where Type 3 are blocked
+
+
+.Task: Configure Totally Stubby Areas on the ABR
+----
+(config-router)# area <id> stub no-summary
+----
+
+=== NSSA
+
+- Contains one or more ASBRs
+- Allows creation of Type 7
+- Doesn't automatically inject default routes
+- The ABR with highest RID translates Type 7 to Type 5
+
+
+.Task: Configure NSSA
+----
+(config-router)# area <id> nssa
+----
+
+
+.Task: Inject Default Routes In NSSA
+----
+(config)# area <id> nssa default-information-originate
+----
+
+=== Totally NSSA
+
+- NSSA  where Type 3 are blocked
+
+
+.Task: Configure Totally NSSA
+----
+(config-router)# area <id> nssa no-summary
+----
+
+
+
+== OSPF Path Selection
+
+- Intra-Area > Inter-Area > External Routes (E1/N1 > E2/N2)
+
+
+
+== Virtual Links
+
+- purposes:
+  * Areas not physically connected to area 0
+  * partitioning the backbone
+
+- transit area can not be stub
+
+.Router A
+----
+(config)# router ospf 10
+(config-router)# area 2 virtual-link 2.2.2.2
+----
+
+.Router B
+----
+(config)# router ospf 10
+(config-router)# area 2 virtual-link 1.1.1.1
+----
+
+.Task: TODO
+----
+(config-router)# no capability transit
+----
+
+.Task: Configure Authentication on Virtual Links
+----
+! Null
+(config-router)# area <id> virtual-link <router-id> authentication { null }
+
+! Plaintext
+(config-router)# area <id> virtual-link <router-id> authentication { authentication-key <key-value> }
+
+! MD5
+(config-router)# area <id> virtual-link <router-id> authentication { message-digest message-digest- key key-num md5 key-value}
+
+! Cryptographic
+(config-router)# area <id> virtual-link <router-id> key-chain <key-chain-name>
+----
+
+http://www.cisco.com/en/US/tech/tk365/technologies_tech_note09186a0080094aaa.shtml[What are ospf areas and virtual links]
+
+== Network Types
+
+broadcast::
+  - multicast hellos every 10 seconds
+  - automatic neighbor discovery
+  - DR/BDR election
+  - default for LAN ethernet, TR, FDDI
+  - DR doesn't change the next hop of advertised prefixes
+
+Point-to-point::
+  - only 2 routers
+  - automatic neighbor relationships
+  - no DR/BDR election
+  - multicast hellos every 10 seconds
+  - default for HDLC and PPP
+
+Non-broadcast::
+  - unicast hellos every 30 seconds
+  - manual configuration of neighbor
+  - DR/BDR election
+  - default on Frame Relay, X.25 and SMDS
+
+Point-to-multipoint::
+  - multi-access, broadcast
+  - hellos every 30 seconds
+  - automatic discovery of neighbor (MA)
+  - DR/BDR election
+  - one IP subnet
+  - maintain connectivity during a VC failure ???
+  - generates host routes (with mask /32 ) for each neighbor
+  - default for ???
+
+Point-to-multipoint non-broadcast::
+  - manual configuration of neighbor
+  - no DR/BDR election
+  - network proprietary to Cisco
+  - hellos every 30 seconds
+
+Loopback::
+
+[TIP]
+- if Multi-Access network type then DR/BDR election
+- if non-broadcast then manual configuration of neighbors
+
+http://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/7039-1.html#t27[OSPF design guide: selecting interface network types]
+
+.Task: Configure OSPF Network Type
+----
+(config-if)# ospf network {broadcast| point-to-point| point-to-multipoint [non-broadcast] | non-broadcast | loopback }
+----
+
+
+
+== Graceful Restart
+
+- enables a router to continue to forward packets during a restart of the routing process
+- must be configured on all neighbor routers
+- can also work with EIGRP, BGP, IS-IS
+- default since IOS 12.4(6)T
+- 2 versions: RFC 3623 and Cisco NSF
+
+http://www.cisco.com/en/US/docs/ios-xml/ios/iproute_ospf/command/ospf-a1.html#wp258289[Cisco
+NSF]
+
+== SPF Throttling
+
+== Capability Vrf-Lite
+
+Read OSG, chapter 19, VRF lite, pp. 872-876
+
+http://www.cisco.com/en/US/docs/ios-xml/ios/iproute_ospf/command/ospf-a1.html#wp2582896905
+
+
+== Summarization
+
+Why the null 0 interface is added ?
+
+- do prevent routing loops
+  * packets destined for the routes that have been summarized will a longer  match
+  * packets destined to summary routes will be dropped
+
+
+See good explanation
+
+
+== OSPF States
+
+image::ospf-lsdb-exchange.png[OSPF LSDB Exchange]
+
+Down::
+- No hellos have been received from neighbors
+
+Attempt::
+- Unicast hello packet has been sent to neighbor, but not yet received back
+- only used for manually configured NBMA neighbors
+
+Init::
+- I have received a hello packet from a neighbor,
+but they have not acknowledged a hello from me
+
+2-way::
+- I have received a hello packet from a neighbor
+and he acknowledged a hello from me
+- I can see my Router Id in the neighbor's hello packet
+- Stop here for DROthers
+
+
+Exstart::
+- Master & slave relationship is formed where master has higher Router-id
+- Master chooses the starting sequence number of the DBD packets that are
+  used for actual LSA exchange.
+
+
+
+
+Exchange::
+- Local link state database is sent through DBD packets
+- DBD sequence number is used for reliable acknowledgement/retransmission
+
+Loading::
+- LSR packets are sent to ask for more info about a particular LSA
+
+Full::
+- Neighbors are fully adjacent and databases are synchronized.
+
+
+.Key Point
+****
+In the beginning of the exchange, each router places the other into the
+ExStart state. Each of them considers itself to be the master, and sends an
+empty DD packet to the other router, containing a randomly chosen sequence
+number, and MS (Master), M (More), and I (Init) flags set to 1. After receiving
+the neighbor’s DD packet, however, the router with the lower RID will change
+its role to slave, and it will respond with a DD packet with MS and I flags
+cleared and the sequence number set to the sequence number of master’s DD
+packet. This accomplishes the master/slave selection, and both routers move to
+the Exchange state. The master will then send a DD packet with the sequence
+number incre- mented by 1, optionally containing one or more LSA headers, and
+the slave will respond with a DD packet reusing the same sequence number from
+the received packet, optionally advertising its own LSA headers. The exchange
+continues in the same fashion, with the master incrementing the sequence number
+of each subsequent DD packet, until both routers have advertised all known all
+LSA headers (the master will stop sending DD pack- ets when it has advertised
+all LSA headers itself and the last DD response from the slave has the M flag
+cleared).
+****
+
+http://www.cisco.com/en/US/tech/tk365/technologies_white_paper09186a0080094e9e.shtml#appa1[ospf design guide: link-state advertisements]
+
+== OSPF Process
+
+.Task: Enable OSPF Process (Legacy Command )
+----
+(config)# router ospf <process-id>
+(config-router)# network <a.b.c.d> [<w.i.l.d>] area <id>
+----
+
+[NOTE]
+====
+- inject both the primary and secondary addresses
+- If an interface is IP unnumbered, and there is a *network* statement
+that matches the IP address of the primary interface,
+inject both the primary interface and the unnumbered interface
+====
+
+.Task: Enable OSPF Process (Interface Level)
+----
+(config-if)# ip ospf <process-id> area <id>
+----
+NOTE: - inject any and all secondary subnets
+
+.Task: Prevent OSPF to Advertize Secondary Prefixes
+----
+(config-if)# ip ospf <process-id> area <id> secondaries none
+----
+
+== OSPF Authentication
+
+=== Classic OSPF Authentication
+
+- Null , default: type 0
+- Plain-text, simple password authentication
+
+----
+(config-router)# area <id> authentication
+(config-if)# ip ospf authentication-key <string>
+----
+
+- Message digest authentication
+
+----
+(config-router)# area <id> authentication message-digest
+(config-if)# ip ospf message-digest-key <key-id> md5 <string>
+----
+
+.Key Rollover Procedure with Multiple MD5 Keys
+[NOTE]
+====
+Multiple MD5 keys with different key IDs are allowed per interface.
+This allows for graceful key migration where a new key can be added without disrupting the adjacencies.
+
+- To sign sent packets, it always uses the key that was added as the last one to the interface (regardless of the key number).
+- To authenticate the received packet, it uses the key ID that is indicated in the packet.
+- If a neighbor is detected on an interface that uses a different key number than this router,
+  OSPF enters a key migration phase in which it sends all packets as many times as how many keys are configured on the interface,
+  and each packet is signed with a different key.
+- The migration phase ends when all neighbors have migrated to the same key as the one used to sign sent packets by this router.
+- This procedure is also called the OSPF key rollover procedure.
+- Because plaintext passwords do not have key numbers, the key rollover is not available for plaintext authentication.
+====
+
+=== Extended Cryptographic OSPF Authentication
+
+- Uses SHA-HMAC (Secure Hash Algorithm - Hash Message Authentication Code) as per RFC 5709
+- Uses key chains
+
+*  Each key in the key chain must have a cryptographic algorithm
+  configured using a per-key *cryptographic-algorithm* command.
+  Failure to do so will result in OSPF not using that key.
+*  Each key in a key chain can be configured with the *send-life-time* and
+   accept-life-time keywords to limit its usability to a particular timeframe.
+   If multiple keys in the key chain are eligible to sign egress packets, the
+   key with the highest key ID will be used. Be aware that this behavior
+   differs from RIPv2 and EIGRP that select the key with the lowest key ID.
+*  The key rollover procedure as used by classic OSPF is not used with key
+   chains.  There is no key migration phase of sending multiple OSPF packets signed with different valid
+   keys.
+
+   ** To sign egress packets, use the valid key with the highest key ID in the key chain.
+   ** To authenticate ingress packets, try to use the key indicated in the received packet.
+
+.Task: Configure a Cryptographic Algorithm for the Key Chain
+----
+(config)# key-chain <name>
+(config-keychain)# key <number>
+(config-keychain-key)# cryptographic-algorithm ?
+
+  hmac-sha-1    HMAC-SHA-1 authentication algorithm
+  hmac-sha-256  HMAC-SHA-256 authentication algorithm
+  hmac-sha-384  HMAC-SHA-384 authentication algorithm
+  hmac-sha-512  HMAC-SHA-512 authentication algorithm
+  md5           MD5 authentication algorithm
+----
+
+.Task: Configure the Extended Cryptographic OSPF Authentication
+----
+(config-if)# ip ospf authentication key-chain <key-chain-name>
+----
+NOTE: Configuring the extended cryptographic authentication using the area OSPF process level
+   command is not supported.
+
+== TTL Security Check
+
+
+- Drops packets with TTL < 255 except on virtual links and sham links
+* If all OSPF routers sent their packets with TTL set to 255,
+  receiving an OSPF packet with its TTL less than 255 would be a clear indication that the packet originated
+  outside the network segment over which it was received.
+  Because OSPF com munication is, with the notable exception of virtual links and sham links,
+  always based on direct router-to-router communication, receiving an OSPF
+  packet outside a virtual link or a sham link with its TTL less than 255 is a
+  possible indication of a malicious activity.
+
+
+.Task: Configure the Time-to-Live (TTL) Security Check Feature on a Specific Interface
+----
+(config-if)# ip ospf ttl-security [hops <count> |disable]
+----
+
+.Task: Configure the Time-to-Live (TTL) Security Check Feature on All Interfaces
+----
+(config-router)# ip ospf ttl-security all-interfaces
+----
+
+.Task: Configure TTL Security on a Virtual Link
+----
+(config-router)# area virtual-link ttl-security <hops>
+----
+
+.Task: Configure TTL Security on a Sham Link
+----
+(config-router)# area virtual-link ttl-security <hops>
+----
+
+== SPF
+
+=== Spf Timers
+
+- spf-delay: between topology change notifications and recalculation of the shortest path
+- spf-holdtime : between spf calculations
+
+.Task: Configure Spf Timers
+----
+(config-router)# timers spf seconds <seconds>
+----
+
+=== SPF Throttling
+
+- Defines a variable-length wait interval between two consecutive SPF runs
+- Controls by 3 parameters:
+
+  * spf-start: initial wait interval before an SPF computation, if the network has been stable for a prolonged period of time.
+  * spf-hold: wait time between subsequent SPF runs, and its value doubles for each consecutive SPF run.
+  * spf-max-wait:  maximum time between two SPF runs (that is, doubling the spf-hold value is capped at spf-max-wait), and also
+  defines a period during which the network must be stable for the wait interval to be set back to spf-start and the spf-hold to its preconfigured
+  value. If the network has been stable for the last spf-hold period but not for the entire spf-max-wait since the last SPF run, the wait interval returns
+  to the spf-start value but the subsequent wait will still be set to twice the
+  previous spfhold value.
+
+
+.Task: Configure Spf Throttling
+----
+(config-router)# timers throttle spf <spf-start> <spf-hold> <spf-max-wait>
+----
+
+.Task: Verify SPF Throttling Configuration
+----
+# sh ip ospf | i SPF
+
+ Initial SPF schedule delay 10000 msecs
+ Minimum hold time between two consecutive SPFs 15000 msecs
+ Maximum wait time between two consecutive SPFs 100000 msecs
+----
+
+
+=== LSA Throttling
+
+.Task: Configure LSA Throttling
+----
+(config-router)# timers throttle lsa all <start-interval> <hold-interval> <max-interval>
+----
+
+.Task: Verify LSA Throttling Configuration
+----
+# sh ip ospf | i LSA
+
+ Initial LSA throttle delay 10000 msecs
+ Minimum hold time for LSA throttle 15000 msecs
+ Maximum wait time for LSA throttle 100000 msecs
+ Minimum LSA arrival 1000 msecs
+ LSA group pacing timer 240 secs
+----
+
+TODO
+Apart from throttling the LSA origination, a router can also be configured to
+ignore the same LSA upon arrival if it appears to arrive too often. This
+throttling of arriving LSAs is configured using the timers lsa arrival
+milliseconds OSPF command. If two or more same LSAs arrive less than
+milliseconds apart, only the first one is accepted and the remaining LSAs are
+dropped. In effect, the same LSA is accepted only if it arrives more than
+milliseconds after the previous accepted one. The default setting is 1000
+millisec- onds and can be seen in the show ip ospf output in Example 9-16.
+Obviously, the value of the minimum LSA arrival interval should be smaller than
+the neighbors’ initial hold interval in LSA Throttling. Otherwise, a neighbor
+would be allowed to send an updated LSA sooner than this router would be
+willing to accept it.
+
+
+
+=== Incremental SPF
+
+.Task: Configure Incremental SPF
+----
+(config-router)# ispf
+----
+
+.Task: Verify Incremental SPF Configuration
+----
+# sh ip ospf | i Incremental
+
+ Incremental-SPF enabled
+----
+
+== OSPF Filtering
+
+=== Routes Filtering Not LSA Filtering
+
+- uses *distribute-list*
+
+-  The distribute list in the inbound direction applies to results of SPF—the
+   routes to be installed into the router’s routing table.
+-  The distribute list in the outbound direction applies only to redistributed
+   routes and only on an ASBR; it selects which redistributed routes shall be
+   advertised.
+-  The inbound logic does not filter inbound LSAs; it instead filters the
+   routes that SPF chooses to add to that one router’s routing table.
+-  If the distribute list includes the incoming interface parameter, the
+   incoming interface is checked as if it were the outgoing interface of the
+   route.
+
+
+=== ABR Type 3 LSA Filtering
+
+-  allows an ABR to filter type 3 LSAs at the point where the LSAs would normally
+ be created.
+
+.Task: Filter Type 3 LSA on the ABR
+----
+(config-router)# area <id> filter-list prefix <prefix-list-name> { in | out }
+----
+
+=== Using the Area Range No-Advertise Option
+
+.Task: Summarize and Do Not Advertise Components
+----
+(config-router)# area <id> range <prefix /length> not-advertise [ cost cost ]
+----
+
+== OSPFv2 Prefix Suppression
+
+- RFC 6860 defines a method of hiding, or suppressing, the transit link prefixes in OSPF
+TODO Complete this
+
+.Task: Activate OSPFv2 Prefix Suppression for the Entire Router
+----
+(config-router)# prefix-suppression
+----
+NOTE:  suppress all prefixes on all its OSPF-enabled interfaces except
+loopbacks, secondary IP addresses, and prefixes on passive interfaces. Such
+prefixes are considered nontransit prefixes.
+
+.Task: Activate OSPFv2 Prefix Suppression on a Specific Interface
+----
+(config-if)# ip ospf prefix-suppression [disable]
+----
+
+
+
+
+== OSPF Stub Router
+
+- allows a router to either temporarily or permanently be prevented from becoming a transit router.
+
+* a transit router is simply one to which packets are forwarded, with the expectation that the transit router will forward the
+ packet to yet another router.
+
+* a nontransit routers only forward packets to and from locally attached subnets.
+
+TODO Better explanation
+
+
+
+== OSPF Graceful Restart
+
+== OSPF Graceful Shutdown

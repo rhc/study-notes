@@ -1,0 +1,82 @@
+= Telnet
+
+- allows a user at one site to establish a TCP connection to a login
+server at another site, then passes the keystrokes from one system to the
+other.
+
+- offers 3 main services:
+
+**  Network virtual terminal connection
+**  Option negotiation
+**  Symmetric connection
+
+- Cisco implementation of Telnet supports the following Telnet options:
+
+**  Remote echo
+**  Binary transmission
+**  Suppress go ahead
+**  Timing mark
+**  Terminal type
+**  Send location
+**  Terminal speed
+**  Remote flow control
+**  X display location
+
+
+.Task: Specify the IP Address Of an Interface As the Source Address for Telnet Connections
+----
+(config)# ip telnet source-interface <interface>
+----
+[NOTE]
+====
+- If the specified interface is not up, IOS selects
+  the address of the interface closest to the destination as the source address.
+====
+
+.Task: Set the TCP Window to Zero When the Telnet Connection Is Idle
+----
+(config)# service telnet-zeroidle
+----
+[NOTE]
+====
+- Normally, data sent to noncurrent Telnet connections is accepted and discarded.
+  When *service telnet-zero-idle* is enabled, if a session is
+  suspended (that is, some other connection is made active or the EXEC is
+  sitting in command mode), the TCP window is set to zero. This action prevents
+  the remote host from sending any more data until the connection is resumed.
+- Use this command when it is important that all messages sent by the host be
+  seen by the users and the users are likely to use multiple sessions.
+- Do not use this command if your host will eventually time out and log out a
+  TCP user whose window is zero.
+====
+
+
+.Task: Hide Host Address While Attempting to Establish a Telnet Session
+----
+(config)# ip telnet hidden addresses
+----
+
+.Task: Mark Outgoing Traffic with IP Precedence
+----
+(config)# ip telnet tos <0-7>
+----
+
+.Task:
+----
+(config)# ip telnet quiet
+----
+
+.Task: Display Error Message When Telnet Connection Fails to a Specific Host
+----
+(config)# busy-message <hostname> d message d
+----
+
+.Task: Sets Line to Send a RETURN (CR) As a CR Followed by a NULL Instead Of a CR Followed by a LINE FEED (LF).
+----
+(config)# ip telnet transparent
+----
+
+
+
+
+

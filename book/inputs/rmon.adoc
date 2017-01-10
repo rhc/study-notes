@@ -1,0 +1,64 @@
+= RMON
+
+TODO clean this section
+
+Remote Monitoring, or RMON, is an event-notification extension of the SNMP
+capabil- ity on a Cisco router or switch. RMON enables you to configure
+thresholds for alerting based on SNMP objects, so that you can monitor device
+performance and take appropri- ate action to any deviations from the normal
+range of performance indications.  RMON is divided into two classes: alarms and
+events. An event is a numbered, user- configured threshold for a particular
+SNMP object. You configure events to track, for example, CPU utilization or
+errors on a particular interface, or anything else you can
+do with an SNMP object.
+
+You set the rising and falling thresholds for these events, and then tell RMON
+which RMON alarm to trigger when those rising or falling thresholds are
+crossed. For example, you might want to have the router watch CPU utilization
+and trigger an SNMP trap or log an event when the CPU utilization rises faster
+than, say, 20 percent per minute. Or you might configure it to trigger an alarm
+when the CPU utiliza- tion rises to some absolute level, such as 80 percent.
+Both types of thresholds (relative, or
+delta,” and absolute) are supported. Then, you can configure a different alarm
+notifica- tion as the CPU utilization falls, again at some delta or to an
+absolute level you specify.
+
+
+The alarm that corresponds to each event is also configurable in terms of what
+it does (logs the event or sends a trap). If you configure an RMON alarm to
+send a trap, you also need to supply the SNMP community string for the SNMP
+server.
+
+
+
+Event and alarm numbering are locally significant. Alarm numbering provides a
+pointer to the corresponding event. That is, the configured events each point
+to specific alarm num- bers, which you must also define.
+
+.Example
+----
+rmon event 1 log trap public description Fa0.0RisingErrors owner config
+rmon event 2 log trap public description Fa0.0FallingErrors owner config
+rmon event 3 log trap public description Se0.0RisingErrors owner config
+rmon event 4 log trap public description Se0.0FallingErrors owner config
+rmon alarm 11 ifInErrors.1 60 delta rising-threshold 10 1 falling-threshold 5 2 owner config
+rmon alarm 20 ifInErrors.2 60 absolute rising-threshold 20 3 falling-threshold 10 4 owner   config
+----
+
+.Task: Monitor RMon Activity
+----
+# sh rmon activity
+# sh rmon event
+----
+
+
+
+
+
+
+
+
+
+
+
+

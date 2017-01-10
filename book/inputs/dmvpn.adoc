@@ -1,0 +1,50 @@
+= DMVPN
+
+== Concepts
+
+- dynamic creation of spoke-to-spoke 
+
+
+- DMVPN = mGRE + NHRP + IPSec
+
+
+Start with mGRE configuration 
+
+interface tunnel 0
+  ip address 141.11.10.1 255.255.255.0
+  tunnel source e0
+  tunnel mode gre multipoint
+
+
+
+== Phases
+
+Phase 1::
+ - Hub and spoke functionality
+ - for simplified and smaller configuration
+ - zero touch provisioning for adding spokes to the VPN
+ - supports dynamically addressed CPEs
+
+Phase 2::
+ - Spoke-to-spoke functionality
+ - on demand spoke-to-spoke tunnels avoids dual encrypts/decrypts 
+ - Smaller spoke CPE can participate in the virtual mesh
+
+Phase 3::
+ Architecture and scaling
+
+
+.Task: Verify NHRP Configuration
+----
+# sh ip nhrp
+
+141.11.10.2/32 via 141.11.10.2
+   Tunnel1234 created 00:02:21, expire 00:57:38
+   Type: dynamic, Flags: unique registered
+   NBMA address: 10.11.10.2
+141.11.10.3/32 via 141.11.10.3
+   Tunnel1234 created 00:02:09, expire 00:57:50
+   Type: dynamic, Flags: unique registered
+   NBMA address: 10.11.10.3
+----
+

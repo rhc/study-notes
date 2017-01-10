@@ -1,0 +1,237 @@
+= HSRP
+:icons: font
+
+menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-hsrp-v2.html[HSRP Version 2] ]
+
+- https://www.ietf.org/rfc/rfc2281.txt[RFC 2281]
+- Set of routers sharing one virtual IP address and one virtual MAC address
+- Elect one active router with the highest (priority, IP address)
+- Standy router takes over if Active router fails
+- Elect new standby router if standby router fails or becomes the active router.
+- To minimize network traffic, only the active and standby router send periodic HSRP messages.
+- A router may participate in multiple groups with seperate state and timers for each group
+- Unique group id per vlan
+- Multicast address = 0000.0c07.AC__xy__ (where xy is the HSRP group number in Hex)
+- Send to multicast 224.0.0.2 for v1 and 224.0.0.102 for v2
+- UDP port 1985
+
+== HSRP Packet
+
+[graphviz, target= 'ethernet-with-hsrp-payload']
+----
+digraph g {
+  node [shape = record, height =.1];
+  node0 [label = "MAC header | IP header | UDP packet port=1985 | HSRP Packet"];
+}
+----
+
+.HSRP Packet
+[packetdiag, target="hsrp-packet"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Version [len = 8]
+  * Opcode [len = 8]
+  * State [len = 8]
+  * Hellotime [len = 8]
+  * Holdtime [len = 8]
+  * Priority [len = 8]
+  * Group [len = 8]
+  * Reserved [len = 8]
+  * Authentication Data [len = 32]
+  * Virtual IP Address [len = 32]
+}
+----
+
+== HSRP Version
+
+- Version 1 by default
+- Version 2 doesn't interoperate with HSRPv1 on the same interface.
+  * v1 and v2 can run on different physical interfaces of the same router
+  * v1 cannot advertise and learn millisecond timers
+  * v1 uses multicast 224.0.0.2 and v2 224.0.0.102
+  * v2 uses jitter timers (negative for hellotimes and positive for holdtimes)
+- Group number: 0..255 for v1 and 0..4095 for v2
+- Different virtual MAC address
+
+.Task: Change HSRP Version
+----
+(config-if)# standby version {1 | 2}
+----
+
+== HSRP OpCode
+
+- Uses the Opcode field for preemption
+
+* 0: *Hello*: The router is running and is capable of becoming the active or standby router
+* 1: *Coup*: The router wishes to become the active router
+* 2: *Resign*: The router no longer wishes to be active router
+
+
+- No preemption by default
+- Preemption: the router with the highest priority becomes immediately the active router by sending a *coup* message,
+ The previous active router changes to the *speak* state and sends a *resign* message.
+- Can specify a delay before take over to allow the router to populate its routing table
+* *minimum* seconds after the last restart:
+* *reload* seconds after the first interface-up event after the device has reloaded, if such an event occurs within 360 seconds from reload. ???
+* *sync* seconds: for IP redundancy clients only ???
+
+.Task: Configure HSRP Preemption
+----
+(config-if)# standby [ <group-number> ] preempt [ delay{ [ minimum <seconds> ] [ reload <seconds> ] [ sync <seconds> ] } ]
+----
+
+
+== HSRP State
+
+[cols="5,15,80"]
+|===
+| Code | State   | Description
+
+| 0    | Initial | This is the starting state and indicates that HSRP is not running. This state is entered via a configuration change or when an interface first comes up.
+| 1    | Learn   | The router has not determined the virtual IP address, and not yet seen an authenticated Hello message from the active router. In this state the router is still waiting to hear from the active router.
+| 2    | Listen  | The router knows the virtual IP address, but is neither the active router nor the standby router. It listens for Hello messages from those routers.
+| 4    | Speak   | The router sends periodic Hello messages and is actively participating in the election of the active and/or standby router. A router cannot enter Speak state unless it has the virtual IP address.
+| 8    | Standby | The router is a candidate to become the next active router and sends periodic Hello messages. Excluding transient conditions, there MUST be at most one router in the group in Standby state.
+| 16   | Active  | The router is currently forwarding packets that are sent to the group's virtual MAC address. The router sends periodic Hello messages. Excluding transient conditions, there MUST be at most one router in Active state in the group.
+|===
+
+== Priority
+
+- Default value: 100
+- The higher (priority || IP address) wins
+
+.Task: Configure HSRP Priority
+----
+(config-if)# standby [group-number] priority <number>
+----
+
+== HSRP Timers
+
+Hellotime::
+- 3 seconds by default
+- Only meaningful in Hello messages
+- Configured on the router or learned from authenticated Hello message from the active router
+* not learned if HSRP hellos < 1 second
+
+Holdtime::
+- 10 seconds by default
+- >= 3 * hellotime
+
+.Task: Configure HSRP Timers
+----
+(config-if)# standby [group-number] timers[msec] <hellotime> [msec] <holdtime>
+----
+
+== HSRP Authentication
+
+- Clear-text or MD5 encryption
+
+
+.Task: Configure HSRP Clear-Text Authentication
+----
+(config-if)# standby [group-number] authentication text <string>
+----
+
+.Task: Configure HSRP MD5 Authentication
+----
+(config-if)# standby [group-number] authentication  md5 { key-string [ 0 | 7 ] key [ timeout seconds ] | key-chain <name-of-chain> }
+----
+
+.Task: Debug HSRP Authentication
+----
+# debug standby errors
+----
+
+== HSRP and Object Tracking
+
+- Reduce HSRP priority if the monitored interface goes down, allowing another HSRP router to become active if it has preemption enabled.
+- Cumulative reduction if multiple tracked interfaces are down
+- Configurable decrement value (default = 10)
+- Can shutdown/change the HSRP group to the Init state on the basis of the  tracked object's state
+
+.Task: Configure Interface Tracking
+----
+(config-if)# standby track { <object-number> [<priority-decrement>] | interface-type <interface-number> [ decrement <priority-decrement> ] } [shutdown]
+----
+
+== HSRP Support for ICMP Redirects
+
+- Enabled by default with advertisement every 60 seconds and holddown of 180 seconds
+
+.Why?
+When HSRP is running, preventing hosts from discovering the interface (or
+real) IP addresses of devices in the HSRP group is important. If a host is
+redirected by ICMP to the real IP address of a device, and that device later
+fails, then packets from the host will be lost.
+
+.How?
+* looks up the next hop IP address in its table of real IP addresses vs virtual IP address
+* if match found, replaces the real IP address by the virtual IP addresses in the gateway field of the redirect packet
+* if no match (unknown), send the redirect packet to go out unchanged
+
+.Restrictions
+* Do not redirect to passive HSRP devices
+
+
+.Task: Enable ICMP Redirects on an Interface
+----
+(config-if)# standby redirect [timers <advertisement> <holddown>] [unknown]
+----
+
+
+.Task: Disable ICMP Redirects on an Interface
+----
+(config-if)# standby redirect [timers <advertisement> <holddown>] [unknown]
+----
+
+.Task: Configure ICMP Redirect Messages with HSRP Virtual IP Address As the Gateway IP Address
+----
+(config)# standby redirects [enable | disable]
+----
+
+.Task: Debug HSRP Support for ICMP Redirects
+----
+# debug standby events icmp
+
+10:43:08: HSRP: ICMP redirect not sent to 10.0.0.4 for dest 10.0.1.2
+10:43:08: HSRP: could not uniquely determine IP address for mac 00d0.bbd3.bc22
+----
+
+
+== HSRP Virtual IP Address and Group
+
+- Can have a name (no longer than 25 chars)
+
+.Task: Configure the Virtual IP Address
+----
+(config-if)# standby [<group-number>] ip [ <a.b.c.d>  [secondary]]
+----
+
+- By default, send one gratuitous ARP when a group becomes active and then another two and four seconds later.
+- When HSRP is on the Active state on an interface,
+Proxy ARP requests are answered with the MAC address of the HSRP group.
+otherwise, they are ignored.
+
+.Task: Configure the Number Of Gratuitous ARP Packets Sent by HSRP Group When It Transitions to the Active State, and How Often the ARP Packets Are Sent
+----
+(config-if)# standby arp gratuitous [count <number=> interval <seconds>]
+----
+
+.Task: Configure the Name Of the Standby Group
+----
+(config-if)# standby name <group-name>
+----
+
+== Multiple HSRP
+
+- Provides load sharing in an HSRP configuration
+* Because HSRP uses only one Active router at a time, any other HSRP routers are idle.
+* two or more HSRP groups are configured on each HSRP LAN interface,
+  where the configured priority determines which router will be active for each HSRP group.
+- requires that each DHCP client and statically configured host are issued a default gateway corresponding to one of the HSRP groups
+- requires that they’re distributed appropriately.

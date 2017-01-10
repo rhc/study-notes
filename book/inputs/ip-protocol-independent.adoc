@@ -1,0 +1,38 @@
+
+= IP Protocol Independent
+
+
+
+== Static Routes
+
+== Default Routes
+
+== Variable-Length Subnet Masks
+
+== Subnet Zero and All-Ones Subnet IP Addressing
+
+== Maximum Number Of Paths
+
+- default to 4
+- 1 for BGP
+
+
+.Task: Change the Maximum Number for Equal Paths
+----
+(config-router)# maximum-paths <number>
+----
+
+
+== Multi-Interface Load Splitting
+
+== Routing Information Redistribution
+
+== Default Passive Interfaces
+
+== Sources Of Routing Information Filtering
+
+== Policy-Based Routing
+
+== QoS Policy Propogation Via BGP
+
+== Authentication Key Management and Supported Protocols

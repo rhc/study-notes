@@ -1,0 +1,141 @@
+= PAgP
+
+== Overview
+
+- **P**ort **Ag**gregation **P**rotocol
+- Cisco proprietary 
+- Automatic creation of a EtherChannel. 
+- Sends PagP packets every 30 seconds to multicast 0100-0CCC-CCCC
+- Same destination address than CDP, UDLD, VTP, and DTP. 
+- Checks for configuration consistency and manages link additions and failures between two switches.
+- Protocol value: 0x104
+- Cannot be enabled on cross-stack EtherChannel
+
+.Task: Display PAgP Status
+----
+# show pagp [channel-group-number]
+----
+
+== Modes
+
+Auto ::
+- Never initiates PAgP communications but instead listen passively for any received PAgP packets 
+before creating an EtherChannel with the neighboring switch. 
+- Default mode
+
+Desirable ::
+- Initiates negotiations with other interfaces by sending PAgP packets.
+
+On ::
+- Forces the interface to channel without PAgP. 
+- Do not exchange PAgP packets.
+
+Etherchannel formed for on-on, desirable-auto, desirable-desirable combinations.
+
+== Physical Vs Aggregate Learners
+
+Switches running PAgP are classified as:
+
+PAgP physical learners:::
+
+* learn MAC addresses using the physical ports within the EtherChannel instead
+  of via the logical EtherChannel link. 
+* forward traffic to addresses based on the physical port via which the address
+  was learned.  The switch will send packets to the neighboring switch using
+  the same port in the EtherChannel from which it learned the source address.
+
+Aggregate learners:::
+* learns addresses based on the aggregate or logical EtherChannel port. 
+* transmit packets to the source by using any of the interfaces in the EtherChannel. 
+* Aggregate learning is the default.
+
+By default, PAgP is not able to detect whether a neighboring switch is a
+physical learner. Therefore, when configuring PAgP EtherChannels on switches
+that support only physical learning, the learning method must be manually set
+to physical learning. It is important when running in this mode, to set the
+load-distribution method to source-based distribution so that any given source
+MAC address is always sent on the same physical port.
+
+.Task: Configure the PAgP Learning Method
+----
+(config-if)# pagp learn-method {physical-port | aggregation-port>
+----
+
+.Task: Verify the PAgP Learning Method
+----
+# show pagp [channel-group-number] internal
+----
+
+== Priority
+
+- Range: 0..255
+- Default: 128
+- The higher the priority, the more likely that the port will be used for PAgP transmission 
+
+
+.Task: Assign a Priority So That the Selected Port Is Chosen for Packet Transmission.
+----
+(config-if)# pagp port-priority <priority>
+----
+
+== Restrictions 
+
+While PAgP allows for all links within the EtherChannel to be used to forward
+and receive user traffic, there are some restrictions:
+
+- DTP and CDP send and receive packets over all the physical interfaces in the EtherChannel, 
+while PAgP sends and receives PAgP PDU only from interfaces that are
+up and have PAgP enabled for auto or desirable modes. 
+
+- When an EtherChannel bundle is configured as a trunk port, 
+the trunk sends and receives PAgP frames on the lowest numbered VLAN. 
+STP always chooses the first operational port in an EtherChannel bundle.
+
+- When configuring additional STP features such as Loop Guard on an EtherChannel, 
+remember that if Loop Guard blocks the first port, 
+no BPDUs will be sent over the channel, 
+even if other ports in the channel bundle are operational. 
+This is because PAgP will enforce uniform Loop Guard configuration on all of the ports that are part of the EtherChannel group.
+
+== Configuration
+
+
+=== Validate the Port That Will Be Used by STP to Send Packets and Receive Packets
+
+----
+Switch#show pagp neighbor
+Flags:  S – Device is sending Slow hello.  C – Device is in Consistent state.
+A – Device is in Auto mode.        P – Device learns on physical port.
+
+Channel group 4 neighbors
+Partner     Partner             Partner         Partner   Group
+Port        Name                Device ID       Port       Age  Flags   Cap.
+Gi1/1/3     Switch.1            00c5.a003.0080   Gi0/1     4s   SC      10001
+Gi1/1/4     Switch.1            00c5.a003.0080   Gi0/2     3s   SC      10001
+----
+
+STP will send packets only out of port Gi1/1/3 
+because it is the first operational interface. 
+If that port fails, 
+STP will send packets out of Gi1/1/4. 
+
+
+== Silent Mode
+
+.Task: Configure a Switch Port for Nonsilent Operation
+----
+
+----
+
+.Task: Configure a Switch Port for Nonsilent Operation
+----
+
+----
+
+
+TODO
+You can also configure a single interface within the group for all
+transmissions and use other interfaces for hot standby. The unused interfaces
+in the group can be swapped into operation in just a few seconds if the
+selected single interface loses hardware-signal detection. 
+

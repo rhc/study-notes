@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>Test Menu choice</title>
+<date>2016-04-26</date>
+</info>
+<section xml:id="_intro">
+<title>Intro</title>
+<simpara><menuchoice><guimenu>Home</guimenu> <guisubmenu>Open File</guisubmenu> <guimenuitem>bonjour</guimenuitem></menuchoice></simpara>
+<simpara>Something else here for macros[<link xl:href="http://google.com">Google</link>]
+Test below.</simpara>
+<simpara><menuchoice><guimenu>Home</guimenu> <guimenuitem>http://google.com[Google</guimenuitem></menuchoice> ]</simpara>
+<simpara><menuchoice><guimenu>Home</guimenu> <guimenuitem><link xl:href="http://google.com">http://google.com</link>[Google</guimenuitem></menuchoice> ]</simpara>
+<simpara>Check link:</simpara>
+</section>
+<section xml:id="_conclusion">
+<title>Conclusion</title>
+<simpara>Check this <link xl:href="http://google.com">Google</link>.</simpara>
+<simpara>Here  <a href="http://asciidoctor.org">asciidoctor.org</a> 
+Here  <a href="http://asciidoctor.org">asciidoctor.org</a> </simpara>
+<simpara><menuchoice><guimenu>Home</guimenu> <guimenuitem> <link xl:href="http://asciidoctor.org">asciidoctor.org</link> </guimenuitem></menuchoice></simpara>
+<simpara>Try this
+ <link xl:href="http://asciidoctor.org">"Asciidoc is king"</link> .</simpara>
+<simpara><menuchoice><guimenu>Home</guimenu> <guimenuitem><link xl:href="http:asciidoctor.org">"Asciidoc is king"</guimenuitem></menuchoice> </link></simpara>
+</section>
+</article>

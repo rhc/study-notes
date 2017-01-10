@@ -1,0 +1,81 @@
+= MQC
+
+- Define a traffic class with *class map*
+- Define PHB actions(marking, queuing, )  with *policy map*
+- Attach the traffic policy to an interface with *service-policy*
+
+- restrictions: maximum of 256 classes in a single policy map
+
+== Traffic Class
+
+A traffic class contains 3 major elts: a name, a series of *match* commands followed by *match-all* (default) or *match-any*
+
+.Match Commands That Can Be Used with MQC
+
+- match access-group
+- match any
+- match class-map
+- match cos
+- match destination-address mac
+- match discard-class
+- match [ip] dscp
+- match field
+- match fr-dlci
+- match input-interface
+- match ip rtp
+- match mpls experimental
+- match mpls experimental topmost
+- match not  // add a note here
+- match packet length
+-
+- etc
+
+- Packets that do not explicitly match a defined class are considered to have matched a special class called *class-default*.
+
+.Task: Display All Class Maps and Their Matching Criteria
+----
+> sh class-map
+----
+
+== Elements Of a Traffic Policy
+
+- contains 3 elts: name, traffic class, command to enable the QoS feature
+
+[cols="25,75"]
+:===
+Command                                      : Purpose
+random-detect discard-class                  : Configures the WRED parameters for a discard- class value for a class in a policy map.
+random-detect discard-class-based            : Configures  WRED on the basis of the discard class value of a packet.
+random-detect ecn                            : Enables explicit congestion notification (ECN).
+random-detect exponential-weighting-constant : Configures the exponential weight factor for the average queue size calculation for the queue reserved for a class.
+random-detect precedence                     : Configure the WRED parameters for a particular IP Precedence for a class policy in a policy map.
+set atm-clp                                  : Sets the cell loss priority (CLP) bit when a policy map is configured.
+set cos                                      : Sets the  Layer 2 class of service (CoS) value of an outgoing packet.
+set discard-class                            : Marks a packet with a discard-class value.
+set [ip] dscp                                : Marks a packet by setting the differentiated services code point (DSCP) value in the type of service (ToS) byte.
+set fr-de                                    : Changes the discard eligible (DE) bit setting in the address field of a Frame Relay frame to 1 for all traffic leaving an interface.
+set mpls experimental                        : Designates the value to which the  MPLS bits are set if the packets match the specified policy map.
+set precedence                               : Sets the precedence value in the packet header.
+set qos-group                                : Sets a  QoS group identifier (ID) that can be used later to classify packets.
+shape                                        : Shapes traffic to the indicated bit rate according to the algorithm specified.
+shape adaptive                               : Configures a Frame  Relay interface or a point-to- point subinterface to estimate the available bandwidth by backward explicit congestion notification (BECN) integration while trafficommand
+shape fecn-adaptative                        : configures a Frame Relay interface to reflect FECN bits as BECN bits in Q.922 test response messages.
+:===
+
+.Task: Display the Configuration for the Specified Class Of the Specified Policy Map
+----
+> show policy-map <policy-name> class <class-name>
+----
+
+.Task: Display the Configuration Of All Classes for All Existing Policy Maps
+----
+> show policy-map interface <name number>
+----
+
+== Service Policy
+
+.Task: Enable a Traffic Policy on an Interface
+-----
+(config-if)# service-policy {input | output } policy-map-name
+-----
+

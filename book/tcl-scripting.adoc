@@ -1,4 +1,0 @@
-= Tcl scripting
-
-
-http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ios_tcl/configuration/15-mt/ios-tcl-15-mt-book/nm-script-tcl.html#GUID-DCB20ADF-1F8E-434B-AE97-54802879F34F[IOS scripting with Tcl]

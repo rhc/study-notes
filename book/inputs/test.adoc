@@ -1,0 +1,41 @@
+= Test Menu Choice
+:experimental:
+:icons: font
+:menu-choice: macros[http://google.com[Google]]
+:link-attrs:
+
+== Intro
+
+menu:Home[Open File > bonjour ]
+
+Something else here for {menu-choice}
+Test below.
+
+menu:Home[ pass:[http://google.com[Google] ] ] 
+
+menu:Home[ pass:macros[http://google.com[Google] ] ] 
+
+// menu:Home[ pass:[{menu-choice} ]]
+// menu:Home[ {menu-choice} ]
+
+
+
+Check link:
+
+== Conclusion
+
+
+Check this http://google.com[Google]. 
+
+Here pass:[ <a href="http://asciidoctor.org">asciidoctor.org</a> ]
+Here pass:[ <a href="http://asciidoctor.org">asciidoctor.org</a> ]
+
+menu:Home[ pass:[ <link xl:href="http://asciidoctor.org">asciidoctor.org</link> ]]
+
+Try this 
+ http://asciidoctor.org["Asciidoc is king"] . 
+
+// This doesn't worked
+// menu:Home[ link:http:asciidoctor.org["Asciidoc is king"] ]
+
+

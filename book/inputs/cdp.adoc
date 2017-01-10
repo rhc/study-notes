@@ -1,0 +1,134 @@
+= CDP
+:experimental:
+:icons: font
+:linkattrs:
+:docref: http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swcdp.html
+
+ifeval::["{backend}" == "docbook5"]
+menu:Catalyst3560-XConfigurationGuides[ pass:[ <link xl:href="http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swcdp.html">CDP</link> ]]
+endif::[]
+
+ifeval::["{backend}" != "docbook5"]
+menu:Catalyst3560-X Configuration Guides[{docref}[CDP] ]
+endif::[]
+
+== Overview 
+
+- Layer 2 discovery protocol  running on Cisco devices
+- Retrieves device type and SNMP agent address of neighboring devices
+
+=== Packet Format
+
+- Header followed by a set of TLV value
+
+.CDP Frame Format
+["packetdiag", target="cdp-frame-format"]
+----
+diagram {
+  colwidth = 16
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Version [len = 8, color = yellow]
+  * TTL [len = 8, color = brown]
+  * Type [len = 16, color = orange]
+  * Length [len = 16, color = green ]
+  * Value (variable) [len = 16, color = lime]
+}
+----
+
+== CDP Operations 
+
+- Enable by default
+
+.Task: Display Global Information About CDP Characteristics
+----
+# show cdp
+
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                 S - Switch, H - Host, I - IGMP, r - Repeater
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+Router3             Ser 1          120           R        2500      Ser 0
+Router1             Eth 1          180           R        2500      Eth 0
+Switch1             Eth 0          240           S        1900      2
+----
+
+----
+show cdp entry <entry-name> [protocol | version]
+----
+
+.Task: Disable CDP 
+----
+(config)# no cdp run
+----
+
+.Task: Enable CDP on an Interface
+----
+(config-if)# cdp enable
+----
+
+=== CDP Updates
+
+
+.Task: Set the Transmission Frequency Of CDP Updates In Seconds
+----
+(config)# cdp timer <seconds>
+----
+
+NOTE: Default: 60 seconds range: 5-254 seconds
+
+.Task: Specify the Amount Of Time a Receiving Device Should Hold the Information Sent by Your Device
+----
+(config)# cdp holdtime <seconds>
+----
+
+NOTE: default: 180 seconds, range: 10 to 255 seconds
+
+
+=== Version
+
+.Task: Send Version-2 Advertisements
+----
+(config)# cdp advertise-v2
+----
+
+== Monitoring and Maintenance
+
+.Task: Reset the Traffic Counters to Zero
+----
+clear cdp counters
+----
+
+=== Neighbors
+
+
+.Task: Delete the CDP Table Of Information About Neighbors
+----
+clear cdp table
+----
+
+
+.Task: Display Information About Interfaces Where CDP Enabled
+----
+sh cdp interface [<interface-id>]
+----
+
+.Task: Display Information About Neighbors
+
+----
+sh cdp neighbors [<interface-id>] [detail]
+----
+
+.Task: Display CDP Counters, Including the Number Of Packets Sent and Received and Checksum Errors
+
+----
+# show cdp traffic
+
+Total packets output: 543, Input: 333
+ Hdr syntax: 0, Chksum error: 0, Encaps failed: 0
+ No memory: 0, Invalid: 0, Fragmented: 0
+ CDP version 1 advertisements output: 191, Input: 187
+ CDP version 2 advertisements output: 352, Input: 146
+----

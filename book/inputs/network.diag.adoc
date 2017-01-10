@@ -1,0 +1,33 @@
+= Blockdiag Example
+
+== Network Diagrams
+
+["nwdiag",target="simple-network.png"]
+----
+diagram {
+  network dmz {
+      address = "210.3.x.x/24"
+      web01 [address = "210.x.x.1"];
+      web02 [address = "210.x.x.2"];
+  }
+  network internal {
+      address = "172.x.x.x/24";
+      web01 [address = "172.x.x.1"];
+      web02 [address = "172.x.x.2"];
+      db01;
+      db02;
+  }
+}
+----
+
+- Exemple
+
+
+["blockdiag",target="simple-network.png"]
+----
+blockdiag {
+  plugin math;
+  A [label = "math://\int_{0}^{\infty} f(x)dx"];
+  A -> B;
+}
+----

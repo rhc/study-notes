@@ -1,0 +1,50 @@
+= IP Multicast
+
+
+IP multicasting::
+Sending a message from a single source to selected multiple destinations across a
+Layer 3 network in one data stream.
+
+
+== Multicast IP Addressing
+
+.Multicast Address Ranges and Their Use
+[cols="30,70"]
+,===
+Range                         ,  Usage
+
+224.0.0.0 to 239.255.255.255  , IPv4 class D reserved for multicast applications
+224.0.0.0 to 224.0.0.255      , permanent groups; Assigned by IANA for network protocols on a local segment. Routers do not forward packets with destination addresses used from this range.
+224.0.1.0 to 224.0.1.255      , permanent groups; Assigned by IANA for the network protocols that are forwarded in the entire network. Routers forward packets with destination addresses used from this range.
+232.0.0.0 to 232.255.255.255  , for SSM applications.
+233.0.0.0 to 233.255.255.255  , GLOP addressing. It is used for automatically allocating 256 multicast addresses to any enterprise that owns a registered ASN.
+239.0.0.0 to 239.255.255.255  , Administratively scoped addresses; for private multicast domains
+Remaining ranges of addresses , transient groups; Any enterprise can allocate a multicast address from the transient groups for a global multicast application and should release it when the application is no longer in use.
+,===
+
+
+.Well-Known Multicast Addresses
+[cols="30,70"]
+:===
+Address    : Usage
+
+224.0.0.1  : All multicast hosts
+224.0.0.2  : All multicast routers
+224.0.0.4  : DVMRP routers
+224.0.0.5  : All OSPF routers
+2224.0.0.9 : RIPv2 routers
+224.0.0.10 : EIGRP routers
+224.0.0.13 : PIM routers
+224.0.0.22 : IGMPv3
+224.0.0.25 : RGMP
+224.0.1.39 : Cisco-RP-Announce
+224.0.1.40 : Cisco-RP-Discovery
+:===
+
+
+== Mapping IP Multicast Address to MAC Addresses
+
+ip -> mac address = (0x01005E) + 0 bit + last 23 bits of the IP address
+
+image::mcast-ip-to-mac.png[IP -> MAC]
+

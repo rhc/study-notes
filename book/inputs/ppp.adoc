@@ -1,0 +1,174 @@
+= PPP
+
+menu:Cisco Cloud Routers Configuration guides[ WAN > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/wan_mlp/configuration/xe-16/wan-mlp-xe-16-book/dia-media-ind-multi-ppp-xe.html#GUID-382A6E17-B674-431A-AA62-6DF387F9E0FB[PPP] ]
+
+
+- error detection, error recovery, standard protocol Type field, supports synchronous and asynchronous links
+- https://tools.ietf.org/html/rfc1661[RFC 1661]
+
+
+== PPP Frame Format
+
+- Replaces proprietary type with standard protocol
+- Adds padding so the frame has even number of bytes
+
+image::ppp-vs-hdlc.png[PPP vs HDLC]
+
+
+== PPP LCP
+
+- link control protocol
+- controls features independent of any Layer 3 protocol
+
+
+.Task: Configure PPP
+----
+(config-if)# encapsulation ppp
+----
+
+=== LCP Operations:
+
+  When a PPP serial link first comes up—for example, when a router senses the
+  Clear to Send (CTS), Data Send Read (DSR), and Data Carrier Detect (DCD) leads
+  come up at the physical layer—LCP begins parameter negotiation with the other
+  end of the link. For example, LCP controls the negotiation of which
+  authentication methods to attempt, and in what order, and then allows the
+  authentication protocol (for example, CHAP)
+  to complete its work. After all LCP negotiation has completed
+  successfully, LCP is considered to be “up.”
+
+=== LCP Features
+
+- LQM link quality monitoring: drop if % of error frames above a configured value
+- looped link detection: drop link if a router receives its own randomly chosen magic number
+- layer 2 load balancing: fragment frames over multilink PPP
+- authentication: chap, pap
+
+.Configuration
+- minimal with *encapsulation ppp*
+- optional authentication, quality
+
+----
+(config-if)# encapsulation ppp
+(config-if)# ppp quality <percent>
+(config-if)# ppp authentication {chap | pap}
+----
+
+
+.Task: Drop the Link If Router Receives Its Own Magic Number
+----
+
+----
+
+
+==== LQM
+
+
+- When LQM is enabled, every keepalive period is sent to Link Quality Reports
+(LQRs) in place of keepalives. All incoming keepalives are responded to
+properly.
+- If LQM is not configured, keepalives are sent every keepalive period and all incoming LQRs are responded to with an LQR.
+- LQM is incompatible with Multilink PPP
+
+.Task: Monitor PPP Link Quality
+----
+(config-if)# ppp quality <percent>
+----
+
+== Multilink PPP
+
+- originally intended to combine multiple ISDN B-channels without requiring any Layer 3 load balancing
+- now load balance traffic accross any type of point-to-point serial link
+- add a header ( 2 or 4 bytes ) to allow reassembly on the receiving end
+- configuration with multilink interfaces or virtual templates
+- fragmenting each data link layer frame, either based on the number of parallel links or on a configured fragmentation delay.
+* sends the fragments over different links at the same time.
+* adds a header (4 or 2 bytes for Sequence Number and Flags bit) to allow reassembly on the receiving end, MLP adds a header (either 4 or 2 bytes)
+
+
+// add example
+
+
+
+=== LFI
+
+ - LFI (link fragmentation and interleaving )
+ - prevents small, delay sensitive packets from having to wait on longer, delay-insensitive packets to be completely serialized out an interface.
+ - the queuing scheduler generally LLQ on the multilink interface determines the next packet to send:
+
+image::ppp-lfi.png[LFI example]
+
+
+.Task: Allow Interleave
+----
+(config-if)# ppp multilink interleave
+----
+
+.Task: Define LFI Fragment Size
+----
+(config-if)# ppp multilink fragment-delay <microseconds>
+----
+NOTE: defines the fragment size based on stem:["Size" = x * "Bandwidth"]
+
+.Example
+----
+interface Multilink1
+  bandwidth 256
+  ip address 10.1.34.3 255.255.255.0
+  encapsulation ppp
+  ppp multilink
+  ppp multilink group 1
+  ppp multilink fragment-delay 10
+  ppp multilink8 interleave
+  service-policy output queue-on-dsc
+----
+
+
+== PPP Compression
+
+- uses L2 payload compression ( ip + tcp + data + DL) : best with longer packet
+- TCP header compression ( ip + tcp )
+- RTP header compression (ip + udp + rtp)
+
+- payload compression works best with longer packets, and header with shorter packets
+- header compression : achieves better compression ration 10:1 to 20:1
+
+=== Layer 2 Compression
+
+- options: LZS (Lempel-Ziv Stacker), MPPC (microsoft point-to-point compression), Predictor
+- LZS use more CPU and less RAM than Predictor algorithm and have better compression ratio
+
+- stacker: supports hdlc, ppp, FR, ATM
+- mppc: ppp, atm
+- predictor: ppp, atm
+
+- configuration with a matching *compress* command under each interface on both end of the links
+- once configured, ppp starts ccp (compression control protocol) which is another NCP
+
+=== Header Compression
+
+- configured with legacy commands or MQC commands
+- legacy under the serial (ppp) or multilink interface
+  - *ip tcp header-compression [passive]*
+  - *ip rtp header-compression [passive]*
+
+- add also MQC commands
+
+// add examples
+
+
+== PPP Authentication
+
+.Task: Enable PPP Authentication
+----
+ppp authentication {chap | chap pap | pap chap | pap} [if-needed] [<list-name> | default] [callin]
+----
+
+.Task: Debug Ppp Authentication
+----
+debug ppp authentication
+----
+
+read
+http://www.cisco.com/c/en/us/support/docs/wan/point-to-point-protocol-ppp/25440-debug-ppp-negotiation.html#sampdebug[understanding debug ppp negotiation]
+

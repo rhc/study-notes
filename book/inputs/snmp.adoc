@@ -1,0 +1,182 @@
+= SNMP
+:experimental:
+:icons: font
+
+menu:Configuration guides[Network Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/snmp/configuration/15-mt/snmp-15-mt-book/nm-snmp-cfg-snmp-support.html[configuring SNMP support] ]
+
+//TODO start here with the pictures
+
+- Application-layer protocol between SNMP managers and agents
+** SNMP manager running NMS software:i UDP port 162 open for traps/informs messages
+** SNMP managed devices running SNMP agent: UDP 161 open for GET/SET messages
+
+== Version
+
+v1:: original specs, weak authentication with community string, Uses SMIv1, uses MIB-I originally.
+v2:: Uses SMIv2, removed requirement for communities, added GetBulk and Inform messages, but began with MIB-II originally.
+v2c::  64-bit counters, getBulkRequest, informsRequest,Pseudo-release (RFC 1905) that allowed SNMPv1-style communities with SNMPv2;
+v3:: authentication, encryption, Mostly identical to SNMPv2, but adds significantly better security, although it supports communities for backward compatibility. Uses MIB-II.
+
+== MIB
+
+MIB: dictionaries of OID
+
+OID: hierarchical identifiers in numerical format that represent MIB variables.
+( e.g. 1.3.6.1.2.1 "Interfaces"
+1.3.6.1.4.1.9 "Enterprises - Cisco"
+)
+
+== Packet Format
+
+.SNMP Header Format
+["packetdiag", target="snmp-header"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 16
+  * Version [len=32]
+  * Community [len=32]
+  * PDU Type [len=32]
+  * Request Identifier [len=32]
+  * Error Status [len=32]
+  * Error Index [len=32  ]
+  * PDU variable bindings [len=64]
+}
+----
+
+=== SNMP PDU Types
+
+. SetRequest
+. GetRequest
+. GetNextRequest
+. GetBulkRequest
+. Trap
+. InformsRquest
+. Response
+
+
+
+== Basic System Information
+
+.Task: Configure the Location Information
+----
+(config)# snmp-server location <homesweethome>
+----
+
+.Task: Configure the Contact Information
+----
+(config)# snmp-server contact <no-where-to-be-found>
+----
+
+.Task: Configure the System Serial Number
+----
+(config)# snmp-server chassis-id <system-serial-number>
+----
+
+==  Views
+
+.Task: Create a View
+----
+(config)# snmp-server view <name> <oid-tree> {included | excluded}
+----
+
+== Communities
+
+
+.Task: Configure a Community String
+----
+(config)# snmp-server community <string> [view <name>] [ro|rw] [<acl]
+----
+
+.Task: Display Community String
+----
+# sh snmp community
+----
+
+== Traps
+
+.Task: Send Traps to NMS
+----
+(config)# snmp-server host <ip-address> [traps | informs] [version {1| 2c | 3 [auth | noauth | priv]}] community-string [udp-port port-number] [notification-type]
+----
+
+== SNMP V3
+
+.Task: Configure SNMP V3 Group
+----
+(config)# snmp-server group [<groupname> {v1 | v2c | v3 [auth | noauth | priv]}]
+            [read <readview>]
+            [write <writeview>]
+            [notify <notifyview>]
+            [access <acl]
+----
+
+.Task: Display SNMP V3 Group Settings
+----
+# sh snmp group
+----
+
+.Task: Configure  SNMP V3 User
+----
+(config)# snmp-server engineID {local <engine-id> | remote <ip-address> [udp-port <number> ] [vrf <vrf-name> ] <engine-id-string> }
+(config)# snmp-server user <username> <groupname> [remote <ip-address> [udp-port <number> ]] {v1 | v2c | v3 [encrypted] [auth {md5 | sha} <auth-password> ]} [access <acl>]
+----
+
+.Task: Display SNMP User Information
+----
+# sh snmp user <user>
+----
+
+.Task: Display SNMP EngineID
+----
+# sh snmp engineID
+----
+
+== SNMP Manager
+
+.Task: Configure the SNMP Manager Process
+----
+(config)# snmp-server manager
+----
+
+.Task: Configure the SNMP Manager Session Time-Out
+----
+(config)# snmp-server manager session-timeout <seconds>
+----
+
+.Task: Display the Status Of the SNMP Sessions
+----
+# sh snmp sessions brief
+----
+
+.Task: Display the Current Set Of Pending SNMP Requests
+----
+# sh snmp pending
+----
+
+
+== SNMP Shutdown Mechanism
+
+.Task: Enable the SNMP Shutdown Mechanism
+----
+(config)# snmp-server system-shutdown
+----
+
+
+.Task: Define the Maximum SNMP Agent Packet Size
+----
+(config)# snmp-server packetsize <bytes>
+----
+
+.Task: Specify the TFTP Servers Used for Saving and Loading Configuration Files
+----
+(config)# snmp-server tftp-server-list <acl>
+----
+
+.Task: Disable SNMP Agent
+----
+(config)# no snmp-server
+----
+

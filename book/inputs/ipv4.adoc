@@ -1,0 +1,162 @@
+= IPv4
+
+- RFC 791
+- IP Ethernet protocol: 0x0800
+
+== IP Packet Format
+
+.IP Header Format
+["packetdiag", target="ospf-header-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Version [len=4]
+  * IHL [len=4]
+  * ToS [len=8]
+  * Total Length [len=16]
+  * Identification [len=16]
+  * Flags [len=3]
+  * Fragment offset [len=13]
+  * TTL [len=8]
+  * Protocol [len=8]
+  * Header Checksum [len=16]
+  * Source Address [len=32]
+  * Destination Address [len=32]
+  * Options (+ padding) [len=32]
+  * Data (variable) [len=64, color=green]
+}
+----
+
+[horizontal]
+IP Header Length (IHL)::
+Datagram header length in 32-bit words.
+
+Type-of-Service::
+Specifies how an upper-layer protocol would like a current datagram to be handled, and assigns datagrams various levels of importance.
+Currently referred to as Differentiated Services Code Point (DSCP) (6 bits).
+
+Total Length::
+Specifies the length, in bytes, of the entire IP packet, including the data and header.
+
+Identification::
+Contains an integer that identifies the current datagram. This field is used to help piece together datagram fragments.
+
+Flags::
+Consists of a 3-bit field of which the two low-order (least-significant) bits control fragmentation. The low-order bit specifies whether the packet can be fragmented. The middle bit specifies whether the packet is the last fragment in a series of fragmented packets. The third or high-order bit is not used.
+
+Fragment Offset::
+Indicates the position of the fragment's data relative to the beginning of the data in the original datagram, which allows the destination IP process to properly reconstruct the original datagram.
+
+Time-to-Live::
+Maintains a counter that gradually decrements down to zero, at which point the datagram is discarded. This keeps packets from looping endlessly.
+
+Protocol::
+Indicates which upper-layer protocol receives incoming packets after IP processing is complete.
+
+Header Checksum::
+Helps ensure IP header integrity.
+
+Options::
+Allows IP to support various options, such as security.
+
+Data::
+Contains upper-layer information.
+
+//Use the packet format as the structure of the document
+
+== IP Address
+
+- 32-bits written in "dotted decimal"
+- Classes: A,B,C,D,E
+- Classless : prefix + host
+
+.Task: Assign an IP Address to an Interface
+----
+(config-if)# ip address <a.b.c.d> <e.f.g.h> [secondary]
+----
+
+.Task: Display the IP Parameters for the Interface
+----
+show ip interface
+----
+
+.Task: Display the IP Networks the Device Is Connected To
+----
+show ip route connected
+----
+
+
+== CIDR
+
+- Classless interdomain routing
+- Defined in RFS 1517-1520
+- Administrative assigment of large address blocks and the related summarized
+  routes for the purpose of reducing the size of the Internet routing table
+- Enable by default
+
+
+.Task: Enable Classless Addressing
+----
+(config)# ip classless
+----
+
+.Task: Specify the Format In Which Netmask Appear for the Current Session
+----
+(config)# line vty <first> <last>
+(config-line)# term ip netmask-format {bitcount | decimal | hexadecimal}
+----
+
+.Task: Specify the Format In Which Netmask Appear for the Current Line
+----
+(config)# line vty <first> <last>
+(config-line)# term ip netmask-format {bitcount | decimal | hexadecimal}
+----
+
+== Private Addressing
+
+- RFC 1918
+- 10.0.0.0/8
+- 172.16.0.0/12
+- 192.168.0.0/16
+
+== VLSM
+
+- Variable length subnet mask
+
+== Subnet Zero
+
+.Task: Allow IP Subnet Zero
+----
+(config)# ip subnet-zero
+----
+
+== Unnumbered Interfaces
+
+- Borrow the IP address of another interface
+- Only point-to-point (non-multiaccess) WAN interfaces
+- You cannot reboot a IOS image over an ip unnumbered interface
+
+.Task: Configure Unnumbered Interfaces on Point-to-Point WAN Interfaces
+----
+(config-if)# ip unnumbered <interface-type interface-id>
+----
+
+=== 31-Bit Prefix
+
+- Conserve IP address space
+- Since RFC 3021
+- Only on point-to-point WAN interfaces
+
+.Task: Use a 31-Bit Prefix on Point-to-Point WAN Interfaces
+----
+(config)# ip classless
+(config-if)# ip address a.b.c.d 255.255.255.254
+----
+
+
+
+

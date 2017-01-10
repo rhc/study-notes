@@ -1,0 +1,15 @@
+= IOS-XE
+
+- runs IOS as a process on top of Linux OS
+- modular -> extensibility
+- high availability
+  ** Can upgrade one package without rebooting the whole device
+- separates control plane (Forwarding and Feature Manager)
+  and data plane (Forwarding Engine Driver)
+  ** The FFM provides a set of APIs used to manage the control plane
+  processes. The resulting outcome is that the FFM programs the data plane
+  through the FED and maintains all forwarding states for the system. It is the
+  FED that allows the drivers to affect the data plane, and it is provided by
+  the platform.
+
+

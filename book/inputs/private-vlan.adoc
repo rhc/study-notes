@@ -1,0 +1,179 @@
+= Private VLANs
+
+menu:Cat3560-X Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swpvlan.html[Private VLANs] ]
+
+- Separate ports as if they are on different VLAN while consuming only one subset.
+- Typically used by service provider in a multi-tenant offerings: one router, one switch, multiple customers
+- PVLAN
+  * one primary VLAN ( promiscuous ports) + multiple secondary VLANs
+  * At most one isolated secondary VLAN
+  * Zero or more community secondary VLANs
+- Cannot use vlan 1, 1002-1005 as private vlans
+
+
+.Task: Display Private VLAN Information
+----
+# sh vlan private-vlan [type]
+
+Primary     Secondary   Type                Ports
+-------     ---------   ----                ---------------------
+10          501         isolated            Gi2/0/1,Gi3/0/1,Gi3/0/2
+10          502         community           Gi2/0/11,Gi3/0/1,Gi3/0/4
+10          503         non-operational
+----
+
+== Primary VLANs
+
+- carries unidirectional traffic downstream from promiscuous ports to all ports
+
+.Task: Configure Primary VLAN and Associated Secondary VLANs
+----
+(config)# vtp mode transparent
+(config)# vlan 100
+(config-vlan)#private-vlan primary
+(config-vlan)#private-vlan association 123-321,999
+----
+
+== Isolated VLANs
+
+- carries unidirectional traffic upstream from the hosts toward the promiscuous ports and the gateway.
+
+.Task: Configure Isolated VLANs
+----
+(config)# vtp mode transparent
+(config)# vlan 102
+(config-vlan)# private-vlan isolated
+----
+
+== Community VLANs
+
+- carries unidirectional traffic upstream from the hosts toward the promiscuous ports and the gateway.
+
+.Task: Configure Isolated VLANs
+----
+(config)# vtp mode transparent
+(config)# vlan 102
+(config-vlan)# private-vlan isolated
+----
+
+
+== Private-Vlan Host Port
+
+.Task: Configure a Layer 2 Port Interface As a Private-Vlan Host Port
+----
+(config-if)# switchport mode private-vlan host
+(config-if)# switchport private-vlan host-association <primary-vlan-id> <secondary-vlan-ids>
+----
+
+[NOTE]
+====
+Although private VLANs provide host isolation at Layer 2,
+hosts can communicate with each other at Layer 3.
+====
+
+== Private-VLAN Promiscuous Ports
+
+.Task: Configure a Layer 2 Port Interface As a Private-Vlan Promiscuous Port
+----
+(config-if)# switchport mode private-vlan promiscuous
+(config-if)# switchport private-vlan mapping <primary-vlan-id> [add | remove] <secondary-vlan-ids>
+----
+
+== Private-VLAN SVI
+
+- SVI can only be associated to primary VLANs
+- SVIs for secondary VLANs are inactive
+- If you assign an IP subnet to the primary VLAN SVI,
+this subnet is the IP subnet address of the entire private VLAN
+
+.Task: Configure a Layer 3 Vlan Interface As a Private-Vlan Promiscuous Port
+----
+(config)# interface vlan <primary-vlan-id>
+(config-if)# private-vlan mapping <primary-vlan-id> [add | remove] <secondary-vlan-ids>
+----
+
+.Task: Display Information About the Private-VLAN Mapping for VLAN SVIs
+----
+# sh interface private-vlan mapping
+----
+
+TODO ip sticky arp
+
+== Private-Vlan Accross Multiple Switches
+
+As with regular VLANs, private VLANs can span multiple switches. A trunk port
+carries the primary VLAN and secondary VLANs to a neighboring switch. The trunk
+port treats the private VLAN as any other VLAN. A feature of private VLANs
+across multiple switches is that traffic from an isolated port in switch A does
+not reach an isolated port on Switch B.
+
+image::private-vlan-accross-multiple-switches.png[Private-VLAN accross multiple switches]
+
+[WARNING]
+====
+- Manually configure private VLANs on all switches because VTP (v1 and v2) does not support private VLANs,
+-
+====
+
+TODO interaction with switch that do not support private-vlan
+
+TODO PVLAN Trunk
+
+TODO PVLAN Isolated
+
+TODO see page 67 Narbick
+
+
+== Interaction with Other Features
+
+VTP::
+- VTP v1 andv2 don't propagate private-vlans
+  ** Set transparent mode
+  ** Save the VTP transparent mode and private-vlan to startup configuration
+- VTP v3 supports private-vlans
+
+STP::
+- only one STP instance for the entire private-vlan
+- the STP parameters of the primary VLAN are propagated to the secondary VLANs
+- Enable Port Fast and BPDU guard on isolated and community host ports
+  to prevent STP loops due to misconfigurations and to speed up STP convergence
+- Do not enable Port Fast and BPDU guard on promiscuous ports.
+
+DHCP snooping::
+- Can be enabled on the private VLAN
+- propagates to all secondary vlans when enabled on the primary VLAN
+- If you configure DHCP on a secondary VLAN, the configuration does not take
+  effect if the primary VLAN is already configured (?!)
+
+IP source guard::
+- enabled only if DHCP snooping is enabled on the primary vlan
+
+SPAN::
+- You can configure a private-VLAN port as a SPAN source port.
+- You can use VLAN-based SPAN (VSPAN) on primary, isolated, and community VLANs
+  or use SPAN on only one VLAN to separately monitor egress or ingress traffic.
+- A private-VLAN host or promiscuous port cannot be a SPAN destination port. If
+  you configure a SPAN destination port as a private-VLAN port, the port
+  becomes inactive.
+- A RSPAN vlan can not be a private-vlan primary or secondary vlan.
+
+
+PAgP or LACP ::
+- If a port is part of a private vlan, any Etherchannel configuration is inactive
+
+IGMP snooping::
+- When enabled (the default), the switch supports no more than 20 private-vlan domain
+
+802.1x::
+- You can configure IEEE 802.1x port-based authentication on a private-VLAN port,
+- You can not configure IEEE 802.1x with port security, voice VLAN, or per-user
+ACL on private-VLAN ports.
+
+Static MAC address::
+- If you configure a static MAC address on a promiscuous port in the primary VLAN,
+  you must add the same static address to all associated secondary VLANs.
+- If you configure a static MAC address on a host port in a secondary VLAN,
+  you must add the same static MAC address to the associated primary VLAN.
+- When you delete a static MAC address from a private-VLAN port,
+  you must remove all instances of the configured MAC address from the private VLAN.
+

@@ -1,0 +1,93 @@
+= LACP
+
+== Overview
+
+- IEEE 802.3ad 
+- Automatic creation of port channels
+- Multicast address IEEE 802.3 Slow Protocols: 0180-C200-0002
+- EtherType value: 0x8809
+- Timers: hellos every second during hand shake
+- Maximum: 16 ports with max 8 active
+
+=== Restrictions
+
+
+
+=== Modes
+
+Passive::
+- Does not initiate LACP negotiation but responds to LACP packets
+- Default mode
+
+Active::
+- Initiate LACP negotiation by sending LACP packets
+
+On::
+- Forces the interface to the channel without PAgP or LACP
+
+
+Working Etherchannel for On-On, Passive-Active, Active-Active
+
+
+== LACP Hot-Standby Ports
+
+- Only 8 LACP links can be active at one time
+- Any additional links are in hot-standby mode
+- If one of the active links becomes inactive,
+  a hot-standby link becomes active in its place
+
+- Each link is assigned a unique priority in this order
+  * LACP system priority (1..65535, default: 32768)
+  * System ID ( the switch MAC address)
+  * LACP port priority
+  * Port number
+- In priority comparisons, lower values have higher priority.
+
+- To determine which ports are active and which ports are hot standby,
+  * Select the master switch with a low system priority and system-id
+  * Select the master ports with the low port priority and number.
+    The port-priority and port-number of the slave switch are not used.
+
+.Task: Check Which Ports Are In the Hot-Standby Mode
+----
+# show etherchannel summary
+----
+
+.Task: Configure the LACP System Priority
+----
+(config)# lacp system-priority <priority>
+----
+
+.Task: Show the LACP System Priority
+----
+# show lacp sys-id
+----
+
+.Task: LACP Port Priority
+----
+(config-if)# lacp port-prioriy  
+----
+
+== LACP Port-Channel MaxBundle Feature
+
+- Control the number of ports allowed to be bundled into the etherchannel
+- Allows hot-standby ports with fewer bundled ports
+
+.Task: Configure the Maximum Number Of Bundled Ports Allowed In a LACP Port Channel
+----
+(config-if)# lacp max-bundle
+----
+
+== LACP Port-Channel Min-Links Feature
+
+- Only for LACP Etherchannel
+- Prevents low-bandwidth interface from becoming active
+- Causes LACP etherChannels to become inactive if they have too feww active members ports to supply the required minimum bandwith
+
+
+.Task: Configure the Minimum Number Of Member Ports That Must Be In the Link-Up State and Bundled In the Etherchannel for the Port Channel Interface to Transition to the Link-Up State 
+----
+(config-if)# port-channel min-link n
+----
+
+

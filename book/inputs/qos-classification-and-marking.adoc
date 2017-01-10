@@ -1,0 +1,286 @@
+= Classification and Marking
+
+== Fields That Can Be Marked for QoS Purposes
+
+- Layer 3:  IPP, IP DSCP, DS field, ToS byte
+- Layer 2:  Ethernet CoS,Frame Relay  DE, ATM CLP, MPLS EXP
+
+===  IPP
+
+image::ipp-vs-dscp.png[]
+
+.IPP and Class Selector DSCP Values
+:===
+DSCP CS name : IPP names
+
+CS0/Default  : routine
+CS1          : priority
+CS2          : immediate
+CS3          : flash
+CS4          : flash override
+CS5          : critical
+CS6          : internetwork control
+CS7          : network control
+:===
+
+=== DSCP
+
+- PHB: Per-Hop Behavior
+
+- Expedited Forwarding (EF):
+* Queue EF packets so that they get scheduled quickly, to give them low latency.
+* Police the EF packets so that they do not consume all bandwidth on the link or starve other queues.
+* Binary value: 101110 Decimal value: 46
+
+* packets given queue priority
+
+- Assured Forwarding (AF)
+* defines 4 queues with 3 drop priorities
+* stem:[AFx_1y_1 > AFx_2y_2 if x_1 > x_2 or (x_1 = x_2 and y_1 < y_2)]
+* AFxy -> 8x + 2y = decimal value
+
+
+=== Ethernet LAN Class Of Service
+
+image::ethernet-cos.png[Ethernet CoS]
+
+
+=== WAN
+
+- Frame Relay DE (Discard Eligibility), 1-bit
+- ATM CLP (Cell Loss Priority ), 1-bit
+- MPLS EXP (Exprimental), 3-bit
+
+== NBAR
+
+- Network-Based Application Recognition
+- Deep-packet classification  from Layer 4 through Layer 7:
+
+* Statically assigned TCP and UDP port numbers.
+* Non-TCP and non-UDP IP protocols.
+* Dynamically assigned TCP and UDP port numbers.
+  ** requires stateful inspection: inspect a protocol across multiple packets during packet classification.
+* Subport classification or classification based on deep-packet inspection.
+  ** URL, Hostname, or MIME type
+
+- uses MQC match protocol
+
+
+.NBAR Match Protocol
+[cols="25,75"]
+:===
+Command                  : Purpose
+
+match protocol           : Configures the match criteria for a class map on the basis of the specified protocol.
+match protocol citrix    : Configures NBAR to match Citrix traffic.
+match protocol fasttrack : Configures NBAR to match FastTrack peer-to-peer traffic.
+match protocol gnutella  : Configures NBAR to match Gnutella peer-to-peer traffic.
+match protocol http      : Configures NBAR to match HTTP traffic by URL, host,MIME type, or fields in HTTP packet headers.
+match protocol rtp       : Configures NBAR to match Real-Time Transport Protocol (RTP) traffic.
+match qos-group          : Identifies a specific QoS group value as a match criterion.
+match source-address mac : Uses the source MAC address as a match criterion.
+match start              : Configures the match criteria for a class map on the basis of the datagram header (Layer 2) or the network header (Layer 3).
+match tag                : Specifies tag type as a match criterion.
+:===
+
+.Restrictions
+- NBAR cannot classify ipx
+- NBAR cannot classify multicast traffic
+
+.Task: Configure DSCP-Based Layer 3 Custom Applications
+----
+(config)# ip nbar custom <name> transport {tcp| udp } id <id>
+(config-custom)# dscp {ef | af }
+----
+
+.Task: Display the Current Protocol-to-Port Mappings In Use by NBAR.
+----
+# sh ip nbar port-mapping [<protocol-name>]
+
+port-map bgp      udp 179
+port-map bgp      tcp 179
+port-map cuseeme  udp 7648 7649
+port-map cuseeme  tcp 7648 7649
+port-map dhcp     udp 67 68
+port-map dhcp     tcp 67 68
+----
+
+== CB Marking
+
+- requires CEF
+- Mark as close to the ingress edge of the network as possible, but not so close
+to the edge that the marking is made by an untrusted device.
+
+
+
+For any class inside the policy map for which there is no set command, packets in that class are not marked.
+
+
+.Recommended Values for Traffic Marking
+:===
+Traffic Type              : IP Precedence : IP DSCP        : Class of Service
+Voice payload             : 5             : EF             : 5
+Video payload             : 4             : AF41           : 4
+Voice and video signaling : 3             : AF31 3
+High priority data        : 2             : AF21 AF22 AF23 : 2
+Medium priority data      : 1             : AF11 AF12 AF13 : 1
+All other traffic         : 0             : Default        : 0
+:===
+
+.Task: Set the DSCP Value In the ToS Byte
+----
+(config-pmap-c)#set ip dscp {<0-63> | AF<xy> | CS<x> | EF | default}
+----
+
+== QoS Pre-Classification
+
+
+- enabled on VPN endpoint routers permit the router to make egress QoS decisions based on the original traffic,
+before encapsulation, rather than just the encapsulating tunnel header.
+- works by keeping the original, unencrypted traffic in memory until the egress QoS actions are taken.
+- enables in tunnel interface configuration mode, virtual-template configuration mode, or crypto map configuration mode
+
+.Task: Enable QoS Pre-Classification
+----
+(config-if)# qos pre-classification
+----
+
+
+== AutoQoS
+
+- macro that helps automate class-based QoS configuration.
+- creates and applies QoS configurations based on Cisco best-practice recommendations.
+- provides the following benefits:
+
+* Simpler QoS deployment.
+* Less operator error, because most steps are automated.
+* Cheaper QoS deployment because less staff time is involved in analyzing network traffic and determining QoS configuration.
+* Faster QoS deployment because there are dramatically fewer commands to issue.
+* Companies can implement QoS without needing an in-depth knowledge of QoS concepts
+
+
+.Task: Display the Interface AutoQoS Configuration
+----
+> sh auto qos
+----
+
+=== AutoQoS for VOIP
+
+- for voice and video applications
+- enables on individual interfaces, but creates both interface and global configuration
+- uses CDP on access ports to detect presence or absence of softphone
+- trusts COS or DSCP values on trunk or uplink ports
+
+
+==== AutoQoS on Switches
+
+-  no need to enable QoS globally.
+* After it is enabled for any interface, the command starts a macro that:
+
+- Globally enables QoS.
+- Creates COS-to-DCSP mappings and DSCP-to-COS mappings.
+* As the traffic enters the switch, the frame header containing the COS value is removed.
+* The switch uses the COS value in the frame header to assign a DSCP value to the packet.
+* If the packet exits a trunk port, the internal DSCP value is mapped back to a COS value.
+- Enables priority or expedite ingress and egress queues.
+- Creates mappings of COS values to ingress and egress queues and thresholds.
+- Creates mappings of DSCP values to ingress and egress queues and thresholds.
+- Creates class maps and policy maps to identify, prioritize, and police voice traffic.
+- Applies those policy maps to the interface.
+
+TIP: For best results, enable AutoQoS before configuring any other QoS on the
+switch. You can then go back and modify the default configuration if needed to
+fit your specific requirements.
+
+
+.Task: Enable AutoQoS on an Access Port
+----
+(config-if)# auto qos voip {cisco- phone | cisco-softphone}
+----
+
+.Task: Enable AutoQoS on Uplink Port
+----
+(config-if)# auto qos voip trust
+----
+
+==== AutoQoS on Routers
+
+.Task: Enable AutoQoS on Router Port
+----
+(config-if)# auto qos voip [trust]
+----
+[NOTE]
+====
+- Make sure that the interface bandwidth is configured before giving this
+command.
+
+* If you change it later, the QoS configuration will not change.  When you issue the *auto qos voip* command on an individual data circuit, the
+configuration it creates differs depending on the bandwidth of the circuit
+itself.
+
+* Compression and fragmentation are enabled on links of 768 kbps
+bandwidth and lower. They are not enabled on links faster than 768 kbps.
+
+* The router additionally configures traffic shaping and applies an AutoQoS service
+policy regardless of the bandwidth.
+
+
+- When you issue the command on a serial interface with a bandwidth of 768 kbps
+or less, the router changes the interface encapsulation to PPP. It creates a
+PPP Multilink interface and enables Link Fragmentation and Interleave (LFI) on
+the interface. Serial interfaces with a configured bandwidth greater than 768
+kbps keep their configured encapsulation, and the router merely applies an
+AutoQoS service policy to the interface.
+
+- If you use the *trust* keyword in the command, the router creates class maps that
+group traffic based on its DSCP values. It associates those class maps with a
+created policy map and assigns it to the interface. You would use this keyword
+when QoS markings are assigned by a trusted device.
+
+- If you do not use the *trust* keyword, the router creates access lists that match
+voice and video data and call control ports. It associates those access lists
+with class maps with a created policy map that marks the traffic appropriately.
+Any traffic not matching those access lists is marked with DSCP 0. You would
+use this command if the traffic either arrives at the router unmarked or
+arrives marked by an untrusted device.
+====
+
+
+=== AutoQoS for Enterprise
+
+- supported on Cisco routers.
+- The main difference between it and AutoQoS VoIP is that it automates the QoS configuration for VoIP
+plus other network applications, and is meant to be used for WAN links.
+-  can be used for Frame Relay and ATM subinterfaces only if they are point-to-point links.
+- detects the types and amounts of network traffic with NBAR and then creates
+policies based on that.
+
+.Task: Enable Traffic Discovery
+----
+(config-if)# auto discovery qos [trust]
+----
+[NOTE]
+====
+- Make sure that CEF is enabled, that the interface
+bandwidth is configured, and that no QoS configuration is on the interface
+before giving the command.
+
+- Use the *trust* keyword if the traffic arrives at the
+router already marked, and if you trust those markings, because the AutoQoS
+policies will use those markings during the configuration stage.
+====
+
+.Task: Generate the AutoQoS Configuration for Enterprise
+----
+(config-if)# auto qos
+----
+
+.Task: Show Auto Discovery Qos
+----
+# sh auto discovery qos
+----
+
+image::autoqos-for-enterprise.png[AutoQoS for Enterprise Classes and DSCP Values]
+
+
+

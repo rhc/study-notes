@@ -1,0 +1,267 @@
+= RIP
+
+menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_rip/configuration/15-mt/irr-15-mt-book/irr-cfg-info-prot.html#GUID-2651B980-3A1B-489F-98D0-93A7102AEA5D[RIP] ]
+
+- Distance vector protocol
+- Transport: UDP 520
+- Update destination:
+  * Broadcast 255.255.255.255 for RIPv1
+  * Multicast 224.0.0.9 for RIPv2
+- Full updates every 30 seconds
+- Trigerred updates
+- Multiple routes to the same subnet with equal metric:
+  * Default = 4
+  * Configured with *ip maximum-paths _n_*
+- Metric: hop count with
+  * 1 signifying a directly connected network of the advertising router
+  * 16 signifying an unreachable network.
+- AD: 120
+- Support CIDR, VLSM, authentication
+- Periodic updates every 30 seconds to multicast address 224.0.0.9
+- Split horizon (without poison reverse on Cisco)
+- Subnet mask included in route entry
+- Administrative distance: 120
+- Route tags when routes are redistributed into RIP
+- Can advertise a next-hop router that is different from itself
+  * Not implemented in Cisco IOS
+- Does not keep a separate topology table
+- Does not form neighbor relationship
+
+== RIP Messages
+
+.RIP Header Format
+[packetdiag, target="rip-header-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Command [len=8]
+  * Version = 2[len=8]
+  * Must Be Zero [len=16]
+  * Address Family ID [len=16]
+  * Route Tag [len=16]
+  * IP Address (1st routing entry)  [len=32]
+  * Subnet Mask [len=32]
+  * Next Hop [len=32]
+  * Metric [len=32]
+  * IP Address (2nd routing entry up to 25)  [len=32]
+  * Subnet Mask [len=32]
+  * Next Hop [len=32]
+  * Metric [len=32]
+  * ... [len=32]
+}
+----
+
+== Request Message
+
+- Command value = 1
+- ask a neighbor to send a partial or a full RIP update immediately,
+- Do not wait for the Update timer to expire
+- Full RIP update
+  * if one routing entry with AF = 0 and metric = 16
+  * sent when RIP process start, RIP-enabled interfaces comes up, or *clear ip route*
+- Partial update
+  * if one or more route entry
+  * Seldom used in Cisco IOS
+
+== Response Message
+
+- Command value = 2
+
+== Default RIP Configuration
+
+- Version : 1
+- Auto-summary : enable
+- Authentication : disable
+- Authentication mode: text
+- Split-horizon : enable
+- Interpacket delay : no
+
+== Basic Configuration
+
+----
+(config)#router rip
+(config-router)#version 2
+(config-router)#network 10.0.0.0
+(config-router)#no auto-summary
+----
+
+== Version
+
+.Task: Specify the RIP Version Globally
+----
+(config-router)# version {1 | 2}
+----
+
+.Task: Configure an Interface to Send Only a RIPv2 Packets
+----
+(config-if)ip rip send version [1] [2]
+----
+
+.Task: Configure an Interface to Receive Only a RIPv2 Packets
+----
+(config-if)ip rip receive version [1] [2]
+----
+
+== Authentication
+
+When authentication is enabled,
+
+- The maximum number of advertised prefixes is reduced to 24.
+- The first route entry in each RIPv2 message would be carrying 20 bytes of
+  authentication data.
+- If cryptographic authentication methods are used, further authentication data
+  is placed after the entire RIPv2 message.
+
+
+.Task: Enable RIP Authentication
+----
+(config-if)# ip rip authentication key-chain <name>
+(config-if)# ip rip authentication mode {text | md5}
+----
+
+TIP: Use *show key chain" to spot invisible blank space after passwords
+
+== Summarization
+
+- Default: auto-summarization
+** Summarizes prefixes to the classful network boundaries
+when classful network boundaries are crossed.
+
+- Supernet advertisement not allowed
+** E.g. *ip summary-address rip 10.0.0.0 252.0.0.0*
+
+.Task: Disable Automatic Route Summarization
+----
+(config-router)# no auto-summary
+----
+
+.Task: Summarize a Prefix
+----
+(config-if)# ip summary-address rip <ip-address> <mask>
+----
+
+== Route Updates
+
+
+.Task: Disable Sending RIP Updates on an Interface but Continue to Receive the Update
+----
+(config-if)# passive-interface { default | <type number>}
+----
+
+.Task: Disable the Validation Of the Source IP Address Of Incoming RIP Routing Updates
+----
+(config-router)# no validate-update-source
+----
+
+.Task: Send Updates As Broadcast
+----
+(config-if)# ip rip v2-broadcast
+----
+
+.Task: Send Updates As Unicast
+----
+(config-router)# neighbor <ip-address>
+----
+
+
+== Route Filtering
+
+.Task: Stop Advertising a Route with a Prefix-List
+----
+(config-router)# distribute-list prefix-list <name> {in | out}
+----
+
+.Task: Filter Out RIP Routes with Extended Access Lists
+----
+(config-router)# distribute-list <extended-acl> {in|out} [<interface-id>]
+----
+[NOTE]
+====
+- The source field in the ACL matches the update source of the route
+- The destination field represents the network address
+====
+
+== Route Metric
+
+- 16 unreachable network
+- Ripv2 adds 1 to the route metric while sending updates.
+* RIPNg and EIGRIP increment metric when they receive updates
+- maximum routes with same metric to the same subnet
+  * 4 by default
+
+.Task: Add an Offset to Incoming and Outgoing Metrics to RIP Routes
+----
+(config-router)# offset-list {<acl>} {in | out } <offset> {interface-type-number>}
+----
+
+
+== Split Horizon
+
+.Task: Disable Split Horizon
+----
+(config-if)# no ip split-horizon
+----
+
+== Interpacket Delay for RIP Updates
+
+- Useful when high-end router send RIP updates to low-end router
+- Default: 0 in range 8 to 50 milliseconds
+
+.Task: Configure Interpacket Delay
+----
+(config-if)# output-delay <milliseconds>
+----
+
+== Rip Optimization Over WAN
+
+.Task: Enable Triggered Extensions for RIP
+----
+(config)# int serial <controller-number>
+(config-if)# ip rip triggerred
+----
+
+
+== Timers
+
+.Task: Configure RIP Timers
+----
+(config-router)# timers basic <update> <invalid> <holddown> <flush> [<sleeptime>]
+----
+
+[horizontal]
+Update timer:: Interval between updates.
+* Default: 30 seconds
+
+Invalid After timer:: time in seconds after which a route is declared invalid.
+* Default: 180 seconds
+* Reset after update is received
+* Should be at least 3 times the update timer.
+* Invalid routes are still used for forwarding packets
+
+Holdown timer:: interval during which routing information about better paths is suppressed.
+* Default: 180 seconds
+* Should be at least 3 times the update timer
+* The route is marked inaccessible and advertised as unreachable.
+* Holdown routes are still used for forwarding packets
+
+Flush After timer:: amount of time that must pass before a route is removed from the RIB.
+* Default: 240 seconds
+* Starts at the same time than Invalid After timer
+* Cisco IOS checks this timer only after the Invalid After timer expired
+** No consequence If Flush timer < Invalid Timer
+
+Sleep time:: amount of time for which routing updates will be postponed.
+
+.Task: Specify a Default Update Interval on an Interface
+----
+(config-if)# ip rip advertise <seconds>
+----
+[NOTE]
+====
+- The command above overrides the update timers set by *timers basic* command.
+====
+

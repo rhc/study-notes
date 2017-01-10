@@ -1,0 +1,534 @@
+= Frame Relay
+
+== Concepts
+
+=== Frame Relay Introduction 
+
+- Connection-oriented layer 2 WAN technology.
+- Speed between 56 Kbps to 45 Mbps
+- Statiscally multiplex virtual circuits over a single physical link.
+- NBMA (non broadcast multi-access)
+
+
+=== Virtual Circuits 
+
+- logical paths between two DTEs
+- can be permanent (PVC) or switched (SVC)
+- identifies with DLCI
+
+
+=== Frame Relay Hardware Configurations
+
+You can create Frame Relay connections using one of the following hardware configurations:
+
+- Routers and access servers connected directly to the Frame Relay switch
+- Routers and access servers connected directly to a channel service unit/digital service unit (CSU/DSU), which then connects to a remote Frame Relay switch 
+
+image::frame-relay-typical-configuration.png[height=100]
+
+
+=== Frame Relay Frame Format
+
+- Uses LAPF (link access protocol for frame - mode bearer services) which is a variation of the HDLC frame
+- There is no control frame, no flow control, no error control, no sequence numbers
+
+image::frame-relay-frame-format.png[height=100]
+
+
+Flags:: 
+binary number 01111110 at the start and end of the frame
+
+Address:: 
+The frame relay header contains the following information:
+
+DLCI :::
+- 10-bit DLCI 
+- represents the virtual connection between the DTE device and the switch. 
+- local significance 
+
+EA :::
+- Extended Address 
+- 2 x 1 bit  ( 8th byte of each byte) 
+- indicate whether the byte in which the EA value is 1 is the last addressing field. 
+
+C/R:::
+- Not currently defined.
+
+FECN:::
+- Forward-explicit congestion notification 
+- 1 bit set by a switch
+- indicate to an end DTE device that congestion was experienced in the direction of the frame transmission from
+source to destination. 
+
+BECN:::
+- Backward-explicit congestion notification  
+- 1 bit set by a switch
+- indicates that congestion was experienced in the network in the direction opposite of the frame transmission from source to
+destination. 
+
+DE:::
+- Discard eligibility  
+- 1-bit set by the DTE device, such as a router
+- indicates that the marked frame is of lesser importance relative to other frames being
+transmitted and be dropped before other frame 
+
+Data:: 
+- Contains encapsulated upper-layer data. 
+- variable-length field up to 16,000 octets. 
+
+FCS:: 
+- Frame Check Sequence 
+- value computed by the source device and verified by the receiver to ensure integrity of transmission. 
+
+=== Frame Relay Addressing
+
+====  DLCI
+
+- Data link connection identifier
+- 10-bits
+- local significance, unique between DTE and DCE
+
+==== Dynamic Address Mapping
+
+Dynamic address mapping uses *Frame Relay Inverse ARP* to request the next hop protocol address
+for a specific connection, given its known DLCI. Responses to Inverse ARP requests are entered in
+an address-to-DLCI mapping table on the router ; the table is then used to supply the
+next hop protocol address or the DLCI for outgoing traffic.
+
+Inverse ARP is enabled by default for all protocols it supports, but can be disabled for specific
+protocol-DLCI pairs. As a result, you can use dynamic mapping for some protocols and static
+mapping for other protocols on the same DLCI. You can explicitly disable Inverse ARP for a
+protocol-DLCI pair if you know that the protocol is not supported on the other end of the connection.
+
+==== Static Address Mapping
+
+A static map links a specified next-hop protocol address to a specified DLCI.
+Static mapping removes the need for Inverse ARP requests; when you supply a
+static map, Inverse ARP is automatically disabled for the specified protocol on
+the specified DLCI. You must use static mapping if the router at the other end
+either does not support Inverse ARP at all or does not support Inverse ARP for
+a specific protocol that you want to use over Frame Relay. 
+
+
+=== LMI 
+
+- Local Management Interface 
+- Developed in 1990 by Cisco Systems, StrataCom, Northern Telecom, and Digital Equipment Corporation. 
+- Extensions to basic Frame Relay specification like 
+
+LMI global addressing :::
+The LMI global addressing extension gives Frame Relay DLCI values global rather than local significance. 
+DLCI values become DTE addresses that are unique in the Frame Relay WAN. 
+The global addressing extension adds functionality and manageability to Frame Relay internetworks. 
+Individual network interfaces and the end nodes attached to
+them, for example, can be identified by using standard address-resolution and
+discovery techniques. In addition, the entire Frame Relay network appears to be
+a typical LAN to routers on its periphery.
+
+LMI virtual cirtual status :::
+LMI virtual circuit status messages provide communication and synchronization
+between Frame Relay DTE and DCE devices. These messages are used to
+periodically report on the status of PVCs, which prevents data from being sent
+into black holes (that is, over PVCs that no longer exist).
+
+
+LMI multicasting :::
+The LMI multicasting extension allows multicast groups to be assigned.
+Multicasting saves bandwidth by allowing routing updates and address-resolution
+messages to be sent only to specific groups of routers. The extension also
+transmits reports on the status of multicast groups in update messages. 
+
+==== LMI Types
+
+.Frame Relay LMI Types
+
+[format="dsv", options="header",cols="20m,30,20,20"]
+|===
+LMI Type : Source Document     : Allowed DLCI Range : LMI DLCI
+cisco    : Cisco Proprietary   : 16–1007            : 1023
+ansi     : ANSI T1.617 Annex D : 16–991             : 0
+q933a    : ITU Q.933 Annex A   : 16–991             : 0
+|===
+
+
+==== LMI Autosense
+
+- Enables the interface to determine the LMI type supported by the switch.
+- Since IOS 11.2, by default no need to configure LMI explicitly
+
+- LMI autosense is active in the following situations:
+** The router is powered up or the interface changes state to up.
+** The line protocol is down but the line is up.
+** The interface is a Frame Relay DTE.
+** The LMI type is not explicitly configured. 
+
+- How it works? 
+
+** *Status request* : The router sends out a full status request, in all three LMI types, to the switch. The
+  order is ANSI, ITU, cisco in rapid succession. 
+
+** *Status messages* :  One or more of the status requests will elicit a reply
+ from the switch. The router will decode the format of the
+reply and configure itself automatically. If more than one reply is received,
+the router will configure itself with the type of the last received reply.
+
+- What happens when LMI is unsuccessful?
+
+** Every N391 interval (default is 60 seconds, which is 6 keep exchanges at 10
+seconds each), LMI autosense will attempt to ascertain the LMI type. 
+
+[TIP]
+The only visible indication to the user that LMI autosense is under way is that
+*debug frame lmi* is turned on. At every N391 interval, the user will now see
+three rapid status inquiries coming out of the serial interface: one in ANSI,
+one in ITU, and one in cisco LMI-type. 
+
+==== LMI Status
+
+
+=== Encapsulation
+
+Two choices for the encapsulation of network protocols over Frame Relay:
+
+- Cisco
+- IETF (RFC 2427) 
+
+The encapsulation must be the same on the 2 DTEs.
+
+TIP: Shut down the interface prior to changing encapsulation types. Although shutting down the interface is not required, it ensures that the interface is reset for the new encapsulation. 
+
+
+
+=== Congestion Controls
+
+- FECN, BECN, DE
+
+Bit  : Meaning When Set                                    : Where Set
+FECN : Congestion in the same direction as this frame      : By FR switches in user frames
+BECN : Congestion in the opposite direction of this frame  : By FR switches or routers in user or Q.922 test frames
+DE   : This frame should be discarded before non-DE frames : By routers or switches in user frames
+
+- Adaptative shaping
+
+=== Compression
+
+Cisco IOS software supports three options for payload compression on Frame Relay VCs:
+packet by packet, data stream, and Frame Relay Forum Implementation Agreement 9
+(FRF.9). FRF.9 is the only standardized protocol of the three options. FRF.9 compression
+and data-stream compression function basically the same way; the only real difference is
+that FRF.9 implies compatibility with non-Cisco devices.
+
+All three FR compression options use LZS as the compression algorithm, but one key
+difference relates to their use of compression dictionaries. LZS defines dynamic dictionary
+entries that list a binary string from the compressed data, and an associated smaller string
+that represents it during transmission::
+thereby reducing the number of bits used to send
+data. The table of short binary codes, and their longer associated string of bytes, is called a
+dictionary. The packet-by-packet compression method also uses LZS, but the compression
+dictionary is built for each packet, then discarded::
+hence the name packet-by-packet. The
+other two methods do not clear the dictionary after each packet. 
+
+
+.Frame Relay Payload Compression Feature Comparison
+[format= "dsv",cols="50,20,20,20"]
+|===
+Feature                          : Packet by Packet : FRF.9 : Data Stream
+Uses LZS algorithm?              : Yes              : Yes   : Yes
+Same dictionary for all packets? : No               : Yes   : Yes
+Cisco proprietary?               : Yes              : No    : Yes
+|===
+
+
+=== Frame Relay Fragmentation
+
+==== FRF.12 
+
+- uses FRF.12 for LFI over a Frame Relay PVC 
+- IOS supports two methods for configuring FRF.12: 
+
+** legacy configuration requires FRTS and a queuing tool 
+** Frame Relay fragmentation at the interfaces (>= ios 12.2(13T))
+
+==== FRF.11c 
+
+- works only on Voice over Frame Relay VCs
+- voice frames are never fragmented, and always interleaved without the need of any queing tool
+- same configuration to the legacy style of FRF.12 once the VoFR VC has been configured
+
+
+==== Multilink PPP
+
+- Only option for Frame Relay-to-ATM Service Interworking. 
+- MLP over FR uses PPP headers instead of the Cisco or RFC 2427 header, thereby enabling many PPP features
+supported by the PPP headers. MLP and LFI configuration would simply need to be added
+to that configuration to achieve LFI.
+
+
+== Configuration Tasks
+
+There are required, basic steps you must follow to enable Frame Relay for your network. 
+In addition, you can customize Frame Relay for your particular network needs and monitor Frame Relay
+connections. The following sections outline these tasks. The tasks in the first two sections are
+required.
+
+- Enable Frame Relay Encapsulation on an Interface
+- Configure Dynamic or Static Address Mapping
+- Configure the LMI
+- Configure Frame Relay Switched Virtual Circuits
+- Configure Frame Relay Traffic Shaping
+- Customize Frame Relay for Your Network
+- Monitor the Frame Relay Connections
+
+
+=== Enable Frame Relay Encapsulation on an Interface
+
+----
+(config-if)# encapsulation frame-relay [ietf]
+----
+
+=== Configure Static Address Mapping
+
+Maps between a next-hop protocol address and DLCI destination.
+
+----
+(config-if)# frame-relay map protocol protocol-address dlci [broadcast] [ietf] [cisco]
+----
+	
+The supported protocols are: ip, ipx, decnet, appletalk, vines, clns
+
+
+
+=== Configure the LMI
+
+Steps::
+
+. Set the LMI Type (Required)
++
+----
+(config-if)# frame-relay lmi-type {ansi | cisco | q933a}
+----
++
+. Set the LMI Keepalive Interval (Required)
++
+----
+(config-if)# keepalive number 
+----
++
+. Set Various Optional Counter, Intervals, and Thresholds (Optional)
+
+
+=== Enable Frame Relay SVC Support on the Interface
+
+// add here all the steps
+
+
+=== Enable Frame Relay Traffic Shaping on the Interface
+
+// add here all the steps
+
+TIP: FRTS can only be applied to the physical interface
+
+
+=== Configure Frame Relay End-to-End Keepalives
+
+. Specify a Map Class for the VC
++
+----
+(config)# map-class frame-relay name
+----
++
+. Specify Frame Relay End-to-End Keepalive Mode
++
+----
+(config-map-class)# frame-relay end-to-end keepalive mode { bidirectional | request | reply | passive-reply } 
+----
+
+bidirectional::
+The device sends keepalive requests to the other end of the VC and responds to keepalive requests from the other end of the VC.
+
+request::
+The device sends keepalive requests to the other end of the VC.
+
+reply::
+The device responds to keepalive requests from the other end of the VC.
+
+passive-reply::
+The device responds to keepalive requests from the other end of the VC, but will not track errors or successes. 
+
+
+=== Modify the Default Parameters
+
+Modifies the number of errors needed to change the keepalive state from up to down.
+
+----
+(config-map-class)# frame-relay end-to-end keepalive error-threshold {send | receive} count
+----
+
+Modifies the number of recent events to be checked for errors.
+
+----
+(config-map-class)# frame-relay end-to-end keepalive event-window {send | receive} count
+----
+
+Modifies the number of consecutive success events required to change the keepalive state from down to up.
+
+----
+(config-map-class)# frame-relay end-to-end keepalive success-events {send | receive} count
+----
+
+Modifies the timer interval. 
+
+----
+(config-map-class)# frame-relay end-to-end keepalive timer {send | receive} interval
+----
+
+=== Enable PPP Over Frame Relay 
+
+Defines the PVC and maps it to the virtual template. 
+
+----
+(config-if)# frame-relay interface-dlci dlci [ppp virtual-template-name]
+----
+
+=== Configure Frame Relay Subinterfaces
+
+Creates a point-to-point or multipoint subinterface.
+
+----
+(config)# interface type number.subinterface-number {multipoint | point-to-point}
+----
+
+Configures Frame Relay encapsulation on the serial interface. 
+
+----
+(config-subif)# encapsulation frame-relay 
+----
+
+=== Define Subinterface Addressing on Point-to-Point Subinterfaces
+
+Associates the selected point-to-point subinterface with a DLCI. 
+
+----
+(config-subif)# encapsulation interface-dlci number
+----
+
+
+=== Accept Inverse ARP for Dynamic Address Mapping on Multipoint Subinterfaces
+
+Associates a specified multipoint subinterface with a DLCI. 
+
+----
+(config-if)# frame-relay interface-dlci dlci
+----
+
+
+=== Configure Static Address Mapping on Multipoint Subinterfaces
+
+----
+(config-if)# frame-relay map protocol protocol-address dlci [broadcast] [ietf] [cisco]
+----
+	
+
+==== Disable or Reenable Frame Relay Inverse ARP
+
+Enables Frame Relay Inverse ARP for a specific protocol and DLCI pair, only if it was previously disabled.
+
+----
+(config-subif)# frame-relay inverse-arp protocol dlci
+----
+
+Disables Frame Relay Inverse ARP for a specific protocol and DLCI pair. 
+
+----
+(config-subif)# no frame relay inverse-arp protocol dlci
+----
+
+
+==== Create a Broadcast Queue for an Interface
+
+----
+(config-if)# frame-relay broadcast-queue size byte-rate packet-rate
+----
+
+==== Configure Frame Relay Fragmentation
+
+. Specifies a Map Class to Define QoS Values for a Frame Relay SVC or PVC. the Map Class Can Be Applied to One or Many PVCs.
++
+----
+(config)# map-class frame-relay map-class-name
+----
++
+
+. Configures Frame Relay Fragmentation for the Map Class. the Fragment_size Argument Defines the Payload Size Of a Fragment; It Excludes the Frame Relay Headers and Any Frame Relay Fragmentation Header. the Valid Range Is from 16 to 1600 Bytes, and the Default Is 53. 
++
+----
+(config-map-class)# frame-relay fragment fragment_size
+----
+
+=== Configure Payload Compression
+
+
+// continue here
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+=== Verify Frame Relay Configuration
+
+Displays statistics about PVCs for Frame Relay interfaces. 
+
+----
+# show frame-relay pvc [interface interface] [dlci]
+----
+
+
+show frame-relay lmi
+show frame-relay map
+debug frame-relay lmi
+
+Displays Frame Relay fragmentation information.
+
+----
+# show frame-relay fragment [interface interface] [dlci]
+----
+
+
+Display compression statistics
+
+----
+(config)# show compress 
+----
+
+
+Displays information about the elements queued at a particular time at the DLCI
+level, including the number of packets in the post-hardware- compression queue. 
+	
+----
+# show traffic-shape queue
+----
+
+
+
+
+
+Shows the status of Frame Relay end-to-end keepalives
+
+----
+show frame-relay end-to-end keepalive interface-id
+----
+

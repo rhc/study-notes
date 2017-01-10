@@ -1,0 +1,152 @@
+= ARP
+
+- menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/15-mt/arp-15-mt-book.html[ARP] ]
+- https://wwwietf.org/rfc/rfc826.txt[RFC 826]
+
+- Finds MAC address of a host given IP address
+- maintains ARP cache
+- ARP Ethernet protocol: 0x0806
+
+== Protocol
+
+.Header Format
+["packetdiag", target="arp"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Hardware Type (Ethernet=1) [len=16]
+  * Protocol Type (IP= 0x0800) [len=16]
+  * Hardware Address Length (6) [len=8]
+  * Protocol Address Length (4) [len=8]
+  * Opcode [len=16]
+  * Sender Hardware Address [len=48, color=lightgreen]
+  * Sender Protocol Address [len=32, color=yellow]
+  * Target Hardware Address [len=48, color=lightgreen]
+  * Target Protocol Address [len=32, color=yellow]
+}
+----
+
+OpCode::
+- 1 for request
+- 2 for response
+
+
+== Static ARP Entries
+
+.Task: Enable the Interface Encapsulation
+----
+(config-if)# arp {arpa | frame-relay | snap}
+----
+
+.Task: Define Static ARP Entries
+----
+# arp <ip-address>  <hardware-address> <encapsulation-type> [<interface-type>]
+----
+
+.Task: Define Static ARP Entries for a Specific VRF
+----
+# arp vrf <name>  <hardware-address> <encapsulation-type> [<interface-type>]
+----
+
+== Dynamic ARP Entries
+
+- Stored in ARP cache
+- timeout by default in 4 hours
+
+
+.Task: Clear the Entire ARP Cache on an Interface
+----
+# clear arp interface <type-number>
+----
+
+.Task: Clear All Dynamic Entries from the ARP Cache, the Fast-Switchig Cache, and the IP Route Cache
+----
+# clear arp-cache
+----
+
+.Task: Set an Expiration Time for Dynamic Entries In the Arp Cache
+----
+(config-if)# arp timeout <seconds>
+----
+
+.Task: Display the Arp Cache
+----
+# show ip arp
+----
+
+----
+# show arp
+
+Protocol    Address            Age (min)   Hardware Addr      Type    Interface
+Internet    10.108.42.112      120         0000.a710.4baf     ARPA    Ethernet3
+AppleTalk   4028.5             29          0000.0c01.0e56     SNAP    Ethernet2
+Internet    110.108.42.114     105         0000.a710.859b     ARPA    Ethernet3
+AppleTalk   4028.9             -           0000.0c02.a03c     SNAP    Ethernet2
+Internet    10.108.42.121      42          0000.a710.68cd     ARPA    Ethernet3
+Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0
+----
+
+.Task: Display ARP and RARP Processes
+----
+# sh processes cpu | include (ARP|PID)
+----
+
+== Proxy ARP
+
+- Same message as ARP
+- Allows response for IP address in remote subnet.
+- RFC 1027
+- Mostly replaced by DHCP nowadays
+
+.Task: Disable Proxy ARP Globally
+----
+# ip arp proxy disable
+----
+
+.Task: Disable Proxy ARP on an Interface
+----
+(config-if)# no ip proxy-arp
+----
+
+== Gratuitous ARP
+
+- broadcast ARP messages where the SPA=TPA and THA=FF:FF:FF:FF:FF:FF
+
+- used to
+
+** to detect IP address conflit
+** to update other machine ARP table
+** to update mac table of the connected switche
+
+TIP: If we see multiple gratitous ARPs from the same host frequently,
+it can be an indication of bad Ethernet NICs
+
+
+== RARP and BootP As DHCP Precursors
+
+image::rarp-bootp.png[RARP and BootP before DHCP]
+
+- A RARP request is a host’s attempt to find its own IP address. So RARP uses the
+  same old ARP message, but the ARP request lists a MAC address target of its own
+  MAC address and a target IP address of 0.0.0.0. A preconfigured RARP server,
+  which must be on the same subnet as the client, receives the request and
+  performs a table lookup in its configuration. If that target MAC address listed
+  in the ARP request is configured on the RARP server, the RARP server sends an
+  ARP reply, after entering the configured IP address in the Source IP address
+  field.
+
+
+- BOOTP was defined in part to improve IP address assignment features of RARP.
+  BOOTP uses a completely different set of messages, defined by RFC 951, with the
+  commands encapsulated inside an IP and UDP header. With the correct router
+  configuration, a router can forward the BOOTP packets to other subnets—allowing
+  the deployment of a centrally located BOOTP server. Also, BOOTP supports the
+  assignment of many other tidbits of information, including the subnet mask,
+  default gateway, DNS addresses, and its namesake, the IP address of a boot (or
+  image) server. However, BOOTP does not solve the configuration burden of RARP,
+  still requiring that the server be preconfigured with the MAC addresses and IP
+  addresses of each client.

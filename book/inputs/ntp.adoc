@@ -1,0 +1,176 @@
+= NTP
+:experimental:
+:icons: font
+
+menu:Configuration guides[Network Management > Basic System Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/configuration/15-mt/bsm-15-mt-book/bsm-time-calendar-set.html[Setting Time and Calendar Services] ]
+
+* Version 3 https://tools.ietf.org/html/rfc1305[RFC 1305]
+* UDP port 123
+* IOS does not support stratum 1 service, cannot be linked to stratum 0 atomic clock
+* Accuracy < milliseconds with 1 NTP packet per minute
+* Stratum
+** 0 : atomic clock
+** 8 : default value
+
+== NTP Associations
+
+* Polled-based    : better accuracy and reliability
+    ** Client mode           : *ntp server*
+    ** Symmetric active mode : *ntp peer*
+* Broadcast-based : less manual configuration on LAN
+    ** Server                : *ntp broadcast*
+    ** Client                : *ntp broadcast client*
+
+.Task: Verify NTP Status
+----
+# show ntp status
+----
+
+.Task: Verify NTP Associations
+----
+# show ntp associations
+----
+
+.Task: Troubleshoot NTP Associations
+----
+# debug ntp refclock
+----
+
+=== Polled-Based Associations
+
+----
+(config)# ntp server <ip-address> [normal-sync] [version <number>] [key <id>] [prefer]
+(config)# ntp peer <ip-address> [normal-sync] [version <number>] [key <id>] [prefer]
+----
+
+=== Broadcast-Based Associations
+
+----
+(config-if)# ntp broadcast version <number>
+(config-if)# ntp broadcast client
+(config-if)# ntp broadcastdelay <microseconds>
+----
+
+== NTP Access Groups
+
+.Task: Grant/Deny Access Privileges with Ipv4 or Ipv6 Access-Lists
+----
+(config)# ntp access-group [ipv4 | ipv6] <options>  <access-list-id> [kod]
+----
+
+[NOTE]
+====
+* _options_ per increasing order of restrictions are:
+
+** *peer*: synchronize itself to systems whose address passes access list criteria
+** *serve*: allows time requests and NTP control queries but no synchronization
+** *serve-only*: allows only time requests
+** *query-only*: allows only NTP control queries
+
+* *kod* sends the kiss-of-death packet to any host that tries to send a packet
+that is not compliant with the access-group policy.
+====
+
+
+== NTP Authentication
+
+* Use cryptographic checksum keys
+* Encryption/decryption are CPU-intensive and may degrade accuracy
+
+----
+(config)# ntp authenticate
+(config)# ntp authentication-key <number> md5 <key>
+(config)# ntp trusted-key <key-number> [-<end-key-number]
+(config)# ntp server <ip-address> key <id>
+----
+
+== Source IP Address
+
+* Default to NTP packet outgoing interface
+
+.Task: Change the Source IP Address for All Destinations
+----
+(config)# ntp source interface
+----
+
+.Task: Change the Source for a Specific Association
+----
+(config)# ntp {server|peer} source
+----
+
+== Authoritative Server
+
+.Task:
+----
+(config)# ntp master
+----
+
+== Panic Treshold
+
+.Task: Reject Time Updates Greater Than the Panic Threshold Of 1000 Seconds
+----
+(config)# ntp panic update
+----
+
+== Orphan Mode
+
+* When a subnet lost communications with clock servers
+* Orphan parent simulate a UTC source for orphan children
+
+----
+(config)# ntp server <a.b.c.d>
+(config)# ntp peer <e.f.g.h>
+(config)# ntp orphan <stratum>
+----
+
+== External Reference Clock
+
+----
+# line aux <number>
+# ntp refclock trimble pps none stratum <number>
+----
+
+== Software Clock
+
+----
+(config)# clock timezone <zone> <hours-offset> [<minutes-offset>]
+(config)# summer-time <zone> recurring [<week day month hh:mm> [<offset>]]
+(config)# summer-time <zone> date [<date month year hh:mm> [<offset>]]
+# clock set <hh:mm:ss date month year>
+# show clock
+----
+
+== Hardware-Clock
+
+- different from software-clock
+
+----
+# calendar set <hh:mm:ss date month year>
+(config)# clock calendar-valid
+# clock read-calendar
+# clock update-calendar
+# show calendar
+# show clock [detail]
+# show ntp associations [details]
+# show ntp status
+----
+
+== Time Ranges
+
+.Task: Configure Time Ranges
+----
+(config)# time-range <name>
+(config-time-range)# absolute [start <hh:mm date month year>] [end <hh:mm date month year>]
+(config-time-range)# periodic <day-of-week> <hh:mm> to [<day-of-the-week>] <hh:mm>
+----
+
+.Task: Verify Time Range
+----
+# show time-range
+----
+
+== Vulnerability
+
+* DoS for version <= 4.2.4p7
+* No workaround, disable NTP on the device
+

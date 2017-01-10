@@ -1,0 +1,115 @@
+= IP SLA
+
+- menu:Configuration Guides[Network Mgt > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipsla/configuration/15-mt/sla-15-mt-book.html[IP SLA] ]
+
+To implement IP SLAs network performance measurement,
+
+. Enable the IP SLAs Responder
+. Configure the Required IP SLAs Operation Type
+. Configure Any Options Available
+. Configure Threshold Conditions
+. Schedule the Operation
+. Run the Operation for a Period Of Time to Gather Statistics
+. Display and Interpret the Results with Cisco CLI or NMS with SNMP
+
+== IP SLAs Operation Types
+
+- ICMP echo, jitter, path echo , path jitter
+- TCP connect
+- UDP echo, jitter
+- VoIP RTP, UDP jitter, gatekeeper registration delay, post-dial delay
+- HTTP, FTP, DNS, DHCP
+
+.Task: Configure Basic IP SLAs ICMP Echo Operation on the Source Device
+----
+(config)# ip sla <operation-number>
+(config-ip-sla)# icmp-echo {<destination-ip-address>| <destination-hostname>}
+                    [source-ip {<src-ip> | src-hostname} | source-interface <interface-name>]
+(config-ip-sla-echo)# frequency <seconds>
+----
+
+== IP SLAs Responder
+
+- for Cisco device only
+- listens on specific port for control protol messages send by IP SLA operation
+- on receipt of the control, open specified TCP or UDP port for specified duration
+- disables the port after reponding to the IP SLA packet or specified timeout
+- may use MD5 authentication for control message
+- takes two timestamps at the target devices to eliminate processing time
+- can track one-way delay, jitter, and directional packet loss
+- requires NTP synchronization except for one-way jitter measurement
+
+image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
+
+== IP SLAs Operation Scheduling
+
+.Task: Schedule IP SLA Operation
+----
+(config)# ip sla schedule <operation-number>
+                          [ life {forever} | <seconds> ]
+                          [start-time {now | pending | after <hh:mm:ss> | [<hh:mm:ss>]}] [month day | day month } ]
+                          [ageout <seconds>]
+                          [recurring]
+----
+
+.Task: Verify IP SLA Configuration
+----
+# sh ip sla configuration
+----
+
+- You can create a multioperation group
+* The frequency of all operations scheduled must be the same
+* The list of operation ID numbers must be limited to a max of 125 chars including commas
+
+.Task: Schedule a Group Of IP SLA Operations
+----
+(config)# ip sla group schedule <group-operation-number> <operation-id-numbers>
+                          { schedule-period <schedule-period-range | schedule-together }
+                          [ frequency <group-operation-frequency> ]
+                          [ life {forever} | <seconds> ]
+                          [start-time {now | pending| after <hh:mm:ss> | [<hh:mm:ss>]}] [month day | day month } ]
+                          [ageout <seconds>]
+                          [recurring]
+----
+
+.Task: Verify IP SLA Multioperation Configuration
+----
+# sh ip sla group schedule
+----
+
+
+== IP SLAs Operation Threshold Monitoring
+
+- can send SNMP traps that are triggered by connection loss, timeout, round-trip time threshold,
+average jitter threshold, one-way packet loss, one-way jitter, one-way mean opinion score, one-way latency
+- can trigger another IP SLA operation
+
+== MPLS VPN Awareness
+
+- IP SLA operations can be configured for a specific VPN
+
+== History Statistics
+
+[horizontal]
+Aggregated statistics:: By default, two hours of aggregated
+statistics for each operation. Value from each operation cycle is aggregated
+with the previously available data within a given hour.
+
+Operation snapshot history::  snapshot of data for each
+operation instance that matches a configurable filter, such as all, over
+threshold, or failures. The entire dataset is available and no aggregation
+takes place.
+
+Distribution statistics::  frequency distribution over
+configurable intervals. Each time IP SLAs starts an operation, a new history
+bucket is created until the number of history buckets matches the specified
+size or the lifetime of the operation expires. By default, the history for an
+IP SLAs operation is not collected. If history is collected, each bucket
+contains one or more history entries from the operation. History buckets do not
+wrap.
+
+== Troubleshooting Tips
+
+- If IP SLAs operation is not running and not generating stats,
+add the *verify-data* command in ip sla configuration mode
+- Use *debug ip sla trace* and *debug ip sla error* commands

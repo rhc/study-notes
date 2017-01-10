@@ -1,0 +1,6 @@
+= Embedded Event Manager
+
+http://www.cisco.com/c/en/us/td/docs/ios/netmgmt/configuration/guide/12_2sx/nm_12_2sx_book/nm_eem_overview.html#wp1070759[EEM overview]
+
+
+

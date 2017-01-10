@@ -1,0 +1,43 @@
+= HDLC
+
+- High-Level Data Link Control
+- Layer 2 on point-to-point links
+- developed by the ISO (ISO 3309)
+- modified by Cisco by adding a proprietary 2-byte Type field to the frame.
+* enabled by default on IOS serial links
+* On a Cisco router, HDLC encapsulation can only connect with another Cisco router
+
+
+== HDLC Frame Format
+
+
+
+== Encapsulation
+
+- default
+
+.Task: Set Encapsulation to Hdlc
+----
+(config-if)# encapsulation hdlc
+----
+
+.Task: Display Statistics
+----
+sh controllers serial
+----
+
+
+== Clock Rate
+
+- Automatically set
+
+.Task: Modify the Clock Rate
+----
+(config-if)# clock-rate <bps>
+----
+
+.Task: Specify the Clock Rate Is In the Network
+----
+(config-if)# clock-rate line
+----
+

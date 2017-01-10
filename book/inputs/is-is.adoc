@@ -1,0 +1,303 @@
+= IS-IS
+
+- link-state protocol
+- doesn't run over any other network protocol
+* encapsulates messages directly in data-link frames
+* sends to the layer 2 address called SNAP (sub-network point of attachment)
+
+== NSAP Address
+
+- variable length between 8 and 20 octets
+- assigned to the entire node
+
+
+IDI:: Initial Domain ID
+DSP:: Domain Specific Part
+AFI:: Authority and Format ID
+HO-DSP:: high-order DSP
+- identifies the area
+- can be divided in sub-fields
+
+System ID::
+- generally 6 octets
+- between 1 and 8 octects
+-
+
+SEL::
+- identifies particular services on the destination node
+- if SEL = 0,
+* identifies node NET (Network Entity Title)
+* mandatory for is-is configuration
+
+
+
+image:nsap-addressing.png[NSAP addressing]
+
+
+:===
+AFI Meaning                                                 : IDI Length and Contents                                         : HO-DSP Length and Contents
+
+39 Use of Data Country Code (ISO 3166)                      : 2 octets; numeric country code according to ISO 3166            : 10 octets; area number
+45 Use of international phone numbers (ITU-T E.164)         : 8 octets; international phone number according to E.164         : 4 octets; area number
+47 Use of International Code Designator (ISO 6523)          : 2 octets; international organization code according to ISO 6523 : 10 octets; area number
+49 Locally defined format (private addressing; free format) : Formally not present                                            : Between 0 and 12 octets; area number
+:===
+
+== Levels Of Routing
+
+- Level 0 : ES-ES / ES-IS on the same link
+- Level 1 : IS-IS intra-area
+- Level 2 : IS-IS inter-area
+- Level 3 : IS-IS inter-domain (inter AS)
+
+
+== Adjancency
+
+- Separate for L1 and L2
+* L1 with same area
+* L2
+
+- possible adjacency states:
+
+* Down: The initial state. No IIHs have been received from the neighbor.
+* Initializing: IIHs have been received from the neighbor, but it is not certain that the neighbor is properly receiving this router’s IIHs.
+* Up: IIHs have been received from the neighbor, and it is certain that the neighbor is properly receiving this router’s IIHs.
+
+
+
+== Metrics
+
+- assigned to individual interfaces
+- default to 10
+* not automatically recalculated if bandwidth changes
+* manually set with *isis metric <number>*
+
+- types of metrics
+
+* Default: Required to be supported by all IS-IS implementations; usually relates to the bandwidth of the link (higher value represents a slower link)
+* Delay: Relates to the transit delay on the link
+* Expense: Relates to the monetary cost of carrying data through the link
+* Error: Relates to the residual bit error rate of the link
+
+- narrow (original) metrics
+* 6 bits for interface
+* 10 bits for complete path
+
+- wide metrics
+* 24 bits for interface
+* 32 bits for complete path
+
+TIP: Use same type of metrics in one area
+
+
+== Packets
+
+- Hello
+- Link State PDU
+- Complete Sequence Numbers PDU
+- Partial Sequence Numbers PDU
+
+
+=== Hello
+
+- also called IIH (IS-IS Hello)
+- separate L1 and L2 hellos in bcast network
+- single L1L2 hellos on point-to-point link
+- sent every 10 seconds per default
+- defined Hold time with *isis hello-multiplier*
+- do not need to match (contrary to OSPF)
+- always the one-third of the configured values on DIS
+* to detect the outage more readily
+
+=== Link State PDU
+
+
+- one single LSP
+- may be fragmented by originator because of MTU
+- uniquely identified by LSPID
+* System Id
+* Pseudo Node:
+* Fragment Number
+- uses Sequence Number for different version of the same LSP
+- has a Remaining Lifetime
+* default to 20 minutes
+* refreshes every 15 minutes
+
+NOTE: If the LSP’s Remaining Lifetime decreases to 0, the router will delete the
+LSP’s body from the link-state database, keep only its header, and advertise
+the empty LSP with the Remaining Lifetime set to 0. Flooding an empty LSP with
+the Remaining Lifetime set to 0 is called an LSP purge. Router purging an LSP
+will not flush the LSP from its link-state database just yet, though. The
+expired LSP can be purged from the link-state database after an additional time
+called ZeroAgeLifetime set to 60 seconds. This is done to ensure that the LSP’s
+header is retained until the purged LSP has been safely propagated to all
+neighbors. Cisco routers, however, appear to hold the empty LSP header for
+another 20 minutes.
+
+=== Complete Sequence Numbers PDU
+
+- contains list of LSPID
+- doesn't contain the LSP body(similar to OSPF's DBD )
+- exchanged only during initialization on P2P links
+- sent periodically by DIS on bcast networks
+
+* Receivers of CSNP packets can compare their link-state database contents to
+ the list of LSPs in the CSNP and perform appropriate action—flood a newer or
+ missing LSP if they have one, or request an LSP if they find it missing in
+ their own database.
+
+* If the sender’s link-state database contains so many LSPs that listing them
+ all in a single CSNP packet would cause it to exceed the MTU, multiple CSNPs
+ are sent. For this purpose, the individual LSPIDs to be advertised are first
+ sorted as integer numbers in ascending order. Each CSNP contains information
+ about the Start LSPID and End LSPID that is described by this CSNP. The full
+ range of possible LSPIDs starts with the value of 0000.0000.0000.00-00 (the
+ bold part is the System ID, the following octet is the Pseudonode ID, and the
+ octet following the dash is the LSP Number ID), and ends with the value of
+ FFFF.FFFF.FFFF.FF-FF. If all LSPs can be listed in a single CSNP, the Start
+ and End LSPIDs will use these respective values. If it is necessary to send
+ more CSNPs, the first CSNP will have the 0000.0000.0000.00-00 as the Start
+ LSPID, and the End LSPID will be set to the LSPID of the last entry in this
+ CSNP. In the following CSNPs, the Start and End LSPIDs will be set to the
+ respective LSPIDs of the first and last entry, sorted in ascending order. The
+ last CSNP will have the value of FFFF.FFFF.FFFF.FF-FF as the End LSPID. This
+ sorting of LSPIDs into ascending number and CSNPs sequen- tially listing all
+ LSPIDs from the allowable range are the reasons for calling these PDUs
+ Sequence Numbers PDUs.
+
+
+
+
+
+=== Partial Sequence Numbers PDU
+
+- used to request an LSP or acknowledge its successful arrival.
+
+
+== Network Types
+
+- Broadcast (multi-access)
+- P2P
+
+
+=== Point-to-Point Links
+
+- On point-to-point interfaces, IS-IS expects to detect a single neighbor, bring up an adja- cency, and then synchronize link-state databases.
+- three-way handshake:
+* configured with *isis three-way-handshake {cisco|ietf}*
+* introduces Extended Local Circuit ID (4 octets)
+* contains adjacency state TLV with
+
+** Adjacency Three Way State: This is the state of adjacency as seen by the sending router.
+** Extended Local Circuit ID: This is the ID of the sending router’s interface.
+** Neighbor System ID: This value is set to the ID of the neighboring router whose IIHs have been successfully received.
+** Neighbor Extended Local Circuit ID: This value is set to the Extended Local Circuit ID field value from the neighbor’s IIH packets.
+
+
+* After the adjacency is declared as Up, routers will attempt to synchronize their link-state databases.
+
+** Both routers will mark all their LSPs for flooding over the point-to-point link; plus they send CSNP packets to each other.
+** Because the IS-IS standard assumes that the actual transmission of LSPs marked for flooding is driven by a periodically scheduled process,
+   it is possible that the CSNP packets are exchanged before the LSP transmission takes place.
+   If a router learns from the received CSNP that its neighbor already has an LSP that is scheduled to be sent,
+   the router will unmark the LSP, removing it from the set of LSPs to be flooded.
+   This way, only the LSPs missing from the neighbor’s database will be sent to it.
+   In addition, if a router learns from the received CSNP that the neighbor has LSPs that are newer or unknown,
+   it will request them using a PSNP packet. Note that neither of these is necessary,
+   as both routers nonetheless initially set up all their LSPs to be flooded across the link, without the aid of CSNP or PSNP packets.
+   The initial sending of CSNPs to com- pare the link-state databases and PSNPs to request missing or updated entries increases the resiliency of the synchronization process but is not strictly necessary: Without these packets,
+   routers will simply exchange the full link-state database.
+
+
+=== Broadcast Networks
+
+- Routers must create adjacencies, synchronize their databases, and keep them synchronized
+- on Ethernet networks,
+
+* encapsulates IEEE 802.2 LLC frames to DSAP and SSAP set to 0xFE
+* sends L1 packets to mcast 0180.c200.0014
+* sends L2 packets to mcast 0180.c200.0015
+
+- detects neighbors with IIH
+
+.Task: Configure the IS-IS Priority
+----
+(config-if)# isis priority <0-255>
+----
+NOTE: Priority 0 doesn't exclude the router from the election
+
+
+==== DIS
+
+- helps routers on bcast segment to synchronize with periodic flooding of CSNPs
+- represents the bcast segment as the pseudo-node
+- doesn't elect/need backup DIS
+
+
+- elected with each IIH based on Highest
+  * Interface priority
+  * SNPA
+  * System ID: when SNPA are not comparable
+  ** Frame Relay DLCI vs ATM VPI/VCI
+
+
+== Areas
+
+
+
+- it is  possible to configure up to three different NSAP addresses on an IS-IS
+router in a single IS-IS instance, provided that the System ID in all NSAP
+addresses is identical and the NSAP addresses differ only in their Area ID.
+
+* A router with multiple NSAP addresses will nonetheless maintain only a single
+link-state database, causing all configured areas to merge together. This
+behavior is useful when splitting, joining, or renumbering areas.
+
+* For example, when you are renumbering an area, all routers are first added a second NSAP
+address with the new Area ID and then the old NSAP address is removed—without
+causing any adjacencies between routers to flap.
+
+* Similarly, when you are joining two areas, routers in an annexed area are given
+the new NSAP with the same Area ID as the area into which they are being
+joined, and afterward, the old NSAP is removed. Splitting an area again uses a
+similar approach—first add the new NSAP address to all routers, and afterward,
+remove the former NSAP address.
+
+
+- L1 routers advertise directly connected networks
+- L2 routerts advertise directly connected networks, + all other L1 networks in its own area
+
+
+== Authentication
+
+- authenticates IIH independently of LSP, CSNP and PSNP packets
+- L1 routers must have the same L1 area password
+- L2 routers must have the same L2 domain password
+
+- If security is a major concern, different passwords for L1 IIH, L2 IIH, L1
+non-IIH, and L2 non-IIH packets can be configured.
+
+.Task: Configure IIH Authentication
+----
+(config-if)# isis authentication mode {text | md5} [level-1|level-2]
+(config-if)# isis auth key-chain name [level-1|level-2]
+----
+
+.Task: Configure LSP, CSNP and PSNP Authentication
+----
+(config-router)# authentication mode {text | md5} [level-1|level-2]
+(config-router)# authentication key-chain name [level-1|level-2]
+----
+
+NOTE: In the previous commands , if the *level-1* or *level-2*
+keyword is omitted from a command where it is currently indicated, the
+corresponding authentication type will be activated for both levels.
+
+
+== IPv6 Support
+
+- Supports out-of-the box
+
+TODO:
+
+

@@ -1,0 +1,116 @@
+= IDRP
+:icons: font
+:experimental:
+
+
+menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html[IRDP] ]
+- http://www.ietf.org/rfc/rfc1256.txt[RFC 1256]
+
+
+- ICMP Router Discovery Protocol allows hosts to locate routers
+that can be used as gateway to reach IP-based devices on other networks.
+
+
+== Message Format
+
+=== ICMP Router Advertisement Message
+["packetdiag", target= 'icmp-router-advertisement']
+------
+{
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Type = 9 [len=8]
+  * Code = 0[len=8]
+  * Checksum [len=16]
+  * Num Addrs [len=8]
+  * Addr Entry Size [len=8]
+  * Lifetime [len=16]
+  * Router Address  [len=32, stacked]
+  * Preference Level [len=32, stacked]
+}
+------
+
+[horizontal]
+Checksum::
+The 16-bit one's complement of the one's complement sum of the ICMP message,
+starting with the ICMP Type.
+For computing the checksum, the Checksum field is set to 0.
+
+Num Addrs:: Number of router addreses advertised in this message
+Addr Entry Size:: Number of 32-bit words of information per router address (=2 for IPv4)
+Lifetime:: Maximum number of seconds that the router adresses may be considered valid.
+Router Address[i]:: Sending router's addresses on the interface from which this message is sent.
+Preference Level[i]:: Preferability of each Router Address[i] as a default router,
+relative to other router addresses on the same subnet. Higher values more preferable.
+
+
+=== ICMP Router Solicitation Message
+
+["packetdiag", target= 'icmp-router-sollicitation']
+----
+{
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Type = 10 [len=8]
+  * Code = 0  [len=8]
+  * Checksum [len=16]
+  * Reserved [len=32]
+}
+----
+
+[horizontal]
+Checksum::
+The 16-bit one's complement of the one's complement sum of the ICMP message,
+starting with the ICMP Type.
+For computing the checksum, the Checksum field is set to 0.
+Reserved:: Sent as 0; ignored on reception.
+
+== Configuration
+
+.Task: Configure a Host to Discover Routers That Transmit IRDP Router Updates After Disabling IP Routing
+----
+(config)# no ip routing
+(config-if)# ip gdp irdp [multicast]
+----
+
+.Task: Enable IRDP on an Interface
+----
+(config-if)# ip irdp
+----
+
+.Task: Send IRDP Advertisement to the All-Systems Multicast Addresses
+----
+(config-if)# ip irdp multicast
+----
+
+.Task: Set the IRDP Period for Which Advertisements Are Valid.
+----
+(config-if)# ip irdp holdtime <seconds>
+----
+
+.Task: Sets the IRDP Maximum Interval Between Advertisements.
+----
+ip irdp maxadvertinterval <seconds>
+----
+
+.Task: Set the IRDP Minimum Interval Between Advertisements.
+----
+ip irdp minadvertinterval <seconds>
+----
+
+.Task: Set the IRDP Preference Level Of the Device
+----
+(config-if)# ip irdp preference <number>
+----
+
+.Task: Specify an IRDP Address and Preference to Proxy-Advertise
+----
+(config-if)# ip irdp address <a.b.c.d> <preference-level>
+----
+

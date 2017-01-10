@@ -1,0 +1,20 @@
+= Implement MPLS Layer 3 VPNs
+
+.Exam Objectives
+----
+weight: 4%
+
+4.0 Implement MPLS Layer 3 VPNs
+4.1 Implement MPLS
+4.2 Implement Layer 3 VPNs on provider edge, provider and customer edge (CE) routers
+4.3 Implement VRF and Multi-VRF Customer Edge (VRF-Lite)
+----
+
+:leveloffset: 1
+
+
+include::mpls.asciidoc[]
+
+:leveloffset: 0
+
+

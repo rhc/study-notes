@@ -1,0 +1,15 @@
+= IOS Configuration
+
+
+== Searching and Filtering CLI Output
+
+http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/configuration/15_sy/fundamentals-15-sy-book/cf-cli-search.html[Regex]
+
+----
+# show <any-command> | begin <regular-expression>
+# more <any-command> | begin <regular-expression>
+----
+
+keywords: append, begin, count, exclude, include, format, redirect, tee 
+
+== Show Command Output Redirection

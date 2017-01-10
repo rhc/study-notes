@@ -1,0 +1,79 @@
+= Ethernet WAN
+
+EWAN
+
+- Virtual Private LAN Services (VPLS),
+- Multi-Protocol Label Switching (MPLS),
+- Any-Transport Over MPLS (ATOM),
+- Dot1Q-in-Dot1Q Tunnels (QnQ Tunnels),
+- Metro-Ethernet.
+
+== VPLS
+
+- Virtual Private LAN Service
+- various WAN connections (over either IP or MPLS networks)
+- uses QoS for audio and video
+- provide multipoint Ethernet LAN services, or Transparent LAN Service (TLS).
+  * A multipoint network service is one that allows a customer edge (CE)
+   endpoint or node to communicate directly with all other CE nodes associated
+   with the multipoint service.
+   * By contrast, using a point-to-point network
+   service such as ATM, the end customer typically designates one CE node to
+   be the hub to which all spoke sites are connected. In this scenario, if a
+   spoke site needs to communicate with another spoke site, it must
+   communicate through the hub, and this requirement can introduce
+   transmission delay.
+
+- To provide multipoint Ethernet capability, the IETF VPLS drafts describe the
+concept of linking virtual Ethernet bridges using MPLS Pseudo-Wires (PW). As a
+VPLS forwards Ethernet frames at Layer 2, the operation of VPLS is exactly the
+same as that found within IEEE 802.1 bridges in that VPLS will self-learn the
+source MAC address to port associations, and frames are forwarded based upon
+the destination MAC address. If the destination address is unknown, or is a
+broadcast or multicast address, the frame is flooded to all ports associated
+with the virtual bridge.
+
+- Although the forwarding operation of VPLS is relatively simple, the VPLS
+  architecture needs to be able to perform other operational functions, such as
+
+* Autodiscover other provider edges (PE) associated with a particular VPLS instance
+* Signaling of PWs to interconnect VPLS virtual switch instances (VSI)
+* Loop avoidance
+* MAC address withdrawal
+
+
+== Metro-Ethernet
+
+- Ethernet on the metropolitan-area network (MAN) can be used as pure Ethernet,
+  Ethernet over MPLS, or Ethernet over Dark Fiber, but regardless of the
+  transport medium, we have to recognize that in network deployments requiring
+  medium-distance backhaul or metropolitan (in the same city) connectivity,
+  this Ethernet WAN technology is king. Why do we have so many different types
+  of Metro-E solutions? The answer is that each has advantages and
+  disadvantages. As an example, pure Ethernet-based deployments are cheaper but
+  less reliable and scalable, and are usually limited to small-scale or
+  experimental deployments. Dark Fiber–based deployments are useful when there
+  is an existing infrastructure already in place, whereas solutions that are
+  MPLS based are costly but highly reliable and scalable, and as such are used
+  typically by large corporations.
+
+- MPLS-based Metro-Ethernet network uses MPLS in the service
+  provider’s network. The subscriber will get an Ethernet interface on copper
+  (for example, 100BASE-TX) or fiber (such as 100BASE-FX). The customer’s
+  Ethernet packet is transported over MPLS, and the service provider network
+  uses Ethernet again as the underlying technology to transport MPLS. So
+  MPLS-based Metro-E is effectively Ethernet over MPLS over Ethernet.
+
+- Label Distribution Protocol (LDP) signaling can be used to provide
+  site-to-site signaling for the inner label (VC label) and Resource
+  Reservation Protocol-Traffic Engineering (RSVP-TE), or LDP can be used to
+  provide the network signaling for the outer label.
+
+- It should also be noted that a typical Metro-Ethernet system has a star
+  network or mesh network topology, with individual routers or servers
+  interconnected through cable or fiber-optic media. This is important when it
+  becomes necessary to troubleshoot Metro-Ethernet solutions.
+
+
+
+

@@ -1,0 +1,10 @@
+= VRF
+
+== Configuration
+
+- Establish an LSP between PEs: IGP + LDP , free BGP core
+- Exchange routes with customer: PE-CE IGP or BGP
+- Exchange customer routes between PEs: iBGP + MPLS VPN label
+- Label switch between PEs: Data follows the IGP + LDP transport label
+
+

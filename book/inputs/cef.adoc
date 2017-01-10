@@ -1,0 +1,137 @@
+= CEF
+
+- enabled by default
+- can be central or distributed accross multiple line cards
+- Uses the FIB and the adjacency table
+- Improves over process switching and fast switching methods
+
+,===
+Switching Path    , Forwarding Information stores                   , Load-Balancing Method
+
+Process switching , Routing table                                   , Per packet
+Fast switching    , Fast-switching cache (per flow route cache)     , Per destination IP address
+CEF               , FIB tree and adjacency table                    , Per a hash of the packet source and destination , or per packet
+,===
+
+.Task: Disable CEF
+----
+(config)# no ip cef [distributed]
+----
+
+.Task: Disable CEF on an Interface
+----
+(config-if)# no ip route-cache cef [distributed]
+----
+
+.Task: Verify That CEF Is Enabled
+----
+# sh cef interface <type number> [detail]
+# sh ip interface <type number>
+----
+
+== FIB
+
+- contains the prefixes and next-hop address from each entry in the IP routing table structured in a way that is optimized for forwarding.
+- no need for route cache maintenance because there is a one-to-one correlation between FIB entries and routing table entries
+
+.Task: Display the FIB Contents
+----
+# sh ip cef
+
+Prefix              Next Hop            Interface
+[...]
+10.2.61.8/24        192.168.100.1       FastEthernet1/0/0
+                    192.168.101.1       FastEthernet6/1
+[...]
+
+----
+
+
+== Adjacency Table
+
+- stores outbound interface and MAC header rewrite for adjacent nodes
+
+.Task: Display the Contents Of the Adjacency Table
+----
+# show adjacency [detail]
+
+Protocol       Interface            Address
+
+IPV6           Serial0/0/0          point2point(12)
+IP             Serial0/0/0          point2point(13)
+IP             Serial0/0/1          point2point(15)
+IPV6           Serial0/0/1          point2point(10)
+IPV6           FastEthernet0/0.2    FE80:24::4(12)
+...
+----
+
+=== Adjacency Discovery
+
+- adjacent nodes are discovered automatically (ARP) or added manually
+
+.Adjacency Types That Required Special Handling
+[cols="20a,80a"]
+|===
+| Adjacency Type    | Actions
+
+| Null adjacency    | Packets destined for a Null0 interface are dropped. Null adjacency can be used as an effective form of access filtering.
+| Glean adjacency   | When a device is connected to a multiaccess medium                                                                                                                          , the FIB table on the device maintains a prefix for the subnet rather than for the individual host prefixes. The subnet prefix points to a glean adjacency. A glean adjacency entry indicates that a particular next hop should be directly connected , but there is no MAC header rewrite information available. When the device needs to forward packets to a specific host on a subnet , Cisco Express Forwarding requests an ARP entry for the specific prefix , ARP sends the MAC address , and the adjacency entry for the host is built.
+| Punt adjacency    | The device forwards packets requiring special handling or packets sent by features not yet supported in CEF switching paths to the next higher switching level for handling.
+| Discard adjacency | The device discards the packets.
+| Drop adjacency    | The device drops the packets.
+|===
+
+=== Unresolved Adjacency
+
+When a link-layer header is prepended to a packet,
+the FIB requires the prepended header to point to an adjacency corresponding to the next hop.
+If an adjacency was created by the FIB and not discovered through a mechanism such as ARP, the Layer 2 addressing information is not known and the adjacency is considered incomplete or unresolved.
+Once the Layer 2 information is known, the packet is forwarded to the RP, and the adjacency is determined through ARP.
+Thus, the adjacency is resolved.
+
+
+== CEF Load Balancing
+
+- per-destination (default)
+- per-packet: round-robin method over multiple links
+
+.Task: Disable Per-Destination
+----
+(config-if)# no ip load-sharing per-destination
+----
+
+.Task: Enable Per-Packet Load Balancing
+----
+(config-if)# ip load-sharing per-packet
+----
+
+[horizontal ]
+Original algorithm::
+- produces distortions in load sharing across multiple routers
+  because the same algorithm is used on every router.
+
+Universal algorithm::
+- allows each router on the network to make a different load sharing decision for each source-destination address pair,
+- avoids original CEF polarization
+- Use a Universal ID as seed for the hash function
+- default
+
+Tunnel algorithm::
+- when there are only a few source and destination pairs
+
+Include-ports algorithm::
+- allows you to use the Layer 4 source and destination ports as part of the load-balancing decision.
+- benefits traffic streams running over equal cost paths that are not load shared
+  because the majority of the traffic is between peer addresses that use different port numbers, Real-Time Protocol (RTP) streams.
++
+GTP-U TEID-Based ECMP Load-Balancing Algorithm::
+- for Cisco IOS XE Software
+- for mobile devices
+
+
+.Task: Select CEF Load Balancing Algorithm
+----
+(config)# ip cef load-sharing algorithm {original | universal | tunnel | include-ports [source | destination | source destination] }
+----
+
+
