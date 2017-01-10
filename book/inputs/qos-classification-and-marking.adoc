@@ -172,7 +172,7 @@ before encapsulation, rather than just the encapsulating tunnel header.
 - trusts COS or DSCP values on trunk or uplink ports
 
 
-===== AutoQoS on switches
+==== AutoQoS on switches
 
 -  no need to enable QoS globally.
 * After it is enabled for any interface, the command starts a macro that:
@@ -203,7 +203,7 @@ fit your specific requirements.
 (config-if)# auto qos voip trust
 ----
 
-===== AutoQoS on routers
+==== AutoQoS on routers
 
 .Task: Enable AutoQoS on router port
 ----

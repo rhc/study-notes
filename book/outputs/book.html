@@ -1004,7 +1004,7 @@ p { margin-bottom: 1rem; }
 <td class="content">
 Use the minutes-offset variable  when the local time zone is a percentage of an hour different from UTC.
 For example, the time zone for some sections of Atlantic Canada (AST) is UTC-3.5, where the 3 means 3 hours and.5 means 50 percent.
-In this case, the necessary command is clock timezone AST -3 30.
+In this case, the necessary command is <strong>clock timezone AST -3 30</strong>.
 </td>
 </tr>
 </table>
@@ -1018,7 +1018,7 @@ In this case, the necessary command is clock timezone AST -3 30.
 <div class="listingblock">
 <div class="title">Task: Set the system clock manually</div>
 <div class="content">
-<pre>clock set hh:mm:ss month day year</pre>
+<pre>(config)# clock set &lt;hh:mm:ss month day year&gt;</pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1057,8 +1057,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 <div class="listingblock">
 <div class="title">Task: Configure a message of the day login banner</div>
 <div class="content">
-<pre>(config)# banner motd &lt;delimiting-character&gt;
-&lt;message&gt; &lt;delimiting-character&gt;</pre>
+<pre>(config)# banner motd &lt;delimiting-character&gt; &lt;message&gt; &lt;delimiting-character&gt;</pre>
 </div>
 </div>
 </div>
@@ -1077,8 +1076,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 <div class="listingblock">
 <div class="title">Task: Configure a Login Banner</div>
 <div class="content">
-<pre>(config)# banner login &lt;delimiting-character&gt;
-&lt;message&gt; &lt;delimiting-character&gt;</pre>
+<pre>(config)# banner login &lt;delimiting-character&gt; &lt;message&gt; &lt;delimiting-character&gt;</pre>
 </div>
 </div>
 </div>
@@ -1302,7 +1300,7 @@ it has not been statically entered is flooded to all ports and not learned</p>
 <div class="ulist">
 <ul>
 <li>
-<p>enabled by default on al VLANs</p>
+<p>enabled by default on a VLANs</p>
 </li>
 <li>
 <p>can be disabled with the following restrictions:</p>
@@ -1665,7 +1663,7 @@ STP will continue to use the BIA.
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Cross-over</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">T568A on one end,  T568B on the other</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">T568A on one end;  T568B on the other</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1-3; 2-6; 3-1; 6-2</p></td>
 </tr>
 </tbody>
@@ -1993,7 +1991,7 @@ Late collisions on a half-duplex interface
 </table>
 </div>
 <div class="sect3">
-<h4 id="_problem_and_approches">2.8.1. Problem and approches</h4>
+<h4 id="_problems_and_approaches">2.8.1. Problems and Approaches</h4>
 <table class="tableblock frame-none grid-rows spread">
 <colgroup>
 <col style="width: 20%;">
@@ -19707,10 +19705,154 @@ allows only EAPoL (Extensible Authentication Protocol over LAN), CDP and STP tra
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_telnet">20.1. Telnet</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>allows a user at one site to establish a TCP connection to a login
+server at another site, then passes the keystrokes from one system to the
+other.</p>
+</li>
+<li>
+<p>offers 3 main services:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Network virtual terminal connection</p>
+</li>
+<li>
+<p>Option negotiation</p>
+</li>
+<li>
+<p>Symmetric connection</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Cisco implementation of Telnet supports the following Telnet options:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Remote echo</p>
+</li>
+<li>
+<p>Binary transmission</p>
+</li>
+<li>
+<p>Suppress go ahead</p>
+</li>
+<li>
+<p>Timing mark</p>
+</li>
+<li>
+<p>Terminal type</p>
+</li>
+<li>
+<p>Send location</p>
+</li>
+<li>
+<p>Terminal speed</p>
+</li>
+<li>
+<p>Remote flow control</p>
+</li>
+<li>
+<p>X display location</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
 <div class="listingblock">
-<div class="title">Task: Description</div>
+<div class="title">Task: Specify the IP address of an interface as the source address for Telnet connections</div>
+<div class="content">
+<pre>(config)# ip telnet source-interface &lt;interface&gt;</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>If the specified interface is not up, IOS selects
+the address of the interface closest to the destination as the source address.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Task: Set the TCP window to zero when the Telnet connection is idle</div>
+<div class="content">
+<pre>(config)# service telnet-zeroidle</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Normally, data sent to noncurrent Telnet connections is accepted and discarded.
+When <strong>service telnet-zero-idle</strong> is enabled, if a session is
+suspended (that is, some other connection is made active or the EXEC is
+sitting in command mode), the TCP window is set to zero. This action prevents
+the remote host from sending any more data until the connection is resumed.</p>
+</li>
+<li>
+<p>Use this command when it is important that all messages sent by the host be
+seen by the users and the users are likely to use multiple sessions.</p>
+</li>
+<li>
+<p>Do not use this command if your host will eventually time out and log out a
+TCP user whose window is zero.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Task: Hide host address while attempting to establish a Telnet session</div>
 <div class="content">
 <pre>(config)# ip telnet hidden addresses</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Mark outgoing traffic with IP precedence</div>
+<div class="content">
+<pre>(config)# ip telnet tos &lt;0-7&gt;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task:</div>
+<div class="content">
+<pre>(config)# ip telnet quiet</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Display error message when Telnet connection fails to a specific host</div>
+<div class="content">
+<pre>(config)# busy-message &lt;hostname&gt; d message d</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Task: Sets line to send a RETURN (CR) as a CR followed by a NULL instead of a CR followed by a LINE FEED (LF).</div>
+<div class="content">
+<pre>(config)# ip telnet transparent</pre>
 </div>
 </div>
 </div>
@@ -20859,8 +21001,8 @@ before encapsulation, rather than just the encapsulating tunnel header.</p>
 </li>
 </ul>
 </div>
-<div class="sect6">
-<h7 id="_autoqos_on_switches">AutoQoS on switches</h7>
+<div class="sect5">
+<h6 id="_autoqos_on_switches">AutoQoS on switches</h6>
 <div class="ulist">
 <ul>
 <li>
@@ -20936,8 +21078,8 @@ fit your specific requirements.
 </div>
 </div>
 </div>
-<div class="sect6">
-<h7 id="_autoqos_on_routers">AutoQoS on routers</h7>
+<div class="sect5">
+<h6 id="_autoqos_on_routers">AutoQoS on routers</h6>
 <div class="listingblock">
 <div class="title">Task: Enable AutoQoS on router port</div>
 <div class="content">
@@ -26095,6 +26237,47 @@ Key Manager (Barbican)
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>== IOS</p>
+</div>
+<div class="paragraph">
+<p>= IOS-XE</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>runs IOS as a process on top of Linux OS</p>
+</li>
+<li>
+<p>modular &#8594; extensibility</p>
+</li>
+<li>
+<p>high availability</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Can upgrade one package without rebooting the whole device</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>separates control plane (Forwarding and Feature Manager)
+and data plane (Forwarding Engine Driver)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The FFM provides a set of APIs used to manage the control plane
+processes. The resulting outcome is that the FFM programs the data plane
+through the FED and maintains all forwarding states for the system. It is the
+FED that allows the drivers to affect the data plane, and it is provided by
+the platform.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -26106,7 +26289,7 @@ Key Manager (Barbican)
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2016-12-07 10:45:30 SAST
+Last updated 2017-01-10 14:17:54 SAST
 </div>
 </div>
 <script type="text/x-mathjax-config">

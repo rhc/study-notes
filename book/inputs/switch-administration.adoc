@@ -14,9 +14,9 @@ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/r
 (config)# clock timezone <zone> <hours-offset> [minutes-offset]
 ----
 
-NOTE: Use the minutes-offset variable  when the local time zone is a percentage of an hour different from UTC. 
+NOTE: Use the minutes-offset variable  when the local time zone is a percentage of an hour different from UTC.
 For example, the time zone for some sections of Atlantic Canada (AST) is UTC-3.5, where the 3 means 3 hours and.5 means 50 percent.
-In this case, the necessary command is clock timezone AST -3 30. 
+In this case, the necessary command is *clock timezone AST -3 30*.
 
 .Task: Reset the time to UTC
 ----
@@ -25,7 +25,7 @@ In this case, the necessary command is clock timezone AST -3 30.
 
 .Task: Set the system clock manually
 ----
-clock set hh:mm:ss month day year
+(config)# clock set <hh:mm:ss month day year>
 ----
 
 .Task: Display the time and date configuration
@@ -48,14 +48,13 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 (config)# hostname <name>
 ----
 
-== MOTD login Banner 
+== MOTD login Banner
 
 - MOTD and login not configured by default
 
 .Task: Configure a message of the day login banner
 ----
-(config)# banner motd <delimiting-character>
-<message> <delimiting-character>
+(config)# banner motd <delimiting-character> <message> <delimiting-character>
 ----
 
 == Login Banner
@@ -65,13 +64,12 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 
 .Task: Configure a Login Banner
 ----
-(config)# banner login <delimiting-character>
-<message> <delimiting-character>
+(config)# banner login <delimiting-character> <message> <delimiting-character>
 ----
 
 == MAC address table
 
-- lists the destination MAC address with the associated VLANs , port number, and the type (static or dynamic) 
+- lists the destination MAC address with the associated VLANs , port number, and the type (static or dynamic)
 - dynamic address are discarded after  the *aging time* (300 seconds by default)
 
 .Task: Display Address Table Entries for the specified MAC address
@@ -85,7 +83,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 ----
 
 
-.Task: Display the number of addresses present 
+.Task: Display the number of addresses present
 ----
 # sh mac address-table count
 ----
@@ -109,7 +107,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 # mac address-table aging-time [0 | 10-1000000] [vlan <1-4094>]
 ----
 
-.Task: Displays the aging time 
+.Task: Displays the aging time
 ----
 # sh mac address-table aging-time [<vlan_id>]
 ----
@@ -131,7 +129,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 (config)# snmp-server enable traps mac-notification change
 (config)# mac address-table notification change [ interval <seconds> ] [ history-size <i0-1-500> ]
 (config)# interface <interface-id>
-(config-if)# snmp trap mac-notification change {added | removed } 
+(config-if)# snmp trap mac-notification change {added | removed }
 ----
 
 .Task: Verify the MAC address table notification change configuration
@@ -200,15 +198,15 @@ it has not been statically entered is flooded to all ports and not learned
 - mcast, bcast and router MAC addresses are not supported
 
 
-.Task: Enable unicast MAC address filtering 
+.Task: Enable unicast MAC address filtering
 ----
 (config)# mac address-table static <MAC> vlan <vlan-id> drop
 ----
 
- 
+
 === MAC Address learning on a VLAN
 
-- enabled by default on al VLANs
+- enabled by default on a VLANs
 - can be disabled with the following restrictions:
 
 //TODO: work this note
@@ -233,11 +231,11 @@ it has not been statically entered is flooded to all ports and not learned
 sh mac address-table learning [vlan <vlan-id>]
 ----
 
-.Task: Reenable MAC address learning 
+.Task: Reenable MAC address learning
 ----
 (config)# default mac address-table learning vlan <vlan-id>
 ----
 
 == errdisable recovery
 
-== L2 MTU 
+== L2 MTU

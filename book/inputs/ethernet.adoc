@@ -7,20 +7,17 @@
 
 == Frame Formats
 
-// TODO: Add the reference to 802.2 later
-// image::ethernet-framing-options.png["Ethernet framing options"]
 .Ethernet (DIX) and Revised (1997) IEEE 802.3
-["graphviz", target= 'ethernet-dix-and-revised-802.3']
+[graphviz, target= 'ethernet-dix-and-revised-802.3']
 ----
 digraph g {
-        node[shape=record]
-        node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Type/Length} |{46\-1500|Data\ and\ Padding}|{4|FCS}"];
+  node[shape=record]
+  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Type/Length} |{46\-1500|Data\ and\ Padding}|{4|FCS}"];
 }
 ----
 
-
 .Original IEEE 802.3
-["graphviz", target= 'ethernet-ieee802.3-extended']
+[graphviz, target= 'ethernet-ieee802.3-extended']
 ----
 digraph g {
   node [shape=record,height=.1];
@@ -119,12 +116,12 @@ image::ethernet-pinouts.png["Ehernet and ISO", height=50]
 
 .Ethernet cabling types
 [cols="20,50,40"]
-|===
-| Type of cable    | Pinouts                               | Key pins connected
+,===
+Type of cable    , Pinouts                               , Key pins connected
 
-| Straight-through | T568A or T568B both ends              | 1-1; 2-2; 3-3; 6-6
-| Cross-over       | T568A on one end,  T568B on the other | 1-3; 2-6; 3-1; 6-2
-|===
+Straight-through , T568A or T568B both ends              , 1-1; 2-2; 3-3; 6-6
+Cross-over       , T568A on one end;  T568B on the other , 1-3; 2-6; 3-1; 6-2
+,===
 
 - Auto-MDIX (automatic medium-dependent interface crossover)
 ** Detects the wrong cable and causes the switch to swap the pair it uses for transmitting and receiving
@@ -213,29 +210,29 @@ the frame, so frames that are in error because of a collision will not be forwar
 
 [cols="20,60"]
 :===
-Type of Address: Switch Action
+Type of Address : Switch Action
 
-Known unicast: Forwards frame out the single interface associated with the destination address
-Unknown unicast: Floods frame out all interfaces, except the interface on which the frame was received
-Broadcast: Floods frame identically to unknown unicasts
-Multicast: Floods frame identically to unknown unicasts, unless multicast optimizations are configured
+Known unicast   : Forwards frame out the single interface associated with the destination address
+Unknown unicast : Floods frame out all interfaces, except the interface on which the frame was received
+Broadcast       : Floods frame identically to unknown unicasts
+Multicast       : Floods frame identically to unknown unicasts, unless multicast optimizations are configured
 :===
 
 
 == Standards
 
 [format="csv", cols="10,90", grid="none"]
-|====
-802.1Q, dot1q trunking
-802.1d , STP
-802.1s , MST
-802.1w , Rapid STP
-802.1ax, LACP (formerly 802.3ad)
-802.2 , Logical Link Control
-802.3u, Fast ethernet over copper and optical cable
-802.3z, Gigabit ethernet over optical cable
-802.3ab, Gigabit ethernet over copper cable
-|====
+:===
+802.1Q  : dot1q trunking
+802.1d  : STP
+802.1s  : MST
+802.1w  : Rapid STP
+802.1ax : LACP (formerly 802.3ad)
+802.2   : Logical Link Control
+802.3u  : Fast ethernet over copper and optical cable
+802.3z  : Gigabit ethernet over optical cable
+802.3ab : Gigabit ethernet over copper cable
+:===
 
 // Replace the image by a table
 image::ethernet-cabling-standards.png[Cabling Standards]
@@ -265,7 +262,7 @@ Late collisions on a half-duplex interface::
 - A late collision occurs after the first 64 bytes of a frame.
 
 
-=== Problem and approches
+=== Problems and Approaches
 
 [cols="20a,30a,50a"]
 |====

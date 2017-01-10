@@ -13,7 +13,6 @@ v1.0, 2015-10-12
 :grid: rows
 :stylesheet: ../stylesheets/asciidoctor.css
 
-
 [dedication]
 = Dedication
 To Cyril "Matiere" Kalenga
@@ -219,3 +218,8 @@ include::iot.adoc[leveloffset=+1]
 
 - Cisco ISR 2900 Series routers running IOS version 15.3T Universal Software release
 - Catalyst 3560X Series switches running IOS version 15.0SE Universal (IP Services) Software release
+
+== IOS
+
+include::ios-xe.adoc[leveloffset=+1]
+

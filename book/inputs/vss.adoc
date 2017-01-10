@@ -60,9 +60,3 @@ image::vss-logical.png[Virtual Switch Link]
 # sh switch virtual [role | link]
 ----
 
-
-
-
-
-
-
