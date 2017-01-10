@@ -236,6 +236,11 @@ sh mac address-table learning [vlan <vlan-id>]
 (config)# default mac address-table learning vlan <vlan-id>
 ----
 
-== errdisable recovery
+== Errdisable Recovery
+
+TODO
 
 == L2 MTU
+
+TODO
+
