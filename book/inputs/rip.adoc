@@ -29,7 +29,7 @@ menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios
 
 == RIP Messages
 
-.RIP header format
+.RIP Header Format
 [packetdiag, target="rip-header-format",size=200]
 ----
 diagram {
@@ -71,7 +71,7 @@ diagram {
 
 - Command value = 2
 
-== Default RIP configuration
+== Default RIP Configuration
 
 - Version : 1
 - Auto-summary : enable
@@ -80,7 +80,7 @@ diagram {
 - Split-horizon : enable
 - Interpacket delay : no
 
-== Basic configuration
+== Basic Configuration
 
 ----
 (config)#router rip
@@ -91,17 +91,17 @@ diagram {
 
 == Version
 
-.Task: Specify the RIP version globally
+.Task: Specify the RIP Version Globally
 ----
 (config-router)# version {1 | 2}
 ----
 
-.Task: Configure an interface to send only a RIPv2 packets
+.Task: Configure an Interface to Send Only a RIPv2 Packets
 ----
 (config-if)ip rip send version [1] [2]
 ----
 
-.Task: Configure an interface to receive only a RIPv2 packets
+.Task: Configure an Interface to Receive Only a RIPv2 Packets
 ----
 (config-if)ip rip receive version [1] [2]
 ----
@@ -117,7 +117,7 @@ When authentication is enabled,
   is placed after the entire RIPv2 message.
 
 
-.Task: Enable RIP authentication
+.Task: Enable RIP Authentication
 ----
 (config-if)# ip rip authentication key-chain <name>
 (config-if)# ip rip authentication mode {text | md5}
@@ -134,48 +134,48 @@ when classful network boundaries are crossed.
 - Supernet advertisement not allowed
 ** E.g. *ip summary-address rip 10.0.0.0 252.0.0.0*
 
-.Task: Disable automatic route summarization
+.Task: Disable Automatic Route Summarization
 ----
 (config-router)# no auto-summary
 ----
 
-.Task: Summarize a prefix
+.Task: Summarize a Prefix
 ----
 (config-if)# ip summary-address rip <ip-address> <mask>
 ----
 
-== Route updates
+== Route Updates
 
 
-.Task: Disable sending RIP updates on an interface but continue to receive the update
+.Task: Disable Sending RIP Updates on an Interface but Continue to Receive the Update
 ----
 (config-if)# passive-interface { default | <type number>}
 ----
 
-.Task: Disable the validation of the source IP address of incoming RIP routing updates
+.Task: Disable the Validation Of the Source IP Address Of Incoming RIP Routing Updates
 ----
 (config-router)# no validate-update-source
 ----
 
-.Task: Send updates as broadcast
+.Task: Send Updates As Broadcast
 ----
 (config-if)# ip rip v2-broadcast
 ----
 
-.Task: Send updates as unicast
+.Task: Send Updates As Unicast
 ----
 (config-router)# neighbor <ip-address>
 ----
 
 
-== Route filtering
+== Route Filtering
 
-.Task: Stop advertising a route with a prefix-list
+.Task: Stop Advertising a Route with a Prefix-List
 ----
 (config-router)# distribute-list prefix-list <name> {in | out}
 ----
 
-.Task: filter out RIP routes with extended access lists
+.Task: Filter Out RIP Routes with Extended Access Lists
 ----
 (config-router)# distribute-list <extended-acl> {in|out} [<interface-id>]
 ----
@@ -185,7 +185,7 @@ when classful network boundaries are crossed.
 - The destination field represents the network address
 ====
 
-== Route metric
+== Route Metric
 
 - 16 unreachable network
 - Ripv2 adds 1 to the route metric while sending updates.
@@ -193,32 +193,32 @@ when classful network boundaries are crossed.
 - maximum routes with same metric to the same subnet
   * 4 by default
 
-.Task: Add an offset to incoming and outgoing metrics to RIP routes
+.Task: Add an Offset to Incoming and Outgoing Metrics to RIP Routes
 ----
 (config-router)# offset-list {<acl>} {in | out } <offset> {interface-type-number>}
 ----
 
 
-== Split horizon
+== Split Horizon
 
-.Task: Disable split horizon
+.Task: Disable Split Horizon
 ----
 (config-if)# no ip split-horizon
 ----
 
-== Interpacket delay for RIP updates
+== Interpacket Delay for RIP Updates
 
 - Useful when high-end router send RIP updates to low-end router
 - Default: 0 in range 8 to 50 milliseconds
 
-.Task: Configure interpacket delay
+.Task: Configure Interpacket Delay
 ----
 (config-if)# output-delay <milliseconds>
 ----
 
-== Rip Optimization over WAN
+== Rip Optimization Over WAN
 
-.Task: Enable triggered extensions for RIP
+.Task: Enable Triggered Extensions for RIP
 ----
 (config)# int serial <controller-number>
 (config-if)# ip rip triggerred
@@ -227,7 +227,7 @@ when classful network boundaries are crossed.
 
 == Timers
 
-.Task: Configure RIP timers
+.Task: Configure RIP Timers
 ----
 (config-router)# timers basic <update> <invalid> <holddown> <flush> [<sleeptime>]
 ----
@@ -256,7 +256,7 @@ Flush After timer:: amount of time that must pass before a route is removed from
 
 Sleep time:: amount of time for which routing updates will be postponed.
 
-.Task: Specify a default update interval on an interface
+.Task: Specify a Default Update Interval on an Interface
 ----
 (config-if)# ip rip advertise <seconds>
 ----

@@ -6,7 +6,7 @@
 - Traffic between VLANs is layer 3 routed
 - Can span multiple physical switches over "trunks"
 
-== VLAN numbering
+== VLAN Numbering
 
 - VLAN ID = 12 bits
 
@@ -36,17 +36,17 @@ Extended-range [1006-4094] ::
   * 802.1q: IEEE standard, 4-byte tag except for native VLAN, modifies original frame
 
 
-== Basic configuration
+== Basic Configuration
 
 Configuring VLANs requires few steps:
 
-. Create the VLAN itself
-. Associate the correct ports with VLAN
+. Create the VLAN Itself
+. Associate the Correct Ports with VLAN
 
 
 VLAN creation can be done either in VLAN database mode configuration (after *vlan database* ) or normal configuration mode
 
-.Catalyst 3550 VLAN database vs configuration mode
+.Catalyst 3550 VLAN Database Vs Configuration Mode
 [format="dsv"]
 |===
 VLAN Database : Configuration
@@ -57,11 +57,11 @@ apply | abort | reset : No equivalent
 |===
 
 
-== VLAN state
+== VLAN State
 
 - Can be active or suspended
 
-.Task: Modify the operational state of a VLAN
+.Task: Modify the Operational State Of a VLAN
 ----
 (config)# vlan <id>
 (config-vlan)#state [active | suspend]

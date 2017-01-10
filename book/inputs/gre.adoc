@@ -21,7 +21,7 @@ to be carried through the tunnel.
 .IP Tunneling Terminology and Concepts
 image::ip-tunneling-concepts.png[]
 
-== GRE header
+== GRE Header
 
 ["packetdiag", target= 'gre-header-format.png']
 ----
@@ -62,7 +62,7 @@ Protocol Type::
 - Ether protocol type (e.g. IPv4 -> 0x800)
 
 
-=== GRE keepalive
+=== GRE Keepalive
 
 The GRE tunnel keepalive mechanism gives the ability for one side to originate
 and receive keepalive packets to and from a remote router even if the remote
@@ -86,13 +86,13 @@ If GRE keepalive is configured on both sides of the tunnel, the period and retri
 
 This command is supported only on GRE point-to-point tunnels.
 
-.Task: Configure GRE keepalives
+.Task: Configure GRE Keepalives
 ----
 (config-if)# keepalive [ period [retries]]
 ----
 
 
-== GRE tunnel
+== GRE Tunnel
 
 To build a tunnel, a tunnel interface must be defined on each of two routers
 and the tunnel interfaces must reference each other.
@@ -107,7 +107,7 @@ If only one side of a tunnel is configured,
 the tunnel interface may still come up and stay up (unless
 keepalive is configured), but packets going into the tunnel will be dropped.
 
-.Task: Summary steps
+.Task: Summary Steps
 ----
 interface tunnel number
   bandwidth kbps
@@ -124,7 +124,7 @@ interface tunnel number
 [TIP]
 The router should have a route to the destination address, but not through the tunnel interface.
 
-=== Configuration example
+=== Configuration Example
 
 Note that Ethernet interface 0/1 is the tunnel source for Router A and the tunnel destination for Router B.
 Fast Ethernet interface 0/1 is the tunnel source for Router B and the tunnel destination for Router A.
@@ -173,7 +173,7 @@ still stay in an up/ip state but the routers cannot forward packets because of
 the mismatch encapsulation.
 
 
-=== "%TUN-5-RECURDOWN" error message and flapping EIGRP/OSPF/BGP neighbors over a GRE tunnel
+=== "%TUN-5-RECURDOWN" Error Message and Flapping EIGRP/OSPF/BGP Neighbors Over a GRE Tunnel
 
 http://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/22327-gre-flap.html
 

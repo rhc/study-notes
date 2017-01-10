@@ -94,7 +94,7 @@ Convert to Hexa : 10101100 00010000 01101011 00111010 01010010 00111100
 Transmission    : 00110101 00001000 11010110 01011100 01001010 00111100
 ----
 
-.Task: Change the MAC address
+.Task: Change the MAC Address
 ----
 (config-if)# mac-address AC-10-BE-EF-DE-AD
 ----
@@ -102,19 +102,19 @@ Transmission    : 00110101 00001000 11010110 01011100 01001010 00111100
 Even if you change the MAC address of the swithch port,
 STP will continue to use the BIA.
 
-=== Types of MAC addresses
+=== Types Of MAC Addresses
 
 - Unicast : I/G bit = 0
 - Multicast: I/G bit = 1
 - Broadcast: all devices in the segment
 
-== RJ-45 pinouts and Cat5 wiring
+== RJ-45 Pinouts and Cat5 Wiring
 
 - Defined by http://www.eia.org[EIA] / http://www.tiaonline.org[TIA]
 
 image::ethernet-pinouts.png["Ehernet and ISO", height=50]
 
-.Ethernet cabling types
+.Ethernet Cabling Types
 [cols="20,50,40"]
 ,===
 Type of cable    , Pinouts                               , Key pins connected
@@ -127,7 +127,7 @@ Cross-over       , T568A on one end;  T568B on the other , 1-3; 2-6; 3-1; 6-2
 ** Detects the wrong cable and causes the switch to swap the pair it uses for transmitting and receiving
 ** Not supported on all Cisco switch models
 
-== Auto-negotiation, Speed and Duplex
+== Auto-Negotiation, Speed and Duplex
 
 - By default, Ethernet auto-negotiation uses FLP (Fast Link Pulses)to determine the speed and duplex setting.
 - To disable auto-negotiation, manually configure the speed and the duplex settings.
@@ -138,17 +138,17 @@ Cross-over       , T568A on one end;  T568B on the other , 1-3; 2-6; 3-1; 6-2
 
 - if auto-negotation is disabled on both end and different speeds statically configured, link down
 
-.Task: Set speed for the interface
+.Task: Set Speed for the Interface
 ----
 (config-if)# speed {10 | 100 | 1000 | auto | nonegotiate}
 ----
 
-.Task: Set duplex mode for the interface
+.Task: Set Duplex Mode for the Interface
 ----
 (config-if)# duplex {auto | full | half}
 ----
 
-.Task: Show controllers
+.Task: Show Controllers
 ----
 Router# show controllers fastethernet1
 !
@@ -172,7 +172,7 @@ Rx Counter Register        [16] : 000A
 Tx Counter Register        [17] : 0008
 ----
 
-== Switch internal processing
+== Switch Internal Processing
 
 Switches forward frames when necessary, and do not forward when there is no need to do so, thus
 reducing overhead.
@@ -206,7 +206,7 @@ received before forwarding the first bytes of the outgoing frame. According to
 Ethernet specifications, collisions should be detected during the first 64 bytes of
 the frame, so frames that are in error because of a collision will not be forwarded.
 
-== Switching and bridging logic
+== Switching and Bridging Logic
 
 [cols="20,60"]
 :===

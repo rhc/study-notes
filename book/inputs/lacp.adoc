@@ -29,7 +29,7 @@ On::
 Working Etherchannel for On-On, Passive-Active, Active-Active
 
 
-== LACP hot-standby ports
+== LACP Hot-Standby Ports
 
 - Only 8 LACP links can be active at one time
 - Any additional links are in hot-standby mode
@@ -48,44 +48,44 @@ Working Etherchannel for On-On, Passive-Active, Active-Active
   * Select the master ports with the low port priority and number.
     The port-priority and port-number of the slave switch are not used.
 
-.Task: Check which ports are in the hot-standby mode
+.Task: Check Which Ports Are In the Hot-Standby Mode
 ----
 # show etherchannel summary
 ----
 
-.Task: Configure the LACP system priority
+.Task: Configure the LACP System Priority
 ----
 (config)# lacp system-priority <priority>
 ----
 
-.Task: Show the LACP system priority
+.Task: Show the LACP System Priority
 ----
 # show lacp sys-id
 ----
 
-.Task: LACP port priority
+.Task: LACP Port Priority
 ----
 (config-if)# lacp port-prioriy  
 ----
 
-== LACP Port-channel MaxBundle feature
+== LACP Port-Channel MaxBundle Feature
 
 - Control the number of ports allowed to be bundled into the etherchannel
 - Allows hot-standby ports with fewer bundled ports
 
-.Task: Configure the maximum number of bundled ports allowed in a LACP port channel
+.Task: Configure the Maximum Number Of Bundled Ports Allowed In a LACP Port Channel
 ----
 (config-if)# lacp max-bundle
 ----
 
-== LACP Port-Channel Min-links feature
+== LACP Port-Channel Min-Links Feature
 
 - Only for LACP Etherchannel
 - Prevents low-bandwidth interface from becoming active
 - Causes LACP etherChannels to become inactive if they have too feww active members ports to supply the required minimum bandwith
 
 
-.Task: Configure the minimum number of member ports that must be in the link-up state and bundled in the etherchannel for the port channel interface to transition to the link-up state 
+.Task: Configure the Minimum Number Of Member Ports That Must Be In the Link-Up State and Bundled In the Etherchannel for the Port Channel Interface to Transition to the Link-Up State 
 ----
 (config-if)# port-channel min-link n
 ----

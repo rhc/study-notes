@@ -13,17 +13,17 @@ Fast switching    , Fast-switching cache (per flow route cache)     , Per destin
 CEF               , FIB tree and adjacency table                    , Per a hash of the packet source and destination , or per packet
 ,===
 
-.Task: disable CEF
+.Task: Disable CEF
 ----
 (config)# no ip cef [distributed]
 ----
 
-.Task: disable CEF on an interface
+.Task: Disable CEF on an Interface
 ----
 (config-if)# no ip route-cache cef [distributed]
 ----
 
-.Task: Verify that CEF is enabled
+.Task: Verify That CEF Is Enabled
 ----
 # sh cef interface <type number> [detail]
 # sh ip interface <type number>
@@ -34,7 +34,7 @@ CEF               , FIB tree and adjacency table                    , Per a hash
 - contains the prefixes and next-hop address from each entry in the IP routing table structured in a way that is optimized for forwarding.
 - no need for route cache maintenance because there is a one-to-one correlation between FIB entries and routing table entries
 
-.Task: Display the FIB contents
+.Task: Display the FIB Contents
 ----
 # sh ip cef
 
@@ -51,7 +51,7 @@ Prefix              Next Hop            Interface
 
 - stores outbound interface and MAC header rewrite for adjacent nodes
 
-.Task: Display the contents of the adjacency table
+.Task: Display the Contents Of the Adjacency Table
 ----
 # show adjacency [detail]
 
@@ -65,11 +65,11 @@ IPV6           FastEthernet0/0.2    FE80:24::4(12)
 ...
 ----
 
-=== Adjacency discovery
+=== Adjacency Discovery
 
 - adjacent nodes are discovered automatically (ARP) or added manually
 
-.Adjacency Types that required special handling
+.Adjacency Types That Required Special Handling
 [cols="20a,80a"]
 |===
 | Adjacency Type    | Actions
@@ -90,17 +90,17 @@ Once the Layer 2 information is known, the packet is forwarded to the RP, and th
 Thus, the adjacency is resolved.
 
 
-== CEF load balancing
+== CEF Load Balancing
 
 - per-destination (default)
 - per-packet: round-robin method over multiple links
 
-.Task: disable per-destination
+.Task: Disable Per-Destination
 ----
 (config-if)# no ip load-sharing per-destination
 ----
 
-.Task: enable per-packet load balancing
+.Task: Enable Per-Packet Load Balancing
 ----
 (config-if)# ip load-sharing per-packet
 ----
@@ -129,7 +129,7 @@ GTP-U TEID-Based ECMP Load-Balancing Algorithm::
 - for mobile devices
 
 
-.Task: Select CEF load balancing algorithm
+.Task: Select CEF Load Balancing Algorithm
 ----
 (config)# ip cef load-sharing algorithm {original | universal | tunnel | include-ports [source | destination | source destination] }
 ----

@@ -3,7 +3,7 @@
 - Cisco IOS application
 - provides statistics on packets flowing through the routing
 
-== NetFlow flows
+== NetFlow Flows
 
 - unidirectional stream of packets between a given source and destination
 - combination of 7 fields: source/destination IP address/Port number, layer 3 protocol type, ToS, input logical interface
@@ -23,12 +23,12 @@
 (config-if)# ip flow { ingress | egress }
 ----
 
-.Task: Verify that NetFlow is operational
+.Task: Verify That NetFlow Is Operational
 ----
 # sh ip cache [verbose] flow
 ----
 
-== NetFlow version
+== NetFlow Version
 
 [horizontal]
 v5::
@@ -52,7 +52,7 @@ digraph g {
 
 === Version 5
 
-.NetFlow header format
+.NetFlow Header Format
 ["packetdiag", target="netflow-header-v5",size=200]
 ----
 diagram {
@@ -74,7 +74,7 @@ diagram {
 }
 ----
 
-.Flow Record format
+.Flow Record Format
 ["packetdiag", target="flow-record-v5",size=50]
 ----
 diagram {
@@ -109,7 +109,7 @@ diagram {
 
 === Version 9
 
-.NetFlow header format
+.NetFlow Header Format
 ["packetdiag", target="netflow-header-v9",size=100]
 ----
 diagram {
@@ -140,17 +140,17 @@ diagram {
   * flow active for more than 30 minutes
 
 
-.Task: Configure the size of the NetFlow cache
+.Task: Configure the Size Of the NetFlow Cache
 ----
 (config)# ip flow-cache entries <size=64000>
 ----
 
-.Task: Configure the flow cache timeout for inactive flow
+.Task: Configure the Flow Cache Timeout for Inactive Flow
 ----
 (config)# ip flow-cache timeout inactive <seconds=15>
 ----
 
-.Task: Configure the flow cache timeout for active flows
+.Task: Configure the Flow Cache Timeout for Active Flows
 ----
 (config)# ip flow-cache timeout active <minutes=30>
 ----
@@ -161,22 +161,22 @@ diagram {
 - Send NetFlow cache entries to workstation running NetFlow Collection Engine
 - supports only two export destinations
 
-.Task: Export NetFlow information to a workstation
+.Task: Export NetFlow Information to a Workstation
 ----
 (config)# ip flow-export destination {<ip-address | hostname} <udp-port>
 ----
 
-.Task: (optional) Use version 5 Export Format
+.Task: (Optional) Use Version 5 Export Format
 ----
 (config)# ip flow-export version 5
 ----
 
-.Task: (optional) Use version 9 Export Format
+.Task: (Optional) Use Version 9 Export Format
 ----
 (config)# ip flow-export version 9
 ----
 
-.Task: verify that NetFlow data export is operational
+.Task: Verify That NetFlow Data Export Is Operational
 ----
 # sh ip flow export
 ----

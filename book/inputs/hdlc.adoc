@@ -8,7 +8,7 @@
 * On a Cisco router, HDLC encapsulation can only connect with another Cisco router
 
 
-== HDLC frame format
+== HDLC Frame Format
 
 
 
@@ -16,7 +16,7 @@
 
 - default
 
-.Task: Set encapsulation to hdlc
+.Task: Set Encapsulation to Hdlc
 ----
 (config-if)# encapsulation hdlc
 ----
@@ -31,12 +31,12 @@ sh controllers serial
 
 - Automatically set
 
-.Task: Modify the clock rate
+.Task: Modify the Clock Rate
 ----
 (config-if)# clock-rate <bps>
 ----
 
-.Task: Specify the clock rate is in the network
+.Task: Specify the Clock Rate Is In the Network
 ----
 (config-if)# clock-rate line
 ----

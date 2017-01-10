@@ -4,9 +4,9 @@
 == Information 
 
 
-=== Message format
+=== Message Format
 
-.header format
+.Header Format
 ["packetdiag", target=""]
 ----
 diagram {

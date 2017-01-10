@@ -7,9 +7,9 @@
 **   pe : mpls and vpn aware
 **   p : no vpn aware
 
-=== MPLS label stack
+=== MPLS Label Stack
 
-.MPLS header format
+.MPLS Header Format
 ["packetdiag", target= 'mpls-header-format']
 ----
 {
@@ -32,11 +32,11 @@ EXP:: Experimental, class of service
 S:: Bottom-of-Stack flag 
 TTL:: Time to live
 
-=== label distribution
+=== Label Distribution
 
 - protocol : ldp (default rfc 3036) or tdp (cisco)
 
-==== dynamic discovery of adjacent ldp peers
+==== Dynamic Discovery Of Adjacent Ldp Peers
 
 - neigbhbor discovery UDP port 646
   * basic neighbor discovery: multicast hellos to directly connected neighbors
@@ -61,7 +61,7 @@ R1#sh mpls ldp neighbor
 (config)# mpls ldp discovery hello holdtime <sec>
 ----
   
-==== peering establishment
+==== Peering Establishment
 
 in 2 steps:
 
@@ -92,7 +92,7 @@ R1#show mpls ldp parameters
   LDP loop detection: off
 ----
 
-=== regulation of peer-to-peer communication and label exchange
+=== Regulation Of Peer-to-Peer Communication and Label Exchange
 
 - with keepalives (60 seconds)
 
@@ -106,7 +106,7 @@ R1#show mpls ldp parameters
 - you need to reset the tcp session for new timers to take effect
 
 
-== label distribution and control
+== Label Distribution and Control
 
 - methods:
   * Unsolicited downstream distribution mode
@@ -115,7 +115,7 @@ R1#show mpls ldp parameters
 (to be revised )
 
 
-=== Route distinguishers and route targets
+=== Route Distinguishers and Route Targets
 
 http://www.cisco.com/c/en/us/td/docs/net_mgmt/ip_solution_center/3-1/mpls/user/guide/mpls/1_iscqsg.html#wp1039468[RD and RT]
 

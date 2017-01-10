@@ -1,4 +1,4 @@
-= CCIE Routing and Switching study notes
+= CCIE Routing and Switching Study Notes
 Christian Kyony <ckyony@changamuka.com>
 v1.0, 2015-10-12
 :doctype: book
@@ -40,7 +40,7 @@ include::isl.adoc[leveloffset=+2]
 include::802.1q.adoc[leveloffset=+2]
 include::802.1q-in-q.adoc[leveloffset=+2]
 
-== Spanning tree
+== Spanning Tree
 include::spanning-tree-protocol.adoc[leveloffset=+2]
 include::mst.adoc[leveloffset=+2]
 
@@ -64,7 +64,7 @@ include::ewan.adoc[leveloffset=+2]
 <<<
 = Part II : Layer 3 Technologies
 
-== IP addressing
+== IP Addressing
 
 include::ipv4.adoc[leveloffset=+2]
 include::arp.adoc[leveloffset=+2]
@@ -78,7 +78,7 @@ include::ipv6.adoc[leveloffset=+2]
 include::cef.adoc[leveloffset=+2]
 
 
-== IP routing
+== IP Routing
 
 include::rip.adoc[leveloffset=+2]
 include::eigrp.adoc[leveloffset=+2]
@@ -98,7 +98,7 @@ include::ipsec.adoc[leveloffset=+1]
 <<<
 = Part IV : Infrastructure Security
 
-== Device security
+== Device Security
 
 include::aaa.adoc[leveloffset=+2]
 
@@ -108,10 +108,10 @@ include::aaa.adoc[leveloffset=+2]
 ** management plane protection
 ** control plane protection
 
-== Network security
+== Network Security
 
 
-=== Switch security
+=== Switch Security
 
 include::acl.adoc[leveloffset=+2]
 
@@ -123,7 +123,7 @@ include::acl.adoc[leveloffset=+2]
 
 
 
-=== Router security
+=== Router Security
 
 - ipv4 access list
 - ipv6 traffic filter
@@ -145,7 +145,7 @@ include::802.1x.adoc[leveloffset=+1]
 <<<
 = Part V : Infrastructure Services
 
-== System management
+== System Management
 
 include::telnet.adoc[leveloffset=+2]
 include::ssh.adoc[leveloffset=+2]
@@ -197,7 +197,7 @@ include::ip-multicast-introduction.adoc[leveloffset=+2]
 include::igmp.adoc[leveloffset=+2]
 include::pim.adoc[leveloffset=+2]
 
-== Network optimization
+== Network Optimization
 
 include::ip-sla.adoc[leveloffset=+2]
 include::eot.adoc[leveloffset=+2]
@@ -214,7 +214,7 @@ include::iot.adoc[leveloffset=+1]
 <<<
 = Appendices
 
-== Lab Equipment and IOS releases
+== Lab Equipment and IOS Releases
 
 - Cisco ISR 2900 Series routers running IOS version 15.3T Universal Software release
 - Catalyst 3560X Series switches running IOS version 15.0SE Universal (IP Services) Software release

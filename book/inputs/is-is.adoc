@@ -5,7 +5,7 @@
 * encapsulates messages directly in data-link frames
 * sends to the layer 2 address called SNAP (sub-network point of attachment)
 
-== NSAP address
+== NSAP Address
 
 - variable length between 8 and 20 octets
 - assigned to the entire node
@@ -43,7 +43,7 @@ AFI Meaning                                                 : IDI Length and Con
 49 Locally defined format (private addressing; free format) : Formally not present                                            : Between 0 and 12 octets; area number
 :===
 
-== Levels of Routing
+== Levels Of Routing
 
 - Level 0 : ES-ES / ES-IS on the same link
 - Level 1 : IS-IS intra-area
@@ -209,7 +209,7 @@ another 20 minutes.
    routers will simply exchange the full link-state database.
 
 
-=== Broadcast networks
+=== Broadcast Networks
 
 - Routers must create adjacencies, synchronize their databases, and keep them synchronized
 - on Ethernet networks,
@@ -220,7 +220,7 @@ another 20 minutes.
 
 - detects neighbors with IIH
 
-.Task: Configure the IS-IS priority
+.Task: Configure the IS-IS Priority
 ----
 (config-if)# isis priority <0-255>
 ----
@@ -277,13 +277,13 @@ remove the former NSAP address.
 - If security is a major concern, different passwords for L1 IIH, L2 IIH, L1
 non-IIH, and L2 non-IIH packets can be configured.
 
-.Task: Configure IIH authentication
+.Task: Configure IIH Authentication
 ----
 (config-if)# isis authentication mode {text | md5} [level-1|level-2]
 (config-if)# isis auth key-chain name [level-1|level-2]
 ----
 
-.Task: Configure LSP, CSNP and PSNP authentication
+.Task: Configure LSP, CSNP and PSNP Authentication
 ----
 (config-router)# authentication mode {text | md5} [level-1|level-2]
 (config-router)# authentication key-chain name [level-1|level-2]
@@ -294,7 +294,7 @@ keyword is omitted from a command where it is currently indicated, the
 corresponding authentication type will be activated for both levels.
 
 
-== IPv6 support
+== IPv6 Support
 
 - Supports out-of-the box
 

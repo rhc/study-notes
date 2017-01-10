@@ -3,7 +3,7 @@
 
 
 
-== Configuration tasks
+== Configuration Tasks
 
 ----
 ip rsvp bandwidth [interface-kbps [single-flow-kbps] ]

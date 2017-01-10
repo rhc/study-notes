@@ -11,7 +11,7 @@
 - Protocol value: 0x104
 - Cannot be enabled on cross-stack EtherChannel
 
-.Task: Display PAgP status
+.Task: Display PAgP Status
 ----
 # show pagp [channel-group-number]
 ----
@@ -32,7 +32,7 @@ On ::
 
 Etherchannel formed for on-on, desirable-auto, desirable-desirable combinations.
 
-== Physical vs Aggregate learners
+== Physical Vs Aggregate Learners
 
 Switches running PAgP are classified as:
 
@@ -56,12 +56,12 @@ to physical learning. It is important when running in this mode, to set the
 load-distribution method to source-based distribution so that any given source
 MAC address is always sent on the same physical port.
 
-.Task: Configure the PAgP learning method
+.Task: Configure the PAgP Learning Method
 ----
 (config-if)# pagp learn-method {physical-port | aggregation-port>
 ----
 
-.Task: Verify the PAgP learning method
+.Task: Verify the PAgP Learning Method
 ----
 # show pagp [channel-group-number] internal
 ----
@@ -73,7 +73,7 @@ MAC address is always sent on the same physical port.
 - The higher the priority, the more likely that the port will be used for PAgP transmission 
 
 
-.Task: Assign a priority so that the selected port is chosen for packet transmission.
+.Task: Assign a Priority So That the Selected Port Is Chosen for Packet Transmission.
 ----
 (config-if)# pagp port-priority <priority>
 ----
@@ -100,7 +100,7 @@ This is because PAgP will enforce uniform Loop Guard configuration on all of the
 == Configuration
 
 
-=== Validate the port that will be used by STP to send packets and receive packets
+=== Validate the Port That Will Be Used by STP to Send Packets and Receive Packets
 
 ----
 Switch#show pagp neighbor
@@ -120,14 +120,14 @@ If that port fails,
 STP will send packets out of Gi1/1/4. 
 
 
-== Silent mode
+== Silent Mode
 
-.Task: Configure a switch port for nonsilent operation
+.Task: Configure a Switch Port for Nonsilent Operation
 ----
 
 ----
 
-.Task: Configure a switch port for nonsilent operation
+.Task: Configure a Switch Port for Nonsilent Operation
 ----
 
 ----

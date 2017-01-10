@@ -1,6 +1,6 @@
-= Classification And Marking
+= Classification and Marking
 
-== Fields that can be marked for QoS purposes
+== Fields That Can Be Marked for QoS Purposes
 
 - Layer 3:  IPP, IP DSCP, DS field, ToS byte
 - Layer 2:  Ethernet CoS,Frame Relay  DE, ATM CLP, MPLS EXP
@@ -9,7 +9,7 @@
 
 image::ipp-vs-dscp.png[]
 
-.IPP and Class Selector DSCP values
+.IPP and Class Selector DSCP Values
 :===
 DSCP CS name : IPP names
 
@@ -40,7 +40,7 @@ CS7          : network control
 * AFxy -> 8x + 2y = decimal value
 
 
-=== Ethernet LAN Class of Service
+=== Ethernet LAN Class Of Service
 
 image::ethernet-cos.png[Ethernet CoS]
 
@@ -66,7 +66,7 @@ image::ethernet-cos.png[Ethernet CoS]
 - uses MQC match protocol
 
 
-.NBAR match protocol
+.NBAR Match Protocol
 [cols="25,75"]
 :===
 Command                  : Purpose
@@ -93,7 +93,7 @@ match tag                : Specifies tag type as a match criterion.
 (config-custom)# dscp {ef | af }
 ----
 
-.Task: Display the current protocol-to-port mappings in use by NBAR.
+.Task: Display the Current Protocol-to-Port Mappings In Use by NBAR.
 ----
 # sh ip nbar port-mapping [<protocol-name>]
 
@@ -127,7 +127,7 @@ Medium priority data      : 1             : AF11 AF12 AF13 : 1
 All other traffic         : 0             : Default        : 0
 :===
 
-.Task: Set the DSCP value in the ToS Byte
+.Task: Set the DSCP Value In the ToS Byte
 ----
 (config-pmap-c)#set ip dscp {<0-63> | AF<xy> | CS<x> | EF | default}
 ----
@@ -140,7 +140,7 @@ before encapsulation, rather than just the encapsulating tunnel header.
 - works by keeping the original, unencrypted traffic in memory until the egress QoS actions are taken.
 - enables in tunnel interface configuration mode, virtual-template configuration mode, or crypto map configuration mode
 
-.Task: Enable QoS pre-classification
+.Task: Enable QoS Pre-Classification
 ----
 (config-if)# qos pre-classification
 ----
@@ -159,7 +159,7 @@ before encapsulation, rather than just the encapsulating tunnel header.
 * Companies can implement QoS without needing an in-depth knowledge of QoS concepts
 
 
-.Task: Display the interface AutoQoS configuration
+.Task: Display the Interface AutoQoS Configuration
 ----
 > sh auto qos
 ----
@@ -172,7 +172,7 @@ before encapsulation, rather than just the encapsulating tunnel header.
 - trusts COS or DSCP values on trunk or uplink ports
 
 
-==== AutoQoS on switches
+==== AutoQoS on Switches
 
 -  no need to enable QoS globally.
 * After it is enabled for any interface, the command starts a macro that:
@@ -193,19 +193,19 @@ switch. You can then go back and modify the default configuration if needed to
 fit your specific requirements.
 
 
-.Task: Enable AutoQoS on an access port
+.Task: Enable AutoQoS on an Access Port
 ----
 (config-if)# auto qos voip {cisco- phone | cisco-softphone}
 ----
 
-.Task: Enable AutoQoS on uplink port
+.Task: Enable AutoQoS on Uplink Port
 ----
 (config-if)# auto qos voip trust
 ----
 
-==== AutoQoS on routers
+==== AutoQoS on Routers
 
-.Task: Enable AutoQoS on router port
+.Task: Enable AutoQoS on Router Port
 ----
 (config-if)# auto qos voip [trust]
 ----
@@ -270,12 +270,12 @@ router already marked, and if you trust those markings, because the AutoQoS
 policies will use those markings during the configuration stage.
 ====
 
-.Task: Generate the AutoQoS configuration for Enterprise
+.Task: Generate the AutoQoS Configuration for Enterprise
 ----
 (config-if)# auto qos
 ----
 
-.Task: Show auto discovery qos
+.Task: Show Auto Discovery Qos
 ----
 # sh auto discovery qos
 ----

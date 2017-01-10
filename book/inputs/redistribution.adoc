@@ -7,7 +7,7 @@
 - choose 
   * routes with lower AD
  
-== Administrative distance
+== Administrative Distance
 
 [format="dsv", options="header"]
 |===
@@ -27,12 +27,12 @@ iBGP            : 200
 Unknown         : 255
 |===
 
-== Spot issues
+== Spot Issues
 
 - Loops cannot occur with one single point of redistribution
 - Loops may occur with multiple points of redistribution
 
-== heuristics
+== Heuristics
 
 - identify each domain and associate a tag
 - assign tags to each domain
@@ -76,9 +76,9 @@ ip community-list 1 permit 10
   set tag 110
 ----
 
-== Connected routes
+== Connected Routes
 
-.Task: redistribute connected routes 
+.Task: Redistribute Connected Routes 
 ----
 redistribute connected 
 ----
@@ -87,8 +87,8 @@ redistribute connected
 - OVerride the implicit redistribution of interfaces running the protocol X
 ====
 
-== Static routes
-.Task: redistribute static route
+== Static Routes
+.Task: Redistribute Static Route
 ----
 (config-router)# redistribute static route-map <name> metric <value>
 (config-router)# default-metric <hops>
@@ -101,7 +101,7 @@ redistribute connected
   ** recommendation: use  1 as default-metric
 
 
-.Task: Prevent loss of packet when BGP routes are redistributed in RIP
+.Task: Prevent Loss Of Packet When BGP Routes Are Redistributed In RIP
 ----
 (config)# router rip
 (config-router)# input-queue 1024
@@ -123,7 +123,7 @@ redistribute <protocol> metric <bandwidth> <delay> <load> <reliability> <MTU>
 TIP: Duplicate router-ids will prevent EIGRP to install routes
 
 
-== OSPF redistribution
+== OSPF Redistribution
 
 - differentiates between internal and external routes but same AD= 110
 - Router-id for flooding loop prevention
@@ -142,19 +142,19 @@ router ospf 1
   default-metric 10
 ----
 
-.Task: Assign different AD to internal and external
+.Task: Assign Different AD to Internal and External
 ----
 ----
 
 
-== BGP redistribution
+== BGP Redistribution
 
 
 === IGP to BGP
 
 - denies OSPF external routes by default
 
-.Task: redistribute OSPF into BGP
+.Task: Redistribute OSPF Into BGP
 ----
 redistribute ospf <pid> match internal external
 ----

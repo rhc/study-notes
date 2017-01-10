@@ -9,7 +9,7 @@
 
 == Configuration
 
-.Task: enable cef
+.Task: Enable Cef
 
 
 - agree on label protocol
@@ -18,31 +18,31 @@
 mpls label protocol
 --
 
-.Task:  define router-id (recommended)
+.Task:  Define Router-Id (Recommended)
 
 --
 mpls ldp router-id
 --
 
-.Task: enable ldp at interface level
+.Task: Enable Ldp at Interface Level
 
 --
 (config-if)# mpls ip
 --
 
-.Task: enable ldp at IGP process
+.Task: Enable Ldp at IGP Process
 
 --
 (config-router)#mpls ldp autoconfig 
 --
 
-.Task: verify ldp is enabled
+.Task: Verify Ldp Is Enabled
 
 --
 sh mpls interfaces
 --
 
-.Task:- verify LDP sessions
+.Task:- Verify LDP Sessions
 
 --
 sh mpls ldp neighbor
@@ -55,7 +55,7 @@ sh mpls forwarding-table
 --
 
 
-.Task:- Troubleshoot LDP adjacencies
+.Task:- Troubleshoot LDP Adjacencies
 
 --
 debug mpls ldp transport events

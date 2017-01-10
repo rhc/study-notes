@@ -90,19 +90,19 @@ looking for the first occurrence of a lower value:
  that one switch wins the election and becomes the root switch.
 
 
-.Task: Force election of a root bridge
+.Task: Force Election Of a Root Bridge
 ----
 # spanning-tree vlan <id> root
 ----
 
-=== Root port
+=== Root Port
 
 - RP is upstream facing towards Root bridge
 - Lowest root path cost ( cumulative cost of all links to get to the root)
   * cost = advertised cost in the BPDU hello + cost on the receiving post
 - Cost based on inverse bandwith
 
-.Default port costs
+.Default Port Costs
 [format="csv"]
 |====
 Speed    , original , revised , 802.1D-2004
@@ -113,26 +113,26 @@ Speed    , original , revised , 802.1D-2004
 10 Gbps  , 1        , 2       , 2000
 |====
 
-.Task: Choose default STP path cost (original or revised)
+.Task: Choose Default STP Path Cost (Original or Revised)
 ----
 (config)# spanning-tree pathcost method {short | long}
 ----
 
 Tie breaker when a switch receives multiple Hellos with equal cost
 
-. Lowest bridge id
-. Lowest port priority
-. Lowest port number
+. Lowest Bridge Id
+. Lowest Port Priority
+. Lowest Port Number
 
 
-=== Designated port
+=== Designated Port
 
 - Designated switch: send the Hello with the lowest advertised cost for the segment
 - DP: port that forward frames onto that segment
 - DP are downstream facing away from root bridge
 - Elected based on lowest root path cost, BID, port ID
 
-=== Blocking ports
+=== Blocking Ports
 
 - Receive BPDUs
 - Discard all other traffic
@@ -143,25 +143,25 @@ Tie breaker when a switch receives multiple Hellos with equal cost
 
 - Steady operations: one Root bridge, one RP on each non-root bridge, one DP on each segment, blocking state
 
-. Root switch generates a Hello every 2 seconds
-. Each RP on non-root switch receives a copy of the root's Hello
-. Each DP updates and forwards the Hello out
-. Each blocking port receives a copy of the Hello from the DP without forwarding it
+. Root Switch Generates a Hello Every 2 Seconds
+. Each RP on Non-Root Switch Receives a Copy Of the Root'S Hello
+. Each DP Updates and Forwards the Hello Out
+. Each Blocking Port Receives a Copy Of the Hello from the DP Without Forwarding It
 
-===  Topology change notification
+===  Topology Change Notification
 
 more at
 http://www.CISCO.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/24062-146.html#topchng[understand new topology changes]
 
 // split this section for 802.1d and 802.1w
 
-. A switch experiencing the STP port state change sends a TCN BPDU out its Root Port;
+. a Switch Experiencing the STP Port State Change Sends a TCN BPDU Out Its Root Port;
 it repeats this message every Hello time until it is acknowledged.
 
-. The next switch receiving that TCN BPDU sends back an acknowledgment via its next
+. the Next Switch Receiving That TCN BPDU Sends Back an Acknowledgment Via Its Next
 forwarded Hello BPDU by marking the Topology Change Acknowledgment (TCA) bit in the Hello.
 
-. The switch that was the DP on the segment in the first two steps repeats the first two steps,
+. the Switch That Was the DP on the Segment In the First Two Steps Repeats the First Two Steps,
 sending a TCN BPDU out its Root Port, and awaiting acknowledgment from the DP on that
 segment.
 
@@ -170,7 +170,7 @@ Once received, the root sets the TC flag on the next several Hellos, which are f
 switches in the network, notifying them that a change has occurred. A switch receiving a Hello
 BPDU with the TC flag set uses the short (Forward Delay time) timer to time out entries in the CAM.
 
-.Transitioning from blocking to forwarding
+.Transitioning from Blocking to Forwarding
 [format="csv"]
 |====
 State      , Forward data frames , Learn source MAC , Stable?
@@ -215,13 +215,13 @@ Hello timer::
 
 //todo: add picture here pp. 78
 
-.Task: Display Spanning-Tree information
+.Task: Display Spanning-Tree Information
 ----
 # sh spanning-tree root
 # sh spanning-tree vlan 1 root detail
 ----
 
-=== Optimizing, improving spanning tree
+=== Optimizing, Improving Spanning Tree
 
 ==== PortFast
 
@@ -230,7 +230,7 @@ Hello timer::
 - Prevent them to generate TCNs
 - Can generate loops if another switch is connected. so must be used with bpdu guard and root guard features
 
-.Task: Enable portfast
+.Task: Enable Portfast
 ----
 (config-if)# spanning-tree portfast
 (config)# spanning-tree portfast default
@@ -246,7 +246,7 @@ addresses of local devices and sends one multicast frame with each local address
 causing all the other switches to update their CAMs. The access switch also clears out the rest of the
 entries in its own CAM.
 
-.Task: Enable uplink fast
+.Task: Enable Uplink Fast
 ----
 (config)#  spanning-tree uplinkfast [max-update-rate rate]
 ----
@@ -265,18 +265,18 @@ the switch experiencing the indirect link failure can go ahead and converge with
 (config)#  spanning-tree backbonefast
 ----
 
-=== bpdu filter
+=== Bpdu Filter
 
 - Filter BPDUs in and out
 
 
-=== bpdu guard
+=== Bpdu Guard
 
 - Puts a portfast enabled port into the errdisable state when a BPDU is received and shuts down the port
 - The port must be manually re-enabled or it can be recovered automatically through the errdiable timeout function.
 - A port configured with bpdu guard will not be put into the root-inconsistent state.
 
-=== loop guard
+=== Loop Guard
 
 - Prevents non-designated ports from inadvertently forming layer 2 switching loops
 if the flow of bpdus is interrupted.
@@ -284,7 +284,7 @@ if the flow of bpdus is interrupted.
 - Only used on point-to-point links
 - Can be used with *UDLD aggressive mode* to get extra protection.
 
-=== root guard
+=== Root Guard
 
 //todo: check command show spanning-tree inconsistentports
 
@@ -329,23 +329,23 @@ into its former STP state when the original Hellos are received again.
 6 remaining bits as well to encode additional information: Proposal bit, Port Role bits, Learning bit, Forwarding bit, and Agreement bit. The TCA bit is not used by RSTP. This change allows implementing the Proposal/Agreement mechanism and also allows a BPDU to carry information about the originating port’s role and state, forming the basis of RSTP’s Dispute mechanism, protecting against issues caused by unidirectional links.
 
 
-=== RSTP link types
+=== RSTP Link Types
 
 - *Point-to-point*: Switch to Switch (default if full-duplex port )
 - *Shared* : Switch to hub (default if half-duplex port)
 - *Edge*: Switch to single end-user device
 
-.Task: Set the RSTP link-type
+.Task: Set the RSTP Link-Type
 ----
 spanning-tree link-type { point-to-point | shared }
 ----
 
-=== RSTP port types
+=== RSTP Port Types
 
 - *Edge* :
 - *Non-Edge*: default
 
-=== RSTP port states
+=== RSTP Port States
 
 - Default to discarding at start
 
@@ -359,7 +359,7 @@ Enabled              , Learning   , Learning
 Enabled              , Forwarding , Forwarding
 |===
 
-=== RSTP port roles
+=== RSTP Port Roles
 
 [horizontal]
 
@@ -487,13 +487,13 @@ both sides become err-disabled.
   role and state into BPDUs. The Dispute mechanism is an integral part of
   RSTP/MST and requires no configuration.
 
-=== storm control
+=== Storm Control
 
-=== unicast flooding
+=== Unicast Flooding
 
 == Troubleshooting
 
-=== flapping port that is generating BPDUs with the TCN bit set
+=== Flapping Port That Is Generating BPDUs with the TCN Bit Set
 
 
 

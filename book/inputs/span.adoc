@@ -4,12 +4,12 @@
 on source ports or VLANs to a destination port for analysis.
 
 
-== Local SPAN sessions
+== Local SPAN Sessions
 
 - Source and destination on the same switch
 image::span-topology.png[SPAN Topology]
 
-.Task: Display SPAN  status
+.Task: Display SPAN  Status
 ----
 Switch# show monitor session
 
@@ -42,7 +42,7 @@ Dest RSPAN VLAN   : None
 ** Tx : after all modification and processing performed by the switch.
 ** Both: by default
 
-.Task: Configure span source ports/VLANs
+.Task: Configure Span Source Ports/VLANs
 ----
 monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | tx]
 ----
@@ -52,7 +52,7 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 - A single session can include multiple sources (ports or VLANs), defined in a series of commands, but you cannot combine source ports and source VLANs in one session.
 ====
 
-==== Source ports
+==== Source Ports
 
 - Can be physical interfaces
 - Can be port-channel logical interfaces with port-channel numbers in (1..48)
@@ -69,7 +69,7 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 - You can monitor only Ethernet VLANs.
 - Ignores CDP, BPDU, VTP,, DTP and PAgP frames unless *encapsulation replicate* is configured
 
-=== Destination port
+=== Destination Port
 
 - Must be a physical port
 - Cannot be a source port
@@ -94,7 +94,7 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 
 //NOTE
 
-.Task: Configure the destination port for a SPAN session
+.Task: Configure the Destination Port for a SPAN Session
 ----
 (config)# monitor <session-number> destination interface <interface-id>
                                    [encapsulation replicate]
@@ -112,18 +112,18 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 - SPAN traffic coming from other port types is not affected by VLAN filtering; that is, all VLANs are allowed on other ports.
 - VLAN filtering affects only traffic forwarded to the destination SPAN port and does not affect the switching of normal traffic.
 
-.Task: Limit SPAN source to specific VLANs
+.Task: Limit SPAN Source to Specific VLANs
 ----
 (config)# monitor <session-number> filter vlan <vlan-ids>
 ----
 
-== Remote SPAN sessions
+== Remote SPAN Sessions
 
 RSPAN consists of at least one RSPAN source session, an RSPAN VLAN, and at least one RSPAN destination session.
 
 image::rspan-topology.png[RSPAN Topology]
 
-.Restrictions and considerations
+.Restrictions and Considerations
 When RSPAN is enabled, each packet being monitored is transmitted twice,
 once as normal traffic and once as a monitored packet.
 Therefore monitoring a large number of ports or VLANs could potentially generate large amounts of network traffic.
@@ -145,34 +145,34 @@ Therefore monitoring a large number of ports or VLANs could potentially generate
 - Access ports (including voice VLAN ports) on the RSPAN VLAN are put in the inactive state.
 - RSPAN VLANs are included as sources for port-based RSPAN sessions when source trunk ports have active RSPAN VLANs. RSPAN VLANs can also be sources in SPAN sessions. However, since the switch does not monitor spanned traffic, it does not support egress spanning of packets on any RSPAN VLAN identified as the destination of an RSPAN source session on the switch.
 
-.Task: Configure RSPAN VLAN on all participating switches
+.Task: Configure RSPAN VLAN on All Participating Switches
 ----
 (config)# vlan <rspan-vlan-id>
 (config-vlan)# remote-span
 ----
 
-=== RSPAN source session
+=== RSPAN Source Session
 
 - Must be configured on the monitored port's switch
 
-.Task: Configure the RSPAN source session
+.Task: Configure the RSPAN Source Session
 ----
 monitor session <session-number> source {interface interface-id | vlan vlan-id} [, | -] [both | rx | tx]
 monitor session session_number destination remote vlan <rspan-vlan-id>
 ----
 
-=== RSPAN destination session
+=== RSPAN Destination Session
 
 - Takes all packets received on the RSPAN VLAN, strips off the VLAN tagging, and presents them on the destination port.
 - Excludes Layer 2 control
 
-.Task: Configure the RSPAN destination session on a different switch (not the switch on which the source session was configured)
+.Task: Configure the RSPAN Destination Session on a Different Switch (Not the Switch on Which the Source Session Was Configured)
 ----
 (config)# monitor session <session-number> source remote vlan <rspan-vlan-id>
 (config)#  monitor session <session-number> destination interface <interface-id>
 ----
 
-== Interaction with other features
+== Interaction with Other Features
 
 Routing ::
 - SPAN does not monitor routed traffic.
@@ -236,9 +236,9 @@ For RSPAN source sessions, do not enable IEEE 802.1x on any ports that are egres
 
 image::erspan.png[]
 
-=== ERSPAN source session
+=== ERSPAN Source Session
 
-.Task: Configure ERSPAN source session
+.Task: Configure ERSPAN Source Session
 ----
 (config)# monitor session <id> type erspan-source
 (config-mon-erspan-src)# source { interface <interface-id> | vlan <vlan-ids> [rx|tx|both]}
@@ -249,9 +249,9 @@ image::erspan.png[]
 (config-mon-erspan-src-dst)# no shutdown
 ----
 
-=== ERSPAN destination session
+=== ERSPAN Destination Session
 
-.Task: Configure ERSPAN destination session
+.Task: Configure ERSPAN Destination Session
 ----
 (config)# monitor session <id> type erspan-destination
 (config-mon-erspan-dst)# destination interface <interface-id>
@@ -262,12 +262,12 @@ image::erspan.png[]
 (config-mon-erspan-dst-src)# no shutdown
 ----
 
-=== ESPAN dummy MAC address rewrite
+=== ESPAN Dummy MAC Address Rewrite
 
 - Supports customizaed MAC value for WAN interface and tunnel interface
 - Monitor the traffic going through WAN interface
 
-.Task: Configure ESPAN dummy MAC address
+.Task: Configure ESPAN Dummy MAC Address
 ----
 (config)# monitor session <session-id> type erspan-source
 (config-mon-erspan-src-dst)# s-mac <mac-address>

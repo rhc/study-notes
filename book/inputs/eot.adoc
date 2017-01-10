@@ -12,27 +12,27 @@
 - may change the polling frequency
 
 
-=== Interface line protocol tracking
+=== Interface Line Protocol Tracking
 
 
-.Task: Track the line protocol state of an interface
+.Task: Track the Line Protocol State Of an Interface
 ----
 (config)# track <object-number> interface <type number> line protocol
 ----
 
-=== Interface IP routing tracking
+=== Interface IP Routing Tracking
 
 - The IP routing State is up if 
 * ip routing is enable and active on the interface 
 * known  ip address ( static, dhcp , ppp/ipcp, unnumbered ) 
 * interface line protocol up 
 
-.Task: Track the IP routing state of an interface
+.Task: Track the IP Routing State Of an Interface
 ----
 (config)# track <object-number> interface <type number> ip routing
 ----
 
-=== EOT support for carrier delay
+=== EOT Support for Carrier Delay
 
 -  If a link fails, by default there is a two-second timer that must expire
    before an interface and the associated routes are declared as being down. If
@@ -47,28 +47,28 @@
   timer.
 
 
-.Task: (optional) Enables EOT to consider the carrier-delay timer when tracking the status of an interface. 
+.Task: (Optional) Enables EOT to Consider the Carrier-Delay Timer When Tracking the Status Of an Interface. 
 ----
 (config-track)# carrier-delay
 ----
 
-.Task: (Optional) Specifies a period of time (in seconds) to delay communicating state changes of a tracked object. 
+.Task: (Optional) Specifies a Period Of Time (In Seconds) to Delay Communicating State Changes Of a Tracked Object. 
 ----
 (config-track)# delay {up <seconds> [down <seconds>] | down <seconds [up <seconds>]}
 ----
 
-== IP route Tracking
+== IP Route Tracking
 
 - Up if the route exists in the RIB and the route is accessible
 - polls the ip route state every 15 seconds
 
 
-.Task: Track an ip route
+.Task: Track an Ip Route
 ----
 (config)# track <object-number> ip route <a.b.c.d/prefix> reachability
 ----
 
-.Task:(Optional) Specifies the interval in which the tracking process polls the tracked object. 
+.Task:(Optional) Specifies the Interval In Which the Tracking Process Polls the Tracked Object. 
 ----
 (config)# track timer ip route { <seconds> | msec <milliseconds> } 
 ----
@@ -76,12 +76,12 @@
 TODO: scaled metrics
 
 
-== IP SLA operation tracking
+== IP SLA Operation Tracking
 
 - tracks the state or the reachability of IP SLA operations 
 -
 
-.Task: Track the reachability of an IP SLA host
+.Task: Track the Reachability Of an IP SLA Host
 ----
 (config)# track <object-number> ip sla <operation-number> reachability
 ----
@@ -102,7 +102,7 @@ Track 3
 ----
 
 
-== Tracked list
+== Tracked List
 
 - can be constructed with 
 
@@ -110,14 +110,14 @@ Track 3
 * treshold and weight
 * treshold and percentage
 
-.Task: Configure tracked list object with a boolean expression
+.Task: Configure Tracked List Object with a Boolean Expression
 ----
 (config)# track <list-object-number> list boolean {and | or}
 (config-track)# object <object-number> [not]
 ----
 
 
-.Task: Configure tracked list object with threshold and weight 
+.Task: Configure Tracked List Object with Threshold and Weight 
 ----
 (config)# track <list-object-number> list treshold weight
 (config-track)# object <object-number> [weight <number]
@@ -127,7 +127,7 @@ Track 3
 
 
 
-.Task: Configure tracked list object with threshold and percentage 
+.Task: Configure Tracked List Object with Threshold and Percentage 
 ----
 (config)# track <list-object-number> list treshold percentage
 (config-track)# object <object-number> 
@@ -135,7 +135,7 @@ Track 3
 (config-track)# treshold percentage {up <number> | down <number>| up <number> down <number>  }
 ----
 
-.Task: Configure tracked list default
+.Task: Configure Tracked List Default
 ----
 (config-track)# default { delay | object <object-number> | treshold percentage }
 ----

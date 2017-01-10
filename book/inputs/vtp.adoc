@@ -8,7 +8,7 @@ menu:Catalyst Configuration guides[http://www.cisco.com/c/en/us/td/docs/switches
 - Eases administrative burden for addition, deletion and renaming of VLANs
 - Supports 1005 VLANs (IP base or IP services feature set) or 255 VLANs (LAN base feature set)
 
-.Task: Show VTP status
+.Task: Show VTP Status
 ----
 # show vtp status
 
@@ -64,13 +64,13 @@ VTP version running: 2
 For more information, read
 http://www.cisco.com/c/en/us/products/collateral/switches/catalyst-6500-series-switches/solution_guide_c78_508010.html[VTP version 3]
 
-== VTP message format
+== VTP Message Format
 
 - Encapsulated in ISL or 802.1q frames
 - Multicasted to  MAC address: 0100-0CCC-CCCC, LLC code: SNAP (AAAA), Type 2003 in the SNAP Header
 - Carried through trunk ports and VLAN 1
 
-.Example: VTP packet encapsulated in ISL frame
+.Example: VTP Packet Encapsulated In ISL Frame
 image::vtp-in-isl.png[height=80]
 
 - The VTP header contains these fields:
@@ -79,7 +79,7 @@ image::vtp-in-isl.png[height=80]
   * management domain length
   * management domain name
 
-=== Summary advertisements
+=== Summary Advertisements
 
 - Sent by Server and Client every 5 minutes intervals, and in addition, after each modificaton of the VLAN database
 - carries information about VTP domain name,
@@ -126,12 +126,12 @@ diagram {
 | MD5 Digest       | If MD5 is configured and used to authenticate the validation of a VTP update.
 |===
 
-=== Subset advertisements
+=== Subset Advertisements
 
 - Follows the summary advertisement after addition, deletion or modification of a VLAN.
 - Contains a list of VLAN information.
 
-.VTP Subset advertisements
+.VTP Subset Advertisements
 ["packetdiag", target="vtp-subset-advert-packet-format.png"]
 ----
 diagram {
@@ -156,7 +156,7 @@ Sequence number::
 - Identify the packet in the stream of packets that follow a summary advertisement
 - Starts with value 1
 
-=== Advertisement request
+=== Advertisement Request
 
 A switch needs a VTP advertisement request in these situations:
 
@@ -167,7 +167,7 @@ A switch needs a VTP advertisement request in these situations:
 Upon receipt of an advertisement request, a VTP device sends a summary advertisement.
 One or more subset advertisements follow the summary advertisement. This is an example:
 
-.VTP advertisement request
+.VTP Advertisement Request
 ["packetdiag", target="vtp-request-advert-packet-format.png"]
 ----
 diagram {
@@ -201,19 +201,19 @@ IMPORTANT: In any VTP version, VTP messages are transmitted and accepted only on
 Access ports neither send nor accept VTP messages.
 For two switches to communicate in VTP, they must first be interconnected through a working trunk link.
 
-== VTP domain
+== VTP Domain
 
 - Controls which devices can exchange VTP advertisements
 - Defaults to NULL value
 - Switch inherits VTP domain name of first received advertisement over trunk links
 - A switch can only be part of one domain at a time
 
-.Task: Set the VTP domain name
+.Task: Set the VTP Domain Name
 ----
 (config)# vtp domain <name>
 ----
 
-== Configuration revision number
+== Configuration Revision Number
 
 - 32-bit
 - Incremented by one for each configuration change
@@ -226,7 +226,7 @@ IMPORTANT: for a newly connected VTP server or client to change another switchâ€
 - The new switch must have the same password, if configured on the existing switches.
 
 
-== VTP modes
+== VTP Modes
 
 You can configure a switch to operate in any one of these VTP modes:
 
@@ -236,7 +236,7 @@ Server::
 - Changes on server overwrite the rest of the domain
 - Configuration saved in NVRAM
 
-.Task: Configure the switch as a VTP server
+.Task: Configure the Switch As a VTP Server
 ----
 (config)# vtp mode server
 ----
@@ -246,7 +246,7 @@ Client::
 - Listens for advertisements originated by server, install them and passes them on
 - Configuration saved in NVRAM only for VTPv3
 
-.Task: Configure the switch as a VTP client
+.Task: Configure the Switch As a VTP Client
 ----
 (config)# vtp mode client
 ----
@@ -258,7 +258,7 @@ Transparent::
 - Can still create, remove or renamed VLANs which are not advertised to neighboring switches.
 - Need for some applications like Private VLANs
 
-.Task: Setup VTP transparent mode
+.Task: Setup VTP Transparent Mode
 ----
 (config)# vtp mode transparent
 ----
@@ -277,23 +277,23 @@ Off (configurable only in CatOS switches)::
 | Can create, modify, or delete VLANs using  configuration commands  | Yes         | No          | Yes
 |===
 
-== VTP security
+== VTP Security
 
 - MD5 authentication prevents against certain attack
   * Does not prevent against misconfiguration
   * Password must be setup manually because switches only exchanges MD5 digest of the password.
 
-.Task: Configure VTP authentication
+.Task: Configure VTP Authentication
 ----
 (config)# vtp password <string>
 ----
 
-.Task: Show the VTP password
+.Task: Show the VTP Password
 ----
 (config)# sh vtp password
 ----
 
-== VTP pruning
+== VTP Pruning
 
 - Problem:
   * Broadcasts and unknown unicast/multicast frame are flooded everywhere in the broadcast domain
@@ -311,7 +311,7 @@ image::flooding-traffic-with-vtp-pruning.png[Optimized flooded traffic with VTP 
 - Restriction:
   * Pruning does not work in transparent mode. Why?
 
-=== Pruning eligibility
+=== Pruning Eligibility
 
 - When VTP pruning is enabled on a VTP server,
   pruning is enabled for the entire management domain

@@ -12,7 +12,7 @@ menu:Configuration guides[Network Management > Basic System Management > http://
 ** 0 : atomic clock
 ** 8 : default value
 
-== NTP associations
+== NTP Associations
 
 * Polled-based    : better accuracy and reliability
     ** Client mode           : *ntp server*
@@ -21,29 +21,29 @@ menu:Configuration guides[Network Management > Basic System Management > http://
     ** Server                : *ntp broadcast*
     ** Client                : *ntp broadcast client*
 
-.Task: Verify NTP status
+.Task: Verify NTP Status
 ----
 # show ntp status
 ----
 
-.Task: Verify NTP associations
+.Task: Verify NTP Associations
 ----
 # show ntp associations
 ----
 
-.Task: Troubleshoot NTP associations
+.Task: Troubleshoot NTP Associations
 ----
 # debug ntp refclock
 ----
 
-=== Polled-based associations
+=== Polled-Based Associations
 
 ----
 (config)# ntp server <ip-address> [normal-sync] [version <number>] [key <id>] [prefer]
 (config)# ntp peer <ip-address> [normal-sync] [version <number>] [key <id>] [prefer]
 ----
 
-=== Broadcast-based associations
+=== Broadcast-Based Associations
 
 ----
 (config-if)# ntp broadcast version <number>
@@ -51,9 +51,9 @@ menu:Configuration guides[Network Management > Basic System Management > http://
 (config-if)# ntp broadcastdelay <microseconds>
 ----
 
-== NTP access groups
+== NTP Access Groups
 
-.Task: Grant/deny access privileges with ipv4 or ipv6 access-lists
+.Task: Grant/Deny Access Privileges with Ipv4 or Ipv6 Access-Lists
 ----
 (config)# ntp access-group [ipv4 | ipv6] <options>  <access-list-id> [kod]
 ----
@@ -72,7 +72,7 @@ that is not compliant with the access-group policy.
 ====
 
 
-== NTP authentication
+== NTP Authentication
 
 * Use cryptographic checksum keys
 * Encryption/decryption are CPU-intensive and may degrade accuracy
@@ -84,35 +84,35 @@ that is not compliant with the access-group policy.
 (config)# ntp server <ip-address> key <id>
 ----
 
-== Source IP address
+== Source IP Address
 
 * Default to NTP packet outgoing interface
 
-.Task: Change the source IP address for all destinations
+.Task: Change the Source IP Address for All Destinations
 ----
 (config)# ntp source interface
 ----
 
-.Task: Change the source for a specific association
+.Task: Change the Source for a Specific Association
 ----
 (config)# ntp {server|peer} source
 ----
 
-== Authoritative server
+== Authoritative Server
 
 .Task:
 ----
 (config)# ntp master
 ----
 
-== Panic treshold
+== Panic Treshold
 
-.Task: Reject time updates greater than the panic threshold of 1000 seconds
+.Task: Reject Time Updates Greater Than the Panic Threshold Of 1000 Seconds
 ----
 (config)# ntp panic update
 ----
 
-== Orphan mode
+== Orphan Mode
 
 * When a subnet lost communications with clock servers
 * Orphan parent simulate a UTC source for orphan children
@@ -123,14 +123,14 @@ that is not compliant with the access-group policy.
 (config)# ntp orphan <stratum>
 ----
 
-== external reference clock
+== External Reference Clock
 
 ----
 # line aux <number>
 # ntp refclock trimble pps none stratum <number>
 ----
 
-== Software clock
+== Software Clock
 
 ----
 (config)# clock timezone <zone> <hours-offset> [<minutes-offset>]
@@ -140,7 +140,7 @@ that is not compliant with the access-group policy.
 # show clock
 ----
 
-== Hardware-clock
+== Hardware-Clock
 
 - different from software-clock
 
@@ -157,14 +157,14 @@ that is not compliant with the access-group policy.
 
 == Time Ranges
 
-.Task: Configure time ranges
+.Task: Configure Time Ranges
 ----
 (config)# time-range <name>
 (config-time-range)# absolute [start <hh:mm date month year>] [end <hh:mm date month year>]
 (config-time-range)# periodic <day-of-week> <hh:mm> to [<day-of-the-week>] <hh:mm>
 ----
 
-.Task: Verify time range
+.Task: Verify Time Range
 ----
 # show time-range
 ----

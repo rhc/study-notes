@@ -9,10 +9,10 @@
 
 
 
-== uRPF
+== URPF
 
 
-== IP source guard
+== IP Source Guard
 
 == AAA
 
@@ -26,13 +26,13 @@
 
 == 802.1x 
 
-== port security
+== Port Security
 
-== device access 
+== Device Access 
 
-== Routing protocol authentication
+== Routing Protocol Authentication
 
 
-== Security features
+== Security Features
 
 

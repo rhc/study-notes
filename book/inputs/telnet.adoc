@@ -23,7 +23,7 @@ other.
 **  X display location
 
 
-.Task: Specify the IP address of an interface as the source address for Telnet connections
+.Task: Specify the IP Address Of an Interface As the Source Address for Telnet Connections
 ----
 (config)# ip telnet source-interface <interface>
 ----
@@ -33,7 +33,7 @@ other.
   the address of the interface closest to the destination as the source address.
 ====
 
-.Task: Set the TCP window to zero when the Telnet connection is idle
+.Task: Set the TCP Window to Zero When the Telnet Connection Is Idle
 ----
 (config)# service telnet-zeroidle
 ----
@@ -51,12 +51,12 @@ other.
 ====
 
 
-.Task: Hide host address while attempting to establish a Telnet session
+.Task: Hide Host Address While Attempting to Establish a Telnet Session
 ----
 (config)# ip telnet hidden addresses
 ----
 
-.Task: Mark outgoing traffic with IP precedence
+.Task: Mark Outgoing Traffic with IP Precedence
 ----
 (config)# ip telnet tos <0-7>
 ----
@@ -66,12 +66,12 @@ other.
 (config)# ip telnet quiet
 ----
 
-.Task: Display error message when Telnet connection fails to a specific host
+.Task: Display Error Message When Telnet Connection Fails to a Specific Host
 ----
 (config)# busy-message <hostname> d message d
 ----
 
-.Task: Sets line to send a RETURN (CR) as a CR followed by a NULL instead of a CR followed by a LINE FEED (LF).
+.Task: Sets Line to Send a RETURN (CR) As a CR Followed by a NULL Instead Of a CR Followed by a LINE FEED (LF).
 ----
 (config)# ip telnet transparent
 ----

@@ -5,12 +5,12 @@
 - RFC 1027
 - Mostly replaced by DHCP nowadays
 
-.Task: disable Proxy ARP globally
+.Task: Disable Proxy ARP Globally
 ----
 ip arp proxy disable
 ----
 
-.Task: Disable Proxy ARP on an interface
+.Task: Disable Proxy ARP on an Interface
 ----
 (config-if)# no ip proxy-arp
 ----

@@ -1,4 +1,4 @@
-= Device Access control
+= Device Access Control
 
 
 == Concepts

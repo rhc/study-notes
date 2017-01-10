@@ -11,7 +11,7 @@ reside instead of flooding multicast traffic to all switch ports.
 IGMP snooping is another method to constrain the flooding of multicast packets.
 
 
-=== Joining a group with CGMP
+=== Joining a Group with CGMP
 
 Hosts connected to a Layer 2 Catalyst switch can join a multicast group by
 sending an unsolicited IGMP membership report message to the target group

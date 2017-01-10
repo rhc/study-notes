@@ -4,7 +4,7 @@
 
 === Header
 
-.ICMP header format
+.ICMP Header Format
 ["packetdiag", target="icmp-header"]
 ----
 diagram {
@@ -25,19 +25,19 @@ diagram {
 
 === Data
 
-=== Control messages
+=== Control Messages
 
 ==== Redirect
 
-==== Time exceeded
+==== Time Exceeded
 
 ==== Timestamp
 
-==== Timestamp reply
+==== Timestamp Reply
 
-==== Address mask request
+==== Address Mask Request
 
-==== Address mask reply
+==== Address Mask Reply
 
-==== Destination unreachable
+==== Destination Unreachable
 

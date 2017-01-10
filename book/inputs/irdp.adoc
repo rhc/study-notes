@@ -11,7 +11,7 @@ menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/
 that can be used as gateway to reach IP-based devices on other networks.
 
 
-== Message format
+== Message Format
 
 === ICMP Router Advertisement Message
 ["packetdiag", target= 'icmp-router-advertisement']
@@ -73,43 +73,43 @@ Reserved:: Sent as 0; ignored on reception.
 
 == Configuration
 
-.Task: Configure a host to discover routers that transmit IRDP router updates after disabling IP routing
+.Task: Configure a Host to Discover Routers That Transmit IRDP Router Updates After Disabling IP Routing
 ----
 (config)# no ip routing
 (config-if)# ip gdp irdp [multicast]
 ----
 
-.Task: Enable IRDP on an interface
+.Task: Enable IRDP on an Interface
 ----
 (config-if)# ip irdp
 ----
 
-.Task: Send IRDP Advertisement to the all-systems multicast addresses
+.Task: Send IRDP Advertisement to the All-Systems Multicast Addresses
 ----
 (config-if)# ip irdp multicast
 ----
 
-.Task: Set the IRDP period for which advertisements are valid.
+.Task: Set the IRDP Period for Which Advertisements Are Valid.
 ----
 (config-if)# ip irdp holdtime <seconds>
 ----
 
-.Task: Sets the IRDP maximum interval between advertisements.
+.Task: Sets the IRDP Maximum Interval Between Advertisements.
 ----
 ip irdp maxadvertinterval <seconds>
 ----
 
-.Task: Set the IRDP minimum interval between advertisements.
+.Task: Set the IRDP Minimum Interval Between Advertisements.
 ----
 ip irdp minadvertinterval <seconds>
 ----
 
-.Task: Set the IRDP preference level of the device
+.Task: Set the IRDP Preference Level Of the Device
 ----
 (config-if)# ip irdp preference <number>
 ----
 
-.Task: Specify an IRDP address and preference to proxy-advertise
+.Task: Specify an IRDP Address and Preference to Proxy-Advertise
 ----
 (config-if)# ip irdp address <a.b.c.d> <preference-level>
 ----

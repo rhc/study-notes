@@ -1,4 +1,4 @@
-= CCIE written exam
+= CCIE Written Exam
 
 
 
@@ -25,9 +25,9 @@ outlines
 
 
 
-== General networking theory
+== General Networking Theory
 
-=== OSI reference
+=== OSI Reference
 
 - OSI (open systems interconnection) reference model 
 - developed by ISO (Internation Standards Organisation) in 1984

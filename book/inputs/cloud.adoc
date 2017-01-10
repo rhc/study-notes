@@ -1,17 +1,17 @@
-= cloud
+= Cloud
 
 IT resources and sces that are abstracted from the underlying infrastructure
 and provided *on-demand* and *at scale* in a *multitenant* environment.
 
 
-== Compare and contrast Cloud deployment models
+== Compare and Contrast Cloud Deployment Models
 
 - Public
 - Private
 - virtual Private
 - inter-cloud
 
-=== Infrastructure, platform, and software services [XaaS]
+=== Infrastructure, Platform, and Software Services [XaaS]
 
 - SaaS : Application sces 
 - PaaS: run-time environment and software development frameworks and components  presented as API
@@ -19,19 +19,19 @@ and provided *on-demand* and *at scale* in a *multitenant* environment.
 - IT foundation: basic building blocks, core technologies 
 
 
-=== Performance and reliability
+=== Performance and Reliability
 
 add comparisons table here 
 
-=== Security and privacy
+=== Security and Privacy
 
 add comparison table here
 
-=== Scalability and interoperability
+=== Scalability and Interoperability
 
 add comparison table here
 
-== Describe Cloud implementations and operations
+== Describe Cloud Implementations and Operations
 
 How to connect to the cloud
 
@@ -41,19 +41,19 @@ How to connect to the cloud
 
 
 
-=== Automation and orchestration
+=== Automation and Orchestration
 
 Automation: single task
 Orchestration: process/workflow ordered set of tasks glued together with conditions
 
 
-=== Workload mobility
+=== Workload Mobility
 
 - share workloads accross a collection of resources
 - different from VM mobility
 
 
-=== Troubleshooting and management
+=== Troubleshooting and Management
 
 - Scripting languages: Python, Ruby, 
 
@@ -69,7 +69,7 @@ Orchestration: process/workflow ordered set of tasks glued together with conditi
 
 
 
-=== OpenStack components
+=== OpenStack Components
 
 TODO: change this to a table
 

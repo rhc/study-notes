@@ -19,16 +19,16 @@
 - outgoing interface for exported traffic must be Ethernet (10/100/1000)
 
 
-== Configuration tasks
+== Configuration Tasks
 
 
-=== Create IP traffic export profiles
+=== Create IP Traffic Export Profiles
 
 ----
 (config)# ip traffic-export profile name
 ----
 
-=== Specify the outgoing interface for exported traffic
+=== Specify the Outgoing Interface for Exported Traffic
 
 - mandatory
 
@@ -36,7 +36,7 @@
 (config-rite)# interface type number
 ----
 
-=== Export incoming and outgoing IP traffic on the monitored interface
+=== Export Incoming and Outgoing IP Traffic on the Monitored Interface
 
 ----
 (config-rite)# bidirectional
@@ -44,7 +44,7 @@
 
 If this command is not enabled, only incoming traffic is exported
 
-=== Specify the MAC address of the destination host 
+=== Specify the MAC Address Of the Destination Host 
 
 - mandatory
 
@@ -52,13 +52,13 @@ If this command is not enabled, only incoming traffic is exported
 (config-rite)# mac-address hhhh.hhhh.hhhh
 ----
 
-=== Filter incoming traffic 
+=== Filter Incoming Traffic 
 
 ----
 (config-rite)# incoming {access-list {standard | extended | named} | sample one-in-every integerk}
 ----
 
-=== Filter outgoing traffic 
+=== Filter Outgoing Traffic 
 
 ----
 (config-rite)# outgoing {access-list {standard | extended | named} | sample one-in-every integerk}
@@ -67,7 +67,7 @@ If this command is not enabled, only incoming traffic is exported
 - the *bidirectional* command must be enabled.
 - only routed traffic is exported and not traffic originate from the device.
 
-=== Enable IP traffic export on an interface
+=== Enable IP Traffic Export on an Interface
 
 ----
 (config-if)# ip traffic-export apply profile name
@@ -92,7 +92,7 @@ debug ip traffic-export events
 show ip traffic-export [interface type number | profile name]
 ----
 
-== Configuration examples
+== Configuration Examples
 
 // add example from pdfs 
 

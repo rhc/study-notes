@@ -11,13 +11,13 @@ image::vss.png[Virtual Switch System]
 
 - Uses VLSP to negotiate the active and standby roles at start
 
-.Task: Configure VSS domain number and switch number
+.Task: Configure VSS Domain Number and Switch Number
 ----
 (config)# switch virtual domain <1..255>
 (config-vs-domain)# switch [1 | 2]
 ----
 
-.Task: Configure VSS switch priority
+.Task: Configure VSS Switch Priority
 ----
 (config-vs-domain)# switch [1 | 2 ] priority [<number>]
 ----
@@ -50,12 +50,12 @@ image::vss-logical.png[Virtual Switch Link]
 (config-if)# exit
 ----
 
-.Task: Convert the switch to virtual
+.Task: Convert the Switch to Virtual
 ----
 (config)# switch convert mode virtual
 ----
 
-.Task: Displays the VSS information
+.Task: Displays the VSS Information
 ----
 # sh switch virtual [role | link]
 ----

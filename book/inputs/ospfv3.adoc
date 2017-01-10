@@ -6,7 +6,7 @@
 - Type 9 : intra-area-prefix LASA advertise prefixes.
 
 
-=== LS type 
+=== LS Type 
 
 - 16 bits 
 - indicates what type of LSA it is and how far the LSA should be flooded

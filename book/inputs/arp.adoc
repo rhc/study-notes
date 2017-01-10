@@ -9,7 +9,7 @@
 
 == Protocol
 
-.header format
+.Header Format
 ["packetdiag", target="arp"]
 ----
 diagram {
@@ -35,45 +35,45 @@ OpCode::
 - 2 for response
 
 
-== Static ARP entries
+== Static ARP Entries
 
-.Task: Enable the interface encapsulation
+.Task: Enable the Interface Encapsulation
 ----
 (config-if)# arp {arpa | frame-relay | snap}
 ----
 
-.Task: Define static ARP entries
+.Task: Define Static ARP Entries
 ----
 # arp <ip-address>  <hardware-address> <encapsulation-type> [<interface-type>]
 ----
 
-.Task: Define static ARP entries for a specific VRF
+.Task: Define Static ARP Entries for a Specific VRF
 ----
 # arp vrf <name>  <hardware-address> <encapsulation-type> [<interface-type>]
 ----
 
-== Dynamic ARP entries
+== Dynamic ARP Entries
 
 - Stored in ARP cache
 - timeout by default in 4 hours
 
 
-.Task: clear the entire ARP cache on an interface
+.Task: Clear the Entire ARP Cache on an Interface
 ----
 # clear arp interface <type-number>
 ----
 
-.Task: clear all dynamic entries from the ARP cache, the fast-switchig cache, and the IP route cache
+.Task: Clear All Dynamic Entries from the ARP Cache, the Fast-Switchig Cache, and the IP Route Cache
 ----
 # clear arp-cache
 ----
 
-.Task: set an expiration time for dynamic entries in the arp cache
+.Task: Set an Expiration Time for Dynamic Entries In the Arp Cache
 ----
 (config-if)# arp timeout <seconds>
 ----
 
-.Task: Display the arp cache
+.Task: Display the Arp Cache
 ----
 # show ip arp
 ----
@@ -90,7 +90,7 @@ Internet    10.108.42.121      42          0000.a710.68cd     ARPA    Ethernet3
 Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0
 ----
 
-.Task: Display ARP and RARP processes
+.Task: Display ARP and RARP Processes
 ----
 # sh processes cpu | include (ARP|PID)
 ----
@@ -102,12 +102,12 @@ Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0
 - RFC 1027
 - Mostly replaced by DHCP nowadays
 
-.Task: disable Proxy ARP globally
+.Task: Disable Proxy ARP Globally
 ----
 # ip arp proxy disable
 ----
 
-.Task: Disable Proxy ARP on an interface
+.Task: Disable Proxy ARP on an Interface
 ----
 (config-if)# no ip proxy-arp
 ----
@@ -126,7 +126,7 @@ TIP: If we see multiple gratitous ARPs from the same host frequently,
 it can be an indication of bad Ethernet NICs
 
 
-== RARP and BootP as DHCP precursors
+== RARP and BootP As DHCP Precursors
 
 image::rarp-bootp.png[RARP and BootP before DHCP]
 

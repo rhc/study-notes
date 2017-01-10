@@ -3,9 +3,9 @@
 - RFC 791
 - IP Ethernet protocol: 0x0800
 
-== IP packet format
+== IP Packet Format
 
-.IP header format
+.IP Header Format
 ["packetdiag", target="ospf-header-format",size=200]
 ----
 diagram {
@@ -68,23 +68,23 @@ Contains upper-layer information.
 
 //Use the packet format as the structure of the document
 
-== IP address
+== IP Address
 
 - 32-bits written in "dotted decimal"
 - Classes: A,B,C,D,E
 - Classless : prefix + host
 
-.Task: Assign an IP address to an interface
+.Task: Assign an IP Address to an Interface
 ----
 (config-if)# ip address <a.b.c.d> <e.f.g.h> [secondary]
 ----
 
-.Task: Display the IP parameters for the interface
+.Task: Display the IP Parameters for the Interface
 ----
 show ip interface
 ----
 
-.Task: Display the IP networks the device is connected to
+.Task: Display the IP Networks the Device Is Connected To
 ----
 show ip route connected
 ----
@@ -99,24 +99,24 @@ show ip route connected
 - Enable by default
 
 
-.Task: Enable classless addressing
+.Task: Enable Classless Addressing
 ----
 (config)# ip classless
 ----
 
-.Task: Specify the format in which netmask appear for the current session
+.Task: Specify the Format In Which Netmask Appear for the Current Session
 ----
 (config)# line vty <first> <last>
 (config-line)# term ip netmask-format {bitcount | decimal | hexadecimal}
 ----
 
-.Task: Specify the format in which netmask appear for the current line
+.Task: Specify the Format In Which Netmask Appear for the Current Line
 ----
 (config)# line vty <first> <last>
 (config-line)# term ip netmask-format {bitcount | decimal | hexadecimal}
 ----
 
-== Private addressing
+== Private Addressing
 
 - RFC 1918
 - 10.0.0.0/8
@@ -127,31 +127,31 @@ show ip route connected
 
 - Variable length subnet mask
 
-== Subnet zero
+== Subnet Zero
 
-.Task: Allow IP subnet zero
+.Task: Allow IP Subnet Zero
 ----
 (config)# ip subnet-zero
 ----
 
-== Unnumbered interfaces
+== Unnumbered Interfaces
 
 - Borrow the IP address of another interface
 - Only point-to-point (non-multiaccess) WAN interfaces
 - You cannot reboot a IOS image over an ip unnumbered interface
 
-.Task: configure unnumbered interfaces on point-to-point WAN interfaces
+.Task: Configure Unnumbered Interfaces on Point-to-Point WAN Interfaces
 ----
 (config-if)# ip unnumbered <interface-type interface-id>
 ----
 
-=== 31-bit prefix
+=== 31-Bit Prefix
 
 - Conserve IP address space
 - Since RFC 3021
 - Only on point-to-point WAN interfaces
 
-.Task: Use a 31-bit prefix on point-to-point WAN interfaces
+.Task: Use a 31-Bit Prefix on Point-to-Point WAN Interfaces
 ----
 (config)# ip classless
 (config-if)# ip address a.b.c.d 255.255.255.254

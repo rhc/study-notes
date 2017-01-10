@@ -10,7 +10,7 @@
 
 A traffic class contains 3 major elts: a name, a series of *match* commands followed by *match-all* (default) or *match-any*
 
-.match commands that can be used with MQC
+.Match Commands That Can Be Used with MQC
 
 - match access-group
 - match any
@@ -32,12 +32,12 @@ A traffic class contains 3 major elts: a name, a series of *match* commands foll
 
 - Packets that do not explicitly match a defined class are considered to have matched a special class called *class-default*.
 
-.Task: Display all class maps and their matching criteria
+.Task: Display All Class Maps and Their Matching Criteria
 ----
 > sh class-map
 ----
 
-== Elements of a traffic policy
+== Elements Of a Traffic Policy
 
 - contains 3 elts: name, traffic class, command to enable the QoS feature
 
@@ -62,19 +62,19 @@ shape adaptive                               : Configures a Frame  Relay interfa
 shape fecn-adaptative                        : configures a Frame Relay interface to reflect FECN bits as BECN bits in Q.922 test response messages.
 :===
 
-.Task: Display the configuration for the specified class of the specified policy map
+.Task: Display the Configuration for the Specified Class Of the Specified Policy Map
 ----
 > show policy-map <policy-name> class <class-name>
 ----
 
-.Task: Display the configuration of all classes for all existing policy maps
+.Task: Display the Configuration Of All Classes for All Existing Policy Maps
 ----
 > show policy-map interface <name number>
 ----
 
-== Service policy
+== Service Policy
 
-.Task: Enable a traffic Policy on an interface
+.Task: Enable a Traffic Policy on an Interface
 -----
 (config-if)# service-policy {input | output } policy-map-name
 -----

@@ -16,7 +16,7 @@ the ISL header( 26 bytes), the original frame and the FCS (4 bytes)
 
 image::isl-frame.png[height=100]
 
-=== Field descriptions
+=== Field Descriptions
 
 DA—Destination Address::
 

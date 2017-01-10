@@ -1,4 +1,4 @@
-= Test Menu choice
+= Test Menu Choice
 :experimental:
 :icons: font
 

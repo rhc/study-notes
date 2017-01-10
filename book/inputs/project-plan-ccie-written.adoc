@@ -1,4 +1,4 @@
-= CCIE written project plan
+= CCIE Written Project Plan
 Christian Kyony <ckyony@changamuka.com>
 
 == Introduction 
@@ -161,7 +161,7 @@ but it is terribly hot in here. I need to remember to drink a lot of water.
     waste year, should have not take the decison to quit job for him ?,
   - getting scare I wont be ready for the 30th January
 
-== Week 1 review
+== Week 1 Review
 
 - Review full blueprint: /1 
 - total study hours: 44.50/60 = 74.2 % 
@@ -334,4 +334,4 @@ in a document that will follow the blue print structure.
 
 
 == Day 30 - Exam Day
-== Day 31 - Celebration time
+== Day 31 - Celebration Time

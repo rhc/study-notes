@@ -26,7 +26,7 @@ image::ppp-vs-hdlc.png[PPP vs HDLC]
 (config-if)# encapsulation ppp
 ----
 
-=== LCP operations:
+=== LCP Operations:
 
   When a PPP serial link first comes up—for example, when a router senses the
   Clear to Send (CTS), Data Send Read (DSR), and Data Carrier Detect (DCD) leads
@@ -37,14 +37,14 @@ image::ppp-vs-hdlc.png[PPP vs HDLC]
   to complete its work. After all LCP negotiation has completed
   successfully, LCP is considered to be “up.”
 
-=== LCP features
+=== LCP Features
 
 - LQM link quality monitoring: drop if % of error frames above a configured value
 - looped link detection: drop link if a router receives its own randomly chosen magic number
 - layer 2 load balancing: fragment frames over multilink PPP
 - authentication: chap, pap
 
-.configuration
+.Configuration
 - minimal with *encapsulation ppp*
 - optional authentication, quality
 
@@ -55,7 +55,7 @@ image::ppp-vs-hdlc.png[PPP vs HDLC]
 ----
 
 
-.Task: Drop the link if router receives its own magic number
+.Task: Drop the Link If Router Receives Its Own Magic Number
 ----
 
 ----
@@ -70,12 +70,12 @@ properly.
 - If LQM is not configured, keepalives are sent every keepalive period and all incoming LQRs are responded to with an LQR.
 - LQM is incompatible with Multilink PPP
 
-.Task: Monitor PPP link Quality
+.Task: Monitor PPP Link Quality
 ----
 (config-if)# ppp quality <percent>
 ----
 
-== multilink PPP
+== Multilink PPP
 
 - originally intended to combine multiple ISDN B-channels without requiring any Layer 3 load balancing
 - now load balance traffic accross any type of point-to-point serial link
@@ -99,12 +99,12 @@ properly.
 image::ppp-lfi.png[LFI example]
 
 
-.Task: Allow interleave
+.Task: Allow Interleave
 ----
 (config-if)# ppp multilink interleave
 ----
 
-.Task: Define LFI fragment size
+.Task: Define LFI Fragment Size
 ----
 (config-if)# ppp multilink fragment-delay <microseconds>
 ----
@@ -124,7 +124,7 @@ interface Multilink1
 ----
 
 
-== PPP compression
+== PPP Compression
 
 - uses L2 payload compression ( ip + tcp + data + DL) : best with longer packet
 - TCP header compression ( ip + tcp )
@@ -133,7 +133,7 @@ interface Multilink1
 - payload compression works best with longer packets, and header with shorter packets
 - header compression : achieves better compression ration 10:1 to 20:1
 
-=== layer 2 compression
+=== Layer 2 Compression
 
 - options: LZS (Lempel-Ziv Stacker), MPPC (microsoft point-to-point compression), Predictor
 - LZS use more CPU and less RAM than Predictor algorithm and have better compression ratio
@@ -145,7 +145,7 @@ interface Multilink1
 - configuration with a matching *compress* command under each interface on both end of the links
 - once configured, ppp starts ccp (compression control protocol) which is another NCP
 
-=== header compression
+=== Header Compression
 
 - configured with legacy commands or MQC commands
 - legacy under the serial (ppp) or multilink interface
@@ -159,12 +159,12 @@ interface Multilink1
 
 == PPP Authentication
 
-.Task: Enable PPP authentication
+.Task: Enable PPP Authentication
 ----
 ppp authentication {chap | chap pap | pap chap | pap} [if-needed] [<list-name> | default] [callin]
 ----
 
-.Task: debug ppp authentication
+.Task: Debug Ppp Authentication
 ----
 debug ppp authentication
 ----

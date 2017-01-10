@@ -27,24 +27,24 @@ good first step when troubleshooting PPPoE connections.
   PPPoE connection from coming up or from properly carrying large datagrams.
   Checking the MTU setting is a good first step when troubleshooting PPPoE connections.
 
-== PPPoE server
+== PPPoE Server
 
 - on the ISP side
 
 TODO: Replace the task below with step-by-step instructions
 
-.Task: Create a Broad Band Aggregation group
+.Task: Create a Broad Band Aggregation Group
 ----
 (config)# bba-group pppoe <name>
 (config-bba-group)# virtual-template 1
 ----
 
-.Task: Limit the number of sessions on the associated MAC
+.Task: Limit the Number Of Sessions on the Associated MAC
 ----
 (config-bba-group)# sessions per-mac limit <number>
 ----
 
-.Task: Create the virtual template interface
+.Task: Create the Virtual Template Interface
 ----
 (config)# interface virtual-template 1
 (config-if)# ip address 10.0.0.1 255.255.255.0
@@ -54,7 +54,7 @@ TODO: Replace the task below with step-by-step instructions
 ----
 
 
-.Task: Enable PPPoE group on the interface
+.Task: Enable PPPoE Group on the Interface
 ----
 (config-if)#
 (config)# interface f0/0
@@ -65,11 +65,11 @@ TODO: Replace the task below with step-by-step instructions
 
 
 
-== PPPOE client
+== PPPOE Client
 
 image::pppoe-topology-example.png[height=150]
 
-.Example of config on the Edge router
+.Example Of Config on the Edge Router
 ----
 # conf t
 (config)# interface fa0/1
@@ -96,7 +96,7 @@ image::pppoe-topology-example.png[height=150]
 (config)# ip route 0.0.0.0 0.0.0.0 dialer1
 ----
 
-.Task: Verify PPPoE connectivity
+.Task: Verify PPPoE Connectivity
 ----
 show pppoe session
 ----
@@ -106,7 +106,7 @@ show pppoe session
 debug pppoe [data | errors | events | packets]
 ----
 
-== PPPoE authentication
+== PPPoE Authentication
 
 TODO: Add section from configuration guides
 

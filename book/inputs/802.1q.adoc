@@ -20,7 +20,7 @@
 
 image::802-1q-frame.png[802.1Q frame]
 
-=== Field descriptions
+=== Field Descriptions
 
 TPID—Tag Protocol Identifier::
 
@@ -42,14 +42,14 @@ VID—VLAN Identifier::
 - 12 bits
 - Identifies the VLAN to which the frame belongs
 
-=== Ethernet Frame Size with 802.1Q tagging
+=== Ethernet Frame Size with 802.1Q Tagging
 
 - Maximum size: 1522 bytes
 - Minimum size: 68 bytes
 
 == Native VLAN
 
-.Task:  Configure a native VLAN over a trunk link
+.Task:  Configure a Native VLAN Over a Trunk Link
 ----
 (config-if)# switchport trunk native vlan <id>
 ----

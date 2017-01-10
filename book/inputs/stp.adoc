@@ -40,14 +40,14 @@ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/r
   * 12 bits : system id extension (vlan id ) to support pvst+ and ieee 802.1s
 
   
-=== Root port election
+=== Root Port Election
 
 - RP is upstream facing towards Root bridge
 - lowest root path cost ( cumulative cost of all links to get to the root)
 - cost based on inverse bandwith
 
 
-.default port costs 
+.Default Port Costs 
 [format="csv", options="header"]
 |====
 Speed    , original , revised
@@ -59,9 +59,9 @@ Speed    , original , revised
 
 Tie breaker when a switch receives multiple Hellos with equal cost
 
-. lowest bridge id
-. lowest port priority 
-. lowest port number
+. Lowest Bridge Id
+. Lowest Port Priority 
+. Lowest Port Number
 
 
 To force selection of a root bridge, 
@@ -72,7 +72,7 @@ spanning-tree vlan id priority 0
 spanning-tree vlan id root
 ----
 
-=== determining the designated port
+=== Determining the Designated Port
 
 - Designated switch: send the hello with the lowest advertised cost for the segment
 - DP: port that forward frames onto that segment
@@ -80,7 +80,7 @@ spanning-tree vlan id root
 - elected based on lowest root path cost, BID, port ID
 
 
-=== blocking all non-RP and non-DP ports
+=== Blocking All Non-RP and Non-DP Ports
 
 - Receive BPDUs
 - discard all other traffic
@@ -92,12 +92,12 @@ spanning-tree vlan id root
 
 - Steady operations: one Root bridge, one RP on each non-root bridge, one DP on each segment, blocking state
 
-. root switch generates a Hello every 2 seconds
-. each RP on non root switch receives a copy of the root's hello  
-. each DP updates and forwards the hello out
-. each blocking port receives a copy of the hello from the DP without forwarding it
+. Root Switch Generates a Hello Every 2 Seconds
+. Each RP on Non Root Switch Receives a Copy Of the Root'S Hello  
+. Each DP Updates and Forwards the Hello Out
+. Each Blocking Port Receives a Copy Of the Hello from the DP Without Forwarding It
 
-===  Topology change notification 
+===  Topology Change Notification 
 
 more at 
 http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/24062-146.html#topchng[understand new topology changes]
@@ -105,14 +105,14 @@ http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/2
 // split this section for 802.1d and 802.1w
 
 
-. A switch experiencing the STP port state change sends a TCN BPDU out its Root Port; it
+. a Switch Experiencing the STP Port State Change Sends a TCN BPDU Out Its Root Port; It
 repeats this message every Hello time until it is acknowledged.
 
-. The next switch receiving that TCN BPDU sends back an acknowledgment via its next
+. the Next Switch Receiving That TCN BPDU Sends Back an Acknowledgment Via Its Next
 forwarded Hello BPDU by marking the Topology Change Acknowledgment (TCA) bit in
 the Hello.
 
-. The switch that was the DP on the segment in the first two steps repeats the first two steps,
+. the Switch That Was the DP on the Segment In the First Two Steps Repeats the First Two Steps,
 sending a TCN BPDU out its Root Port, and awaiting acknowledgment from the DP on that
 segment.
 
@@ -170,13 +170,13 @@ Hello timer::
   
 //todo: add picture here pp. 78
 
-=== configuration
+=== Configuration
 
 show spanning-tree root
 show spanning-tree vlan 1 root detail
 
 
-=== optimizing, improving spanning tree
+=== Optimizing, Improving Spanning Tree
 
 TODO:
 
@@ -223,19 +223,19 @@ the switch experiencing the indirect link failure can go ahead and converge with
 (config)#  spanning-tree backbonefast
 ----
 
-=== bpdu filter
+=== Bpdu Filter
 
 - Filter BPDUs in and out
 
 
-=== bpdu guard
+=== Bpdu Guard
 
 - Puts a (portfast enabled ???) port into the errdisable state when a BPDU is received and shuts down the port 
 - The port must be manually re-enabled or it can be recovered automatically through the errdiable timeout function.
 - A port configured with bpdu guard will not be put into the root-inconsistent state.
 
 
-=== loop guard
+=== Loop Guard
 
 - Prevents non-designated ports from inadvertently forming layer 2 switching loops 
 if the flow of bpdus is interrupted.
@@ -243,7 +243,7 @@ if the flow of bpdus is interrupted.
 - Only used on point-to-point links
 - Can be used with *UDLD aggressive mode* to get extra protection.
 
-=== root guard
+=== Root Guard
 
 //todo: check command show spanning-tree inconsistentports
 
@@ -309,13 +309,13 @@ into its former STP state when the original Hellos are received again.
 - All bridges generate BPDUs every Hello interval
 
 
-=== RSTP link types
+=== RSTP Link Types
 
 - *Point-to-point*: switch to switch
 - *Shared* : switch to hub
 - *Edge*: switch to single end-user device
 
-=== RSTP port states
+=== RSTP Port States
 
 [format="csv", options="header"]
 |===
@@ -327,7 +327,7 @@ enabled, learning, learning
 enabled, forwarding, forwarding
 |===
 
-=== RSTP role ports
+=== RSTP Role Ports
 
 Root Port::
 - Same role as 802.1d RP
@@ -353,7 +353,7 @@ NOTE: a port needs to receive BPDUs to stay blocked.
 
 
 
-=== configuration
+=== Configuration
 
 ----
 (config)#  spanning-tree mode rapid-pvst
@@ -377,14 +377,14 @@ NOTE: a port needs to receive BPDUs to stay blocked.
 
 
 
-=== storm control
+=== Storm Control
 
-=== unicast flooding
+=== Unicast Flooding
 
 
 == Troubleshooting 
 
-=== flapping port that is generating BPDUs with the TCN bit set
+=== Flapping Port That Is Generating BPDUs with the TCN Bit Set
 
 == Questions
 

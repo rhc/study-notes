@@ -1,6 +1,6 @@
 = VRF
 
-== configuration
+== Configuration
 
 - Establish an LSP between PEs: IGP + LDP , free BGP core
 - Exchange routes with customer: PE-CE IGP or BGP

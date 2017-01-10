@@ -35,7 +35,7 @@ Reply:: get virtual MAC, unicast sent from AVG
 * Host-dependent: use same AVF based on the host MAC
 * Weighted: use the weight value advertised by the gateway
 
-.Task: Configure GLBP virtual ip address
+.Task: Configure GLBP Virtual Ip Address
 ----
 (config-if)# glbp <group:0..1023 > ip [<virtual-ip-address> [secondary]]
 ----
@@ -48,22 +48,22 @@ If a forwarder in the GLBP group is active, proxy ARP requests are answered usin
 forwarder in the group.
 If no forwarder is active, proxy ARP responses are suppressed.
 
-.Task: Configure GLBP priority
+.Task: Configure GLBP Priority
 ----
 (config-if)# glbp [<group>] priority <level=100>
 ----
 
-.Task: Configure GLBP preemption
+.Task: Configure GLBP Preemption
 ----
 (config-if)# glbp [<group>] preempt [delay minimum <seconds>]
 ----
 
-.Task: Configure GLBP load balancing
+.Task: Configure GLBP Load Balancing
 ----
 (config-if)# glbp <group> load-balancing [ <host-dependent> | <round-robin> | <weighted> ]
 ----
 
-.Task: Configure the time during which the AVG continues to redirect clients to a secondary AVF
+.Task: Configure the Time During Which the AVG Continues to Redirect Clients to a Secondary AVF
 ----
 (config-if)# glbp <group> timers redirect <redirect-seconds=60> <timeout-seconds=1440>
 ----
@@ -83,7 +83,7 @@ If no forwarder is active, proxy ARP responses are suppressed.
    entry that contained the virtual MAC address.
 ====
 
-.Task: Display glbp status
+.Task: Display Glbp Status
 ----
 # sh glbp
 
@@ -132,17 +132,17 @@ FastEthernet0/0.40 - Group 1
 * When multiple tracked interfaces are down, the configured weighting decrements are cumulative.
 
 
-.Task: Specify GLBP initial weighting value
+.Task: Specify GLBP Initial Weighting Value
 ----
 (config-if)# glbp <group-number> weighting <maximum> [lower <low-value> ] [upper <up-value>]
 ----
 
-.Task: specify a tracking object where GLBP weighting changes based on the availability of the object being tracked
+.Task: Specify a Tracking Object Where GLBP Weighting Changes Based on the Availability Of the Object Being Tracked
 ----
 (config-if)# glbp <group> weighting track <object-number> [decrement <value>]
 ----
 
-.Task: configure a router to take over as (AVF) group if the current AVF falls below its low weighting threshold
+.Task: Configure a Router to Take Over As (AVF) Group If the Current AVF Falls Below Its Low Weighting Threshold
 ----
 (config-if)# glbp <group> preempt forwarder [delay minimum <seconds>]
 ----
@@ -151,7 +151,7 @@ FastEthernet0/0.40 - Group 1
 
 - Supports no authentication, plain-text, or MD5 authentication
 
-.Task: configure glbp authentication
+.Task: Configure Glbp Authentication
 ----
 (config-if)# glbp authentication { text <string> | key-chain <name> }
 ----

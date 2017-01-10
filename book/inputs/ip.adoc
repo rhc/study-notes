@@ -4,9 +4,9 @@
 
 menu:Configuration guides[IP > IP Application Services > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp/configuration/15-mt/iap-15-mt-book/iap-ip.html[Configuring IP] ]
 
-== Message format
+== Message Format
 
-.IP header format
+.IP Header Format
 ["packetdiag", target="ip-header"]
 ----
 diagram {
@@ -33,7 +33,7 @@ diagram {
 ----
 
 
-.Task: Assign an IP address to an interface
+.Task: Assign an IP Address to an Interface
 ----
 (config-if)# ip address <ip-address> <mask>
 ----

@@ -20,7 +20,7 @@
 
 == EIGRP Packet Format
 
-.EIGRP packet format
+.EIGRP Packet Format
 [packetdiag, target="eigrp-header-format",size=200]
 ----
 diagram {
@@ -81,10 +81,10 @@ TLV::
 
 
 
-== EIGRP messages
+== EIGRP Messages
 
 
-.Task: Show Statistics about messages sent and received
+.Task: Show Statistics About Messages Sent and Received
 ----
 # show ip eigrp traffic
 
@@ -179,7 +179,7 @@ SIA-Request::
  * are retransmitted at most 16 times
 
 
-.Task: debug EIGRP
+.Task: Debug EIGRP
 ----
 debug ip eigrp packet [hello | ack | update } quey | reply]
 ----
@@ -205,12 +205,12 @@ the same link. Here’s another way of putting this rule: Either all neighbors o
 a common network segment are statically configured for each other, or none of
 them are.
 
-.Task: Adjust EIGRP Hello interval
+.Task: Adjust EIGRP Hello Interval
 ----
 (config-if)# ip hello-interval eigrp <asn> <seconds>
 ----
 
-.Task: Adjust EIGRP Holdown time
+.Task: Adjust EIGRP Holdown Time
 ----
 (config-if)# ip hold-time eigrp <asn> <seconds>
 ----
@@ -221,7 +221,7 @@ close or even higher than the default Hold time, without changing the Hold
 timer itself.
 
 
-.Task: Verify neighbor adjacencies
+.Task: Verify Neighbor Adjacencies
 ----
 # sh ip eigrp neighbors [detail]
 
@@ -235,34 +235,34 @@ H  Address    Interface  Hold Uptime    SRTT   RTO  Q  Seq
 IMPORTANT: Q Cnt indicates the number of enqueued reliable packets, that is, packets that
 have been prepared for sending and even possibly sent but for which no ACK has been received yet from the neighbor. In a stable network, the Q Cnt value must be zero; non- zero values are normal during initial router database synchronization or during network convergence. If the Q Cnt value remains nonzero for prolonged periods of time, however, it indicates a communication problem with the neighbor.
 
-.Task: Exchange EIGRP packets only as unicast
+.Task: Exchange EIGRP Packets Only As Unicast
 ----
 (config-router)# neighbor <a.b.c.d> <interface-id>
 ----
 
-.Task: Exchange EIGRP packets only as unicast in named configuration
+.Task: Exchange EIGRP Packets Only As Unicast In Named Configuration
 ----
 (config-router-af-interface)# neighbor <a.b.c.d> <interface-id>
 ----
 
-=== Adjancency creation
+=== Adjancency Creation
 
 image::eigrp-adjacency-creation.png[EIGRP Adjacency Formation]
 
 NOTE: :EIGRP does not build peer relationships over secondary addresses. All EIGRP traffic is sourced from the primary address of the interface.
 
-== EIGRP Loop prevention techniques
+== EIGRP Loop Prevention Techniques
 
-=== Split horizon
+=== Split Horizon
 
 - Enabled by default on all interfaces
 
-.Task: Disable split horizon for EIGRP
+.Task: Disable Split Horizon for EIGRP
 ----
 (config-if)# no ip split-horizon eigrp <asn>
 ----
 
-.Task: Disable split horizon in named configuration
+.Task: Disable Split Horizon In Named Configuration
 ----
 (config-router-af-interface)# no split-horizon
 ----
@@ -287,7 +287,7 @@ asciimath:[Metric = 256 * ((K_1 * B\a\n\dwidth + (K_2 * B\a\n\dwidth)/(256 - Loa
 * Range: 1 Mbps to 10 Gpbs
 
 
-.Task: Configure the bandwidth of an interface
+.Task: Configure the Bandwidth Of an Interface
 ----
 (config-if)# bandwidth <kbps>
 ----
@@ -300,7 +300,7 @@ asciimath:[Metric = 256 * ((K_1 * B\a\n\dwidth + (K_2 * B\a\n\dwidth)/(256 - Loa
 * EIGRP split horizon with poison reverse, route withdrawal uses max delay 167,772,15 to indicate an  unreachable network
 * CAUTION: *show ip interface* displays delay in micro-seconds
 
-.Task: Configure the delay of an interface
+.Task: Configure the Delay Of an Interface
 ----
 (config-if)# delay <tens-of-microseconds>
 ----
@@ -375,7 +375,7 @@ Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total
 * *sh ip protocols*
 
 TODO:
-.Task: Change the scale
+.Task: Change the Scale
 ----
 (config-router)# metric rib-scale <1..255>
 ----
@@ -455,14 +455,14 @@ TODO:
 - EIGRP VPNs can be configured. A VRF and RD must be defind before the address-family session can be created.
 - a single EIGRP routing process can support multiple VRFs.  However, a single VRF can be supported by each VPN . Redistribution between VRFs is not supported.
 
-.Task: Configure a basic EIGRP named configuration
+.Task: Configure a Basic EIGRP Named Configuration
 ----
 (config)# router eigrp <virtual-instance-name>
 (config-router)# address-family ipv4 [multicast] [umicast] [vrf <vrf-name>] autonomous-system <asn>
 (config-router-af)# network <a.b.c.d>
 ----
 
-.Task: Convert Classic Configuration to EIGRP named configuration
+.Task: Convert Classic Configuration to EIGRP Named Configuration
 ----
 # eigrp upgrade-cli name
 ----
@@ -565,7 +565,7 @@ variance            : Control load balancing variance
 
 === Topology Table
 
-.Task: Display EIGRP topology table
+.Task: Display EIGRP Topology Table
 ----
 # show ip eigrp topology [as-number | [[ip-address] mask]] [active | all-links | pending | summary | zero-successors]
 
@@ -625,7 +625,7 @@ whose value is never advertised to another router.
 - reported distance
 - route source (external routes are marked)
 
-=== Feasibility condition
+=== Feasibility Condition
 
 - Feasibility condition: RD < FD
 * it is a sufficient condition but not a necessary condition
@@ -665,10 +665,10 @@ the best route.
 - After a topology changes, if the best path is through a Feasible Successor,
 do the following:
 
-. The Feasible Successor providing the least CD is made the new Successor.
-. If the CD over the new Successor is less than the current FD, the FD will be updated to the new CD; otherwise it stays at its current value.
-. The routing table is updated to point toward the new Successor.
-. If the current distance to the destination has changed as a result of switching to a new Successor, an Update packet is sent to all neighbors, advertising the router’s updated distance to the destination.
+. the Feasible Successor Providing the Least CD Is Made the New Successor.
+. If the CD Over the New Successor Is Less Than the Current FD, the FD Will Be Updated to the New CD; Otherwise It Stays at Its Current Value.
+. the Routing Table Is Updated to Point Toward the New Successor.
+. If the Current Distance to the Destination Has Changed As a Result Of Switching to a New Successor, an Update Packet Is Sent to All Neighbors, Advertising the Router’S Updated Distance to the Destination.
 
 === Diffusing Computation
 
@@ -680,7 +680,7 @@ do the following:
 3. The network is put into the Active state and the router sends out a Query packet to all its neighbors. This Query packet contains the Active network’s prefix and the router’s current CD toward it.
 
 
-==== One single topology change
+==== One Single Topology Change
 
 Each neighbor receiving a Query packet will process it by updating its own
 topology table using the distance information advertised in the Query and
@@ -693,7 +693,7 @@ none of its own neighbors that offer the shortest path are a Feasible
 Successor.
 
 
-=== Multiple topology changes
+=== Multiple Topology Changes
 
 - Uses DUAL Finite State Machine to handle multiple topology changes occuring a simple diffusing computation
 
@@ -771,7 +771,7 @@ Rules::
   in the previous case
 
 
-.Task: Display details on EIGRP Active States
+.Task: Display Details on EIGRP Active States
 ----
 # sh ip eigrp topology active
 ----
@@ -808,7 +808,7 @@ SIA-Query packets allow extending the diffusing computation to a maximum of 4 ×
 90 = 360 seconds (90 seconds to the first SIA-Query, plus each SIA-Query buying
 another 90 seconds).
 
-.Task: Control the time that the router waits (after sending a query) before declaring the route to be in the stuck in active state.
+.Task: Control the Time That the Router Waits (After Sending a Query) Before Declaring the Route to Be In the Stuck In Active State.
 ----
 (config-router)# timers active-time [<minutes>| disabled]
 ----
@@ -823,9 +823,9 @@ NOTE: default wait time = 3 minutes
 
 
 - Troubleshooting SIA routes is generally a three-step process:
-. Find the routes that are consistently being reported as SIA.
-. Find the router that is consistently failing to answer queries for these routes
-. Find the reason that router is not receiving or answering queries.
+. Find the Routes That Are Consistently Being Reported As SIA.
+. Find the Router That Is Consistently Failing to Answer Queries for These Routes
+. Find the Reason That Router Is Not Receiving or Answering Queries.
 
 The first step should be fairly easy.
 If you are logging console messages, a quick perusal of the log indicates which routes are most frequently marked SIA.
@@ -937,7 +937,7 @@ routers on a common segment is not a recom- mended practice, it is inevitable,
 for example, in cases where the hubs and spokes are interconnected by a DMVPN
 or a VPLS service.
 
-.Task: Configure EIGRP stub
+.Task: Configure EIGRP Stub
 ----
 (config-router)# eigrp stub {[received-only] | [connected] [static] [ leak-map <name>] [redistributed] [summary]
 ----
@@ -1027,7 +1027,7 @@ TODO
 table, it will immediately send back a Reply indicating an unreachable
 destination, without itself going active and propagating the Query further.
 
-.Task: Enable auto-summarization
+.Task: Enable Auto-Summarization
 ----
 (config-router)# auto-summarization
 ----
@@ -1037,17 +1037,17 @@ destination, without itself going active and propagating the Query further.
 - create null0 summary
 ====
 
-.Task: Advertise a single summary in EIGRP classic mode
+.Task: Advertise a Single Summary In EIGRP Classic Mode
 ----
 (config-if)# ip summary-address eigrp <asn> <prefix> <mask>
 ----
 
-.Task: Advertise a single summary in EIGRP named mode
+.Task: Advertise a Single Summary In EIGRP Named Mode
 ----
 (config-router-af-interface)# summary-address <prefix> <mask>
 ----
 
-.Task: Configure summarization to advertise a default route into EIGRP
+.Task: Configure Summarization to Advertise a Default Route Into EIGRP
 ----
 (config-if)# ip summary-address eigrp <asn> 0.0.0.0 0.0.0.0
 ----
@@ -1056,7 +1056,7 @@ destination, without itself going active and propagating the Query further.
 - All subnets will be suppressed because all IPv4 networks are subnet of 0/0
 ====
 
-.Task: Configure a fixed metric for EIGRP summary address
+.Task: Configure a Fixed Metric for EIGRP Summary Address
 ----
 (config-router)# summary-metric <network-address> <subnet-mask>
                                 { <bandwidth> <delay> <reliability> <load> <mtu> [ distance <ad>  ] | distance  <ad>}
@@ -1071,9 +1071,9 @@ peers. Even if the best component metric is not the one that changed, EIGRP
 still has to search every topology entry to make sure the summary is not
 affected. This can add a significant processing overhead.
 
-=== Leak map
+=== Leak Map
 
-.Task: Advertise specific subnets of a EIGRP summary
+.Task: Advertise Specific Subnets Of a EIGRP Summary
 ----
 (config-if)# ip summary-address eigrp <asn> <prefix> <mask> leak-map <route-maps>
 ----
@@ -1094,19 +1094,19 @@ TODO
 - Supports MD5 in classic mode
 - Supports MD5 and SHA-256 in multi-af mode
 
-.Task: Use MD5 password in EIGRP classic mode
+.Task: Use MD5 Password In EIGRP Classic Mode
 ----
 (config-if)# ip authentication mode eigrp <asn> md5
 (config-if)# ip authentication key-chain eigrp <asn> <password>
 ----
 
-.Task: Use MD5 password in EIGRP named mode
+.Task: Use MD5 Password In EIGRP Named Mode
 ----
 (config-router-af-interface)# authentication mode md5
 (config-router-af-interface)# authentication key-chain <sesame>
 ----
 
-.Task: Authenticate EIGRP neighbor with SHA-256 password
+.Task: Authenticate EIGRP Neighbor with SHA-256 Password
 ----
 (config-router-af-interface)# authenticate mode hmac-sha-256 <password>
 ----
@@ -1124,9 +1124,9 @@ TODO
 
 
 
-== EIGRP autonomous system configuration
+== EIGRP Autonomous System Configuration
 
-.Task: Create a basic EIGRP AS system configuration
+.Task: Create a Basic EIGRP AS System Configuration
 ----
 (config)# router eigrp asn
 (config-router)# network a.b.c.d [e.f.g.h]
@@ -1135,7 +1135,7 @@ TODO
 - A maximum of 30 EIGRP can be configured
 - EIGRP sends updates only interfaces in the specified networks
 
-.Task: Verify eigrp topology
+.Task: Verify Eigrp Topology
 ----
 show ip eigrp topology [all-links]
 show ip eigrp topology [prefix/len]
@@ -1172,12 +1172,12 @@ maximum number of parallel paths to a destination configured using the
 maximum-paths command. Depending on your network topology and requirements, it
 might be necessary to modify this setting.
 
-.Task: Enable EIGRP unequal load balancing
+.Task: Enable EIGRP Unequal Load Balancing
 ----
 (config-router)# variance <number>
 ----
 
-.Task: Enable EIGRP unequal load balancing in named configuration
+.Task: Enable EIGRP Unequal Load Balancing In Named Configuration
 ----
 (config-router-topology)# variance <number>
 ----
@@ -1211,12 +1211,12 @@ over the usual reconvergence process in EIGRP to learn about the other route.
 * Doesn't form adjancencies
 * Includes the interface addresses in the topology database
 
-.Task: Configure EIGRP passive interfaces
+.Task: Configure EIGRP Passive Interfaces
 ----
 (config-router)# passive-interface [default] [<interface-type>  <interface-number>]
 ----
 
-== EIGRP Over The Top
+== EIGRP Over the Top
 
 - Enables a single end-to-end routing domain between two or more EIGRP sites
 that are connected using a private or a public WAN connection.
@@ -1292,13 +1292,13 @@ and R2 when two hosts from each LISP sites communicate.
 
 === EIGRP Logging and Reporting
 
-.Task: Display the contents of the EIGRP log
+.Task: Display the Contents Of the EIGRP Log
 ----
 # sh ei address-family {ipv4 | ipv6} events
 ----
 
 
-.Task: configure EIGRP logging
+.Task: Configure EIGRP Logging
 ----
 Router(config-router)# eigrp ?
 event-log-size : Set max log size (default=500)

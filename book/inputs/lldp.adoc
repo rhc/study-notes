@@ -17,92 +17,92 @@ menu:Catalyst Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switche
   ** port vlan ID for ieee 802.1
   ** MAC/PHY configuration/status for ieee 802.3
 
-== LLDP global state                    
+== LLDP Global State                    
 
 - Disabled by default
 
-.Task: Enable LLDP globally on the switch
+.Task: Enable LLDP Globally on the Switch
 ----
 (config)# lldp run
 ----
 
-.Task: Display global information, such as frequency of transmissions, the holdtime for packets being sent, and the delay time before LLDP initializes on an interface.
+.Task: Display Global Information, Such As Frequency Of Transmissions, the Holdtime for Packets Being Sent, and the Delay Time Before LLDP Initializes on an Interface.
 ----
 show lldp
 ----
 
-.Task: Display LLDP counters, including the number of packets sent and received, number of packets discarded, and number of unrecognized TLVs.
+.Task: Display LLDP Counters, Including the Number Of Packets Sent and Received, Number Of Packets Discarded, and Number Of Unrecognized TLVs.
 ----
 show lldp traffic
 ----
 
-.Task: Reset the traffic counters to zero.
+.Task: Reset the Traffic Counters to Zero.
 ----
 clear lldp counters
 ----
 
-.Task: Delete the LLDP neighbor information table.
+.Task: Delete the LLDP Neighbor Information Table.
 ----
 clear lldp table
 ----
 
-.Task: Clear the NMSP statistic counters.
+.Task: Clear the NMSP Statistic Counters.
 
 ----
 clear nmsp statistics
 ----
 
-== LLDP interfaces                 
+== LLDP Interfaces                 
 
 - Disabled by default
 
-.Task: Enable an interface to send LLDP packets
+.Task: Enable an Interface to Send LLDP Packets
 ----
 (config-if)# lldp transmit
 ----
 
-.Task: Enable an interface to receive LLDP packets
+.Task: Enable an Interface to Receive LLDP Packets
 ----
 (config-if)# lldp receive
 ----
 
-.Task: Display information about interfaces with LLDP enabled.
+.Task: Display Information About Interfaces with LLDP Enabled.
 ----
 show lldp interface [<interface-id>]
 ----
 
 == Neighbors
 
-.Task: Display information about a specific neighbor.
+.Task: Display Information About a Specific Neighbor.
 ----
 show lldp entry <entry-name>
 ----
 
-.Task: Display information about all neighbors.
+.Task: Display Information About All Neighbors.
 ----
 show lldp entry *
 ----
 
-.Task: Display information about neighbors, including device type, interface type and number, holdtime settings, capabilities, and port ID.
+.Task: Display Information About Neighbors, Including Device Type, Interface Type and Number, Holdtime Settings, Capabilities, and Port ID.
 ----
 show lldp neighbors [<interface-id>] [detail]
 ----
 
 == Timers
 
-.Task: Specify the amount of time a receiving device should hold the information from your device
+.Task: Specify the Amount Of Time a Receiving Device Should Hold the Information from Your Device
 - default: 120 s, range: 0 - 65535
 ----
 (config)# lldp holdtime <seconds>
 ----
 
-.Task: Specify the delay time in seconds for LLDP to initialize on an interface.
+.Task: Specify the Delay Time In Seconds for LLDP to Initialize on an Interface.
 The range is 2 to 5 seconds; the default is 2 seconds.
 ----
 (config)# lldp reinit delay 
 ----
 
-.Task: Set the sending frequency of LLDP updates in seconds.
+.Task: Set the Sending Frequency Of LLDP Updates In Seconds.
 The range is 5 to 65534 seconds; the default is 30 seconds.
 ----
 (config)# lldp timer rate
@@ -110,22 +110,22 @@ The range is 5 to 65534 seconds; the default is 30 seconds.
 
 == TLV 
 
-.Task: Specify the LLDP TLVs to send or receive.
+.Task: Specify the LLDP TLVs to Send or Receive.
 ----
 (config)# lldp tlv-select
 ----
 
-.Task: Specify the LLDP-MED TLVs to send or receive.
+.Task: Specify the LLDP-MED TLVs to Send or Receive.
 ----
 (config)# lldp med-tlv-select
 ----
 
-.Task: Specify the LLDP-MED TLV to send 
+.Task: Specify the LLDP-MED TLV to Send 
 ----
 (config-if)# lldp med-tlv-select {inventory-management | location | network-policy | power-management }
 ----
 
-.Task: Configure network policy TLV 
+.Task: Configure Network Policy TLV 
 ----
 (config)# network-policy profile <profile-number>
 (config)#  {voice | voice-signaling} vlan [<id>  {cos <cvalue> | dscp <dvalue>}] 
@@ -143,19 +143,19 @@ The range is 5 to 65534 seconds; the default is 30 seconds.
 - For wired location to function, you must first enter the ip device tracking global configuration command.  
 ====
 
-.Task: Display the location information for an endpoint.
+.Task: Display the Location Information for an Endpoint.
 ----
 show location
 ----
 
-== Network-policy profiles
+== Network-Policy Profiles
 
-.Task: Display the configured network-policy profiles.
+.Task: Display the Configured Network-Policy Profiles.
 ----
 show network-policy profile
 ----
 
-.Task: Display the NMSP information.
+.Task: Display the NMSP Information.
 ----
 show nmsp
 ----
@@ -173,7 +173,7 @@ show nmsp
 * Inventory management TLV
 * Location TLV
 
-== Wired location service
+== Wired Location Service
 
 - The switch uses the wired location service feature to send location and
 attachment tracking information for its connected devices to a Cisco Mobility

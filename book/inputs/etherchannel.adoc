@@ -40,7 +40,7 @@ The channel groups are also numbered from 1 to 64.
 - When the port leaves the port-channel, its physical interface is brought up,
   and it has the same configuration as it had before joining the EtherChannel.
 
-== Link aggregation protocol
+== Link Aggregation Protocol
 
 - PAgP
   * Maximum 8 ports
@@ -48,12 +48,12 @@ The channel groups are also numbered from 1 to 64.
   * Maximum 16 ports
   * Maximum 8 active ports and 8 standby ports
 
-.Task: Verify which negotiation protocol has been used for the EtherChannel
+.Task: Verify Which Negotiation Protocol Has Been Used for the EtherChannel
 ----
 # show etherchannel protocol
 ----
 
-.Task: Specify the link aggregation protocol globally
+.Task: Specify the Link Aggregation Protocol Globally
 ----
 (config-if)# channel-protocol {pagp | lacp}
 ----
@@ -69,7 +69,7 @@ The channel groups are also numbered from 1 to 64.
 
 - Logical interfaces are dynamically created when using *channel-group* command.
 
-.Task: Configure layer 2 EtherChannels
+.Task: Configure Layer 2 EtherChannels
 ----
 conf t
 interface <type slot/number>
@@ -79,7 +79,7 @@ interface <type slot/number>
 
 == Layer 3 EtherChannels
 
-.Task: Create the port channel logical interface
+.Task: Create the Port Channel Logical Interface
 ----
 conf t
 interface port-channel <number>
@@ -87,7 +87,7 @@ interface port-channel <number>
   ip address <a.b.c.d> <mask>
 ----
 
-.Task: Assign the physical interfaces to the layer 3 port channel
+.Task: Assign the Physical Interfaces to the Layer 3 Port Channel
 ----
 conf t
 interface <type id>
@@ -103,12 +103,12 @@ interface <type id>
 ====
 
 
-.Relationship of Physical Ports, Logical Port Channels, and Channel Groups
+.Relationship Of Physical Ports, Logical Port Channels, and Channel Groups
 image::etherchannel-relationships.png[height=150]
 
-== EtherChannel modes
+== EtherChannel Modes
 
-.EtherChannel modes
+.EtherChannel Modes
 [format="dsv" cols="15,15,70"]
 |===
 Cisco PAgP : 802.1AD LACP : Description
@@ -119,7 +119,7 @@ desirable  : active       : initiates the negotiation
 auto       : passive      : waits on other side to start negotiation
 |===
 
-.Task: Display EtherChannel status
+.Task: Display EtherChannel Status
 ----
 # show etherchannel [group-number]
 ----
@@ -131,7 +131,7 @@ auto       : passive      : waits on other side to start negotiation
 - STP sends packets over the first interface in the Etherchannel
 - The MAC address of a Layer 3 EtherChannel is the MAC address of the first interface in the port-channel.
 
-=== Load balancing and forwarding modes
+=== Load Balancing and Forwarding Modes
 
 - Load balancing between member interface based on a combination of
   * Source MAC address
@@ -140,12 +140,12 @@ auto       : passive      : waits on other side to start negotiation
   * Destination IP address
 - Uses only source MAC address by default
 
-.Task: Configure the EtherChannel load-balancing method
+.Task: Configure the EtherChannel Load-Balancing Method
 ----
 (config)# port-channel load-balance { dst-ip | dst-mac | src-dst-ip | src-dst-mac | src-ip | src-mac}
 ----
 
-.Task: Display the EtherChannel load-balancing method
+.Task: Display the EtherChannel Load-Balancing Method
 ----
 # show etherchannel load-balance
 
@@ -158,7 +158,7 @@ IPv4: Source MAC address
 IPv6: Source MAC address
 ----
 
-== EtherChannel Misconfiguration guard
+== EtherChannel Misconfiguration Guard
 
 - This mechanism makes an assumption that if multiple ports are correctly bundled
 into a Port-channel at the neighbor side, all BPDUs received over links in this
@@ -170,7 +170,7 @@ the links as individual, and the entire Port-channel will be err-disabled
 - Enabled by default
 
 
-.Task: Deactivate EtherChannal misconfig guard
+.Task: Deactivate EtherChannal Misconfig Guard
 ----
 (config)# no spanning-tree etherchan- nel guard misconfig
 ----

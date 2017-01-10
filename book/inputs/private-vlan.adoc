@@ -11,7 +11,7 @@ menu:Cat3560-X Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switch
 - Cannot use vlan 1, 1002-1005 as private vlans
 
 
-.Task: Display private VLAN information
+.Task: Display Private VLAN Information
 ----
 # sh vlan private-vlan [type]
 
@@ -26,7 +26,7 @@ Primary     Secondary   Type                Ports
 
 - carries unidirectional traffic downstream from promiscuous ports to all ports
 
-.Task: Configure primary VLAN and associated secondary VLANs
+.Task: Configure Primary VLAN and Associated Secondary VLANs
 ----
 (config)# vtp mode transparent
 (config)# vlan 100
@@ -38,7 +38,7 @@ Primary     Secondary   Type                Ports
 
 - carries unidirectional traffic upstream from the hosts toward the promiscuous ports and the gateway.
 
-.Task: Configure isolated VLANs
+.Task: Configure Isolated VLANs
 ----
 (config)# vtp mode transparent
 (config)# vlan 102
@@ -49,7 +49,7 @@ Primary     Secondary   Type                Ports
 
 - carries unidirectional traffic upstream from the hosts toward the promiscuous ports and the gateway.
 
-.Task: Configure isolated VLANs
+.Task: Configure Isolated VLANs
 ----
 (config)# vtp mode transparent
 (config)# vlan 102
@@ -57,9 +57,9 @@ Primary     Secondary   Type                Ports
 ----
 
 
-== Private-Vlan Host port
+== Private-Vlan Host Port
 
-.Task: Configure a layer 2 port interface as a private-vlan host port
+.Task: Configure a Layer 2 Port Interface As a Private-Vlan Host Port
 ----
 (config-if)# switchport mode private-vlan host
 (config-if)# switchport private-vlan host-association <primary-vlan-id> <secondary-vlan-ids>
@@ -71,9 +71,9 @@ Although private VLANs provide host isolation at Layer 2,
 hosts can communicate with each other at Layer 3.
 ====
 
-== Private-VLAN promiscuous ports
+== Private-VLAN Promiscuous Ports
 
-.Task: Configure a layer 2 port interface as a private-vlan promiscuous port
+.Task: Configure a Layer 2 Port Interface As a Private-Vlan Promiscuous Port
 ----
 (config-if)# switchport mode private-vlan promiscuous
 (config-if)# switchport private-vlan mapping <primary-vlan-id> [add | remove] <secondary-vlan-ids>
@@ -86,20 +86,20 @@ hosts can communicate with each other at Layer 3.
 - If you assign an IP subnet to the primary VLAN SVI,
 this subnet is the IP subnet address of the entire private VLAN
 
-.Task: Configure a layer 3 vlan interface as a private-vlan promiscuous port
+.Task: Configure a Layer 3 Vlan Interface As a Private-Vlan Promiscuous Port
 ----
 (config)# interface vlan <primary-vlan-id>
 (config-if)# private-vlan mapping <primary-vlan-id> [add | remove] <secondary-vlan-ids>
 ----
 
-.Task: Display information about the private-VLAN mapping for VLAN SVIs
+.Task: Display Information About the Private-VLAN Mapping for VLAN SVIs
 ----
 # sh interface private-vlan mapping
 ----
 
 TODO ip sticky arp
 
-== Private-vlan accross multiple switches
+== Private-Vlan Accross Multiple Switches
 
 As with regular VLANs, private VLANs can span multiple switches. A trunk port
 carries the primary VLAN and secondary VLANs to a neighboring switch. The trunk
@@ -124,7 +124,7 @@ TODO PVLAN Isolated
 TODO see page 67 Narbick
 
 
-== Interaction with other features
+== Interaction with Other Features
 
 VTP::
 - VTP v1 andv2 don't propagate private-vlans

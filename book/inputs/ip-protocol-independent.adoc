@@ -11,13 +11,13 @@
 
 == Subnet Zero and All-Ones Subnet IP Addressing
 
-== Maximum Number of Paths
+== Maximum Number Of Paths
 
 - default to 4
 - 1 for BGP
 
 
-.Task: Change the maximum number for equal paths
+.Task: Change the Maximum Number for Equal Paths
 ----
 (config-router)# maximum-paths <number>
 ----
@@ -29,10 +29,10 @@
 
 == Default Passive Interfaces
 
-== Sources of Routing Information Filtering
+== Sources Of Routing Information Filtering
 
 == Policy-Based Routing
 
-== QoS Policy Propogation via BGP
+== QoS Policy Propogation Via BGP
 
 == Authentication Key Management and Supported Protocols

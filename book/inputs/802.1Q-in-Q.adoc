@@ -1,4 +1,4 @@
-= 802.1Q-in-Q tunneling
+= 802.1Q-In-Q Tunneling
 
 - Adds a metro tag or PE-VLAN to the 802.1q tagged packets
 - Expands the VLAN space by double-tagging frames
@@ -7,14 +7,14 @@
  * to provide services such as Internet access on specific VLANs for specific customers,
    yet providing other services on other VLANs
 
-.Q-in-Q: basic operation
+.Q-In-Q: Basic Operation
 image::q-in-q-basic-operations.png[height=150]
 
 == Frame
 
 image::q-in-q-frame.png[802.1Q-in-Q frame]
 
-=== Frame size
+=== Frame Size
 
 - Recommended minimum MTU: 1504 bytes
   * default MTU: 1500 bytes

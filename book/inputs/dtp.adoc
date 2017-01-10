@@ -1,13 +1,13 @@
 = DTP
 
 
-== Dynamic trunk protocol
+== Dynamic Trunk Protocol
 
 - negotiate trunk status
 - default to *dynamic auto*
 - both sides must be on the same VTP domain or one must be in the NULL domain
 
-.Trunking configuration options that lead to a working trunk
+.Trunking Configuration Options That Lead to a Working Trunk
 [cols="20,10,40,20", format="dsv", options="header", grid="rows"]
 |===
 Configuration Command : Short name : Meaning : To trunk other side must be
@@ -19,49 +19,49 @@ switchport mode access: Access: Never trunks; sends DTP to help other side reach
 switchport mode access; switchport nonegotiate : Access (with nonegotiate): Never trunks; does not send DTP messages: (Never trunks)
 |===
 
-.Task: Configure an inter-switch link to be in dynamic desirable state
+.Task: Configure an Inter-Switch Link to Be In Dynamic Desirable State
 ----
 (config-if)# switchport mode dynamic desirable
 ----
 
-.Task: Disable DTP for a port administratively configured as a trunk
+.Task: Disable DTP for a Port Administratively Configured As a Trunk
 ----
 (config-if)# switchport mode trunk
 (config-if)# switchport nonegotiate
 ----
 
-.Task: Put the interface into permanent nontrunking mode
+.Task: Put the Interface Into Permanent Nontrunking Mode
 ----
 (config-if)# switchport mode access
 ----
 
-.Task: Display a summary of trunk-related information
+.Task: Display a Summary Of Trunk-Related Information
 ----
 show interface trunk: Summary of trunk-related information
 ----
 
-.Task: List trunking details for a specified interface
+.Task: List Trunking Details for a Specified Interface
 ----
 show interface <type number> trunk
 ----
 
-.Task: List nontrunking details for a particular interface
+.Task: List Nontrunking Details for a Particular Interface
 ----
 show interface <type number> switchport
 ----
 
-.Task: Display DTP information for the switch
+.Task: Display DTP Information for the Switch
 ----
 # show dtp
 ----
 
-.Task: Display DTP information for a specific interface
+.Task: Display DTP Information for a Specific Interface
 
 ----
 # show dtp interface <type slot/number>
 ----
 
-== Trunking between a switch and a Router
+== Trunking Between a Switch and a Router
 
 Because  DTP is not supported on Router
 
@@ -69,7 +69,7 @@ Because  DTP is not supported on Router
 - on the switch, disable DTP and manually configure the trunk
 
 
-.Task: Enable trunking but disable DTP for routers
+.Task: Enable Trunking but Disable DTP for Routers
 ----
 ! SW1
 conf t

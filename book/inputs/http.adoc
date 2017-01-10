@@ -25,7 +25,7 @@ HTTPS router access also gives you the option of specifying the cipher suite of
 your choice. This is the combination of encryption methods that the router will
 enable for HTTPS access. By default, all methods are enabled
 
-.Task: Display HTTP secure server status
+.Task: Display HTTP Secure Server Status
 ----
 # sh ip http server secure status
 

@@ -1,4 +1,4 @@
-= IP source guard
+= IP Source Guard
 
 == Concepts
 

@@ -9,13 +9,13 @@
 
 - Default= v2 since IOS 11.3
 
-.Task: Configure the PIM version on the interface.
+.Task: Configure the PIM Version on the Interface.
 ----
 (config)# ip multicast-routing
 (config-if)# ip pim version [1|2]
 ----
 
-.Task: Display information about interfaces configured for PIM.
+.Task: Display Information About Interfaces Configured for PIM.
 ----
 show ip pim interface [type number] [count]
 ----
@@ -43,7 +43,7 @@ show ip pim interface [type number] [count]
 - PIM packets are no longer inside IGMP packets; they are standalone packets.
 
 
-=== PIMv1 and PIMv2 interoperability
+=== PIMv1 and PIMv2 Interoperability
 
 - You can upgrade to PIMv2 incrementally. PIM Versions 1 and 2 can be configured
 on different routers within one network. Internally,
@@ -84,7 +84,7 @@ To ease the transition to PIMv2, we have these recommendations:
 
 - By default, no mode is configured.
 
-.Task: Enable a PIM mode on the interface.
+.Task: Enable a PIM Mode on the Interface.
 ----
 (config-if)# pim {dense-mode | sparse-mode | sparse-dense-mode }
 ----
@@ -141,7 +141,7 @@ prune message up the distribution tree to stop the flow of unwanted multicast
 traffic.
 
 
-=== Shared tree vs Source tree
+=== Shared Tree Vs Source Tree
 
 By default, members of a group receive data from senders to the group across a
 single data-distribution tree rooted at the RP. Figure <<pim_tree>> shows this type of
@@ -150,7 +150,7 @@ distribution to group members joined to the shared tree.
 
 
 [[pim_tree]]
-.PIM trees
+.PIM Trees
 image::pim-trees.png[]
 
 
@@ -162,27 +162,27 @@ receiving the first data packet from a source.
 
 This process describes the move from a shared tree to a source tree:
 
-. A receiver joins a group; leaf Router C sends a join message toward the RP.
+. a Receiver Joins a Group; Leaf Router C Sends a Join Message Toward the RP.
 
-. The RP puts a link to Router C in its outgoing interface list.
+. the RP Puts a Link to Router C In Its Outgoing Interface List.
 
-. A source sends data; Router A encapsulates the data in a register message
+. a Source Sends Data; Router a Encapsulates the Data In a Register Message
 and sends it to the RP.
 
-. The RP forwards the data down the shared tree to Router C and sends a join
+. the RP Forwards the Data Down the Shared Tree to Router C and Sends a Join
 message toward the source. At this point, data might arrive twice at Router C,
 once encapsulated and once natively.
 
-. When data arrives natively (unencapsulated) at the RP, it sends a
+. When Data Arrives Natively (Unencapsulated) at the RP, It Sends A
 register-stop message to Router A.
 
-. By default, reception of the first data packet prompts Router C to send a
+. by Default, Reception Of the First Data Packet Prompts Router C to Send A
 join message toward the source.
 
-. When Router C receives data on (S,G), it sends a prune message for the
+. When Router C Receives Data on (S,G), It Sends a Prune Message for The
 source up the shared tree.
 
-. The RP deletes the link to Router C from the outgoing interface of (S,G).
+. the RP Deletes the Link to Router C from the Outgoing Interface Of (S,G).
 The RP triggers a prune message toward the source.
 
 Join and prune messages are sent for sources and RPs. They are sent hop-by-hop
@@ -221,7 +221,7 @@ tree. In this case, the DR is the device with the highest IP address.
 
 The default is 30 seconds. The range is 1 to 65535.
 
-.Task: Configure the PIM query interval
+.Task: Configure the PIM Query Interval
 ----
 ip pim query-interval <seconds>
 ----
@@ -241,7 +241,7 @@ using the dense-mode PIM techniques.
 * A PIM device can use multiple RPs, but only one per group.
 
 
-.Task: Configure static RP address
+.Task: Configure Static RP Address
 ----
 ip pim rp-address <RP-IP-address> [<standard-access-list-number>] [override]
 ----
@@ -254,17 +254,17 @@ from 1 to 99. If no access list is configured, the RP is used for all groups.
 RP configured with this command and one learned by Auto-RP or BSR, the RP configured with this command prevails.
 ====
 
-.Task: Display the RP that was selected for the specified group.
+.Task: Display the RP That Was Selected for the Specified Group.
 ----
 # sh ip pim rp-hash group
 ----
 
-.Task: Display how the router learns of the RP (through the BSR or the Auto-RP mechanism).
+.Task: Display How the Router Learns Of the RP (Through the BSR or the Auto-RP Mechanism).
 ----
 # sh ip pim rp [ <group-name> | <group-address> | <mapping> ]
 ----
 
-.Task: Display the RP routers associated with a sparse-mode multicast group.
+.Task: Display the RP Routers Associated with a Sparse-Mode Multicast Group.
 ----
 # sh ip pim rp [ <group-name> | <group-address>]
 ----
@@ -295,7 +295,7 @@ network.
 - Send multicast RP-announce messages to 224.0.1.39 every 60 seconds (default) with holdtime of 180 seconds (defauld)
 
 
-.Task: Configure another PIM device to be the candidate RP for local groups.
+.Task: Configure Another PIM Device to Be the Candidate RP for Local Groups.
 ----
 ip pim send-rp-announce <interface-id> scope <ttl> group-list <access-list-number> interval <seconds>
 ----
@@ -316,24 +316,24 @@ sent. The default is 60 seconds. The range is 1 to 16383.
 
 ====
 
-=== Mapping agents
+=== Mapping Agents
 
 - listen to RP-announce messages
 - create Group-to-RP mapping cache
 - select highest IP candidate as active RP
 - send Group-to-RP mapping cache in RP-discovery messages to 224.0.1.40 every 60 seconds with 180 seconds holdtime
 
-.Task: Configure RP mapping agent
+.Task: Configure RP Mapping Agent
 ----
 (config)# ip pim send-rp-discovery scope <1..255>
 ----
 
-.Task: Configure PIM-SM interfaces to use dense mode to flood Auto-RP traffic to 224.0.1.39 and 224.0.1.40.
+.Task: Configure PIM-SM Interfaces to Use Dense Mode to Flood Auto-RP Traffic to 224.0.1.39 and 224.0.1.40.
 ----
 (config)# ip pim autorp listener
 ----
 
-.Task: Prevent candidate RP spoofing
+.Task: Prevent Candidate RP Spoofing
 ----
 ip pim rp-announce-filter rp-list <access-list-number> group-list <access-list-number>
 ----
@@ -352,7 +352,7 @@ all mapping agents to ensure that no conflicts occur in the Group-to-RP mapping
 information.
 ====
 
-.Task: Prevent Join Messages to false RPs
+.Task: Prevent Join Messages to False RPs
 ----
 Switch(config)# ip pim accept-rp 172.10.20.1 1
 Switch(config)# access-list 1 permit 224.0.1.39
@@ -378,7 +378,7 @@ pim accept-rp* command accepting the RP must be configured as follows:
 ====
 
 
-=== PIM routers
+=== PIM Routers
 
 - listen to RP-discovery messages
 - knows with RP to use for groups they support
@@ -410,7 +410,7 @@ routers and switches select the same RP for a given group because they all use
 a common RP hashing algorithm.
 
 
-.Task: Display the elected BSR
+.Task: Display the Elected BSR
 ----
 # sh ip pim bsr
 ----
@@ -421,7 +421,7 @@ You can configure one or more candidate BSRs. The devices serving as candidate
 BSRs should have good connectivity to other devices and be in the backbone
 portion of the network.
 
-.Task: Configure your multilayer switch to be a candidate BSR.
+.Task: Configure Your Multilayer Switch to Be a Candidate BSR.
 ----
 (config)# ip pim bsr-candidate <interface-id> <hash-mask-length> [priority]
 ----
@@ -448,15 +448,15 @@ the IP packet. To determine whether to forward or drop an incoming multicast
 packet, the router  uses a *reverse path forwarding* (RPF)
 check on the packet as follows and shown in Figure <<rpf>>:
 
-. The router  examines the source address of the arriving
+. the Router  Examines the Source Address Of the Arriving
 multicast packet to determine whether the packet arrived on an interface that
 is on the reverse path back to the source.
 
-. If the packet arrives on the interface leading back to the source, the RPF
+. If the Packet Arrives on the Interface Leading Back to the Source, the RPF
 check is successful and the packet is forwarded to all interfaces in the
 outgoing interface list (which might not be all interfaces on the router).
 
-. If the RPF check fails, the packet is discarded.
+. If the RPF Check Fails, the Packet Is Discarded.
 
 Some multicast routing protocols, such as DVMRP, maintain a separate multicast
 routing table and use it for the RPF check. However, PIM uses the unicast routing table to perform the RPF check.
@@ -485,7 +485,7 @@ Sparse-mode PIM uses the RPF lookup function to determine where it needs to send
 
 DVMRP and dense-mode PIM use only source trees and use RPF as previously described.
 
-.Task: Display how the multilayer switch is doing Reverse-Path Forwarding
+.Task: Display How the Multilayer Switch Is Doing Reverse-Path Forwarding
 ----
 # sh ip rpf { <source-address> | <name>}
 ----
@@ -513,28 +513,28 @@ DR functions as the IGMP querier.
 It sends PIM register messages to notify the RP that multicast traffic from a source needs
 to be forwarded down the shared tree.
 
-.Task: List the PIM neighbors
+.Task: List the PIM Neighbors
 ----
 # sh ip pim neighbor [type number]
 ----
 
-.Task: Query a multicast router  about which neighboring multicast devices are peering with it.
+.Task: Query a Multicast Router  About Which Neighboring Multicast Devices Are Peering with It.
 ----
 # mrinfo [ <hostname> | <address>] [ <source-address> | <interface>]
 ----
 
-.Task: Display IP multicast packet rate and loss information.
+.Task: Display IP Multicast Packet Rate and Loss Information.
 ----
 # mstat source [<destination>] [<group>]
 ----
 
-.Task: Trace the path from a source to a destination branch for a multicast distribution tree for a given group.
+.Task: Trace the Path from a Source to a Destination Branch for a Multicast Distribution Tree for a Given Group.
 ----
 # mtrace source [<destination>] [<group>]
 ----
 
 
-== Auto-RP and BSR configuration guidelines
+== Auto-RP and BSR Configuration Guidelines
 
 There are two approaches to using PIMv2. You can use Version 2 exclusively in
 your network or migrate to Version 2 by employing a mixed PIM version
@@ -564,7 +564,7 @@ BSR.
 
 
 
-== PIM domain border
+== PIM Domain Border
 
 As IP multicast becomes more widespread, the chances of one PIMv2 domain
 bordering another PIMv2 domain is increasing. Because these two domains
@@ -576,16 +576,16 @@ across all bordering domains and co-mingle candidate RP advertisements,
 resulting in the election of RPs in the wrong domain.
 
 
-.Task: Define a PIM bootstrap message boundary for the PIM domain.
+.Task: Define a PIM Bootstrap Message Boundary for the PIM Domain.
 ----
 (config-if)# ip pim bsr-border
 ----
 
-=== Administratively-scoped Boundary
+=== Administratively-Scoped Boundary
 
 - uses range 239.0.0.0 to 239.255.255.255
 
-.Task: Configure an administratively scope boundary
+.Task: Configure an Administratively Scope Boundary
 ----
 (config-if)# ip multicast boundary <access-list-number> [filter-autorp]
 ----
@@ -602,13 +602,13 @@ forwarded out the interface.
 perimeter of the network.
 
 
-.Task: Configure TTL scoping
+.Task: Configure TTL Scoping
 ----
 (config-if)# ip multicast ttl-threshold <value>
 ----
 
 
-== Delay the Use of PIM Shortest-Path Tree
+== Delay the Use Of PIM Shortest-Path Tree
 
 The change from shared to source tree happens when the first data packet
 arrives at the last-hop router. This change occurs
@@ -632,7 +632,7 @@ using a group list (a standard access list). If a value of 0 is specified or if
 the group list is not used, the threshold applies to all groups.
 
 
-.Task: Specify the threshold that must be reached before moving to shortest-path tree
+.Task: Specify the Threshold That Must Be Reached Before Moving to Shortest-Path Tree
 ----
 ip pim spt-threshold {kbps | infinity} [group-list access-list-number]
 ----
@@ -658,9 +658,9 @@ applies to all groups.
 When debugging interoperability problems between PIMv1 and PIMv2, check these
 in the order shown:
 
-. Verify RP mapping with *sh ip pim rp-hash* making sure that all systems agree on the same RP for the same group.
+. Verify RP Mapping with *Sh Ip Pim Rp-Hash* Making Sure That All Systems Agree on the Same RP for the Same Group.
 
-. Verify interoperability between different versions of DRs and RPs. Make sure
+. Verify Interoperability Between Different Versions Of DRs and RPs. Make Sure
 the RPs are interacting with the DRs properly (by responding with
 register-stops and forwarding decapsulated data packets from registers).
 
@@ -673,7 +673,7 @@ http://www.cisco.com/c/en/us/td/docs/ios/12<4t/ip>mcast/configuration/guide/mctl
 
 TODO To be added in the text
 
-.PIM type code
+.PIM Type Code
 [format="csv", cols="10,90", options="header"]
 |===
 Type  , Name
@@ -694,7 +694,7 @@ Type  , Name
 
 === SSM
 
-.Task: Define the ssm range of IP multicast addresses
+.Task: Define the Ssm Range Of IP Multicast Addresses
 ----
 (config)# ip pim [vrf <name>] ssm { default | range a<ccess-list-number> }
 ----

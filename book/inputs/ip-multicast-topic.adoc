@@ -1,7 +1,7 @@
-= IP multicast routing
+= IP Multicast Routing
 
 
-== Cisco Implementation of IP multicast routing
+== Cisco Implementation Of IP Multicast Routing
 
 The Cisco IOS software supports these protocols to implement IP multicast routing:
 
@@ -21,7 +21,7 @@ The Cisco IOS software supports these protocols to implement IP multicast routin
 connected to Layer 2 Catalyst switches to perform tasks similar to those performed by IGMP. 
 
 
-.Multicast routing protocols
+.Multicast Routing Protocols
 image::ip-multicast-routing-protocols.png[]
 
 include::ip-multicast-introduction.adoc[]

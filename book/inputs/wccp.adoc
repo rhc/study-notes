@@ -52,15 +52,15 @@ WCCP
   ** filtering needed to avoid duplicate or irrelevant multicast messages.
   ** configure all cache engines to communicate with all routers servicing the clusters
 
-== Configuration tasks
+== Configuration Tasks
 
-=== Enable WCCP service 
+=== Enable WCCP Service 
 
 ----
 (config)# ip wccp { web-cache | service-number}
 ----
 
-=== Specify a version of WCCP
+=== Specify a Version Of WCCP
 
 - version 2 enable by default globally
 - different version can be configured on each interface
@@ -69,7 +69,7 @@ WCCP
 (config)#  ip wccp version { 1 | 2}
 ----
 
-=== Configure a service group 
+=== Configure a Service Group 
 
 Specifies a web-cache or dynamic service to enable on the router,
 specifies the IP multicast address used by the service group,
@@ -102,7 +102,7 @@ which translates into faster redirection of packets.
 
 
 
-=== Exclude traffic on a specific interface from redirection
+=== Exclude Traffic on a Specific Interface from Redirection
 
 xxx
 
@@ -110,7 +110,7 @@ xxx
 (config-if)# ip wccp redirect exclude in
 ----
 
-=== register a router to a multicast address
+=== Register a Router to a Multicast Address
 
 Specifies the multicast address for the service group 
 
@@ -131,7 +131,7 @@ To enable traversal over an intervening router:
 with *ip wccp group-listen*
 
 
-=== use access list for a WCCP service group
+=== Use Access List for a WCCP Service Group
 
 Indicates to the router from which IP addresses of cache engines to accept packets
 
@@ -146,13 +146,13 @@ Disables caching for certain clients
 ----
 
 
-=== set a MD5 password for a router and cache engines
+=== Set a MD5 Password for a Router and Cache Engines
 
 ----
 (config)# ip wccp web-cache password _string_
 ----
 
-=== verify WCCP configuration settings
+=== Verify WCCP Configuration Settings
 
 Displays global information related to WCCP, 
 including the protocol version currently running, 
@@ -199,7 +199,7 @@ For further troubleshooting information
 # show ip wccp {web-cache | servicenumber} service
 ----
 
-.WCCP configuration example
+.WCCP Configuration Example
 [source]
 ----
 ! Enable WCCP globally on the router,

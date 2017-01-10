@@ -1,9 +1,9 @@
-= Internet of Things
+= Internet Of Things
 
-== Describe architectural framework and deployment considerations for Internet of Things [IoT]
-=== Performance, reliability and scalability
+== Describe Architectural Framework and Deployment Considerations for Internet Of Things [IoT]
+=== Performance, Reliability and Scalability
 === Mobility
-=== Security and privacy
-=== Standards and compliance
+=== Security and Privacy
+=== Standards and Compliance
 === Migration
-=== Environmental impacts on the network
+=== Environmental Impacts on the Network

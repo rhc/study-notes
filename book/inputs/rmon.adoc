@@ -45,7 +45,7 @@ rmon alarm 11 ifInErrors.1 60 delta rising-threshold 10 1 falling-threshold 5 2 
 rmon alarm 20 ifInErrors.2 60 absolute rising-threshold 20 3 falling-threshold 10 4 owner   config
 ----
 
-.Task: Monitor RMon activity
+.Task: Monitor RMon Activity
 ----
 # sh rmon activity
 # sh rmon event

@@ -1,6 +1,6 @@
 = TEST
 
-.seqdiag example
+.Seqdiag Example
 ["seqdiag",target="seqdiag-1.png"]
 ---------------------------------------------------------------------
 {

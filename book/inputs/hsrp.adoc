@@ -15,7 +15,7 @@ menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/
 - Send to multicast 224.0.0.2 for v1 and 224.0.0.102 for v2
 - UDP port 1985
 
-== HSRP packet
+== HSRP Packet
 
 [graphviz, target= 'ethernet-with-hsrp-payload']
 ----
@@ -25,7 +25,7 @@ digraph g {
 }
 ----
 
-.HSRP packet
+.HSRP Packet
 [packetdiag, target="hsrp-packet"]
 ----
 diagram {
@@ -47,7 +47,7 @@ diagram {
 }
 ----
 
-== HSRP version
+== HSRP Version
 
 - Version 1 by default
 - Version 2 doesn't interoperate with HSRPv1 on the same interface.
@@ -58,7 +58,7 @@ diagram {
 - Group number: 0..255 for v1 and 0..4095 for v2
 - Different virtual MAC address
 
-.Task: Change HSRP version
+.Task: Change HSRP Version
 ----
 (config-if)# standby version {1 | 2}
 ----
@@ -80,7 +80,7 @@ diagram {
 * *reload* seconds after the first interface-up event after the device has reloaded, if such an event occurs within 360 seconds from reload. ???
 * *sync* seconds: for IP redundancy clients only ???
 
-.Task: Configure HSRP preemption
+.Task: Configure HSRP Preemption
 ----
 (config-if)# standby [ <group-number> ] preempt [ delay{ [ minimum <seconds> ] [ reload <seconds> ] [ sync <seconds> ] } ]
 ----
@@ -105,12 +105,12 @@ diagram {
 - Default value: 100
 - The higher (priority || IP address) wins
 
-.Task: Configure HSRP priority
+.Task: Configure HSRP Priority
 ----
 (config-if)# standby [group-number] priority <number>
 ----
 
-== HSRP timers
+== HSRP Timers
 
 Hellotime::
 - 3 seconds by default
@@ -122,44 +122,44 @@ Holdtime::
 - 10 seconds by default
 - >= 3 * hellotime
 
-.Task: configure HSRP timers
+.Task: Configure HSRP Timers
 ----
 (config-if)# standby [group-number] timers[msec] <hellotime> [msec] <holdtime>
 ----
 
-== HSRP authentication
+== HSRP Authentication
 
 - Clear-text or MD5 encryption
 
 
-.Task: Configure HSRP clear-text authentication
+.Task: Configure HSRP Clear-Text Authentication
 ----
 (config-if)# standby [group-number] authentication text <string>
 ----
 
-.Task: Configure HSRP MD5 authentication
+.Task: Configure HSRP MD5 Authentication
 ----
 (config-if)# standby [group-number] authentication  md5 { key-string [ 0 | 7 ] key [ timeout seconds ] | key-chain <name-of-chain> }
 ----
 
-.Task: Debug HSRP authentication
+.Task: Debug HSRP Authentication
 ----
 # debug standby errors
 ----
 
-== HSRP and Object tracking
+== HSRP and Object Tracking
 
 - Reduce HSRP priority if the monitored interface goes down, allowing another HSRP router to become active if it has preemption enabled.
 - Cumulative reduction if multiple tracked interfaces are down
 - Configurable decrement value (default = 10)
 - Can shutdown/change the HSRP group to the Init state on the basis of the  tracked object's state
 
-.Task: Configure interface tracking
+.Task: Configure Interface Tracking
 ----
 (config-if)# standby track { <object-number> [<priority-decrement>] | interface-type <interface-number> [ decrement <priority-decrement> ] } [shutdown]
 ----
 
-== HSRP support for ICMP redirects
+== HSRP Support for ICMP Redirects
 
 - Enabled by default with advertisement every 60 seconds and holddown of 180 seconds
 
@@ -178,23 +178,23 @@ fails, then packets from the host will be lost.
 * Do not redirect to passive HSRP devices
 
 
-.Task: Enable ICMP redirects on an interface
+.Task: Enable ICMP Redirects on an Interface
 ----
 (config-if)# standby redirect [timers <advertisement> <holddown>] [unknown]
 ----
 
 
-.Task: Disable ICMP redirects on an interface
+.Task: Disable ICMP Redirects on an Interface
 ----
 (config-if)# standby redirect [timers <advertisement> <holddown>] [unknown]
 ----
 
-.Task: configure ICMP redirect messages with HSRP virtual IP address as the gateway IP address
+.Task: Configure ICMP Redirect Messages with HSRP Virtual IP Address As the Gateway IP Address
 ----
 (config)# standby redirects [enable | disable]
 ----
 
-.Task: Debug HSRP support for ICMP redirects
+.Task: Debug HSRP Support for ICMP Redirects
 ----
 # debug standby events icmp
 
@@ -203,11 +203,11 @@ fails, then packets from the host will be lost.
 ----
 
 
-== HSRP virtual IP address and group
+== HSRP Virtual IP Address and Group
 
 - Can have a name (no longer than 25 chars)
 
-.Task: Configure the virtual IP address
+.Task: Configure the Virtual IP Address
 ----
 (config-if)# standby [<group-number>] ip [ <a.b.c.d>  [secondary]]
 ----
@@ -217,12 +217,12 @@ fails, then packets from the host will be lost.
 Proxy ARP requests are answered with the MAC address of the HSRP group.
 otherwise, they are ignored.
 
-.Task: Configure the number of gratuitous ARP packets sent by HSRP group when it transitions to the active state, and how often the ARP packets are sent
+.Task: Configure the Number Of Gratuitous ARP Packets Sent by HSRP Group When It Transitions to the Active State, and How Often the ARP Packets Are Sent
 ----
 (config-if)# standby arp gratuitous [count <number=> interval <seconds>]
 ----
 
-.Task: configure the name of the standby group
+.Task: Configure the Name Of the Standby Group
 ----
 (config-if)# standby name <group-name>
 ----

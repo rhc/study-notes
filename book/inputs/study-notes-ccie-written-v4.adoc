@@ -1,4 +1,4 @@
-= CCIE written study notes 
+= CCIE Written Study Notes 
 // a2x: -L -d book -f pdf
 // a2x: --dblatex-opts "--param toc.section.depth=0"
 

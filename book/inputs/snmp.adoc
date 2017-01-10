@@ -26,9 +26,9 @@ OID: hierarchical identifiers in numerical format that represent MIB variables.
 1.3.6.1.4.1.9 "Enterprises - Cisco"
 )
 
-== Packet format
+== Packet Format
 
-.SNMP header format
+.SNMP Header Format
 ["packetdiag", target="snmp-header"]
 ----
 diagram {
@@ -58,26 +58,26 @@ diagram {
 
 
 
-== Basic system information
+== Basic System Information
 
-.Task: Configure the location information
+.Task: Configure the Location Information
 ----
 (config)# snmp-server location <homesweethome>
 ----
 
-.Task: Configure the contact information
+.Task: Configure the Contact Information
 ----
 (config)# snmp-server contact <no-where-to-be-found>
 ----
 
-.Task: Configure the system serial number
+.Task: Configure the System Serial Number
 ----
 (config)# snmp-server chassis-id <system-serial-number>
 ----
 
 ==  Views
 
-.Task: Create a view
+.Task: Create a View
 ----
 (config)# snmp-server view <name> <oid-tree> {included | excluded}
 ----
@@ -85,26 +85,26 @@ diagram {
 == Communities
 
 
-.Task: Configure a community string
+.Task: Configure a Community String
 ----
 (config)# snmp-server community <string> [view <name>] [ro|rw] [<acl]
 ----
 
-.Task: Display community string
+.Task: Display Community String
 ----
 # sh snmp community
 ----
 
 == Traps
 
-.Task: Send traps to NMS
+.Task: Send Traps to NMS
 ----
 (config)# snmp-server host <ip-address> [traps | informs] [version {1| 2c | 3 [auth | noauth | priv]}] community-string [udp-port port-number] [notification-type]
 ----
 
-== SNMP v3
+== SNMP V3
 
-.Task: Configure SNMP v3 group
+.Task: Configure SNMP V3 Group
 ----
 (config)# snmp-server group [<groupname> {v1 | v2c | v3 [auth | noauth | priv]}]
             [read <readview>]
@@ -113,69 +113,69 @@ diagram {
             [access <acl]
 ----
 
-.Task: Display SNMP v3 group settings
+.Task: Display SNMP V3 Group Settings
 ----
 # sh snmp group
 ----
 
-.Task: Configure  SNMP v3 user
+.Task: Configure  SNMP V3 User
 ----
 (config)# snmp-server engineID {local <engine-id> | remote <ip-address> [udp-port <number> ] [vrf <vrf-name> ] <engine-id-string> }
 (config)# snmp-server user <username> <groupname> [remote <ip-address> [udp-port <number> ]] {v1 | v2c | v3 [encrypted] [auth {md5 | sha} <auth-password> ]} [access <acl>]
 ----
 
-.Task: Display SNMP user information
+.Task: Display SNMP User Information
 ----
 # sh snmp user <user>
 ----
 
-.Task: Display SNMP engineID
+.Task: Display SNMP EngineID
 ----
 # sh snmp engineID
 ----
 
-== SNMP manager
+== SNMP Manager
 
-.Task: Configure the SNMP manager process
+.Task: Configure the SNMP Manager Process
 ----
 (config)# snmp-server manager
 ----
 
-.Task: Configure the SNMP manager session time-out
+.Task: Configure the SNMP Manager Session Time-Out
 ----
 (config)# snmp-server manager session-timeout <seconds>
 ----
 
-.Task: Display the status of the SNMP sessions
+.Task: Display the Status Of the SNMP Sessions
 ----
 # sh snmp sessions brief
 ----
 
-.Task: Display the current set of pending SNMP requests
+.Task: Display the Current Set Of Pending SNMP Requests
 ----
 # sh snmp pending
 ----
 
 
-== SNMP shutdown mechanism
+== SNMP Shutdown Mechanism
 
-.Task: Enable the SNMP shutdown mechanism
+.Task: Enable the SNMP Shutdown Mechanism
 ----
 (config)# snmp-server system-shutdown
 ----
 
 
-.Task: Define the maximum SNMP agent packet size
+.Task: Define the Maximum SNMP Agent Packet Size
 ----
 (config)# snmp-server packetsize <bytes>
 ----
 
-.Task: Specify the TFTP servers used for saving and loading configuration files
+.Task: Specify the TFTP Servers Used for Saving and Loading Configuration Files
 ----
 (config)# snmp-server tftp-server-list <acl>
 ----
 
-.Task: Disable SNMP agent
+.Task: Disable SNMP Agent
 ----
 (config)# no snmp-server
 ----

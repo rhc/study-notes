@@ -17,11 +17,11 @@ endif::[]
 - Layer 2 discovery protocol  running on Cisco devices
 - Retrieves device type and SNMP agent address of neighboring devices
 
-=== Packet format
+=== Packet Format
 
 - Header followed by a set of TLV value
 
-.CDP frame format
+.CDP Frame Format
 ["packetdiag", target="cdp-frame-format"]
 ----
 diagram {
@@ -38,11 +38,11 @@ diagram {
 }
 ----
 
-== CDP operations 
+== CDP Operations 
 
 - Enable by default
 
-.Task: Display global information about CDP characteristics
+.Task: Display Global Information About CDP Characteristics
 ----
 # show cdp
 
@@ -64,22 +64,22 @@ show cdp entry <entry-name> [protocol | version]
 (config)# no cdp run
 ----
 
-.Task: Enable CDP on an interface
+.Task: Enable CDP on an Interface
 ----
 (config-if)# cdp enable
 ----
 
-=== CDP updates
+=== CDP Updates
 
 
-.Task: Set the transmission frequency of CDP updates in seconds
+.Task: Set the Transmission Frequency Of CDP Updates In Seconds
 ----
 (config)# cdp timer <seconds>
 ----
 
 NOTE: Default: 60 seconds range: 5-254 seconds
 
-.Task: Specify the amount of time a receiving device should hold the information sent by your device
+.Task: Specify the Amount Of Time a Receiving Device Should Hold the Information Sent by Your Device
 ----
 (config)# cdp holdtime <seconds>
 ----
@@ -89,14 +89,14 @@ NOTE: default: 180 seconds, range: 10 to 255 seconds
 
 === Version
 
-.Task: Send Version-2 advertisements
+.Task: Send Version-2 Advertisements
 ----
 (config)# cdp advertise-v2
 ----
 
-== Monitoring and maintenance
+== Monitoring and Maintenance
 
-.Task: Reset the traffic counters to zero
+.Task: Reset the Traffic Counters to Zero
 ----
 clear cdp counters
 ----
@@ -104,24 +104,24 @@ clear cdp counters
 === Neighbors
 
 
-.Task: Delete the CDP table of information about neighbors
+.Task: Delete the CDP Table Of Information About Neighbors
 ----
 clear cdp table
 ----
 
 
-.Task: Display information about interfaces where CDP enabled
+.Task: Display Information About Interfaces Where CDP Enabled
 ----
 sh cdp interface [<interface-id>]
 ----
 
-.Task: Display information about neighbors
+.Task: Display Information About Neighbors
 
 ----
 sh cdp neighbors [<interface-id>] [detail]
 ----
 
-.Task: Display CDP counters, including the number of packets sent and received and checksum errors
+.Task: Display CDP Counters, Including the Number Of Packets Sent and Received and Checksum Errors
 
 ----
 # show cdp traffic

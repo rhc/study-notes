@@ -1,6 +1,6 @@
 = Switching
 
-== Switching and bridging logic
+== Switching and Bridging Logic
 
 [format="dsv", options="header", cols="20,60"]
 |===
@@ -11,7 +11,7 @@ Broadcast: Floods frame identically to unknown unicasts
 Multicast: Floods frame identically to unknown unicasts, unless multicast optimizations are configured
 |===
 
-=== Switch  internal processing
+=== Switch  Internal Processing
 
 Store-and-forward::
 

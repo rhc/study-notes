@@ -36,7 +36,7 @@ int t123
   ip nhrp map 129.99.123.1 10.0.0.1
 
 
-.Task: Verify that NHRP registration has been sent from spokes to the hub
+.Task: Verify That NHRP Registration Has Been Sent from Spokes to the Hub
 ----
 R1#sh ip nhrp
 

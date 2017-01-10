@@ -7,7 +7,7 @@ MSS::
 
 === Message Format
 
-.UDP header format
+.UDP Header Format
 ["packetdiag", target="udp-header"]
 ----
 diagram {

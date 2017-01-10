@@ -34,7 +34,7 @@ Phase 3::
  Architecture and scaling
 
 
-.Task: Verify NHRP configuration
+.Task: Verify NHRP Configuration
 ----
 # sh ip nhrp
 

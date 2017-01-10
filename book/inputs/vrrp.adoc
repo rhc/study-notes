@@ -9,17 +9,17 @@
 - Preemption by default
 - The group IP address is the interface IP address of one of the VRRP routers.
 
-.Task: enable VRRP
+.Task: Enable VRRP
 ----
 (config-if)# vrrp <group> []
 ----
 
-.Task: verify VRRP configuration
+.Task: Verify VRRP Configuration
 ----
 # sh vrrp
 ----
 
-.Task: customize VRRP
+.Task: Customize VRRP
 ----
 conf t
 interface <type number>

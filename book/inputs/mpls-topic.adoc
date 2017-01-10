@@ -1,6 +1,6 @@
 = Implement MPLS Layer 3 VPNs
 
-.Exam objectives
+.Exam Objectives
 ----
 weight: 4%
 

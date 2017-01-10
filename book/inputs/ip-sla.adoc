@@ -4,15 +4,15 @@
 
 To implement IP SLAs network performance measurement,
 
-. Enable the IP SLAs responder
-. Configure the required IP SLAs operation type
-. Configure any options available
-. Configure threshold conditions
-. Schedule the operation
-. Run the operation for a period of time to gather statistics
-. Display and interpret the results with Cisco CLI or NMS with SNMP
+. Enable the IP SLAs Responder
+. Configure the Required IP SLAs Operation Type
+. Configure Any Options Available
+. Configure Threshold Conditions
+. Schedule the Operation
+. Run the Operation for a Period Of Time to Gather Statistics
+. Display and Interpret the Results with Cisco CLI or NMS with SNMP
 
-== IP SLAs Operation types
+== IP SLAs Operation Types
 
 - ICMP echo, jitter, path echo , path jitter
 - TCP connect
@@ -20,7 +20,7 @@ To implement IP SLAs network performance measurement,
 - VoIP RTP, UDP jitter, gatekeeper registration delay, post-dial delay
 - HTTP, FTP, DNS, DHCP
 
-.Task: Configure basic IP SLAs ICMP echo operation on the source device
+.Task: Configure Basic IP SLAs ICMP Echo Operation on the Source Device
 ----
 (config)# ip sla <operation-number>
 (config-ip-sla)# icmp-echo {<destination-ip-address>| <destination-hostname>}
@@ -41,9 +41,9 @@ To implement IP SLAs network performance measurement,
 
 image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
 
-== IP SLAs Operation scheduling
+== IP SLAs Operation Scheduling
 
-.Task: schedule IP SLA operation
+.Task: Schedule IP SLA Operation
 ----
 (config)# ip sla schedule <operation-number>
                           [ life {forever} | <seconds> ]
@@ -52,7 +52,7 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
                           [recurring]
 ----
 
-.Task: Verify IP SLA configuration
+.Task: Verify IP SLA Configuration
 ----
 # sh ip sla configuration
 ----
@@ -61,7 +61,7 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
 * The frequency of all operations scheduled must be the same
 * The list of operation ID numbers must be limited to a max of 125 chars including commas
 
-.Task: schedule a group of IP SLA Operations
+.Task: Schedule a Group Of IP SLA Operations
 ----
 (config)# ip sla group schedule <group-operation-number> <operation-id-numbers>
                           { schedule-period <schedule-period-range | schedule-together }
@@ -72,7 +72,7 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
                           [recurring]
 ----
 
-.Task: Verify IP SLA multioperation configuration
+.Task: Verify IP SLA Multioperation Configuration
 ----
 # sh ip sla group schedule
 ----
@@ -84,7 +84,7 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
 average jitter threshold, one-way packet loss, one-way jitter, one-way mean opinion score, one-way latency
 - can trigger another IP SLA operation
 
-== MPLS VPN awareness
+== MPLS VPN Awareness
 
 - IP SLA operations can be configured for a specific VPN
 
@@ -108,7 +108,7 @@ IP SLAs operation is not collected. If history is collected, each bucket
 contains one or more history entries from the operation. History buckets do not
 wrap.
 
-== Troubleshooting tips
+== Troubleshooting Tips
 
 - If IP SLAs operation is not running and not generating stats,
 add the *verify-data* command in ip sla configuration mode

@@ -69,7 +69,7 @@ diagram {
 -
 
 
-=== Next header
+=== Next Header
 
 When more than one extension header is used in the same
 packet, it is recommended that those headers appear in the
@@ -107,14 +107,14 @@ Mobility Header (currently without upper layer) , 135               , Used with 
 - 128 bits
 - Represented in hexadecimal and uses 8 colon-separated fields of 16 bits.
 
-=== IPv4 vs IPv6
+=== IPv4 Vs IPv6
 
 - Multiple ipv6 addresses on a logical or physical interface with equal precedence on IOS (only one primary
   ipv4 with optional secondary address)
 - Automatic configuration of globally unique address (without the need of DHCP)
 - Built-in neighbor discovery of neighbors, routers and gateways
 
-=== Address abbreviation rules
+=== Address Abbreviation Rules
 
 - Whenever one or more successive 16-bit groups in an IPv6 address consist of all 0s, that
 portion of the address can be omitted and represented by two colons (::). The two-colon
@@ -132,7 +132,7 @@ abbreviation method is used anywhere in the address.
 2001:1::A1:CC0:1AB:397A
 ----
 
-=== Address types
+=== Address Types
 
 [options="header",cols="30,15,60"]
 |===
@@ -148,13 +148,13 @@ redundancy. Relies on routing metrics to determine the best destination for a pa
 
 ==== Unicast
 
-===== Aggregatable global addresses
+===== Aggregatable Global Addresses
 
 - Begin with binary 001 (hexadeximal= 2000::/3)
 
 image::ipv6-unicast-address-format.png[height=150]
 
-===== Link-local addresses
+===== Link-Local Addresses
 
 - Starts with FE80::/10
 - Follows by 54 bits set to 0
@@ -162,7 +162,7 @@ image::ipv6-unicast-address-format.png[height=150]
 
 - Routers do not forward link-local traffic to other segments.
 
-===== IPv4-compatible addresses
+===== IPv4-Compatible Addresses
 
 - One option is to have first 96 bits set to 0
 
@@ -172,14 +172,14 @@ image::ipv6-unicast-address-format.png[height=150]
 ::A:A:64:10
 ----
 
-===== Assign an IPv6 unicast address to a router interface
+===== Assign an IPv6 Unicast Address to a Router Interface
 
-.Task: Enable ipv6 on the router
+.Task: Enable Ipv6 on the Router
 ----
 (config)# ipv6 unicast-routing
 ----
 
-.Task: Configure a global unicast address
+.Task: Configure a Global Unicast Address
 ----
 (config-if)# ipv6 address 2014:10:12::19:66/64
 ----
@@ -193,7 +193,7 @@ However, you can explicitly configure one
 
 ==== Multicast
 
-===== IPv6 multicast address format
+===== IPv6 Multicast Address Format
 
 - Begin with FF as the first octect, or FF00::/8
 - The second octet specifies lifetime (permanent or temporary) and the scope (node, link, site, organization, global)
@@ -235,14 +235,14 @@ router anycast address to reach a particular router on the link identified by th
 subnet router anycast address.
 
 
-==== The unspecified address
+==== the Unspecified Address
 
 - Represented by **::**
 - Used as source address by an interface that has not yet learned its unicast addresses.
 - Cannot be assigned to an interface
 - Cannot be used as a destination address
 
-==== how to embed an RP address within a multicast group address
+==== How to Embed an RP Address Within a Multicast Group Address
 
 RFC 2373
 
@@ -264,7 +264,7 @@ Follow the structure FF__7__**X**:0**Y**30:2001:DB8:0717::**group**
 - Remaining hextets for the network prefix
 
 
-=== IPv6 address autoconfiguration
+=== IPv6 Address Autoconfiguration
 
 Stateful autoconfiguration::
 - Assigns a host its entire 128-bit address using DHCP
@@ -273,7 +273,7 @@ Stateless autoconfiguration::
 - Assigns a host a 64-bit prefix,
 and the host derives the last bit using EUI-64 process.
 
-==== EUI-64 address
+==== EUI-64 Address
 
 - Split 48-bit MAC address in two parts
 - Place FFFE in the middle
@@ -286,9 +286,9 @@ the resulting EUI-address is 2001:128:1f:633:**2**07:85**FF:FE**80:71B8/64
 (config-if)# ipv6 address 2001:128:1f:633::/64 eui-64
 ----
 
-== Basic  IPv6 functionality protocols
+== Basic  IPv6 Functionality Protocols
 
-=== Neighbor discovery
+=== Neighbor Discovery
 
 - RFC 2461
 - Discover and track other IPv6 hosts on connected interfaces
@@ -305,17 +305,17 @@ the resulting EUI-address is 2001:128:1f:633:**2**07:85**FF:FE**80:71B8/64
 **  Neighbor address resolution (replaces ARP, both dynamic and static)
 **  Neighbor and router reachability verification
 
-.ICMPv6 messages used by ND
+.ICMPv6 Messages Used by ND
 //add the table here pp 896
 
-==== Neighbor advertisements
+==== Neighbor Advertisements
 
 - Host advertises their pr
 - Source addresses
 - Destination addresses
 - Icmp type, code: 134,0
 
-==== Neighbor solicitation
+==== Neighbor Solicitation
 
 - NS messages to find the link-layer of a specific neighbor
 - Source address: manual assigned or ::
@@ -328,11 +328,11 @@ the resulting EUI-address is 2001:128:1f:633:**2**07:85**FF:FE**80:71B8/64
 IPv6 does not include ARP as a protocol but rather integrates the same functionality into ICMP as part of neighbor discovery.
 The response to an NS message is an NA message .
 
-.Neighbor discovery between two hosts
+.Neighbor Discovery Between Two Hosts
 image::ipv6-neighbor-discovery.png[]
 
 
-==== Router advertisement
+==== Router Advertisement
 
 - Routers advertise their presence and link prefixes, MTU, hop limits
 - Source address: router's link-local address
@@ -352,17 +352,17 @@ and to inform hosts that the router is available to be used as a default gateway
 By default, a Cisco router running IPv6 on an interface advertises itself as a candidate default router.
 
 
-.Task: Prevent router to advertise itself as a default candidate but do not hide its presence
+.Task: Prevent Router to Advertise Itself As a Default Candidate but Do Not Hide Its Presence
 ----
 ipv6 nd ra-lifetime 0
 ----
 
-.Task: Hide presence of a router running IPv6
+.Task: Hide Presence Of a Router Running IPv6
 ----
 ipv6 nd suppress-ra
 ----
 
-==== Router solicitation
+==== Router Solicitation
 
 - Host query for the presence of routers on the link
 - Source address: querying host interface, or :: if not assigned
@@ -375,7 +375,7 @@ parameters, without waiting for a periodic RA message. If a host has no configur
 it sends an RS using the unspecified address as the source. If it has a configured address, it sources
 the RS from the configured address.
 
-==== Duplicate address Detection
+==== Duplicate Address Detection
 
 //change this to an algorithm
 To verify that autoconfigured or statically address is unique,
@@ -384,7 +384,7 @@ This message is sourced from the unspecified address ::.
 In the target address field in the NS is the address the host seeks to verify.
 If an NA from another host results, the sending host knows that the address is not unique
 
-==== Neighbor unreachability detection
+==== Neighbor Unreachability Detection
 
 2 options:
 
@@ -403,7 +403,7 @@ Limit ICMPv6 error messages with default interval 100 ms , and default token-buc
 (config)# ipv6 icmp error-interval seconds ???
 -----
 
-==== Unicast reverse path forwarding
+==== Unicast Reverse Path Forwarding
 
 - Protects router from DoS attacks from spoofed IPv6 host address.
 - Performs a recursive lookup in the ipv6 routing table
@@ -427,7 +427,7 @@ Limit ICMPv6 error messages with default interval 100 ms , and default token-buc
 - Provides extensive information about the configuration and functionality of Cisco devices.
 
 
-.Task: Display IPv6 information transmitted in CDP
+.Task: Display IPv6 Information Transmitted In CDP
 -------
 # show cdp neighbors detail
 -------
@@ -458,7 +458,7 @@ you first configure a DHCP pool, just as in IPv4
 then enable the DHCPv6 service using the *ipv6 dhcp server pool-name*
 
 
-=== Access lists
+=== Access Lists
 
 Similar with IPv4 access lists except that:
 
@@ -466,7 +466,7 @@ Similar with IPv4 access lists except that:
 ND traffic. This is necessary to avoid breaking ND’s ARP-like functionality.
 You can override this implicit-permit behavior using deny statements in IPv6 access lists.
 
-.Task: Configure an interface to filter traffic using an access list
+.Task: Configure an Interface to Filter Traffic Using an Access List
 ----
 ipv6 traffic-filter access-list-name {in | out}
 ----
@@ -477,9 +477,9 @@ named access-list configuration mode. However, you can also enter IPv4-like comm
 specify an entire access-list entry on one line. The router will convert it to the correct
 configuration commands for named access-list configuration mode.
 
-== IPv6 routing
+== IPv6 Routing
 
-=== Static routes
+=== Static Routes
 
 Similar to IPv4 static routes except that:
 
@@ -506,12 +506,12 @@ http://www.cisco.com/en/US/docs/ios/ipv6/configuration/guide/ip6-ospf.html#wp106
 === EIGRPv6
 
 
-== ospfv3
+== Ospfv3
 
 - Router id is highest ipv4 loopback, highest ipv4, or *router-id* id command
 
 
-== readings
+== Readings
 
 http://www.cisco.com/c/en/us/td/docs/ios/12_4/interface/configuration/guide/inb_tun.html#wp1045782[Implement tunnels]
 

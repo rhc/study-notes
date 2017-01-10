@@ -1,6 +1,6 @@
 = Blockdiag Example
 
-== Network diagrams
+== Network Diagrams
 
 ["nwdiag",target="simple-network.png"]
 ----

@@ -2,7 +2,7 @@
 
 == Concepts
 
-=== Frame Relay introduction 
+=== Frame Relay Introduction 
 
 - Connection-oriented layer 2 WAN technology.
 - Speed between 56 Kbps to 45 Mbps
@@ -10,14 +10,14 @@
 - NBMA (non broadcast multi-access)
 
 
-=== Virtual circuits 
+=== Virtual Circuits 
 
 - logical paths between two DTEs
 - can be permanent (PVC) or switched (SVC)
 - identifies with DLCI
 
 
-=== Frame Relay hardware configurations
+=== Frame Relay Hardware Configurations
 
 You can create Frame Relay connections using one of the following hardware configurations:
 
@@ -27,7 +27,7 @@ You can create Frame Relay connections using one of the following hardware confi
 image::frame-relay-typical-configuration.png[height=100]
 
 
-=== Frame Relay frame format
+=== Frame Relay Frame Format
 
 - Uses LAPF (link access protocol for frame - mode bearer services) which is a variation of the HDLC frame
 - There is no control frame, no flow control, no error control, no sequence numbers
@@ -80,7 +80,7 @@ FCS::
 - Frame Check Sequence 
 - value computed by the source device and verified by the receiver to ensure integrity of transmission. 
 
-=== Frame Relay addressing
+=== Frame Relay Addressing
 
 ====  DLCI
 
@@ -88,7 +88,7 @@ FCS::
 - 10-bits
 - local significance, unique between DTE and DCE
 
-==== Dynamic address mapping
+==== Dynamic Address Mapping
 
 Dynamic address mapping uses *Frame Relay Inverse ARP* to request the next hop protocol address
 for a specific connection, given its known DLCI. Responses to Inverse ARP requests are entered in
@@ -100,7 +100,7 @@ protocol-DLCI pairs. As a result, you can use dynamic mapping for some protocols
 mapping for other protocols on the same DLCI. You can explicitly disable Inverse ARP for a
 protocol-DLCI pair if you know that the protocol is not supported on the other end of the connection.
 
-==== Static address mapping
+==== Static Address Mapping
 
 A static map links a specified next-hop protocol address to a specified DLCI.
 Static mapping removes the need for Inverse ARP requests; when you supply a
@@ -138,7 +138,7 @@ Multicasting saves bandwidth by allowing routing updates and address-resolution
 messages to be sent only to specific groups of routers. The extension also
 transmits reports on the status of multicast groups in update messages. 
 
-==== LMI types
+==== LMI Types
 
 .Frame Relay LMI Types
 
@@ -151,7 +151,7 @@ q933a    : ITU Q.933 Annex A   : 16–991             : 0
 |===
 
 
-==== LMI autosense
+==== LMI Autosense
 
 - Enables the interface to determine the LMI type supported by the switch.
 - Since IOS 11.2, by default no need to configure LMI explicitly
@@ -199,7 +199,7 @@ TIP: Shut down the interface prior to changing encapsulation types. Although shu
 
 
 
-=== Congestion controls
+=== Congestion Controls
 
 - FECN, BECN, DE
 
@@ -230,7 +230,7 @@ hence the name packet-by-packet. The
 other two methods do not clear the dictionary after each packet. 
 
 
-.Frame Relay payload compression feature comparison
+.Frame Relay Payload Compression Feature Comparison
 [format= "dsv",cols="50,20,20,20"]
 |===
 Feature                          : Packet by Packet : FRF.9 : Data Stream
@@ -240,7 +240,7 @@ Cisco proprietary?               : Yes              : No    : Yes
 |===
 
 
-=== Frame Relay fragmentation
+=== Frame Relay Fragmentation
 
 ==== FRF.12 
 
@@ -265,7 +265,7 @@ supported by the PPP headers. MLP and LFI configuration would simply need to be 
 to that configuration to achieve LFI.
 
 
-== Configuration tasks
+== Configuration Tasks
 
 There are required, basic steps you must follow to enable Frame Relay for your network. 
 In addition, you can customize Frame Relay for your particular network needs and monitor Frame Relay
@@ -281,13 +281,13 @@ required.
 - Monitor the Frame Relay Connections
 
 
-=== Enable Frame Relay encapsulation on an interface
+=== Enable Frame Relay Encapsulation on an Interface
 
 ----
 (config-if)# encapsulation frame-relay [ietf]
 ----
 
-=== Configure static address mapping
+=== Configure Static Address Mapping
 
 Maps between a next-hop protocol address and DLCI destination.
 
@@ -303,42 +303,42 @@ The supported protocols are: ip, ipx, decnet, appletalk, vines, clns
 
 Steps::
 
-. Set the LMI type (required)
+. Set the LMI Type (Required)
 +
 ----
 (config-if)# frame-relay lmi-type {ansi | cisco | q933a}
 ----
 +
-. Set the LMI keepalive interval (required)
+. Set the LMI Keepalive Interval (Required)
 +
 ----
 (config-if)# keepalive number 
 ----
 +
-. Set various optional counter, intervals, and thresholds (optional)
+. Set Various Optional Counter, Intervals, and Thresholds (Optional)
 
 
-=== Enable Frame Relay SVC support on the interface
+=== Enable Frame Relay SVC Support on the Interface
 
 // add here all the steps
 
 
-=== Enable Frame Relay traffic shaping on the interface
+=== Enable Frame Relay Traffic Shaping on the Interface
 
 // add here all the steps
 
 TIP: FRTS can only be applied to the physical interface
 
 
-=== Configure Frame Relay end-to-end keepalives
+=== Configure Frame Relay End-to-End Keepalives
 
-. Specify a map class for the VC
+. Specify a Map Class for the VC
 +
 ----
 (config)# map-class frame-relay name
 ----
 +
-. Specify Frame Relay end-to-end keepalive mode
+. Specify Frame Relay End-to-End Keepalive Mode
 +
 ----
 (config-map-class)# frame-relay end-to-end keepalive mode { bidirectional | request | reply | passive-reply } 
@@ -357,7 +357,7 @@ passive-reply::
 The device responds to keepalive requests from the other end of the VC, but will not track errors or successes. 
 
 
-=== Modify the default parameters
+=== Modify the Default Parameters
 
 Modifies the number of errors needed to change the keepalive state from up to down.
 
@@ -383,7 +383,7 @@ Modifies the timer interval.
 (config-map-class)# frame-relay end-to-end keepalive timer {send | receive} interval
 ----
 
-=== Enable PPP over Frame Relay 
+=== Enable PPP Over Frame Relay 
 
 Defines the PVC and maps it to the virtual template. 
 
@@ -391,7 +391,7 @@ Defines the PVC and maps it to the virtual template.
 (config-if)# frame-relay interface-dlci dlci [ppp virtual-template-name]
 ----
 
-=== Configure Frame Relay subinterfaces
+=== Configure Frame Relay Subinterfaces
 
 Creates a point-to-point or multipoint subinterface.
 
@@ -405,7 +405,7 @@ Configures Frame Relay encapsulation on the serial interface.
 (config-subif)# encapsulation frame-relay 
 ----
 
-=== Define subinterface addressing on point-to-point subinterfaces
+=== Define Subinterface Addressing on Point-to-Point Subinterfaces
 
 Associates the selected point-to-point subinterface with a DLCI. 
 
@@ -414,7 +414,7 @@ Associates the selected point-to-point subinterface with a DLCI.
 ----
 
 
-=== Accept inverse ARP for dynamic address mapping on multipoint subinterfaces
+=== Accept Inverse ARP for Dynamic Address Mapping on Multipoint Subinterfaces
 
 Associates a specified multipoint subinterface with a DLCI. 
 
@@ -423,14 +423,14 @@ Associates a specified multipoint subinterface with a DLCI.
 ----
 
 
-=== Configure static address mapping on multipoint subinterfaces
+=== Configure Static Address Mapping on Multipoint Subinterfaces
 
 ----
 (config-if)# frame-relay map protocol protocol-address dlci [broadcast] [ietf] [cisco]
 ----
 	
 
-==== disable or reenable Frame Relay inverse ARP
+==== Disable or Reenable Frame Relay Inverse ARP
 
 Enables Frame Relay Inverse ARP for a specific protocol and DLCI pair, only if it was previously disabled.
 
@@ -445,28 +445,28 @@ Disables Frame Relay Inverse ARP for a specific protocol and DLCI pair.
 ----
 
 
-==== Create a broadcast queue for an interface
+==== Create a Broadcast Queue for an Interface
 
 ----
 (config-if)# frame-relay broadcast-queue size byte-rate packet-rate
 ----
 
-==== Configure frame relay fragmentation
+==== Configure Frame Relay Fragmentation
 
-. Specifies a map class to define QoS values for a Frame Relay SVC or PVC. The map class can be applied to one or many PVCs.
+. Specifies a Map Class to Define QoS Values for a Frame Relay SVC or PVC. the Map Class Can Be Applied to One or Many PVCs.
 +
 ----
 (config)# map-class frame-relay map-class-name
 ----
 +
 
-. Configures Frame Relay fragmentation for the map class. The fragment_size argument defines the payload size of a fragment; it excludes the Frame Relay headers and any Frame Relay fragmentation header. The valid range is from 16 to 1600 bytes, and the default is 53. 
+. Configures Frame Relay Fragmentation for the Map Class. the Fragment_size Argument Defines the Payload Size Of a Fragment; It Excludes the Frame Relay Headers and Any Frame Relay Fragmentation Header. the Valid Range Is from 16 to 1600 Bytes, and the Default Is 53. 
 +
 ----
 (config-map-class)# frame-relay fragment fragment_size
 ----
 
-=== Configure payload compression
+=== Configure Payload Compression
 
 
 // continue here
@@ -488,7 +488,7 @@ Disables Frame Relay Inverse ARP for a specific protocol and DLCI pair.
 
 
 
-=== Verify Frame Relay configuration
+=== Verify Frame Relay Configuration
 
 Displays statistics about PVCs for Frame Relay interfaces. 
 

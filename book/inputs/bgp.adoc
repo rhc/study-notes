@@ -12,15 +12,15 @@ menu:Configuration guides[IP Routing > http://www.cisco.com/c/en/us/td/docs/ios-
 - AD: external 20 , internal and local 200
 - RFC 1771
 
-== BGP message format
+== BGP Message Format
 
 - Minimum size: 19 bytes
 - Maximum size: 4096 bytes (why?)
 
-=== BGP header
+=== BGP Header
 
 
-.BGP header format
+.BGP Header Format
 [packetdiag, target= 'bgp-header-format']
 ----
 {
@@ -94,7 +94,7 @@ diagram {
 - Optional Parameters:
   - Variable length field containing a triplet <Type: 1 octet,Length: 1 octet,Value>
 
-.Task: Configure the bgp router id
+.Task: Configure the Bgp Router Id
 ----
 (config-router)# bgp router-id <ip-address>
 ----
@@ -104,12 +104,12 @@ diagram {
 - Every 60 seconds
 - Hold-time: 180 seconds
 
-.Task: Set the bgp network timers
+.Task: Set the Bgp Network Timers
 ----
 (config-router)# timers bgp <keepalive-seconds> <holdtime-seconds>
 ----
 
-.Task: Set the bgp network timers for a specific neighbor
+.Task: Set the Bgp Network Timers for a Specific Neighbor
 ----
 (config-router)# neighbor {<ip-address> | <peer-group-name>} timers <keepalive-seconds> <holdtime-seconds>
 ----
@@ -118,7 +118,7 @@ diagram {
 
 - Advertises a single feasible route to a peer and/or withdraws multiple unfeasible routes
 
-.header format
+.Header Format
 [packetdiag, target=""]
 ----
 diagram {
@@ -158,7 +158,7 @@ Length, Attribute Value). The Attribute Type part of the triple is a 2-octet fie
 four flag bits, four unused bits, and an Attribute Type code (see <<AttributeTypeCode>>).
 
 
-.Attribute Type part of the Path Attributes field
+.Attribute Type Part Of the Path Attributes Field
 [packetdiag, target="bgp-attribute"]
 ----
 diagram {
@@ -211,7 +211,7 @@ NOTE: tasks for Internet, no-export, no-advertise, local-as
 
 === BGP FSM States
 
-.BGP neighbor negotiation finite state machines
+.BGP Neighbor Negotiation Finite State Machines
 [graphviz]
 ----
 digraph bgp_fsm {
@@ -277,7 +277,7 @@ holdtime 180 seconds
 
 
 
-== Autonomous systems
+== Autonomous Systems
 
 - AS: set of routers under a single technical administration
 - AS can be:
@@ -286,7 +286,7 @@ holdtime 180 seconds
     ** transit: allows traffic with origin and destination outside the AS
     ** non-transit:
 
-=== ASN format
+=== ASN Format
 
 - 2-byte (RFC 4271)
   * 0 - 65535
@@ -302,12 +302,12 @@ holdtime 180 seconds
 
 - AS 23456: reserved for gradual transition from 2-byte to 4-byte (RFC 4893)
 
-.Task: Modify the default output and regex match format for 4-byte ASN
+.Task: Modify the Default Output and Regex Match Format for 4-Byte ASN
 ----
 (config-router)# bgp asnotation dot
 ----
 
-== BGP peers
+== BGP Peers
 
 - Manually configured and not automatically discovered
 - Formed over a TCP connection
@@ -328,14 +328,14 @@ eBGP peers ::
 (config-router)# neighbor <ip-address> remote-as <asn>
 ----
 
-.Task: Enable the neighbor to exchange prefixes for the ipv4 unicast address family with the local device
+.Task: Enable the Neighbor to Exchange Prefixes for the Ipv4 Unicast Address Family with the Local Device
 ----
 (config-router)# address-family ipv4 [unicast | multicast | vrf <name>]
 !TODO check the mode
 (config-router)# neighbor <ip-address> activate
 ----
 
-.Task: Display info about the TCP and BGP connection to neighbors
+.Task: Display Info About the TCP and BGP Connection to Neighbors
 ----
 # sh ip bgp neigbors <ip-address>
 ----
@@ -345,7 +345,7 @@ eBGP peers ::
 //# show ip bgp [network-address] [network-mask] [longer-prefixes] [prefix-list prefix-list-name | route-map route-map-name] [shorter prefixes mask-length]
 
 
-== BGP peer groups
+== BGP Peer Groups
 
 - Group of peers with the same update policies ( outbound route maps, distribute lists, filter lists, update source ,)
 - Benefits:
@@ -354,64 +354,64 @@ eBGP peers ::
 
 - Restrictions for eBGP peers:
 
-.Task: Create a BGP peer group
+.Task: Create a BGP Peer Group
 ----
 (config-router)# neighbor <peer-group-name> peer-group
 ----
 
-.Task: Assign a neighbor to a peer group
+.Task: Assign a Neighbor to a Peer Group
 ----
 (config-router)# neighbor <ip-address> peer-group <name>
 ----
 
-.Task: Add a text description with a specified peer group
+.Task: Add a Text Description with a Specified Peer Group
 ----
 (config-router)# neighbor <peer-group-name> description <text>
 ----
 
-.Task: Disable a BGP peer or peer group
+.Task: Disable a BGP Peer or Peer Group
 ----
 (config-router)# neighbor <ip-address> shutdown
 ----
 
-== BGP session reset
+== BGP Session Reset
 
 - Whenever the routing policy changes due to a configuration change
 - Can be hard reset, soft reset or dynamic inbound soft reset
 
-.Task: Clear and reset BGP neighbor sessions
+.Task: Clear and Reset BGP Neighbor Sessions
 ----
 # clear ip bgp *
 ----
 
-.Task: Enable logging of BGP neighbor resets
+.Task: Enable Logging Of BGP Neighbor Resets
 ----
 (config-router)# bgp log-neighbor-changes
 ----
 
-.Task: Clear BGP update group membership and recalculate BGP update groups
+.Task: Clear BGP Update Group Membership and Recalculate BGP Update Groups
 ----
 # clear ip bgp update-group [ <index-group> | <ip-address> ]
 ----
 
-=== Hard reset
+=== Hard Reset
 
 - Tears down the peering sessions including the TCP connections
 - Deletes prefixes learned from the peers.
 - Pros: no memory overhead
 
-=== Soft reset
+=== Soft Reset
 
 - Stores prefix information
 - Do not tearn down existing peering sessions
 - Can be configured for inbound or outbound sessions
 
-.Task:Configure a BGP speaker to perform inbound soft reconfiguration for peers that do not support the route refresh capability.
+.Task:Configure a BGP Speaker to Perform Inbound Soft Reconfiguration for Peers That Do Not Support the Route Refresh Capability.
 ----
 (config-router)# bgp soft-reconfig-backup
 ----
 
-.Task: Start storing updates for each neighbor that do not support route refresh
+.Task: Start Storing Updates for Each Neighbor That Do Not Support Route Refresh
 ----
 (config-router)# neighbor <ip-address|peer-group-name> soft-reconfiguration [inbound]
 ----
@@ -425,7 +425,7 @@ eBGP peers ::
 - Memory requirements can increased.
 ====
 
-=== Dynamic inbound soft reset
+=== Dynamic Inbound Soft Reset
 
 - Do not store update information locally
 - Relies on dynamic exchanges with supporting peers
@@ -433,11 +433,11 @@ eBGP peers ::
   _Received route refresh capability from peer_ .
 - Use *bgp soft-reconfig-backup* to store updates for peers who do not support the refresh route capability
 
-=== Routing policy change management
+=== Routing Policy Change Management
 
 TODO: add this part under bgp reset
 
-== BGP route aggregation
+== BGP Route Aggregation
 
 - 2 methods
   * basic route redistribution: creates an aggregate route, then redistributes the routes in BGP
@@ -448,7 +448,7 @@ TODO: add this part under bgp reset
   into the RIB) to any peer.
 
 
-=== BGP route aggregation generating AS_SET information
+=== BGP Route Aggregation Generating AS_SET Information
 
 #TODO: improve this part
 
@@ -462,37 +462,37 @@ by default for the aggregate-address command, is not added to the AS_SET.
 
 
 
-== BGP backdoor routes
+== BGP Backdoor Routes
 
 - Use *network backdoor* to cause BGP to prefer EIGRP
 
 image::bgp-backdoor-route-topology.png[]
 
-.Task: Indicate a network reachable through a backdoor route
+.Task: Indicate a Network Reachable Through a Backdoor Route
 ----
 (config-router)# network <ip-address> backdoor
 ----
 
-== Best path selection algorithm
+== Best Path Selection Algorithm
 
-. reachable next hop (well-known mandatory)
-. highest weight
-. highest local pref
-. locally originated paths (network, distribute, aggregate-summary) over externally originated paths
-. shortest AS path
-. lowest origin type ( internal over external over incomplete)
-. lowest MED
-. eBGP paths over iBGP paths
-. lowest IGP cost
-. oldest path
-. lowest BGP router id
+. Reachable Next Hop (Well-Known Mandatory)
+. Highest Weight
+. Highest Local Pref
+. Locally Originated Paths (Network, Distribute, Aggregate-Summary) Over Externally Originated Paths
+. Shortest AS Path
+. Lowest Origin Type ( Internal Over External Over Incomplete)
+. Lowest MED
+. EBGP Paths Over IBGP Paths
+. Lowest IGP Cost
+. Oldest Path
+. Lowest BGP Router Id
 
 TIP: “We Love Oranges AS Oranges Mean Pure Refreshment”.
 W Weight (Highest) L Local_Pref (Highest) O Originate (local originate) AS
 As_Path (shortest) O Origin Code (IGP < EGP < Incomplete) M MED (lowest) P
 Paths (External Paths preferred Over Internal) R Router ID (lowest)
 
-=== community attributes
+=== Community Attributes
 
 - No-advertise: prevents advertisements to any BGP peer
 - No-export: prevents advertisements to any eBGP peer
@@ -502,23 +502,23 @@ Paths (External Paths preferred Over Internal) R Router ID (lowest)
 
 == BGP Routing Process
 
-.Task: Configure a bgp routing process
+.Task: Configure a Bgp Routing Process
 ----
 (config)# router bgp <asn>
 ----
 
-.Task: Specify a network as local to the BGP routing table
+.Task: Specify a Network As Local to the BGP Routing Table
 ----
 (config-router)# network <prefix> [mask  <a.b.c.d>] [route-map <name>]
 ----
 
 
-.Task: Disable the IPv4 unicast address family for the BGP routing process
+.Task: Disable the IPv4 Unicast Address Family for the BGP Routing Process
 ----
 no bgp default ipv4-unicast
 ----
 
-.Task: Add a text description with a specified neighbor
+.Task: Add a Text Description with a Specified Neighbor
 ----
 (config-router)# neighbor <ip-address> description <text>
 ----
@@ -534,28 +534,28 @@ no bgp default ipv4-unicast
 
 === Aggregating Route Prefixes Using BGP
 
-.Task: Redistribute static routes into the BGP routing table
+.Task: Redistribute Static Routes Into the BGP Routing Table
 ----
 (config-router)# redistribute static
 ----
 
-.Task:Create an aggregate entry in a BGP routing table
+.Task:Create an Aggregate Entry In a BGP Routing Table
 ----
 (config-router)# aggregate-address <prefix> <mask> [as-set]
 ----
 
-.Task: Create an aggregate route and suppress advertisements of more-specific routes to all peers
+.Task: Create an Aggregate Route and Suppress Advertisements Of More-Specific Routes to All Peers
 ----
 (config-router)# aggregate-address <prefix> <mask> [summary-only]
 ----
 
-.Task: Create an aggregate route but suppress advertisement of specified routes
+.Task: Create an Aggregate Route but Suppress Advertisement Of Specified Routes
 ----
 (config-router)# aggregate-address <prefix> <mask> [suppress-map <map-name>]
 ----
 
 
-.Task: Selectively advertises routes previously suppressed by the *aggregate-address* command
+.Task: Selectively Advertises Routes Previously Suppressed by the *Aggregate-Address* Command
 ----
 (config-router)# neighbor <ip-address | peer-group-name> unsuppress-map <map-name>
 ----
@@ -583,58 +583,58 @@ condition is met.
   access list or an IP prefix list.
 
 
-.Task: Advertise selectively some BGP routes to neighbor
+.Task: Advertise Selectively Some BGP Routes to Neighbor
 ----
 (config-router)# neighbor <ip-address> advertise-map <name-1> { exist-map <name> | non-exist-map <name>}
 ----
 
-.Task: Inject more specific prefixes into a BGP routing table over less specific prefixes
+.Task: Inject More Specific Prefixes Into a BGP Routing Table Over Less Specific Prefixes
 ----
 (config-router)# bgp inject-map <name> exist-map <name> [copy-attributes]
 ----
 
 == BGP Routes
 
-.Task: Advertise a default route to BGP peers
+.Task: Advertise a Default Route to BGP Peers
 ----
 (config-router)# neighbor <ip-address> default-originate  [route-map <name>]
 ----
 
 
 
-.Task: Suppress inactive route advertisement using BGP
+.Task: Suppress Inactive Route Advertisement Using BGP
 
 - Suppress inactive route advertisement
 ----
 (config-router-af)# bgp suppress-inactive
 ----
 
-==  peer session template
+==  Peer Session Template
 
-.Task: Create a peer session template
+.Task: Create a Peer Session Template
 ----
 (config-router)# template peer-session <name>
 ----
 
-.Task: Inherit the configuration of another peer session template
+.Task: Inherit the Configuration Of Another Peer Session Template
 ----
 (config-router-stmp)# inherit peer-session <template-name>
 ----
 
-.Task: Send a peer session template to a neighbor so that the neighbor can inherit the configuration
+.Task: Send a Peer Session Template to a Neighbor So That the Neighbor Can Inherit the Configuration
 ----
 (config-router)# neighbor <ip-address> inherit peer-session <template-name>
 ----
 
 == Peer Policy Template
 
-.Task: Create a peer policy template
+.Task: Create a Peer Policy Template
 ----
 (config-router)# template peer-policy <name>
 ----
 
 
-.Task: Configure the maximum number of prefixes that a neighbor will accept from this peer
+.Task: Configure the Maximum Number Of Prefixes That a Neighbor Will Accept from This Peer
 ----
 (config-router-ptmp)# maximum-prefix <limit> [<threshold>] [restart <interval> | warning-only]
 ----
@@ -650,7 +650,7 @@ condition is met.
 
 == BGP Routing Table
 
-.Task: Display the entries in the bgp routing table
+.Task: Display the Entries In the Bgp Routing Table
 ----
 # sh ip bgp [prefix] [mask]
 ----
@@ -724,12 +724,12 @@ show ip bgp template peer-session
 == Troubleshoot
 
 
-.Task: Display info about the processing of BGP update groups.
+.Task: Display Info About the Processing Of BGP Update Groups.
 ----
 # debug ip bgp groups
 ----
 
-== todos
+== Todos
 
 - Concept: bgp route aggregation generating AS_SET information
 - Multiprotocol bgp concepts

@@ -1,10 +1,10 @@
-= Switch administration
+= Switch Administration
 
 ==  Interface Characteristics
 
 http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swint.html
 
-== System clock
+== System Clock
 
 - Can be set manually or dynamic with NTP
 - Keeps track internally based on UTC
@@ -18,17 +18,17 @@ NOTE: Use the minutes-offset variable  when the local time zone is a percentage 
 For example, the time zone for some sections of Atlantic Canada (AST) is UTC-3.5, where the 3 means 3 hours and.5 means 50 percent.
 In this case, the necessary command is *clock timezone AST -3 30*.
 
-.Task: Reset the time to UTC
+.Task: Reset the Time to UTC
 ----
 (config)# no clock timezone
 ----
 
-.Task: Set the system clock manually
+.Task: Set the System Clock Manually
 ----
 (config)# clock set <hh:mm:ss month day year>
 ----
 
-.Task: Display the time and date configuration
+.Task: Display the Time and Date Configuration
 ----
 # sh clock [detail]
 ----
@@ -43,16 +43,16 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 
 == System Name and Prompt
 
-.Task: Configure a system name
+.Task: Configure a System Name
 ----
 (config)# hostname <name>
 ----
 
-== MOTD login Banner
+== MOTD Login Banner
 
 - MOTD and login not configured by default
 
-.Task: Configure a message of the day login banner
+.Task: Configure a Message Of the Day Login Banner
 ----
 (config)# banner motd <delimiting-character> <message> <delimiting-character>
 ----
@@ -67,47 +67,47 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 (config)# banner login <delimiting-character> <message> <delimiting-character>
 ----
 
-== MAC address table
+== MAC Address Table
 
 - lists the destination MAC address with the associated VLANs , port number, and the type (static or dynamic)
 - dynamic address are discarded after  the *aging time* (300 seconds by default)
 
-.Task: Display Address Table Entries for the specified MAC address
+.Task: Display Address Table Entries for the Specified MAC Address
 ----
 # sh mac address-table address <MAC>
 ----
 
-.Task: Display only dynamic MAC addresses
+.Task: Display Only Dynamic MAC Addresses
 ----
 # sh mac address-table dynamic
 ----
 
 
-.Task: Display the number of addresses present
+.Task: Display the Number Of Addresses Present
 ----
 # sh mac address-table count
 ----
 
-.Task: Display the MAC address table information for the specified VLAN
+.Task: Display the MAC Address Table Information for the Specified VLAN
 ----
 # sh mac address-table vlan
 ----
 
-.Task: Display the MAC address table information for the specified interface
+.Task: Display the MAC Address Table Information for the Specified Interface
 ----
 # sh mac address-table interface
 ----
 
-=== Aging time
+=== Aging Time
 
 - Default: 300 seconds
 
-.Task: Set the length of time that a dynamic entry remains in the MAC address after the entry is used or updated
+.Task: Set the Length Of Time That a Dynamic Entry Remains In the MAC Address After the Entry Is Used or Updated
 ----
 # mac address-table aging-time [0 | 10-1000000] [vlan <1-4094>]
 ----
 
-.Task: Displays the aging time
+.Task: Displays the Aging Time
 ----
 # sh mac address-table aging-time [<vlan_id>]
 ----
@@ -117,13 +117,13 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 # clear mac address-table dynamic [<mac-address>]
 ----
 
-=== MAC Address change Notification Traps
+=== MAC Address Change Notification Traps
 
 - send SNMP trap when the switch learns or removes dynamic and secure MAC addresses.
 - do not send trap for self addesses, multicast addresses or static addresses
 - can set a trap-interval time to bundle the notification traps to reduce network traffic
 
-.Task: Send MAC address change notification traps to an NMS host
+.Task: Send MAC Address Change Notification Traps to an NMS Host
 ----
 (config)# snmp-server host <host-addr> { traps | informs} { version { 1 | 2c | 3 } } <community-string> mac-notification
 (config)# snmp-server enable traps mac-notification change
@@ -132,32 +132,32 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 (config-if)# snmp trap mac-notification change {added | removed }
 ----
 
-.Task: Verify the MAC address table notification change configuration
+.Task: Verify the MAC Address Table Notification Change Configuration
 ----
 # sh mac address-table notification change [interface]
 ----
 
-=== MAC address move Notification traps
+=== MAC Address Move Notification Traps
 
 - send a SNMP notification whenever a MAC address moves from one port to another within the same VLAN
 
-.Task: Send MAC address move notification traps to an NMS host
+.Task: Send MAC Address Move Notification Traps to an NMS Host
 ----
 (config)# snmp-server host <host-addr> { traps | informs} { version { 1 | 2c | 3 } } <community-string> mac-notification
 (config)# snmp-server enable traps mac-notification move
 (config)# mac address-table notification mac-move
 ----
 
-.Task: Verify the MAC address table notification move configuration
+.Task: Verify the MAC Address Table Notification Move Configuration
 ----
 # sh mac address-table notification mac-move
 ----
 
-=== MAC Treshold notification traps
+=== MAC Treshold Notification Traps
 
 - Send an SNMP notification when a MAC Address table treshold limit is reached or exceeded.
 
-.Task: Configure MAC Treshold notifcation traps
+.Task: Configure MAC Treshold Notifcation Traps
 ----
 (config)# snmp-server host <host-addr> { traps | informs} { version { 1 | 2c | 3 } } <community-string> mac-notification
 (config)# snmp-server enable traps mac-notification treshold
@@ -166,12 +166,12 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 ----
 
 
-.Task: Verify the MAC address table notification treshold configuration
+.Task: Verify the MAC Address Table Notification Treshold Configuration
 ----
 # sh mac address-table notification treshold
 ----
 
-=== Static addresses
+=== Static Addresses
 
 - manually entered in the address table and must be manually removed
 - can be unicast or mcast
@@ -181,30 +181,30 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 it has not been statically entered is flooded to all ports and not learned
 ** if the VLAN is in a private-primary or private-secondary, configure the same static address in all associated VLANs.
 
-.Task: Add a static address to the MAC address table
+.Task: Add a Static Address to the MAC Address Table
 ----
 (config)# mac address-table static <MAC> vlan <vlan-id> interface <interface-id>
 ----
 
-.Task: Display only static MAC addresses
+.Task: Display Only Static MAC Addresses
 ----
 # sh mac address-table static
 ----
 
-=== Unicast MAC address filtering
+=== Unicast MAC Address Filtering
 
 - Drops packets with specific source or destination MAC addressess
 - disabled by default
 - mcast, bcast and router MAC addresses are not supported
 
 
-.Task: Enable unicast MAC address filtering
+.Task: Enable Unicast MAC Address Filtering
 ----
 (config)# mac address-table static <MAC> vlan <vlan-id> drop
 ----
 
 
-=== MAC Address learning on a VLAN
+=== MAC Address Learning on a VLAN
 
 - enabled by default on a VLANs
 - can be disabled with the following restrictions:
@@ -221,17 +221,17 @@ it has not been statically entered is flooded to all ports and not learned
 - If you disable MAC address learning on a VLAN that includes a secure port, MAC address learning is not disabled on that port. If you disable port security, the configured MAC address learning state is enabled.
 ====
 
-.Task: Disable MAC address learning
+.Task: Disable MAC Address Learning
 ----
 (config)# no mac address-table learning vlan <vlan-id>
 ----
 
-.Task: Display the MAC address learning
+.Task: Display the MAC Address Learning
 ----
 sh mac address-table learning [vlan <vlan-id>]
 ----
 
-.Task: Reenable MAC address learning
+.Task: Reenable MAC Address Learning
 ----
 (config)# default mac address-table learning vlan <vlan-id>
 ----

@@ -6,9 +6,9 @@ Sending a message from a single source to selected multiple destinations across 
 Layer 3 network in one data stream.
 
 
-== Multicast IP addressing
+== Multicast IP Addressing
 
-.Multicast Address ranges and their use
+.Multicast Address Ranges and Their Use
 [cols="30,70"]
 ,===
 Range                         ,  Usage
@@ -23,7 +23,7 @@ Remaining ranges of addresses , transient groups; Any enterprise can allocate a 
 ,===
 
 
-.Well-known Multicast Addresses
+.Well-Known Multicast Addresses
 [cols="30,70"]
 :===
 Address    : Usage
@@ -42,7 +42,7 @@ Address    : Usage
 :===
 
 
-== Mapping IP multicast address to MAC addresses
+== Mapping IP Multicast Address to MAC Addresses
 
 ip -> mac address = (0x01005E) + 0 bit + last 23 bits of the IP address
 

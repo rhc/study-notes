@@ -28,14 +28,14 @@ after realizing no messages have been received.
 If the other switch does not reply to the repeated additional messages, 
 both sides become err-disabled.
 
-=== Modes of operations
+=== Modes Of Operations
 
 ==== Normal
 
 - default
 - detects unidirectional links due to misconnected ports on fiber-optic connection 
 
-==== Aggresive mode
+==== Aggresive Mode
 
 
 
@@ -43,7 +43,7 @@ both sides become err-disabled.
 == Tasks
 
 
-=== Default configuration
+=== Default Configuration
 
 [format="dsv"]
 |===
@@ -54,7 +54,7 @@ UDLD per-port enable state for UTP copper media            : Disabled on all Eth
 UDLD aggressive mode                                       : Disabled
 |===
 
-.Task: Enable UDLD globally
+.Task: Enable UDLD Globally
 ----
 (config)# udld {aggressive | enable | message time <seconds>}
 ----
@@ -70,9 +70,9 @@ that are in the advertisement phase and are detected to be bidirectional.
 - This command affects fiber-optic ports only. Use *(config-if)# udld* 
 to enable UDLD on other port types.
 
-.Task: Enable UDLD on an interface
+.Task: Enable UDLD on an Interface
 
-.Task: Reset an interface disabled by UDLD
+.Task: Reset an Interface Disabled by UDLD
 ----
 udld reset 
 ----
@@ -83,9 +83,9 @@ You can also  restart the disabled port
 - *no udld {aggressive | enable}* followed by *udld {aggressive | enable}*
 - *no udld port* followed by *udld port [aggressive]* 
 
-== UDLD error-disabled state
+== UDLD Error-Disabled State
 
-.Task: Recover from the UDLD error-disabled state
+.Task: Recover from the UDLD Error-Disabled State
 ----
 ! Enable UDLD to automatically recover
 (config)# errdisable recovery cause udld 
@@ -94,7 +94,7 @@ You can also  restart the disabled port
 (config-if)# errdisable recovery interval <seconds>
 ----
 
-.Task: Display UDLD status
+.Task: Display UDLD Status
 ----
 show udld [interface-id]
 ----

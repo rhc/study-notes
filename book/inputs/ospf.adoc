@@ -32,7 +32,7 @@ To form adjacency neighbors must agree on
   * interface MTU
   * other optional capabilities
 
-== Router id
+== Router Id
 
 Determined by these rules in order of preference at boot or ospf process restart:
 
@@ -40,7 +40,7 @@ Determined by these rules in order of preference at boot or ospf process restart
 - highest IP address of an up/up loopback not used by other OSPF process
 - highest IP address of an up/up non-loopack interfaces  not used by other OSPF process
 
-.Task: Set the router-id
+.Task: Set the Router-Id
 ----
 (config-router)# router-id <a.b.c.d>
 ----
@@ -58,12 +58,12 @@ Determined by these rules in order of preference at boot or ospf process restart
 (config-if)# ip ospf priority <0-255>
 ----
 
-.Task: Set the WAIT timer
+.Task: Set the WAIT Timer
 ----
 (config-if)# ip ospf dead-timer <seconds>
 ----
 
-== Ospf cost
+== Ospf Cost
 
 stem:["Cost" = 10^8 / "Bandwidth(bps)"]
 
@@ -76,7 +76,7 @@ stem:["Cost" = 10^8 / "Bandwidth(bps)"]
 
 === Common OSPF Packet Header
 
-.OSPF header format
+.OSPF Header Format
 ["packetdiag", target="ospf-header-format",size=200]
 ----
 diagram {
@@ -125,7 +125,7 @@ NOTE: OSPF neighbors will become fully adjacent if one or both of the neighbors 
 unnumbered interfaces for the connection between them.
 
 
-.OSPF Hello Packet format
+.OSPF Hello Packet Format
 ["packetdiag", target="ospf-hello-packet-format"]
 ----
 diagram {
@@ -144,12 +144,12 @@ diagram {
 }
 ----
 
-.Task: Configure OSPF Hello interval
+.Task: Configure OSPF Hello Interval
 ----
 (config-if)# ip ospf hello-interval <seconds>
 ----
 
-.Task: Set the interval during which at least one OSPF hello packet must be received from a neighbor before the router declares that neighbor down
+.Task: Set the Interval During Which at Least One OSPF Hello Packet Must Be Received from a Neighbor Before the Router Declares That Neighbor Down
 ----
 (config-if)# ip ospf dead-interval {<seconds> | minimal hello-multiplier <number>}
 ----
@@ -169,7 +169,7 @@ diagram {
 same sequence number. In effect, a slave is polled by the master and only responds to it.
 * If a slave has more DD than the master, he uses the M flag
 
-.OSPF DD Packet format
+.OSPF DD Packet Format
 ["packetdiag", target="ospf-database-description-message-format"]
 ----
 diagram {
@@ -205,7 +205,7 @@ MS-bit:: if this message is sent by the master in the communication
 
 === Link State Request
 
-.OSPF Link State Request format
+.OSPF Link State Request Format
 ["packetdiag", target="ospf-link-state-request-message-format"]
 ----
 diagram {
@@ -222,7 +222,7 @@ diagram {
 
 === Link State Update
 
-.OSPF Link State Update format
+.OSPF Link State Update Format
 ["packetdiag", target="ospf-link-state-update-message-format"]
 ----
 diagram {
@@ -238,7 +238,7 @@ diagram {
 
 === Link State Acknowledgment
 
-.OSPF Link State Acknowledgment format
+.OSPF Link State Acknowledgment Format
 ["packetdiag", target="ospf-link-state-ack-message-format"]
 ----
 diagram {
@@ -324,7 +324,7 @@ Type 9-11:: Opaque LSA
     * type 11 has autonomous system flooding scope equivalent to the flooding scope of type 5 LSAs
     (not flooded into stubby areas and NSSAs).
 
-. OSPF's SPF algorithm links different pieces of information together.
+. OSPF'S SPF Algorithm Links Different Pieces Of Information Together.
 ****
 For a router in Area 1 to reach the external route in Area 3,
 it has to look at the Type-5 that represents the external route.
@@ -336,7 +336,7 @@ Read more
 https://supportforums.cisco.com/document/133976/reading-and-understanding-ospf-database#sthash.qdHPgN1P.dpuf[here].
 ****
 
-.Task: Display the OSPF database
+.Task: Display the OSPF Database
 ----
 # sh ip ospf database
 ----
@@ -360,11 +360,11 @@ All stubby area types
 - automatically inject default routes except NSSA
 
 
-=== Stubby area
+=== Stubby Area
 
 - Doesn't have an ASBR
 
-.Task: Configure a stubby area
+.Task: Configure a Stubby Area
 ----
 (config-router)# area <id> stub
 ----
@@ -374,7 +374,7 @@ All stubby area types
 - Stubby areas where Type 3 are blocked
 
 
-.Task: Configure totally stubby areas on the ABR
+.Task: Configure Totally Stubby Areas on the ABR
 ----
 (config-router)# area <id> stub no-summary
 ----
@@ -393,7 +393,7 @@ All stubby area types
 ----
 
 
-.Task: Inject default routes in NSSA
+.Task: Inject Default Routes In NSSA
 ----
 (config)# area <id> nssa default-information-originate
 ----
@@ -410,13 +410,13 @@ All stubby area types
 
 
 
-== OSPF path selection
+== OSPF Path Selection
 
 - Intra-Area > Inter-Area > External Routes (E1/N1 > E2/N2)
 
 
 
-== Virtual links
+== Virtual Links
 
 - purposes:
   * Areas not physically connected to area 0
@@ -441,7 +441,7 @@ All stubby area types
 (config-router)# no capability transit
 ----
 
-.Task: Configure Authentication on virtual links
+.Task: Configure Authentication on Virtual Links
 ----
 ! Null
 (config-router)# area <id> virtual-link <router-id> authentication { null }
@@ -458,7 +458,7 @@ All stubby area types
 
 http://www.cisco.com/en/US/tech/tk365/technologies_tech_note09186a0080094aaa.shtml[What are ospf areas and virtual links]
 
-== Network types
+== Network Types
 
 broadcast::
   - multicast hellos every 10 seconds
@@ -504,14 +504,14 @@ Loopback::
 
 http://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/7039-1.html#t27[OSPF design guide: selecting interface network types]
 
-.Task: Configure OSPF network type
+.Task: Configure OSPF Network Type
 ----
 (config-if)# ospf network {broadcast| point-to-point| point-to-multipoint [non-broadcast] | non-broadcast | loopback }
 ----
 
 
 
-== Graceful restart
+== Graceful Restart
 
 - enables a router to continue to forward packets during a restart of the routing process
 - must be configured on all neighbor routers
@@ -522,16 +522,16 @@ http://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/7039-
 http://www.cisco.com/en/US/docs/ios-xml/ios/iproute_ospf/command/ospf-a1.html#wp258289[Cisco
 NSF]
 
-== SPF throttling
+== SPF Throttling
 
-== capability vrf-lite
+== Capability Vrf-Lite
 
 Read OSG, chapter 19, VRF lite, pp. 872-876
 
 http://www.cisco.com/en/US/docs/ios-xml/ios/iproute_ospf/command/ospf-a1.html#wp2582896905
 
 
-== summarization
+== Summarization
 
 Why the null 0 interface is added ?
 
@@ -543,7 +543,7 @@ Why the null 0 interface is added ?
 See good explanation
 
 
-== OSPF states
+== OSPF States
 
 image::ospf-lsdb-exchange.png[OSPF LSDB Exchange]
 
@@ -607,9 +607,9 @@ cleared).
 
 http://www.cisco.com/en/US/tech/tk365/technologies_white_paper09186a0080094e9e.shtml#appa1[ospf design guide: link-state advertisements]
 
-== OSPF process
+== OSPF Process
 
-.Task: Enable OSPF process (legacy command )
+.Task: Enable OSPF Process (Legacy Command )
 ----
 (config)# router ospf <process-id>
 (config-router)# network <a.b.c.d> [<w.i.l.d>] area <id>
@@ -623,18 +623,18 @@ that matches the IP address of the primary interface,
 inject both the primary interface and the unnumbered interface
 ====
 
-.Task: Enable OSPF Process (interface level)
+.Task: Enable OSPF Process (Interface Level)
 ----
 (config-if)# ip ospf <process-id> area <id>
 ----
 NOTE: - inject any and all secondary subnets
 
-.Task: Prevent OSPF to advertize secondary prefixes
+.Task: Prevent OSPF to Advertize Secondary Prefixes
 ----
 (config-if)# ip ospf <process-id> area <id> secondaries none
 ----
 
-== OSPF authentication
+== OSPF Authentication
 
 === Classic OSPF Authentication
 
@@ -653,7 +653,7 @@ NOTE: - inject any and all secondary subnets
 (config-if)# ip ospf message-digest-key <key-id> md5 <string>
 ----
 
-.Key rollover procedure with Multiple MD5 keys
+.Key Rollover Procedure with Multiple MD5 Keys
 [NOTE]
 ====
 Multiple MD5 keys with different key IDs are allowed per interface.
@@ -689,7 +689,7 @@ This allows for graceful key migration where a new key can be added without disr
    ** To sign egress packets, use the valid key with the highest key ID in the key chain.
    ** To authenticate ingress packets, try to use the key indicated in the received packet.
 
-.Task: Configure a cryptographic algorithm for the key chain
+.Task: Configure a Cryptographic Algorithm for the Key Chain
 ----
 (config)# key-chain <name>
 (config-keychain)# key <number>
@@ -702,7 +702,7 @@ This allows for graceful key migration where a new key can be added without disr
   md5           MD5 authentication algorithm
 ----
 
-.Task: Configure the extended cryptographic OSPF authentication
+.Task: Configure the Extended Cryptographic OSPF Authentication
 ----
 (config-if)# ip ospf authentication key-chain <key-chain-name>
 ----
@@ -722,34 +722,34 @@ NOTE: Configuring the extended cryptographic authentication using the area OSPF 
   possible indication of a malicious activity.
 
 
-.Task: Configure the Time-to-Live (TTL) security check feature on a specific interface
+.Task: Configure the Time-to-Live (TTL) Security Check Feature on a Specific Interface
 ----
 (config-if)# ip ospf ttl-security [hops <count> |disable]
 ----
 
-.Task: Configure the Time-to-Live (TTL) security check feature on all interfaces
+.Task: Configure the Time-to-Live (TTL) Security Check Feature on All Interfaces
 ----
 (config-router)# ip ospf ttl-security all-interfaces
 ----
 
-.Task: Configure TTL security on a virtual link
+.Task: Configure TTL Security on a Virtual Link
 ----
 (config-router)# area virtual-link ttl-security <hops>
 ----
 
-.Task: Configure TTL security on a sham link
+.Task: Configure TTL Security on a Sham Link
 ----
 (config-router)# area virtual-link ttl-security <hops>
 ----
 
 == SPF
 
-=== spf timers
+=== Spf Timers
 
 - spf-delay: between topology change notifications and recalculation of the shortest path
 - spf-holdtime : between spf calculations
 
-.Task: Configure spf timers
+.Task: Configure Spf Timers
 ----
 (config-router)# timers spf seconds <seconds>
 ----
@@ -768,12 +768,12 @@ NOTE: Configuring the extended cryptographic authentication using the area OSPF 
   previous spfhold value.
 
 
-.Task: configure spf throttling
+.Task: Configure Spf Throttling
 ----
 (config-router)# timers throttle spf <spf-start> <spf-hold> <spf-max-wait>
 ----
 
-.Task: Verify SPF throttling configuration
+.Task: Verify SPF Throttling Configuration
 ----
 # sh ip ospf | i SPF
 
@@ -790,7 +790,7 @@ NOTE: Configuring the extended cryptographic authentication using the area OSPF 
 (config-router)# timers throttle lsa all <start-interval> <hold-interval> <max-interval>
 ----
 
-.Task: Verify LSA Throttling configuration
+.Task: Verify LSA Throttling Configuration
 ----
 # sh ip ospf | i LSA
 
@@ -824,7 +824,7 @@ willing to accept it.
 (config-router)# ispf
 ----
 
-.Task: Verify Incremental SPF configuration
+.Task: Verify Incremental SPF Configuration
 ----
 # sh ip ospf | i Incremental
 
@@ -833,7 +833,7 @@ willing to accept it.
 
 == OSPF Filtering
 
-=== Routes Filtering not LSA filtering
+=== Routes Filtering Not LSA Filtering
 
 - uses *distribute-list*
 
@@ -849,7 +849,7 @@ willing to accept it.
    route.
 
 
-=== ABR Type 3 LSA filtering
+=== ABR Type 3 LSA Filtering
 
 -  allows an ABR to filter type 3 LSAs at the point where the LSAs would normally
  be created.
@@ -859,9 +859,9 @@ willing to accept it.
 (config-router)# area <id> filter-list prefix <prefix-list-name> { in | out }
 ----
 
-=== Using the area range no-advertise option
+=== Using the Area Range No-Advertise Option
 
-.Task: Summarize and do not advertise components
+.Task: Summarize and Do Not Advertise Components
 ----
 (config-router)# area <id> range <prefix /length> not-advertise [ cost cost ]
 ----
@@ -871,7 +871,7 @@ willing to accept it.
 - RFC 6860 defines a method of hiding, or suppressing, the transit link prefixes in OSPF
 TODO Complete this
 
-.Task: Activate OSPFv2 Prefix Suppression for the entire router
+.Task: Activate OSPFv2 Prefix Suppression for the Entire Router
 ----
 (config-router)# prefix-suppression
 ----
@@ -879,7 +879,7 @@ NOTE:  suppress all prefixes on all its OSPF-enabled interfaces except
 loopbacks, secondary IP addresses, and prefixes on passive interfaces. Such
 prefixes are considered nontransit prefixes.
 
-.Task: Activate OSPFv2 Prefix Suppression on a specific interface
+.Task: Activate OSPFv2 Prefix Suppression on a Specific Interface
 ----
 (config-if)# ip ospf prefix-suppression [disable]
 ----

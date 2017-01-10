@@ -1,10 +1,10 @@
 = MST
 
-== operations
+== Operations
 cst -> 1 stp for all vlan
 pvst -> 1 stp for each vlan
 mst -> 1 stp per instance 
 
-== readings
+== Readings
 
 http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swmstp.html
