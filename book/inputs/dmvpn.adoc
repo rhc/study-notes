@@ -1,37 +1,36 @@
 = DMVPN
 
-== Concepts
-
-- dynamic creation of spoke-to-spoke 
-
-
+- dynamic creation of spoke-to-spoke
 - DMVPN = mGRE + NHRP + IPSec
 
 
-Start with mGRE configuration 
+Start with mGRE configuration
 
+----
 interface tunnel 0
   ip address 141.11.10.1 255.255.255.0
   tunnel source e0
   tunnel mode gre multipoint
-
+----
 
 
 == Phases
 
 Phase 1::
- - Hub and spoke functionality
- - for simplified and smaller configuration
- - zero touch provisioning for adding spokes to the VPN
- - supports dynamically addressed CPEs
+- Hub and spoke functionality
+- for simplified and smaller configuration
+- zero touch provisioning for adding spokes to the VPN
+- supports dynamically addressed CPEs
 
 Phase 2::
- - Spoke-to-spoke functionality
- - on demand spoke-to-spoke tunnels avoids dual encrypts/decrypts 
- - Smaller spoke CPE can participate in the virtual mesh
+- Spoke-to-spoke functionality (by changing the routing protocol behavior self-hop ?)
+- on demand spoke-to-spoke tunnels avoids dual encrypts/decrypts
+- Smaller spoke CPE can participate in the virtual mesh
 
 Phase 3::
- Architecture and scaling
+- Architecture and scaling
+- uses ip nhrp redirect on the hub
+- uses ip nhrp shortcut on the spokes to accept and install the shortcut route
 
 
 .Task: Verify NHRP Configuration
@@ -47,4 +46,301 @@ Phase 3::
    Type: dynamic, Flags: unique registered
    NBMA address: 10.11.10.3
 ----
+
+
+== DMVPN with IPsec using pre-shared key
+
+The feature works according to the following rules.
+
+- Each spoke has a permanent IPSec tunnel to the hub, not to the other spokes
+  within the network. Each spoke registers as clients of the NHRP server.
+- When a spoke needs to send a packet to a destination (private) subnet on
+  another spoke, it queries the NHRP server for the real (outside) address of
+  the destination (target) spoke.
+- After the originating spoke learns the peer address of the target spoke, it
+  can initiate a dynamic IPSec tunnel to the target spoke.
+- The spoke-to-spoke tunnel is built over the multipoint GRE (mGRE) interface.
+- The spoke-to-spoke links are established on demand whenever there is traffic
+  between the spokes. Thereafter, packets are able to bypass the hub and use
+  the spoke-to-spoke tunnel.
+- If an IP multicast stream originates from a spoke location, a rendezvous
+  point (RP) must be deployed at the hub site in order for other spoke site
+  clients to receive the stream
+- mGRE Tunnel Interface allows a single GRE interface to support multiple IPSec
+  tunnels and simplifies the size and complexity of the configuration.
+
+
+TODO: Work this long configuration sample.
+TODO: Understand the purpose of the individual commands
+
+.Hub Router
+----
+crypto isakmp policy 100
+hash md5
+authentication pre-share
+
+!--- Add dynamic pre-shared keys for all the remote VPN
+!--- routers.
+crypto isakmp key cciein8weeks address 0.0.0.0 0.0.0.0
+!--- Create the Phase 2 policy for actual data encryption.
+crypto ipsec transform-set strong esp-3des esp-md5-hmac
+!
+!--- Create an IPSec profile to be applied dynamically to the
+!--- GRE over IPSec tunnels.
+
+crypto ipsec profile cciein8weeks
+set security-association lifetime seconds 120
+set transform-set strong
+
+!--- Create a GRE tunnel template which will be applied to
+!--- all the dynamically created GRE tunnels.
+
+interface Tunnel0
+ip address 192.168.1.1 255.255.255.0
+no ip redirects
+ip mtu 1440
+ip nhrp authentication cciein8weeks
+ip nhrp map multicast dynamic
+ip nhrp network-id 1
+no ip split-horizon eigrp 90
+no ip next-hop-self eigrp 90
+tunnel source FastEthernet0/0
+tunnel mode gre multipoint
+
+
+
+
+
+
+tunnel key 0
+tunnel protection ipsec profile cciein8weeks
+
+!--- This is the outbound interface.
+
+interface FastEthernet0/0
+ip address 209.168.202.225 255.255.255.0
+duplex auto
+speed auto
+
+!--- This is the inbound interface.
+
+interface FastEthernet0/1
+ip address 1.1.1.1 255.255.255.0
+duplex auto
+speed auto
+!
+!--- Enable a routing protocol to send and receive
+!--- dynamic updates about the private networks.
+
+router eigrp 10
+network 1.1.1.0 0.0.0.255
+network 192.168.1.0
+no auto-summary
+----
+
+
+
+
+.Spoke 1 (DMVPN Phase II)
+----
+crypto isakmp policy 10
+hash md5
+authentication pre-share
+
+!--- Add dynamic pre-shared keys for all the remote VPN
+!--- routers and the hub router.
+
+crypto isakmp key cciein8weeks address 0.0.0.0 0.0.0.0
+!
+!--- Create the Phase 2 policy for actual data encryption.
+crypto ipsec transform-set strong esp-3des esp-md5-hmac
+
+!--- Create an IPSec profile to be applied dynamically to
+!--- the GRE over IPSec tunnels.
+
+crypto ipsec profile cciein8weeks
+set security-association lifetime seconds 120
+set transform-set strong
+
+!--- Create a GRE tunnel template to be applied to
+!--- all the dynamically created GRE tunnels.
+
+interface Tunnel0
+ip address 192.168.1.2 255.255.255.0
+no ip redirects
+ip mtu 1440
+ip nhrp authentication cciein8weeks
+ip nhrp map multicast dynamic
+ip nhrp map 192.168.1.1 209.168.202.225
+ip nhrp map multicast 209.168.202.225
+ip nhrp network-id 1
+ip nhrp nhs 192.168.1.1
+tunnel source FastEthernet0/0
+tunnel mode gre multipoint <- facilitates spoke to spoke communication
+tunnel key 0
+tunnel protection ipsec profile cciein8weeks
+!
+!--- This is the outbound interface.
+interface FastEthernet0/0
+ip address 209.168.202.131 255.255.255.0
+duplex auto
+speed auto
+!
+!--- This is the inbound interface.
+interface FastEthernet0/1
+ip address 2.2.2.2 255.255.255.0
+duplex auto
+speed auto
+
+!--- Enable a routing protocol to send and receive
+!--- dynamic updates about the private networks.
+
+router eigrp 10
+network 2.2.2.0 0.0.0.255
+network 192.168.1.0
+no auto-summary
+----
+
+
+.Spoke 2
+----
+crypto isakmp policy 10
+hash md5
+authentication pre-share
+
+!--- Add dynamic pre-shared keys for all the remote VPN
+!--- routers and the hub router.
+
+crypto isakmp key cciein8weeks address 0.0.0.0 0.0.0.0
+!--- Create the Phase 2 policy for actual data encryption.
+crypto ipsec transform-set strong esp-3des esp-md5-hmac
+
+!--- Create an IPSec profile to be applied dynamically to
+!--- the GRE over IPSec tunnels.
+
+crypto ipsec profile cciein8weeks
+set security-association lifetime seconds 120
+set transform-set strong
+!--- Create a GRE tunnel template to be applied to
+!--- all the dynamically created GRE tunnels.
+
+interface Tunnel0
+ip address 192.168.1.3 255.255.255.0
+no ip redirects
+ip mtu 1440
+ip nhrp authentication cciein8weeks
+ip nhrp map multicast dynamic
+ip nhrp map 192.168.1.1 209.168.202.225
+ip nhrp map multicast 209.168.202.225
+ip nhrp network-id 1
+ip nhrp nhs 192.168.1.1
+tunnel source FastEthernet0/0
+tunnel mode gre multipoint
+tunnel key 0
+tunnel protection ipsec profile cciein8weeks
+!
+
+!--- This is the outbound interface.
+interface FastEthernet0/0
+ip address 209.168.202.130 255.255.255.0
+duplex auto
+speed auto
+!
+!--- This is the inbound interface.
+interface FastEthernet0/1
+ip address 3.3.3.3 255.255.255.0
+duplex auto
+speed auto
+!
+!--- Enable a routing protocol to send and receive
+!--- dynamic updates about the private networks.
+
+router eigrp 10
+network 3.3.3.0 0.0.0.255
+network 192.168.1.0
+no auto-summary
+----
+
+== QoS profile
+
+
+The Per-Tunnel QoS for DMVPN feature introduces per-tunnel quality of service (QoS) support
+for Dynamic Multipoint VPN (DMVPN) and increases per-tunnel QoS performance for Internet
+Protocol Security (IPsec) tunnel interfaces. This feature allows you to apply a QoS policy on a
+DMVPN hub on a tunnel instance (per-endpoint or per-spoke basis) in the egress direction for
+DMVPN hub-to-spoke tunnels. The QoS policy on a DMVPN hub on a tunnel instance allows
+you to shape the tunnel traffic to individual spokes (parent policy) and to differentiate individual
+data flows going through the tunnel for policing (child policy).
+
+The QoS policy that is used by the hub for a particular endpoint or spoke is selected by the Next
+Hop Resolution Protocol (NHRP) group in which the spoke is configured. Even though many
+spokes may be configured in the same NHRP group, the tunnel traffic of each spoke is
+measured individually for shaping and policing.
+
+The following example shows how to map NHRP groups to a QoS policy on the hub.
+The example shows a hierarchical QoS policy (parent: group1_parent/group2_parent; child:
+group1/group2) that will be used for configuring per-tunnel QoS for DMVPN feature.
+The example also shows how to map the NHRP group spoke_group1 to the QoS policy
+group1_parent and map the NHRP group spoke_group2 to the QoS policy group2_parent on
+the hub:
+
+.DMVPN Hub and QoS Configuration
+----
+class-map match-all group1_Routing
+match ip precedence 6
+class-map match-all group2_Routing
+match ip precedence 6
+class-map match-all group2_voice
+match access-group 100
+class-map match-all group1_voice
+match access-group 100
+
+policy-map group1
+class group1_voice
+        priority 1000
+class group1_Routing
+        bandwidth percent 20
+policy-map group1_parent
+class class-default
+        shape average 3000000
+ service-policy group1
+policy-map group2
+class group2_voice
+        priority percent 20
+class group2_Routing
+        bandwidth percent 10
+policy-map group2_parent
+class class-default
+        shape average 2000000
+ service-policy group2
+
+interface tunnel 1
+ip address 209.165.200.225 255.255.255.224
+no ip redirects
+ip mtu 1400
+ip nhrp authentication testing
+ip nhrp map multicast dynamic
+ip nhrp map group spoke_group1 service-policy output group1_parent
+ip nhrp map group spoke_group2 service-policy output group2_parent
+ip nhrp network-id 172176366
+ip nhrp holdtime 300
+ip nhrp registration no-unique
+tunnel source fastethernet 2/1/1
+tunnel mode gre multipoint
+tunnel protection ipsec profile DMVPN
+
+interface fastethernet 2/1/1
+ip address 209.165.200.226 255.255.255.224
+----
+
+
+== QoS Pre-classify
+
+Configure qos pre-classify in VPN designs where both QoS and IPsec occur on the
+same system and QoS needs to match on parameters in the cleartext packet other
+than the DSCP/ToS byte.
+
+http://goo.gl/cb0HLi[Further Reading]
+
+
 

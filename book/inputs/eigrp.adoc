@@ -1,11 +1,7 @@
 = EIGRP
 
-
-
-
-
 - classless protocol (VLSM, summarization)
-- multiple routed protocol support (ipv4, ipx, appletalk, )
+- multiprotocol support (ipv4, ipv6, ipx, appletalk, )
 - uses its own transport protocol
   ** IP protocol 88: RTP
   ** Uses multicast to 224.0.0.10 and unicast
@@ -15,8 +11,8 @@
 - granular metric
 - unequal cost load balancing
 - summarization
-- Supports MD5 based authentication
-
+- Supports MD5 and SHA based authentication
+- https://tools.ietf.org/html/rfc7868[rfc7868]
 
 == EIGRP Packet Format
 
@@ -64,6 +60,11 @@ packet is being sent.
 - A Hello packet with a nonzero ACK field  will be treated as an ACK packet rather than as a Hello.
 - only unicast because acknowledgments are never multicasted.
 
+Virtual Router Id::
+- 0x1 = Unicast Address Family
+- 0x2 = Multicast Address Family
+- 0x8000 = Unicast Service Address Family (in service advertisement framework)
+
 TLV::
 - Field used to carry route entries as well as provide EIGRP DUAL information.
 
@@ -72,40 +73,25 @@ TLV::
 * 0x0003 Sequence (General TLV Types)
 * 0x0004 Software Version (General TLV Types)
 * 0x0005 Next Multicast Sequence (General TLV Types)
-* 0x0102 IPv4 Internal Routes (IP*Specific TLV Types)
-* 0x0103 IPv4 External Routes (IP*Specific TLV Types)
-* 0x0402 IPv6 Internal Routes (IP*Specific TLV Types)
-* 0x0403 IPv6 External Routes (IP*Specific TLV Types)
-* 0x0602 Multi Protocol Internal Routes (AFI*Specific TLV Types)
-* 0x0603 Multi Protocol External Routes (AFI*Specific TLV Types)
-
-
+* 0x0102 IPv4 Internal Routes (IP-Specific TLV Types)
+* 0x0103 IPv4 External Routes (IP-Specific TLV Types)
+* 0x0402 IPv6 Internal Routes (IP-Specific TLV Types)
+* 0x0403 IPv6 External Routes (IP-Specific TLV Types)
+* 0x0602 Multi Protocol Internal Routes (AFI-Specific TLV Types)
+* 0x0603 Multi Protocol External Routes (AFI-Specific TLV Types)
 
 == EIGRP Messages
 
+- Unreliable packets: Hello and Ack (with Seq=0)
+- Reliable packets: Update, Query/Reply, SIA-Query/SIA-Reply
+ * sent with non-zero SEQ
+ * Must be ACK
+ * are retransmitted at most 16 times for a max window of 5 secons
 
-.Task: Show Statistics About Messages Sent and Received
-----
-# show ip eigrp traffic
-
-EIGRP-IPv4 VR(CCIE) Address-Family Traffic Statistics for AS(1)
-  Hellos sent/received: 1132/6090
-  Updates sent/received: 169/428
-  Queries sent/received: 0/0
-  Replies sent/received: 0/0
-  Acks sent/received: 74/191
-  SIA-Queries sent/received: 0/0
-  SIA-Replies sent/received: 0/0
-  Hello Process ID: 246
-  PDM Process ID: 244
-  Socket Queue: 0/10000/7/0 (current/max/highest/drops)
-  Input Queue: 0/2000/7/0 (current/max/highest/drops)
-----
-
-[horizontal]
 Hello::
 - Opcode = 5
-- Multicast to 224.0.0.10
+- Multicast to 224.0.0.10 or FF02::A
+- unicast to static neighbors
 - Do not require acknowlegment
 - Can be used as Ack if sent without data
 - every 5 seconds or 60 seconds on NBMA interfaces with < 1 Mbps bandwidth
@@ -126,9 +112,7 @@ the unicast reliable packet carrying a nonzero Acknowledgment number field will 
 
 
 Update::
-- multicast or unicast
-
-
+* reliable
 * unicast during a new adjacency buildup, Update packets are unicasted between the
   newly discovered neighbors.
 
@@ -142,6 +126,7 @@ Update::
 
 Query::
 - Opcode = 3
+- reliable
 - multicast unless in response to a received query
 
 Reply::
@@ -169,14 +154,29 @@ SIA-Query::
   giving the computation extra time to finish
 
 SIA-Request::
-- Opcode = 10
+- Opcode = 11
 - unicast
 
 
-- Unreliable packets: Hello and Ack
-- Reliable packets: Update, Query/Reply, SIA-Query/SIA-Reply
- * Must be ACK
- * are retransmitted at most 16 times
+
+.Task: Show Statistics About Messages Sent and Received
+----
+# show ip eigrp traffic
+
+EIGRP-IPv4 VR(CCIE) Address-Family Traffic Statistics for AS(1)
+  Hellos sent/received: 1132/6090
+  Updates sent/received: 169/428
+  Queries sent/received: 0/0
+  Replies sent/received: 0/0
+  Acks sent/received: 74/191
+  SIA-Queries sent/received: 0/0
+  SIA-Replies sent/received: 0/0
+  Hello Process ID: 246
+  PDM Process ID: 244
+  Socket Queue: 0/10000/7/0 (current/max/highest/drops)
+  Input Queue: 0/2000/7/0 (current/max/highest/drops)
+----
+
 
 
 .Task: Debug EIGRP
@@ -189,13 +189,13 @@ debug ip eigrp packet [hello | ack | update } quey | reply]
 - Discovered with Hello packets
 - can be set manually
 - must agree on
-** Primary IPv4 subnet
-** Autonomous System Number
-** Authentication
-** K values
+  * Primary IPv4 subnet
+  * Autonomous System Number
+  * Authentication
+  * K values
 
 - Do not need to agree on timers
-** The hold time is included in the hello packets so each neighbor should stay alive even though the hello interval and hold timers do not match.
+  * The hold time is included in the hello packets so each neighbor should stay alive even though the hello interval and hold timers do not match.
 
 IMPORTANT: After a static neighbor is defined, all EIGRP multicasts on the
 interface through which the neighbor is reachable will be disabled. As a
@@ -245,11 +245,25 @@ have been prepared for sending and even possibly sent but for which no ACK has b
 (config-router-af-interface)# neighbor <a.b.c.d> <interface-id>
 ----
 
-=== Adjancency Creation
 
-image::eigrp-adjacency-creation.png[EIGRP Adjacency Formation]
+// image::eigrp-adjacency-creation.png[EIGRP Adjacency Formation]
 
-NOTE: :EIGRP does not build peer relationships over secondary addresses. All EIGRP traffic is sourced from the primary address of the interface.
+.Adjacency Formation
+["seqdiag", target="eigrp-adjacency-creation",svg]
+----
+diagram {
+  autonumber = True;
+  R1 -> R2 [label = "Hello", note= "R2 puts R1 to Pending"]
+  R1 <- R2 [label = "Hello", rightnote = "R1 puts R2 to Pending"];
+  R1 <- R2 [label = "Null Update\n with Init, Seq=x", leftnote="Init Received from R2"];
+  R1 -> R2 [label = "Null Update\n with Init, Seq=y, Ack=x", note="Init and Ack Received from R1\nR2 Puts R1 to Up"];
+  R1 <- R2 [label = "Acknowledgment, Ack=y", leftnote="Ack Received from R2\nR1 Puts R2 to Up"];
+  R1 -> R2 [label= "Database Synchronization\n using Updates and Acks"];
+}
+----
+
+
+IMPORTANT: EIGRP does not build peer relationships over secondary addresses. All EIGRP traffic is sourced from the primary address of the interface.
 
 == EIGRP Loop Prevention Techniques
 
@@ -268,11 +282,11 @@ NOTE: :EIGRP does not build peer relationships over secondary addresses. All EIG
 ----
 
 
-== Metric
+== Classic Metric
 
-asciimath:[Metric = 256 * ((K_1 * B\a\n\dwidth + (K_2 * B\a\n\dwidth)/(256 - Load) + K_3 * Delay)) * ( K_5 / (Reliability + K_4) )]
+asciimath:[Metric = 256 * ((k_1 * B\a\n\dwidth + (k_2 * B\a\n\dwidth)/(256 - Load) + k_3 * Delay)) * ( k_5 / (Reliability + k_4) )]
 
-- Default Values: k1,k2,k3,k4,k5 = 1,0,1,0,0
+- Default Values: asciimath:[k_1,k_2,k_3,k_4,k_5 = 1,0,1,0,0]
 - The values of K must match for the neighbors to become adjacents
 - EIGRP uses integer division while calculating the metric
 
@@ -296,9 +310,10 @@ asciimath:[Metric = 256 * ((K_1 * B\a\n\dwidth + (K_2 * B\a\n\dwidth)/(256 - Loa
 
 * in tens-of-microseconds
 * sum of delay on the path to the destination
-* Range: 1..167,772,14
-* EIGRP split horizon with poison reverse, route withdrawal uses max delay 167,772,15 to indicate an  unreachable network
-* CAUTION: *show ip interface* displays delay in micro-seconds
+* Range: 1..16_777_214
+* EIGRP split horizon with poison reverse, route withdrawal uses max delay 16,777,215 to indicate an  unreachable network
+
+IMPORTANT: *show ip interface* displays delay in micro-seconds
 
 .Task: Configure the Delay Of an Interface
 ----
@@ -330,13 +345,18 @@ IOS maintains two independent load metric counters, the Txload for outgoing traf
 === MTU Metric Component
 
 * minimum Maximum transmission unit
-* not factored into the composite metric calculation and does not impact the best-path selection in any way
+* advertised but not factored into the composite metric calculation and does not impact the best-path selection in any way
 
 
 === Hop Count Metric Component
 
 * Default max value: 100, can be set to 255
 * not factored into the composite metric calculation and does not impact the best-path selection in any way
+
+.Task: Change the max hop count
+----
+(config-router)# metric maximum-hops <1-255>
+----
 
 === Routing Metric Offset Lists
 
@@ -348,7 +368,7 @@ When trying to manually influence EIGRP path selection through interface bandwid
 the modification of bandwidth is discouraged for following reasons:
 
 - The change will only affect the path selection
-  if the configured value is the low- est bandwidth over the entire path. Changing the bandwidth can have
+  if the configured value is the lowest bandwidth over the entire path. Changing the bandwidth can have
   impact beyond affecting the EIGRP metrics. For example, QoS also looks at the bandwidth on an interface.
 
 - EIGRP by default throttles to use 50 percent of the configured bandwidth.
@@ -366,21 +386,35 @@ the modification of bandwidth is discouraged for following reasons:
 
 == Wide Metric
 
-Metric = [(K1*Minimum Throughput + (K2*Minimum Throughput/(256-Load) + (K3*Total Latency) + (K6*Extended Attributes)]* [K5/(K4 + Reliability)]
+TODO Narbick figure 8.2
 
+asciimath:[Metric = ((k_1* Throughput + (k_2* (Throughput )/ (256-Load) + (k_3*TotalLatency) + (k_6*ExtendedA\t\t\ributes))* (k_5/(k_4 + Reliability)) ]
+
+- uses by default in Named Configuration Mode
 - Use one of the following commands to confirm wide metric support:
 
 * *sh eigrp plugins*
 * *sh eigrp tech-support*
 * *sh ip protocols*
 
-TODO:
+- needs to be downscaled because the RIB can only handle 32-bit metric
+  * default value: 128
+
 .Task: Change the Scale
 ----
 (config-router)# metric rib-scale <1..255>
 ----
+NOTE: The downscaled value is not used by EIGRP in any way. EIGRP makes all its path selections based on the
+Wide Metrics composite value; only after a best path toward a destination is selected, its
+composite metric value is downscaled as the route is installed to the RIB.
 
-- throughput -> bandwidth
+
+=== Throughput
+
+
+- ~ bandwidth
+- 65536 * 10^7 / bandwitdh_in_kbps
+
 
 === Latency Metric Component
 
@@ -394,6 +428,29 @@ TODO:
   the interface delay is computed as its specified delay value converted to picoseconds, that is, 10^7^ * value of the delay command
   (recall that the delay command defines the delay in tens of microseconds)
 
+=== Reliability
+
+- same than Classic Reliability
+
+=== Load
+
+- same than Classic Load
+
+=== MTU
+
+- same than classic MTU
+- advertised but unused
+
+=== Hop Count
+
+- same than classic Hop Count metric component
+- advertised but unusedd
+
+===  Extended Metrics
+
+- placeholders for future extensions to the composite metric computation.
+- As of this writing, three extended metrics were defined: Jitter, Energy, and Quiescent Energy.
+- Uses K6
 
 == Reliable Transport Protocol
 
@@ -434,7 +491,7 @@ TODO:
 
 * multicast flow timer: time to wait for an ACK before declaring a neighbor as lagging and switching from multicast to unicast
 * RTO (Retransmission Time Out): the time between the subsequent unicasts
-* SRTT (Smooth Round Trip Time): is average elapsed time, measured in milliseconds, between the transmission of a reliable packet to the neighbor and the receipt of an acknowledgment.
+* SRTT (Smooth Round Trip Time): average elapsed time in milliseconds, between the transmission of a reliable packet to the neighbor and the receipt of an acknowledgment.
 
 
 == EIGRP Autonomous System Configuration
@@ -560,10 +617,40 @@ variance            : Control load balancing variance
 ----
 
 
+.Task: Modify administrative distance
+----
+(config-router)# distance eigrp <internal-routes> <external-routes>
+----
+
+.Task: Modify the administrative distance on a per-prefix basis
+----
+(config-router)# distance <1-255> <source-ip> <source-wild-card> [<acl>]
+----
+NOTE: The AD for EIGRP internal routes can be changed on a per-prefix basis,
+but external EIGRP routes cannot
+
 == DUAL
+
+Diffusing Computation::
+- A distributed computation in which a single starting node commences the
+  computation by delegating subtasks of the computation to its neighbors that
+  may, in turn, recursively delegate sub-subtasks further, including a
+  signaling scheme allowing the starting node to detect that the computation
+  has finished while avoiding false terminations.
+
+- In DUAL, the task of coordinated updates of routing tables and resulting best
+  path computation is performed as a diffusing computation.
+
+Diffusing Update Algorithm (DUAL)::
+- A loop-free routing algorithm used with distance vectors or link states
+  that provides a diffused computation of a routing table.
+-  works very well in the presence of multiple topology changes with low overhead.
 
 
 === Topology Table
+
+- stores information about every known destination
+- network prefix/length, FD, CD, RD and route state
 
 .Task: Display EIGRP Topology Table
 ----
@@ -593,24 +680,20 @@ R - Reply:: Indicates that a reply packet was sent to this destination.
 r - Reply:: status Flag that is set after the software has sent a query and is waiting for a reply.
 
 RD:: Reported Distance
-CD:: Computed Distance
 
+CD::
+- Computed Distance = RD + link cost
+- Total metric along a path from the current router to a destination network
+  through a particular neighbor computed using that neighbor's Reported
+  Distance (RD) and the cost of the link between the two routers.
+- Exactly one CD is computed and maintained per the [Destination, Advertising
+  Neighbor] pair.
 
-FD:: Feasible Distance
-- record of the lowest known distance since the last transition
-from the Active to Passive state.
-* In other words, FD is a historical record, or a historical copy, of the smallest known CD toward a particular destination,
-with the history starting anew with the last Active-to-Passive transition.
-
-* Being a record of the smallest known CD since the route entered the Passive
-state for the last time, FD is not necessarily equal to the current best CD
-to a destination.
-
-* By its definition, in the Passive state, after the FD has
-been initialized, it can only decrease (if the current best CD happens to fall
-below the current value of FD) or remain at its current value (if the current
-best CD rises but the route remains Passive).
-
+FD::
+- Feasible Distance
+- least-known total metric to a destination from the current router
+since the last transition from the Active to Passive state.
+- not necessarily equal to the current best CD to a destination.
 * There is exactly one FD per each destination, regardless of the number of neighbors.
 * FD is an internal variable maintained for each network known to EIGRP
 whose value is never advertised to another router.
@@ -628,7 +711,7 @@ whose value is never advertised to another router.
 === Feasibility Condition
 
 - Feasibility condition: RD < FD
-* it is a sufficient condition but not a necessary condition
+* sufficient but not necessary condition
 * not every loop-free path satisfies the FC
 * proven by Dr. J. J. Garcia-Luna-Aceves
 * also called the Source Node Condition
@@ -636,6 +719,14 @@ whose value is never advertised to another router.
 
 - Feasible Successor: Neighbor that satisfy the FC
 - successor: Feasible Successor with the least CD
+
+SDAG::
+- Successor--Directed Acyclic Graph
+- For a particular destination, a graph defined by routing table contents of
+  individual routers in the topology, such that nodes of this graph are the
+  routers themselves and a directed edge from router X to router Y exists if
+  and only if router Y is router X's successor.
+- After the network has converged, in the absence of topological changes, SDAG is a tree.
 
 === Topology Changes
 
@@ -697,7 +788,7 @@ Successor.
 
 - Uses DUAL Finite State Machine to handle multiple topology changes occuring a simple diffusing computation
 
-image::eigrp-dual-fsm.png[DUAL finite state machine]
+image:eigrp-dual-fsm.png[DUAL finite state machine, 600, 800, float="right"]
 
 States::
 - P : Passive
@@ -1233,21 +1324,22 @@ that are connected using a private or a public WAN connection.
 
 === LISP
 
-- Locator/Identifier Seperation Protocol
+image:lisp.png[LISP, 500, 500, float="right"]
+
+- Locator/Identifier Separation Protocol
 - Separate the identity and location into two independent entities, each of
  them represented by a complete address, and provide a mapping service so that
  the address representing the identity of a host can be resolved into the
  address that represents its location.
 - Uses EID (EndPoints Identifiers) and RLOC (Routing Locator)
--
 
-image::lisp.png[LISP]
 
-- LISP hence has both a control and a data plane. The control plane in LISP
-comprises the registration protocol and procedures by which the tunnel routers
+- LISP hence has both a control and a data plane.
+
+* The control plane in LISP comprises the registration protocol and procedures by which the tunnel routers
 R1 and R2 register the EIDs they are responsible for along with their RLOCs in
 a LISP-mapping service, and using these registrations they map EIDs into RLOCs.
-The data plane defines the actual tunnel encapsulation used between Routers R1
+* The data plane defines the actual tunnel encapsulation used between Routers R1
 and R2 when two hosts from each LISP sites communicate.
 
 - In OTP, EIGRP serves as the replacement for LISP control plane protocols.
@@ -1259,7 +1351,7 @@ and R2 when two hosts from each LISP sites communicate.
 - OTP is based on creating targeted EIGRP sessions between customer edge
   routers, and using the routing information carried by EIGRP to populate both
   routing tables and LISP mapping tables. The edge routers do not exchange any
-  routing information with the ser- vice provider routers. Thus, this solution
+  routing information with the service provider routers. Thus, this solution
   is fully controlled by a customer and requires no cooperation with the
   service provider, apart from providing full IP connectivity between customer routers
 
@@ -1289,6 +1381,8 @@ and R2 when two hosts from each LISP sites communicate.
 (config-router-af)# network 192.168.0.0
 ----
 
+More
+http://www.cisco.com/c/en/us/products/collateral/ios-nx-os-software/ip-routing/whitepaper_C11-730404.html[WAN virtualization with OTP]
 
 === EIGRP Logging and Reporting
 
@@ -1307,5 +1401,8 @@ log-neighbor-changes : enable IP-EIGRP neighbor logging (default)
 log-neighbor-warnings :  Enable/Disable IP-EIGRP neighbor warnings (default=every 10seconds)
 ----
 
+=== SoO
+
+TODO
 
 

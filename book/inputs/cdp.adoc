@@ -12,17 +12,17 @@ ifeval::["{backend}" != "docbook5"]
 menu:Catalyst3560-X Configuration Guides[{docref}[CDP] ]
 endif::[]
 
-== Overview 
-
-- Layer 2 discovery protocol  running on Cisco devices
+- Layer 2 discovery protocol running on Cisco devices
 - Retrieves device type and SNMP agent address of neighboring devices
+- Send CDP announcements to the multicast destination address 01-00-0c-cc-cc-cc,
+- All CDP packet includes the VLAN ID of the access port or the lowest VLAN ID in a trunk port
 
-=== Packet Format
+== Packet Format
 
 - Header followed by a set of TLV value
 
 .CDP Frame Format
-["packetdiag", target="cdp-frame-format"]
+[packetdiag, target="cdp-frame-format"]
 ----
 diagram {
   colwidth = 16
@@ -38,9 +38,10 @@ diagram {
 }
 ----
 
-== CDP Operations 
 
-- Enable by default
+== CDP Operations
+
+- Enabled by default
 
 .Task: Display Global Information About CDP Characteristics
 ----
@@ -59,7 +60,7 @@ Switch1             Eth 0          240           S        1900      2
 show cdp entry <entry-name> [protocol | version]
 ----
 
-.Task: Disable CDP 
+.Task: Disable CDP
 ----
 (config)# no cdp run
 ----
@@ -69,25 +70,25 @@ show cdp entry <entry-name> [protocol | version]
 (config-if)# cdp enable
 ----
 
-=== CDP Updates
+== CDP Updates
 
+- by default every 60 seconds
+- can be set between 5 to 254 seconds
 
 .Task: Set the Transmission Frequency Of CDP Updates In Seconds
 ----
 (config)# cdp timer <seconds>
 ----
 
-NOTE: Default: 60 seconds range: 5-254 seconds
 
 .Task: Specify the Amount Of Time a Receiving Device Should Hold the Information Sent by Your Device
 ----
 (config)# cdp holdtime <seconds>
 ----
-
 NOTE: default: 180 seconds, range: 10 to 255 seconds
 
 
-=== Version
+== Version
 
 .Task: Send Version-2 Advertisements
 ----
@@ -98,15 +99,15 @@ NOTE: default: 180 seconds, range: 10 to 255 seconds
 
 .Task: Reset the Traffic Counters to Zero
 ----
-clear cdp counters
+# clear cdp counters
 ----
 
-=== Neighbors
+== Neighbors
 
 
 .Task: Delete the CDP Table Of Information About Neighbors
 ----
-clear cdp table
+# clear cdp table
 ----
 
 
@@ -118,11 +119,10 @@ sh cdp interface [<interface-id>]
 .Task: Display Information About Neighbors
 
 ----
-sh cdp neighbors [<interface-id>] [detail]
+# sh cdp neighbors [<interface-id>] [detail]
 ----
 
 .Task: Display CDP Counters, Including the Number Of Packets Sent and Received and Checksum Errors
-
 ----
 # show cdp traffic
 
@@ -132,3 +132,4 @@ Total packets output: 543, Input: 333
  CDP version 1 advertisements output: 191, Input: 187
  CDP version 2 advertisements output: 352, Input: 146
 ----
+

@@ -101,13 +101,15 @@ TODO ip sticky arp
 
 == Private-Vlan Accross Multiple Switches
 
+
+image:private-vlan-accross-multiple-switches.png[Private-VLAN accross multiple switches, 400, 400, float='left']
+
 As with regular VLANs, private VLANs can span multiple switches. A trunk port
 carries the primary VLAN and secondary VLANs to a neighboring switch. The trunk
 port treats the private VLAN as any other VLAN. A feature of private VLANs
 across multiple switches is that traffic from an isolated port in switch A does
 not reach an isolated port on Switch B.
 
-image::private-vlan-accross-multiple-switches.png[Private-VLAN accross multiple switches]
 
 [WARNING]
 ====
@@ -127,7 +129,7 @@ TODO see page 67 Narbick
 == Interaction with Other Features
 
 VTP::
-- VTP v1 andv2 don't propagate private-vlans
+- VTP v1 and v2 don't propagate private-vlans
   ** Set transparent mode
   ** Save the VTP transparent mode and private-vlan to startup configuration
 - VTP v3 supports private-vlans
@@ -176,4 +178,19 @@ Static MAC address::
   you must add the same static MAC address to the associated primary VLAN.
 - When you delete a static MAC address from a private-VLAN port,
   you must remove all instances of the configured MAC address from the private VLAN.
+
+== PVLAN Edge or Protected Ports
+
+- only local significance to the switch (unlike Private Vlans),
+- no isolation provided between two protected ports located on different switches.
+- A protected port does not forward any traffic (unicast, multicast, or broadcast) to any other
+port that is also a protected port in the same switch.
+- Traffic cannot be forwarded between protected ports at L2, all traffic passing between protected
+ ports must be forwarded through a Layer 3 device.
+
+.Task: Configure a protected port
+----
+(config-if)# switchport protected
+----
+
 

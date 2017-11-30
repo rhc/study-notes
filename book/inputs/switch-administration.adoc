@@ -11,7 +11,7 @@ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/r
 
 .Task: Configure the Time Zone
 ----
-(config)# clock timezone <zone> <hours-offset> [minutes-offset]
+(config)# clock timezone <zone> <hours-offset> [<minutes-offset>]
 ----
 
 NOTE: Use the minutes-offset variable  when the local time zone is a percentage of an hour different from UTC.
@@ -70,7 +70,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 == MAC Address Table
 
 - lists the destination MAC address with the associated VLANs , port number, and the type (static or dynamic)
-- dynamic address are discarded after  the *aging time* (300 seconds by default)
+- dynamic address are discarded after the *aging time* (300 seconds by default)
 
 .Task: Display Address Table Entries for the Specified MAC Address
 ----
@@ -81,7 +81,6 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 ----
 # sh mac address-table dynamic
 ----
-
 
 .Task: Display the Number Of Addresses Present
 ----
@@ -120,7 +119,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 === MAC Address Change Notification Traps
 
 - send SNMP trap when the switch learns or removes dynamic and secure MAC addresses.
-- do not send trap for self addesses, multicast addresses or static addresses
+- do not send trap for self addresses, multicast addresses or static addresses
 - can set a trap-interval time to bundle the notification traps to reduce network traffic
 
 .Task: Send MAC Address Change Notification Traps to an NMS Host
@@ -171,7 +170,7 @@ Example(config)# clock summer-time PDT recurring 1 Sunday April 2:00 last Sunday
 # sh mac address-table notification treshold
 ----
 
-=== Static Addresses
+=== Static Address
 
 - manually entered in the address table and must be manually removed
 - can be unicast or mcast
@@ -204,26 +203,31 @@ it has not been statically entered is flooded to all ports and not learned
 ----
 
 
-=== MAC Address Learning on a VLAN
+=== MAC Address Learning
 
 - enabled by default on a VLANs
 - can be disabled with the following restrictions:
 
-//TODO: work this note
 
 [CAUTION]
 ====
-- If the VLAN has a configured switch virtual interface (SVI),  the switch then floods all IP packets in the Layer 2 domain.
+- If the VLAN has a configured SVI,  the switch then floods all IP packets in the Layer 2 domain.
 - If you disable MAC address learning on a VLAN with more than two ports, every packet entering the switch is flooded in that VLAN domain.
 - You cannot disable MAC address learning on a VLAN that is used internally by the switch. If the VLAN ID that you enter is an internal VLAN, the switch generates an error message and rejects the command. To view internal VLANs in use, enter the show vlan internal usage privileged EXEC command.
 - If you disable MAC address learning on a VLAN configured as a private-VLAN primary VLAN, MAC addresses are still learned on the secondary VLAN that belongs to the private VLAN and are then replicated on the primary VLAN. If you disable MAC address learning on the secondary VLAN, but not the primary VLAN of a private VLAN, MAC address learning occurs on the primary VLAN and is replicated on the secondary VLAN.
 - You cannot disable MAC address learning on an RSPAN VLAN. The configuration is not allowed.
-- If you disable MAC address learning on a VLAN that includes a secure port, MAC address learning is not disabled on that port. If you disable port security, the configured MAC address learning state is enabled.
+- If you disable MAC address learning on a VLAN that includes a secure port, MAC address learning is not disabled on that port.
+  If you disable port security, the configured MAC address learning state is enabled.
 ====
 
-.Task: Disable MAC Address Learning
+.Task: Disable MAC Address Learning on an interface
 ----
-(config)# no mac address-table learning vlan <vlan-id>
+(config)# no mac-address-table learning interface <interface-type slot/port>
+----
+
+.Task: Disable MAC Address Learning on an range of VLANs
+----
+(config)# no mac-address-table learning {vlan <vlan-id> [,<vlan-id> | -<vlan-id>]
 ----
 
 .Task: Display the MAC Address Learning
@@ -236,11 +240,227 @@ sh mac address-table learning [vlan <vlan-id>]
 (config)# default mac address-table learning vlan <vlan-id>
 ----
 
-== Errdisable Recovery
 
-TODO
+== Error disable
+
+- port disabled due to error condition
+  * no traffic sent or received
+  * port LED orange or amber
+
+- eliminates the possibility that this port can cause other ports on the module or the entire module to fail.
+  Such a failure can occur when a bad port monopolizes buffers or port error messages monopolize interprocess communications on the card,
+  which can ultimately cause serious network issues.
+
+.Task: Show which local ports are involved in the errdisabled state.
+----
+# show interfaces status err-disabled
+
+Port    Name  Status          Vlan  Duplex  Speed Type
+Gi4/1         err-disabled    100   full    1000 1000BaseSX
+----
+
+=== Err-Disable detection
+
+- error-disable detection enabled by default
+
+.Task: Disable error disable detection
+----
+(config-if)# no err-disable detect cause
+----
+
+.Task: Shows the reason for the errdisable status.
+----
+# show errdisable detect
+----
+
+Reasons for the interface to go into errdisable
+
+- Duplex mismatch
+- Port channel misconfiguration
+- BPDU guard violation
+- UDLD condition
+- Late-collision detection
+- Link-flap detection
+- PAgP flap
+- Security violation
+- L2TP guard
+- DHCP snooping rate-limit
+- Incorrect GBIC / Small Form-Factor Pluggable module or cable
+- ARP inspection
+- Inline power
+
+=== Link-flap detection
+
+- if the interface goes up and down more than five times in 10 seconds.
+- common cause: Layer 1 issue such as a bad cable, duplex mismatch, or bad GBIC card.
+- console messages or syslog server that state the reason for the port shutdown.
+
+    %PM-4-ERR_DISABLE: link-flap error detected on Gi4/1, putting Gi4/1 in err-disable state
+
+.Task: View the flap values:
+----
+#show errdisable flap-values
+
+  ErrDisable Reason    Flaps    Time (sec)
+  -----------------    ------   ----------
+  pagp-flap              3       30
+  dtp-flap               3       30
+  link-flap              5       10
+----
+
+=== Loopback error
+
+- occurs when the keepalive packet is looped back to the port that sent the keepalive.
+
+ %PM-4-ERR_DISABLE: loopback error detected on Gi4/1, putting Gi4/1 in err-disable state
+
+
+=== L2TP guard
+
+When the Layer 2 PDUs enter the tunnel or access port on the inbound edge switch,
+the switch overwrites the customer PDU-destination MAC address
+with a well-known Cisco proprietary multicast address (01-00-0c-cd-cd-d0).
+If 802.1Q tunneling is enabled, packets are also double-tagged.
+The outer tag is the customer metro tag and the inner tag is the customer VLAN tag.
+The core switches ignore the inner tags and forward the packet to all trunk ports in the same metro VLAN.
+The edge switches on the outbound side restore the proper Layer 2 protocol and
+MAC address information and forward the packets to all tunnel or access ports
+in the same metro VLAN. Therefore, the Layer 2 PDUs are kept intact and
+delivered across the service-provider infrastructure to the other side of the
+customer network.
+
+----
+(config)#interface gigabitethernet 0/7
+(config-if)# l2protocol-tunnel {cdp | vtp | stp}
+----
+
+The interface goes to errdisabled state.
+* If an encapsulated PDU (with the proprietary destination MAC address) is received from a tunnel port or access port with Layer 2 tunneling enabled,
+the tunnel port is shut down to prevent loops.
+* The port also shuts down when a configured shutdown threshold for the protocol is reached.
+
+You can manually reenable the port (by issuing a shutdown, no shutdown command sequence)
+or if errdisable recovery is enabled, the operation is retried after a specified time interval.
+
+The interface can be recovered from errdisable state by reenabling the port using *errdisable recovery cause l2ptguard*.
+
+This command is used to configure the recovery mechanism from a Layer 2 maximum
+rate error so that the interface can be brought out of the disabled state and
+allowed to try again. You can also set the time interval. Errdisable recovery
+is disabled by default; when enabled, the default time interval is 300 seconds.
+
+=== Incorrect GBIC / Small Form-Factor Pluggable module or cable
+
+- Ports go into errdisable state with the *%PHY-4-SFP_NOT_SUPPORTED* error message
+  when you connect Catalyst 3560 and Catalyst 3750 Switches using an SFP Interconnect Cable.
+- The Cisco Catalyst 3560 SFP Interconnect Cable (CAB-SFP-50CM=) provides for a low-cost, point-to-point, Gigabit Ethernet connection between Catalyst 3560 Series Switches.
+The 50-centimeter cable is an alternative to using SFP transceivers when interconnecting Catalyst 3560 Series Switches through their SFP ports over a short distance.
+All Cisco Catalyst 3560 Series Switches support the SFP Interconnect Cable.
+When a Catalyst 3560 Switch is connected to a Catalyst 3750 or any other type of Catalyst switch model, you cannot use the CAB-SFP-50CM= cable.
+
+- You can connect both switches using a copper cable with SFP (GLC-T) on both devices instead of a CAB-SFP-50CM= cable.
+
+
+=== Err-Disable recovery
+
+.Steps
+- Determine the cause with *sh interfaces status err-disabled*
+- Fix the root cause
+- Reenable the Errdisabled ports manually with *shutdown*, *no shutdown* command sequence
+  or automatically after a specified amount of time with *errdisable recovery* command.
+
+.Task: Shows the time period after which the interfaces are enabled for errdisable conditions.
+----
+#show errdisable recovery
+
+  ErrDisable Reason    Timer Status
+  -----------------    --------------
+  udld                 Enabled
+  bpduguard            Enabled
+  security-violation   Enabled
+  channel-misconfig    Enabled
+  pagp-flap            Enabled
+  dtp-flap             Enabled
+  link-flap            Enabled
+  l2ptguard            Enabled
+  psecure-violation    Enabled
+  gbic-invalid         Enabled
+  dhcp-rate-limit      Enabled
+  mac-limit            Enabled
+  unicast-flood        Enabled
+  arp-inspection       Enabled
+----
+
+
 
 == L2 MTU
 
-TODO
+- default size: 1500 bytes
+- max size: 1998 bytes, 9198 bytes for jumbo frames
 
+
+
+.Task: Change the MTU size for all Fast Ethernet interfaces on the switch.
+----
+(config)# system mtu <bytes>
+----
+
+.Task: Change the MTU size for all Gigabit and 10-Gigabit Ethernet interfaces on the switch.
+----
+(config)# system mtu jumbo <bytes>
+----
+
+.Task: Change the system MTU for routed ports.
+----
+(config)# system mtu routing <bytes>
+----
+
+NOTE: The system routing MTU is the maximum MTU for routed packets and is also the maximum MTU that the switch
+advertises in routing updates for protocols such as OSPF.
+
+
+== Switch Internal Processing
+
+Switches forward frames when necessary, and do not forward when there is no need to do so, thus
+reducing overhead.
+
+To accomplish this, switches perform three actions:
+
+- Learn MAC addresses by examining the source MAC address of each received frame
+- Decide when to forward a frame or when to filter (not forward) a frame, based on the destination MAC address
+- Create a loop-free environment with other bridges by using the Spanning Tree Protocol
+
+[horizontal]
+
+Store-and-forward::
+
+The switch fully receives all bits in the frame (store) before forwarding
+the frame (forward). This allows the switch to check the FCS before
+forwarding the frame, thus ensuring that errored frames are not forwarded.
+
+Cut-through::
+
+The switch performs the address table lookup as soon as the Destination
+Address field in the header is received. The first bits in the frame can be sent out
+the outbound port before the final bits in the incoming frame are received. This
+does not allow the switch to discard frames that fail the FCS check, but the
+forwarding action is faster, resulting in lower latency.
+
+Fragment-free::
+
+This performs like cut-through switching, but the switch waits for 64 bytes to be
+received before forwarding the first bytes of the outgoing frame. According to
+Ethernet specifications, collisions should be detected during the first 64 bytes of
+the frame, so frames that are in error because of a collision will not be forwarded.
+
+== Switching and Bridging Logic
+
+[cols="20,60"]
+:===
+Type of Address : Switch Action
+
+Known unicast   : Forwards frame out the single interface associated with the destination address
+Unknown unicast : Floods frame out all interfaces, except the interface on which the frame was received
+Broadcast       : Floods frame identically to unknown unicasts
+Multicast       : Floods frame identically to unknown unicasts, unless multicast optimizations are configured
+:===

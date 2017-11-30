@@ -1,0 +1,31 @@
+= Stackwise
+
+TODO
+
+Cisco StackWise technology provides a new method for collectively utilizing the capabilities of a
+stack of switches. Individual switches intelligently join to create a single switching unit with a 32-
+Gbps switching stack interconnect. Configuration and routing information is shared by every
+switch in the stack, creating a single switching unit. Switches can be added to and deleted from
+a working switch stack without affecting performance.
+
+
+.Rules and their respective priority order
+[cols='10,90a']
+|====
+| Priority  | Rule
+
+| 1 | The switch that is currently the stack master
+| 2 | The switch that is currently the stack master
+|3 |  The switch that uses the non-default interface-level configuration
+|4 |  The switch with the higher Hardware/Software priority.
+    These switch software versions are listed from highest to lowest priority :
+      1. Cryptographic IP services image software
+      2. Noncryptographic IP services image software
+      3. Cryptographic IP base image software
+      4. Noncryptographic IP base image software
+|5 | The switch with the longest system up-time
+|6 | The switch with the lowest MAC address
+|====
+
+
+

@@ -1,0 +1,10 @@
+= Dynamic ARP Inspection
+
+Dynamic ARP inspection blocks "a variety of ARP-based attacks", according to the documentation.
+Drop ARPs that shouldn't be coming based on the information seen in the DHCP snooping table.
+
+----
+SW1(config-if)#ip arp inspection trust  ! need to trust other switches
+SW1(config)#ip arp inspection vlan 100  ! turn the feature on globally for the VLAN
+----
+

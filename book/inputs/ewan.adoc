@@ -76,4 +76,32 @@ with the virtual bridge.
 
 
 
+== Ethernet Private Line (EPL)
+
+The Ethernet Private Line service is used to deploy private line WAN connectivity across the
+Metro network. Typically the Ethernet service will forward packets to a long haul SONET
+network where Ethernet packets are encapsulated in SONET frames.
+The Ethernet packets are stripped off (de-encapsulated) at the SONET Provider Edge (PE)
+equipment and forwarded to the local Metro service provider network. The Ethernet private line
+is similar to any WAN link where VLAN information isn't sent between routers. The service
+provider does the rate limiting of traffic based on the CIR selected by the customer. The CIR is
+the guaranteed data rate service level agreement with the ISP. Traffic shaping or rate limiting of
+packets should be done at the Customer Edge (CE) on the CPE Ethernet interface to make sure
+packets are not dropped by the service provider.
+
+
+== Ethernet Virtual Private Line (EVPL)
+
+The Ethernet virtual private line service is deployed for trunking of multiple VLANs across a
+Metro network (i.e. multiplexing multiple point to point EVCs). The 802.1q encapsulation
+protocol is the new standard that works with Cisco and other vendor equipment. The customer
+edge device uses 802.1q protocol to tag each Ethernet packet with VLAN membership before
+forwarding it across the virtual point to point Metrolink. QoS is applied at the Customer Edge
+(CE) Ethernet interface using per VLAN or per Class per VLAN traffic shaping.
+
+
+Further Reading
+http://goo.gl/Ffsq5o
+
+
 

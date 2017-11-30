@@ -1,37 +1,10 @@
 = IPv6
-:source-highlighter: pygments
-:language: ruby
 
+menu:Configuration Guides[IP > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipv6/configuration/15-2mt/ip6-15-2mt-book.html[IPv6] ]
 
 == IPv6 Header
 
 .IPv6 Base Header Format
-[cols="30,70"]
-|===
-| Comparison with IPv4  | Packet
-
-a|
-
-Streamlined::
-
-- Fragmentation fields moved out of base header
-- IP options moved out of base header
-- Header checksum eliminated
-- Header length field eliminated
-- Length field excludes IPv6 header
-- Alignment changed from 32 to 64 bits
-
-Revised::
-- Time to live -> hop limit
-- Protocol -> next header
-- Precedence and TOS -> traffic class
-- Addresses increased 32 bits -> 128 bits
-
-Extended::
-- Flow label field added
-
-a|
-
 ["packetdiag", target="ipv6-header-format",size=200]
 ----
 diagram {
@@ -51,56 +24,251 @@ diagram {
 }
 ----
 
-|===
+.Comparison with IPv4
 
-=== Traffic Class
+Streamlined::
+- Fixed length header + optional extension header
+- Fragmentation fields moved out of base header
+- IP options moved out of base header
+- Header checksum eliminated
+- Header length field eliminated
+- Length field excludes IPv6 header
+- Alignment changed from 32 to 64 bits
+
+Revised::
+- Time to live -> hop limit
+- Protocol -> next header
+- Precedence and TOS -> traffic class
+- Addresses increased 32 bits -> 128 bits
+
+Extended::
+- Flow label field added
+
+== Traffic Class
 
 - 6 bits for ToS
 - 2 bits for ECN
 
-=== Flow Label
+== Flow Label
 
-// Improve this
 - Sequence in a particular flow
+- Originally created for giving real-time applications special service.
+-  when set to a non-zero value now serves as a hint to routers and
+switches with multiple outbound paths that these packets should stay on the
+same path so that they will not be reordered.
+- may be used to help detect spoofed packets
+
+== Payload Length
+
+- Size in bytes of the payload including any extensionn header
+- Set to zero when a *Hop-by-Hop* extension header carries a *Jumbo Payload* option.
+
+TODO jumbo-grams
 
 
-=== Payload Length
 
--
+== Next Header
+
+- Specifies the type of the next header.
+- usually specifies the transport layer protocol used by a packet's payload.
+- When extension headers are present in the packet this field indicates which extension header follows.
+- The values are shared with those used for the IPv4 protocol field
+- Extension headers only examined at the destination, except for the 'hop-by-hop options'.
+
+- If a node does not recognize a specific extension header, it should discard the
+packet and send a Parameter Problem message (ICMPv6 Type 4, Code 1).
+- When a Next Header value 0 appears in a header other than the fixed header a node
+should do the same.
 
 
-=== Next Header
+.Recommended order of extension header
+[cols="40,10,40"]
+:===
+Next Header Type                                : Value : Description
 
-When more than one extension header is used in the same
-packet, it is recommended that those headers appear in the
-following order:
-
-- IPv6 header
-- Hop-by-hop options header
-- Destination options header (routing header associations)
-- Routing header
-- Fragment header
-- Authentication header
-- Encapsulating security payload header
-- Destination options header (options processed by final estination)
-- Upper-layer header
-
-,===
-Header Type                                     , Next Header Value , Description
-
-Hop-by-Hop Options Header                       , 0                 , Read by all devices in transit network
-Destination Option Header                       , 60                , Read by the final destination device
-Routing Header                                  , 43                , Support routing decision making
-Fragment Header                                 , 44                , Contains parameters of datagram fragmentation
-Authentication Header                           , 51                ,
-Encapsulating Security Payload                  , 50                , Carries encrypted data for secure communication.
-Upper-Layer Header                              , 6                 , (TCP)                                            ,
-Upper-Layer Header                              , 17                , (UDP)                                            ,
-Mobility Header (currently without upper layer) , 135               , Used with Mobile IPv6
-,===
-
+Hop-by-Hop Options Header                       : 0     : Read by all devices in transit network
+Destination Option Header                       : 60    : Read by the final destination device
+Routing Header                                  : 43    : Support routing decision making
+Fragment Header                                 : 44    : Contains parameters of datagram fragmentation
+Authentication Header                           : 51    :
+Encapsulating Security Payload                  : 50    : Carries encrypted data for secure communication.
+Destination Option Header                       : 60    : Read by the final destination device
+Upper-Layer Header                              : 6     : TCP
+Upper-Layer Header                              : 17    : UDP
+Mobility Header (currently without upper layer) : 135   : Used with Mobile IPv6
+:===
 
 - Value 59 means *No Next Header*
+
+
+=== Hop-by-hop options and destination options
+
+- Hop-by-Hop Options extension headers examined by all nodes on the packet's path, including sending and receiving nodes.
+- The Destination Options extension header need to be examined by the destination node(s) only.
+- The extension headers are both at least 8 octets in size;
+  * if more options are present than will fit in that space,
+  blocks of 8 octets are added to the header repeatedly—containing options and
+  padding—until all options are represented.
+- the *header ext len* is the size of this header in bytes excluding the first 8 octets
+
+
+.IPv6 Hop-By-Hop Options
+["packetdiag", target="ipv6-hop-by-hop-options",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+
+  * Next Header [len=8]
+  * Header Ext Len [len=8]
+  * Options and paddings [len=8]
+  * More Options and paddings [len=8, stacked]
+}
+----
+
+=== Routing Extension Header
+
+- Directs a packet to one or more intermediate nodes before being sent to its destination.
+- At least 8 octets in size;
+  * if more Type-specific Data is needed than will fit in 4 octets, blocks of 8 octets are added to the header repeatedly, until all Type-specific Data is placed.
+- Routing types:
+  * 0 deprecated, because of DoS
+  * 1 used by the Nimrod project
+  * 2 for IPv6 Mobile
+
+
+.IPv6 Routing Options
+["packetdiag", target="ipv6-routing-options",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Next Header [len=8]
+  * Header Ext Len [len=20]
+  * Routing Type [len=8]
+  * Segmentsleft   [len=8]
+  * Type-Specific Data   [len=32]
+  * More Type-Specific Data (optional)  [len=16, stacked]
+}
+----
+
+
+TODO
+.Task:
+----
+(config-if)# no ipv6 source-route
+----
+
+=== Fragment Extension Header
+
+- In order to send a packet that is larger than the path MTU,
+  the sending node splits the packet into fragments.
+- The Fragment extension header carries the information necessary to reassemble the original (unfragmented) packet.
+
+.IPv6 Fragment Options
+["packetdiag", target="ipv6-fragment-options",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Next Header [len=8]
+  * Reserved [len=8]
+  * Fragment Offset [len=13]
+  * Res   [len=2]
+  * M   [len=1]
+  * Identification [len=32]
+}
+----
+
+
+== Fragmentation And Reassembly
+
+- Unlike in IPv4, IPv6 routers never fragment IPv6 packets.
+  * Packets exceeding the size of the maximum transmission unit of the destination link are dropped
+  * The router sends a *Packet too Big ICMPv6 Type 2* message to the originating node
+    , similarly to the IPv4 method when the Don't Fragment bit is set.
+
+- End nodes in IPv6 are expected to perform path MTU discovery to determine the
+  maximum size of packets to send, and the upper-layer protocol is expected to
+  limit the payload size. However, if the upper-layer protocol is unable to do
+  so, the sending host may use the Fragment extension header in order to
+  perform end-to-end fragmentation of IPv6 packets. Any data link layer
+  conveying IPv6 data must be capable of delivering an IP packet containing
+  *1280 bytes* without the need to invoke end-to-end fragmentation at the IP
+  layer.
+
+=== Fragmenting
+
+- A packet containing a fragment of an original (larger) packet consists of two
+parts: the unfragmentable part of the original packet (which is the same for
+all fragments), and a piece of the fragmentable part of the original packet,
+identified by a Fragment Offset. The Fragment Offset of the first ("leftmost")
+fragment is 0.
+
+- The unfragmentable part of a packet consists of the fixed header and some of
+the extension headers of the original packet (if present): all extension
+headers up to and including the Routing extension header, or else the
+Hop-by-Hop extension header. If neither extension headers are present, the
+unfragmentable part is just the fixed header.
+
+- The Next Header value of the last (extension) header of the unfragmentable part
+is set to 44 to indicate that a Fragment extension header follows. After the
+Fragment extension header a fragment of the rest of the original packet
+follows.
+
+- The first fragment(s) hold the rest of the extension headers (if present).
+After that the rest of the payload follows. Each fragment is a multiple of 8
+octets in length, except the last fragment.
+
+- Each Fragment extension header has its M flag set to 1 (indicating more
+fragments follow), except the last, whose flag is set to 0.
+
+
+=== Re-Assembly
+
+- The original packet is reassembled by the receiving node by collecting all
+  fragments and placing each fragment at the right offset and discarding the
+  Fragment extension headers of the packets that carried them. Packets
+  containing fragments need not arrive in sequence; they will be rearranged by
+  the receiving node.
+
+- If not all fragments are received within 60 seconds after receiving the first
+  packet with a fragment, reassembly of the original packet is abandoned and
+  all fragments are discarded. If the first fragment was received (which
+  contains the fixed header), a Time Exceeded message (ICMPv6 type 3, code 1)
+  is returned to the node originating the fragmented packet, if the packet was
+  discarded for this reason.
+
+- Receiving hosts must make a best-effort attempt to reassemble fragmented IP
+  datagrams that, after reassembly, contain up to 1500 bytes. Hosts are
+  permitted to make an attempt to reassemble fragmented datagrams larger than
+  1500 bytes, but they are also permitted to silently discard any datagram
+  after it becomes apparent that the reassembled packet would be larger than
+  1500 bytes. Therefore, senders should avoid sending fragmented IP datagrams
+  with a total reassembled size larger than 1500 bytes, unless they have
+  previous assurance that the receiver is capable of reassembling such large
+  datagrams
+
+
+=== Security
+
+- Research has shown that the use of fragmentation can be leveraged to evade
+  network security controls.
+
+- As a result, RFC 7112 requires that the first fragment of an IPv6 packet
+  contains the entire IPv6 header chain, such that some very pathological
+  fragmentation cases are forbidden.
+
+- Additionally, as a result of research on the evasion of RA-Guard in RFC 7113,
+  RFC 6980 has deprecated the use of fragmentation with Neighbor Discovery, and
+  discouraged the use of fragmentation with Secure Neighbor Discovery (SEND).
+
 
 == Addressing
 
@@ -113,6 +281,9 @@ Mobility Header (currently without upper layer) , 135               , Used with 
   ipv4 with optional secondary address)
 - Automatic configuration of globally unique address (without the need of DHCP)
 - Built-in neighbor discovery of neighbors, routers and gateways
+
+
+
 
 === Address Abbreviation Rules
 
@@ -159,6 +330,7 @@ image::ipv6-unicast-address-format.png[height=150]
 - Starts with FE80::/10
 - Follows by 54 bits set to 0
 - Interface ID
+- only one link-local address per interface
 
 - Routers do not forward link-local traffic to other segments.
 
@@ -171,6 +343,10 @@ image::ipv6-unicast-address-format.png[height=150]
 ::10:10:100:16
 ::A:A:64:10
 ----
+
+- ::ffff:0:0/96 prefix is designated as an IPv4-mapped IPv6 address.  With a
+  few exceptions, this address type allows the transparent use of the Transport
+  Layer protocols over IPv4 through the IPv6 networking.
 
 ===== Assign an IPv6 Unicast Address to a Router Interface
 
@@ -190,6 +366,17 @@ However, you can explicitly configure one
 ----
 (config-if)# ipv6 address fe80::1 link-local
 ----
+
+Additionally, the configured interface automatically joins the
+following required multicast groups for that link:
+
+- Solicited-node multicast group FF02:0:0:0:0:1:FF00::/104 for each unicast and anycast address assigned to the interface
+- All-nodes link-local multicast group FF02::1
+- All-routers link-local multicast group FF02::2
+
+- IPv6 redistribution ignores the “local” routes in the IPv6 routing table
+(the /128 host routes for a router’s own interface IPv6 addresses)
+whereas IPv4 has no such concept.
 
 ==== Multicast
 
@@ -235,7 +422,7 @@ router anycast address to reach a particular router on the link identified by th
 subnet router anycast address.
 
 
-==== the Unspecified Address
+==== The Unspecified Address
 
 - Represented by **::**
 - Used as source address by an interface that has not yet learned its unicast addresses.
@@ -244,7 +431,7 @@ subnet router anycast address.
 
 ==== How to Embed an RP Address Within a Multicast Group Address
 
-RFC 2373
+https://www.ietf.org/rfc/rfc2373.txt[RFC 2373]
 
 Given address 2001:DB*:0717::A,
 Follow the structure FF__7__**X**:0**Y**30:2001:DB8:0717::**group**
@@ -263,7 +450,6 @@ Follow the structure FF__7__**X**:0**Y**30:2001:DB8:0717::**group**
 - 30 for the mask for the network (0x30 = decimal 48)
 - Remaining hextets for the network prefix
 
-
 === IPv6 Address Autoconfiguration
 
 Stateful autoconfiguration::
@@ -275,7 +461,7 @@ and the host derives the last bit using EUI-64 process.
 
 ==== EUI-64 Address
 
-- Split 48-bit MAC address in two parts
+- Split 48-bit MAC address in two 24-bit parts
 - Place FFFE in the middle
 - Set to 1 the universal/local bit (7th bit in the interface id )
 
@@ -286,17 +472,19 @@ the resulting EUI-address is 2001:128:1f:633:**2**07:85**FF:FE**80:71B8/64
 (config-if)# ipv6 address 2001:128:1f:633::/64 eui-64
 ----
 
+- RFC2373
+
 == Basic  IPv6 Functionality Protocols
 
 === Neighbor Discovery
 
-- RFC 2461
+- https://www.ietf.org/rfc/rfc2461.txt[RFC 2461]
 - Discover and track other IPv6 hosts on connected interfaces
 - Uses ICMPv6 messages and Solicited-node multicast addresses
 
 - Major roles
 
-**  Stateless address autoconfiguration (detailed in RFC 2462)
+**  Stateless address autoconfiguration (detailed in https://www.ietf.org/rfc/rfc2462.txt[RFC 2462]
 **  Duplicate address detection (DAD)
 **  Router discovery
 **  Prefix discovery
@@ -414,7 +602,6 @@ Limit ICMPv6 error messages with default interval 100 ms , and default token-buc
 (config-if)# ipv6 verify unicast reverse-path
 -----
 
-
 === DNS
 
 - Provides resolution of domain names
@@ -426,7 +613,6 @@ Limit ICMPv6 error messages with default interval 100 ms , and default token-buc
 - Cisco Discovery Protocol
 - Provides extensive information about the configuration and functionality of Cisco devices.
 
-
 .Task: Display IPv6 Information Transmitted In CDP
 -------
 # show cdp neighbors detail
@@ -435,6 +621,7 @@ Limit ICMPv6 error messages with default interval 100 ms , and default token-buc
 === DHCP
 
 - RFC 3315
+
 
 Two conditions can cause a host to use DHCPv6:
 
@@ -477,6 +664,108 @@ named access-list configuration mode. However, you can also enter IPv4-like comm
 specify an entire access-list entry on one line. The router will convert it to the correct
 configuration commands for named access-list configuration mode.
 
+== IPv6 tunneling
+
+=== 6in4
+
+- mechanism for migrating from IPv4 to IPv6 (RFC 4213)
+- uses tunneling to encapsulate IPv6 traffic over explicitly-configured IPv4 links
+* The 6in4 traffic is sent over the IPv4 Internet inside IPv4 packets whose
+IP headers have the IP protocol number set to 41.
+* In 6in4, the IPv4 packet header is immediately followed by the IPv6 packet being carried.
+This means that the encapsulation overhead is simply the size of the IPv4 header of 20 bytes.
+With an Ethernet MTU of 1500 bytes,
+one can thus send IPv6 packets of 1480 bytes without fragmentation.
+- Also referred to as proto-41 static because the endpoints are configured statically.
+- generally manually configured
+
+image::6in4.png[Manually configuration, dual-stack]
+
+=== 6to4
+
+- encapsulates the IPv6 packets into IPv4 which allows remote IPv6 networks to communicate across the IPv4
+infrastructure(core network or Internet).
+- The main difference between the manual tunnels and automatic 6to4 tunnels is
+  that the tunnel is not point-to-point but it is point-to-multipoint.
+- In automatic 6to4 tunnels, the IPv4 infrastructure is treated as a virtual non-broadcast multi-
+access (NBMA). The IPv4 address embedded
+in the IPv6 address is used to find the other end of the automatic tunnel.
+- Point-to-multipoint 6to4 tunnels that can be used to connect isolated IPv6 sites can use
+addresses from the 2002::/16 prefix.
+
+=== ISATAP
+
+- automatic overlay tunneling mechanism that uses the underlying IPv4 network as
+a NBMA link layer for IPv6.
+
+- Overlay tunneling encapsulates IPv6 packets in IPv4 packets for delivery across an IPv4
+infrastructure (a core network). By using overlay tunnels, you can communicate with isolated
+IPv6 networks without upgrading the IPv4 infrastructure between them. Overlay tunnels can be
+configured between border devices or between a border device and a host; however, both
+tunnel endpoints must support both the IPv4 and IPv6 protocol stacks.
+
+IPv6 supports the following types of overlay tunneling mechanisms:
+- Manual
+- GRE
+- IPv4-compatible
+- 6to4
+- Intra-site Automatic Tunnel Addressing Protocol (ISATAP)
+
+=== 6RD
+
+IPv6 Rapid Deployment (6rd) is a stateless tunneling mechanism which allows a Service
+Provider to rapidly deploy IPv6 in a lightweight and secure manner without requiring upgrades to
+existing IPv4 access network infrastructure. While there are a number of methods for carrying
+IPv6 over IPv4, 6rd has been particularly successful due to its stateless mode of operation
+which is lightweight and naturally scalable, resilient, and simple to provision.
+
+http://goo.gl/JXYWEc[Further Reading]
+
+
+=== 6VPE
+
+The 6PE feature is particularly applicable to Service Providers who already run an MPLS
+network or plan to do it. One of the Cisco 6PE advantages is that there is no need to upgrade
+the hardware, software or configuration of the core network. Thus it eliminates the impact on the
+operations and the revenues generated by the existing IPv4 traffic. MPLS has been chosen by
+many Service Providers as a vehicle to deliver services to customers. MPLS as a multi-service
+infrastructure technology is able to provide layer 3 VPN, QoS, traffic engineering, fast re-routing
+and integration of ATM and IP switching. It is in a very natural manner that MPLS is put to
+contribution to ease IPv6 introduction in existing production networks.
+
+MPLS decoupling of the control plane and data plane provide an interesting alternative to the
+integration and coexistence of IPv4, IPv6 and ATM over a single infrastructure, thus fulfilling
+environments such as 3G networks where UMTS Release 5 needs in terms of transport: Cisco
+6PE for IPv6 traffic, ATM over MPLS and regular IPv4 switching with its VPN, traffic engineering
+and QoS extensions. From an operational standpoint, new CEs introduction is straightforward
+and painless as it leverages the Layer 3 VPN scalability. Using tunnels on the CE routers is the
+simplest way to deploy IPv6 over MPLS networks. It has no impact on the operation or
+infrastructure of MPLS, and requires no changes to either the P routers (they don’t have to be
+IPv6 aware) in the core or the PE routers connected to the customers.
+
+6VPE is a technology that allows IPv6 VPN customers to communicate with each other over an
+IPv4 MPLS Provider without any tunnel setup, by having the customer VPNv6 prefixes using a
+v4-mapped IPv6 address as next-hop inside the provider's network and using IPv4 LSPs
+between the 6VPEs. In 6VPE, labels must be exchanged between the 6VPEs for their VPNv6
+prefixes, which means that the VPNv6 address-family must be activated on the IPv4 iBGP
+session between the 6VPEs.
+
+By default, the *mpls ip propagate-ttl* command is enabled and the IP TTL value is copied to the
+MPLS TTL field during label imposition.
+To disable TTL propagation for all packets, use the *no mpls ip propagate-ttl* command.
+To disable TTL propagation for only forwarded packets, use the *no mpls ip propagate forwarded* command.
+Disabling TTL propagation of forwarded packets allows the structure of the MPLS network to be hidden from customers, but not the provider.
+
+
+Further Reading
+http://goo.gl/vuPAxm
+http://goo.gl/Hu78Cr
+
+
+Further Reading
+http://goo.gl/xEL1XF
+
+
 == IPv6 Routing
 
 === Static Routes
@@ -515,6 +804,7 @@ http://www.cisco.com/en/US/docs/ios/ipv6/configuration/guide/ip6-ospf.html#wp106
 
 http://www.cisco.com/c/en/us/td/docs/ios/12_4/interface/configuration/guide/inb_tun.html#wp1045782[Implement tunnels]
 
-
+=== IPv6 General Prefix
+TODO
 
 

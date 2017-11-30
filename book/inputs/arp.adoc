@@ -6,11 +6,24 @@
 - Finds MAC address of a host given IP address
 - maintains ARP cache
 - ARP Ethernet protocol: 0x0806
+- ARP request for the same address rate-limited to one request every 2 seconds
+
 
 == Protocol
 
+TODO: better work to show that ARP is encapsulated in Ethernet frame, use color
+
+.ARP
+[graphviz, target= 'ethernet-arp']
+----
+digraph g {
+  node[shape=record]
+  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Type=0x806} |{46\-1500|ARP Request or Reply}|{4|FCS}"];
+}
+----
+
 .Header Format
-["packetdiag", target="arp"]
+[packetdiag, target="arp"]
 ----
 diagram {
   colwidth = 32
@@ -20,8 +33,8 @@ diagram {
 
   * Hardware Type (Ethernet=1) [len=16]
   * Protocol Type (IP= 0x0800) [len=16]
-  * Hardware Address Length (6) [len=8]
-  * Protocol Address Length (4) [len=8]
+  * Hardware Addr Length (MAC=6) [len=8]
+  * Protocol Addr Length (IP=4) [len=8]
   * Opcode [len=16]
   * Sender Hardware Address [len=48, color=lightgreen]
   * Sender Protocol Address [len=32, color=yellow]
@@ -44,7 +57,7 @@ OpCode::
 
 .Task: Define Static ARP Entries
 ----
-# arp <ip-address>  <hardware-address> <encapsulation-type> [<interface-type>]
+(config)# arp <ip-address>  <hardware-address> <encapsulation-type> [<interface-type>]
 ----
 
 .Task: Define Static ARP Entries for a Specific VRF
@@ -52,10 +65,12 @@ OpCode::
 # arp vrf <name>  <hardware-address> <encapsulation-type> [<interface-type>]
 ----
 
+
+
 == Dynamic ARP Entries
 
 - Stored in ARP cache
-- timeout by default in 4 hours
+- Timeout: 4 hours by default
 
 
 .Task: Clear the Entire ARP Cache on an Interface
@@ -76,10 +91,6 @@ OpCode::
 .Task: Display the Arp Cache
 ----
 # show ip arp
-----
-
-----
-# show arp
 
 Protocol    Address            Age (min)   Hardware Addr      Type    Interface
 Internet    10.108.42.112      120         0000.a710.4baf     ARPA    Ethernet3
@@ -112,11 +123,33 @@ Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0
 (config-if)# no ip proxy-arp
 ----
 
+[TIP]
+====
+High CPU utilization in the ARP input process occurs if the router has to originate an excessive
+number of ARP requests. The router uses ARP for all hosts, not just those on the local subnet,
+and ARP requests are sent out as broadcasts, which causes more CPU utilization on every host
+in the network. ARP requests for the same IP address are rate-limited to one request every two
+seconds, so an excessive number of ARP requests would have to originate for different IP
+addresses. This can happen if an IP route has been configured pointing to a broadcast interface
+(as opposed to next-hop). A most common example is a default route such as:
+
+  ip route 0.0.0.0 0.0.0.0 Fastethernet0/0
+
+In this case, the router generates an ARP request for each IP address that is not reachable
+through more specific routes, which practically means that the router generates an ARP request
+for almost every address on the Internet.
+====
+
+
+IMPORTANT: When the router needs to route a packet which matches an entry in the routing
+  table with a next-hop value, it performs Layer 3 to Layer 2 resolution for the
+  next-hop address. If it matches an entry in the routing table with just the
+  outgoing/exit local interface, without a next-hop value, it performs Layer 3 to
+  Layer 2 resolution for the final destination of the IP packet.
+
 == Gratuitous ARP
 
 - broadcast ARP messages where the SPA=TPA and THA=FF:FF:FF:FF:FF:FF
-
-- used to
 
 ** to detect IP address conflit
 ** to update other machine ARP table
@@ -130,7 +163,7 @@ it can be an indication of bad Ethernet NICs
 
 image::rarp-bootp.png[RARP and BootP before DHCP]
 
-- A RARP request is a host’s attempt to find its own IP address. So RARP uses the
+- A RARP request is a host's attempt to find its own IP address. So RARP uses the
   same old ARP message, but the ARP request lists a MAC address target of its own
   MAC address and a target IP address of 0.0.0.0. A preconfigured RARP server,
   which must be on the same subnet as the client, receives the request and
@@ -150,3 +183,20 @@ image::rarp-bootp.png[RARP and BootP before DHCP]
   image) server. However, BOOTP does not solve the configuration burden of RARP,
   still requiring that the server be preconfigured with the MAC addresses and IP
   addresses of each client.
+
+
+== ARP vulnerabilities
+
+1. Since ARP does not authenticate requests or replies, ARP Requests and Replies can be forged
+2. ARP is stateless: ARP Replies can be sent without a corresponding ARP Request
+3. According to the ARP protocol specification, a node receiving an ARP
+packet (Request or Reply) must update its local ARP cache with the
+information in the source fields, if the receiving node already has an entry
+for the IP address of the source in its ARP cache.
+
+Typical exploitation of these vulnerabilities:
+
+- ARP poisoning: a  forged ARP Request or Reply can be used to update the ARP cache of
+a remote system with a forged entry
+- This can be used to redirect IP traffic to other hosts
+

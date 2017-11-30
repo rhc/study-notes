@@ -1,16 +1,27 @@
 = MPLS
 
-== Concepts
+- Protocol number: 137 ???
+- packet-forwarding technology which uses labels in order to make data
+  forwarding decisions
+- LSP Label Switching Path
+- FEC forwarding equivalence class: a group of IP packets which are forwarded
+  in the same manner (e.g., over the same path, with the same forwarding
+  treatment)
 
-- mpls vpn
-**   ce : no mpls-aware
-**   pe : mpls and vpn aware
-**   p : no vpn aware
 
-=== MPLS Label Stack
+== MPLS Label Stack
+
+[graphviz, target='mpls-label-stack']
+----
+digraph g {
+  node[shape=record]
+  node0 [label ="{Layer2 Header}|{Top Label}|{...}|{Bottom Label} |{Layer 3 Header}"];
+}
+----
+
 
 .MPLS Header Format
-["packetdiag", target= 'mpls-header-format']
+[packetdiag, target='mpls-header-format']
 ----
 {
   colwidth = 32
@@ -28,112 +39,131 @@
 
 [horizontal]
 Label:: Locally significant to the router
+- 0 : IPv4 Explicit NULL Label. indicates that the label stack must be
+  popped, and the packet forwarding must be based on the IPv4 header.
+- 1 : Router Alert Label. When a received packet contains this label value
+  at the top of the label stack, it is delivered to a local software module for
+  processing. The actual packet forwarding is determined by the label beneath
+  it in the stack. However, if the packet is forwarded further, the Router
+  Alert Label should be pushed back onto the label stack before forwarding. The
+  use of this label is analogous to the use of the Router Alert Option in IP
+  packets (for example, ping with record route option)
+- 2 : IPv6 Explicit NULL Label. indicates that the label stack must be
+  popped, and the packet forwarding must be based on the IPv6 header
+- 3 : Implicit NULL Label. never actually appears in the
+  encapsulation.indicates that the LSR pops the top label from the stack and
+  forwards the rest of the packet (labeled or unlabeled) through the outgoing
+  interface (as per the entry in Lfib). Although this value might never appear
+  in the encapsulation, it needs to be specified in the Label Distribution
+  Protocol, so a value is reserved
+- 4-15: Reseerved
+
 EXP:: Experimental, class of service
-S:: Bottom-of-Stack flag 
+S:: Bottom-of-Stack flag
 TTL:: Time to live
 
-=== Label Distribution
 
-- protocol : ldp (default rfc 3036) or tdp (cisco)
+== Label Distribution
 
-==== Dynamic Discovery Of Adjacent Ldp Peers
+- protocol : LDP (default RFC 3036) or TDP (cisco)
 
-- neigbhbor discovery UDP port 646
-  * basic neighbor discovery: multicast hellos to directly connected neighbors
-  * extended neighbor discovery: unicast hellos to non-directly connected neighbors
+== MPLS ping and tracetroute
 
+
+MPLS LSP ping uses MPLS echo request and reply packets to validate an LSP. You can use
+MPLS LSP ping to validate IPv4 LDP, AToM, and IPv4 RSVP FECs by using appropriate
+keywords and arguments with the ping mpls command. The MPLS echo request packet is sent
+to a target router through the use of the appropriate label stack associated with the LSP to be
+validated. Use of the label stack causes the packet to be forwarded over the LSP itself.
+The destination IP address of the MPLS echo request packet is different from the address used
+to select the label stack. The destination IP address is defined as a 127.x.y.z/8 address. The
+127.x.y.z/8 address prevents the IP packet from being IP switched to its destination if the LSP is
+broken.
+
+An MPLS echo reply is sent in response to an MPLS echo request. The reply is sent as an IP
+packet and it is forwarded using IP, MPLS, or a combination of both types of switching. The
+source address of the MPLS echo reply packet is an address obtained from the router
+generating the echo reply. The destination address is the source address of the router that
+originated the MPLS echo request packet. The MPLS echo reply destination port is set to the
+echo request source port.
+
+
+MPLS LSP traceroute uses MPLS echo request and reply packets to validate an LSP. You can
+use MPLS LSP traceroute to validate IPv4 LDP and IPv4 RSVP FECs by using appropriate
+keywords and arguments with the trace mpls command.
+The MPLS LSP Traceroute feature uses TTL settings to force expiration of the TTL along an
+LSP. MPLS LSP Traceroute incrementally increases the TTL value in its MPLS echo requests
+(TTL = 1, 2, 3, 4) to discover the downstream mapping of each successive hop. The success of
+the LSP traceroute depends on the transit router processing the MPLS echo request when it
+receives a labeled packet with a TTL = 1. On Cisco routers, when the TTL expires, the packet is
+sent to the Route Processor (RP) for processing. The transit router returns an MPLS echo reply
+containing information about the transit hop in response to the TTL-expired MPLS packet. The
+MPLS echo reply destination port is set to the echo request source port.
+
+.Task: Select an LDP IPv4 prefix FEC for validation
 ----
-R1#sh mpls ldp neighbor
-  Peer LDP Ident: 192.1.5.5:0; Local LDP Ident 192.1.1.1:0
-    TCP connection: 192.1.5.5.21288 - 192.1.1.1.646
-    State: Oper; Msgs sent/rcvd: 10/11; Downstream
-    Up time: 00:04:24
-    LDP discovery sources:
-      FastEthernet0/0, Src IP addr: 172.16.15.5
-    Addresses bound to peer LDP Ident:
-    172.16.15.5 192.1.5.5
-----
-
-- timers: hello interval (5 seconds) and holdtime (15 seconds)
-
-----
-(config)# mpls ldp discovery hello interval <sec>
-(config)# mpls ldp discovery hello holdtime <sec>
-----
-  
-==== Peering Establishment
-
-in 2 steps:
-
-- transport connection: if the 2 peers have never established a tcp session, create a new session with a client (active device, highest ip address) 
-using a random port and the server (lowest ip addr) listening on the TCP 646 port.
-
-----
-R1#show tcp brief (state)
-TCB        Local_Address   Foreign_Address
-498D80D8   192.1.1.1.646   192.1.5.5.21288   ESTAB
-----
-
-- session establishment:
- * negotiates ldp protocol version, label exchange method, timers
- * if incompatibility, sends error negotiation messages and restart the negotiation
-  with initial backoff value (15 seconds) and maximum backoff value (120 seconds)
-
-----
-R1#show mpls ldp parameters
-  Protocol version: 1
-  Session hold time: 180 sec; keep alive interval: 60 sec
-  Discovery hello: holdtime: 15 sec; interval: 5 sec
-  Discovery targeted hello: holdtime: 90 sec; interval: 10 sec
-  Downstream on Demand max hop count: 255
-  Downstream on Demand Path Vector Limit: 255
-  LDP for targeted sessions
-  LDP initial/maximum backoff: 15/120 sec
-  LDP loop detection: off
+# ping mpls ipv4 <destination-address/destination-mask-length> [repeat <count>] [exp <bits> ] [verbose]
 ----
 
-=== Regulation Of Peer-to-Peer Communication and Label Exchange
-
-- with keepalives (60 seconds)
-
+.Task: Select an LDP IPv4 prefix FEC for validation
 ----
-(config)# mpls ldp holdtime <sec>
-%Previously established sessions may not use the new holdtime.
+# trace mpls ipv4 <destination-address/destination-mask-length>
 ----
 
-- keepalive timer is reset every time ldp packets or keepalive are received
-- keepalive are automatically adjusted to 1/3 of the configured holdtime
-- you need to reset the tcp session for new timers to take effect
 
 
-== Label Distribution and Control
+Further Reading
+http://goo.gl/V1Z2kN
+https://partners.intelsecurity.com/uk/reseller/index.aspx[Good explanation on INE blog]
 
-- methods:
-  * Unsolicited downstream distribution mode
-  * solicited downstream distribution mode
+== L3VPNs
 
-(to be revised )
-
-
-=== Route Distinguishers and Route Targets
-
-http://www.cisco.com/c/en/us/td/docs/net_mgmt/ip_solution_center/3-1/mpls/user/guide/mpls/1_iscqsg.html#wp1039468[RD and RT]
+- mpls vpn
+**   CE : no mpls-aware
+**   PE : mpls and vpn aware
+**   P : no vpn aware
 
 
-RD is added to prefix when BGP vpnv4 advertised NLRI.
-  - only one per NLRI
-RT is Path attribute of the NLRI
-  - 1 or + for each RD/prefix  
-  - useful in overlapping VPNs or central service VPN offered by SP
+TODO Place this section at an appropriate place
 
-//TODO add figure 11-17 from narbick volume 2
-
+- Establish an LSP between PEs: IGP + LDP , free BGP core
+- Exchange routes with customer: PE-CE IGP or BGP
+- Exchange customer routes between PEs: iBGP + MPLS VPN label
+- Label switch between PEs: Data follows the IGP + LDP transport label
 
 
-== Commands
+Read http://goo.gl/FXrVOO[Route leaking]
+
 
 ----
 show mpls forwarding-table
 ----
 
 check http://www.cisco.com/en/US/docs/ios-xml/ios/mpls/command/mp-s2.html#wp4232274342
+
+
+== IPv6 over MPLS: 6PE and 6VPE
+
+- enables the service providers running an MPLS/IPv4 infrastructure
+to offer IPv6 services without any major changesin the infrastructure
+
+- benefits
+
+  * Minimal operational cost and risk : No impact on existing IPv4 and MPLS services.
+  * Only PE routers upgrade : A 6PE and 6VPE router can be an existing PE router or
+  a new one dedicated to IPv6 traffic.
+  * No impact on IPv6 CE routers : The ISP can connect to any CE router running Static,
+  IGP or EGP.
+  * Production services ready : An ISP can delegate IPv6 prefixes.
+  * IPv6 introduction into an existing MPLS service : 6PE and 6VPE routers can be added at any time.
+
+.protocols leveraged with 6vpe
+image::6vpe-protocols.png[Protocols leveragaged with  6VPE]
+
+More at
+https://gixtools.net/wp-content/uploads/2011/05/Cisco-IPv6-Provider-Edge-Router-over-MPLS-Cisco-6PE.pdf
+
+
+
+
+

@@ -1,7 +1,4 @@
 = EtherChannel
-:icons: font
-:experimental:
-
 
 - EtherChannel aggregates bandwidth of up to 8 physical links
 - Consists of two parts:
@@ -9,7 +6,6 @@
   * Member interfaces: physical links part of the bundle
 
 - can be any type of interface: Layer 2 access, trunk, tunnel or layer 3 routed
-
 - Configured as either Layer 2 or Layer 3 interfaces.
 
 - To be part of a PortChannel, both sides must agree on:
@@ -53,7 +49,7 @@ The channel groups are also numbered from 1 to 64.
 # show etherchannel protocol
 ----
 
-.Task: Specify the Link Aggregation Protocol Globally
+.Task: Configure the Link Aggregation Protocol Globally
 ----
 (config-if)# channel-protocol {pagp | lacp}
 ----
@@ -74,7 +70,7 @@ The channel groups are also numbered from 1 to 64.
 conf t
 interface <type slot/number>
   switchport mode {access | trunk}
-  channel-group n mode {active | passive | on | {auto [non-silent] | desirable [non-silent]  }
+  channel-group <n> mode {active | passive | on | {auto [non-silent] | desirable [non-silent]  }
 ----
 
 == Layer 3 EtherChannels
@@ -93,7 +89,7 @@ conf t
 interface <type id>
   no switchport
   no ip address
-  channel-group n mode {active | passive | on | {auto [non-silent] | desirable [non-silent]  }
+  channel-group <n> mode {active | passive | on | {auto [non-silent] | desirable [non-silent]  }
 ----
 
 [TIP]
@@ -169,10 +165,16 @@ Port-channel interface, it is an indication that the neighbor is still treating
 the links as individual, and the entire Port-channel will be err-disabled
 - Enabled by default
 
-
 .Task: Deactivate EtherChannal Misconfig Guard
 ----
-(config)# no spanning-tree etherchan- nel guard misconfig
+(config)# no spanning-tree etherchannel guard misconfig
 ----
 
+
+== Vlan internal allocation policy
+
+.Task: manage the vlan internal allocation policy
+----
+(config)# vlan internal allocation policy ascending
+----
 

@@ -1,23 +1,23 @@
 = SNMP
-:experimental:
-:icons: font
 
 menu:Configuration guides[Network Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/snmp/configuration/15-mt/snmp-15-mt-book/nm-snmp-cfg-snmp-support.html[configuring SNMP support] ]
 
 //TODO start here with the pictures
 
 - Application-layer protocol between SNMP managers and agents
-** SNMP manager running NMS software:i UDP port 162 open for traps/informs messages
+** SNMP manager running NMS software: UDP port 162 open for traps/informs messages
 ** SNMP managed devices running SNMP agent: UDP 161 open for GET/SET messages
 
 == Version
 
+[horizontal]
 v1:: original specs, weak authentication with community string, Uses SMIv1, uses MIB-I originally.
-v2:: Uses SMIv2, removed requirement for communities, added GetBulk and Inform messages, but began with MIB-II originally.
+v2:: Uses SMIv2, removed requirement for communities, added GetBulk and Inform messages, began with MIB-II originally.
 v2c::  64-bit counters, getBulkRequest, informsRequest,Pseudo-release (RFC 1905) that allowed SNMPv1-style communities with SNMPv2;
 v3:: authentication, encryption, Mostly identical to SNMPv2, but adds significantly better security, although it supports communities for backward compatibility. Uses MIB-II.
 
 == MIB
+
 
 MIB: dictionaries of OID
 
@@ -53,9 +53,8 @@ diagram {
 . GetNextRequest
 . GetBulkRequest
 . Trap
-. InformsRquest
+. InformsRequest
 . Response
-
 
 
 == Basic System Information
@@ -99,7 +98,10 @@ diagram {
 
 .Task: Send Traps to NMS
 ----
-(config)# snmp-server host <ip-address> [traps | informs] [version {1| 2c | 3 [auth | noauth | priv]}] community-string [udp-port port-number] [notification-type]
+(config)# snmp-server host <ip-address>
+                      [traps | informs]
+                      [version {1| 2c | 3 [auth | noauth | priv]}]
+                      community-string [udp-port port-number] [notification-type]
 ----
 
 == SNMP V3
@@ -135,6 +137,13 @@ diagram {
 ----
 
 == SNMP Manager
+
+- control and monitor the activities of network hosts using SNMP.
+- Network Management System (NMS)
+  * can be dedicated device used for network management, or the applications used on such a device.
+  * can be CLI or GUI (CiscoWorks2000)
+
+
 
 .Task: Configure the SNMP Manager Process
 ----

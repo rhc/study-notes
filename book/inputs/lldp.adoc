@@ -2,22 +2,20 @@
 
 menu:Catalyst Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swlldp.html[LLDP] ]
 
-== Overview
-
 - IEEE 802.1AB link layer discovery protocol
-- neighbor discovery protocol 
-- advertises TLV(type, length, value) for each attribute
-* basic mandatory
+- Neighbor discovery protocol
+- Advertises TLV(type, length, value) for each attribute
+* Basic mandatory
   ** port description
   ** system name
   ** system description
-  ** system capabilities 
+  ** system capabilities
   ** management address
-* optional
+* Optional
   ** port vlan ID for ieee 802.1
   ** MAC/PHY configuration/status for ieee 802.3
 
-== LLDP Global State                    
+== LLDP Global State
 
 - Disabled by default
 
@@ -28,31 +26,30 @@ menu:Catalyst Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switche
 
 .Task: Display Global Information, Such As Frequency Of Transmissions, the Holdtime for Packets Being Sent, and the Delay Time Before LLDP Initializes on an Interface.
 ----
-show lldp
+# show lldp
 ----
 
 .Task: Display LLDP Counters, Including the Number Of Packets Sent and Received, Number Of Packets Discarded, and Number Of Unrecognized TLVs.
 ----
-show lldp traffic
+# show lldp traffic
 ----
 
 .Task: Reset the Traffic Counters to Zero.
 ----
-clear lldp counters
+# clear lldp counters
 ----
 
 .Task: Delete the LLDP Neighbor Information Table.
 ----
-clear lldp table
+# clear lldp table
 ----
 
 .Task: Clear the NMSP Statistic Counters.
-
 ----
-clear nmsp statistics
+# clear nmsp statistics
 ----
 
-== LLDP Interfaces                 
+== LLDP Interfaces
 
 - Disabled by default
 
@@ -68,24 +65,24 @@ clear nmsp statistics
 
 .Task: Display Information About Interfaces with LLDP Enabled.
 ----
-show lldp interface [<interface-id>]
+# show lldp interface [<interface-id>]
 ----
 
 == Neighbors
 
 .Task: Display Information About a Specific Neighbor.
 ----
-show lldp entry <entry-name>
+# show lldp entry <entry-name>
 ----
 
 .Task: Display Information About All Neighbors.
 ----
-show lldp entry *
+# show lldp entry *
 ----
 
 .Task: Display Information About Neighbors, Including Device Type, Interface Type and Number, Holdtime Settings, Capabilities, and Port ID.
 ----
-show lldp neighbors [<interface-id>] [detail]
+# show lldp neighbors [<interface-id>] [detail]
 ----
 
 == Timers
@@ -99,7 +96,7 @@ show lldp neighbors [<interface-id>] [detail]
 .Task: Specify the Delay Time In Seconds for LLDP to Initialize on an Interface.
 The range is 2 to 5 seconds; the default is 2 seconds.
 ----
-(config)# lldp reinit delay 
+(config)# lldp reinit delay
 ----
 
 .Task: Set the Sending Frequency Of LLDP Updates In Seconds.
@@ -108,7 +105,7 @@ The range is 5 to 65534 seconds; the default is 30 seconds.
 (config)# lldp timer rate
 ----
 
-== TLV 
+== TLV
 
 .Task: Specify the LLDP TLVs to Send or Receive.
 ----
@@ -120,16 +117,16 @@ The range is 5 to 65534 seconds; the default is 30 seconds.
 (config)# lldp med-tlv-select
 ----
 
-.Task: Specify the LLDP-MED TLV to Send 
+.Task: Specify the LLDP-MED TLV to Send
 ----
 (config-if)# lldp med-tlv-select {inventory-management | location | network-policy | power-management }
 ----
 
-.Task: Configure Network Policy TLV 
+.Task: Configure Network Policy TLV
 ----
 (config)# network-policy profile <profile-number>
-(config)#  {voice | voice-signaling} vlan [<id>  {cos <cvalue> | dscp <dvalue>}] 
-            | [[dot1p {cos <cvalue> | dscp <dvalue>}] | none | untagged] 
+(config)#  {voice | voice-signaling} vlan [<id>  {cos <cvalue> | dscp <dvalue>}]
+            | [[dot1p {cos <cvalue> | dscp <dvalue>}] | none | untagged]
 (config-if)# network-policy <profile-number>
 (config-if)# lldp med-tlv select network-policy
 ----
@@ -140,31 +137,31 @@ The range is 5 to 65534 seconds; the default is 30 seconds.
 - If you first configure a network-policy profile on an interface, you cannot apply the switchport voice vlan command on the interface. If the switchport voice vlan vlan-id is already configured on an interface, you can apply a network-policy profile on the interface. This way the interface has the voice or voice-signaling VLAN network-policy profile applied on the interface.
 - You cannot configure static secure MAC addresses on an interface that has a network-policy profile.
 - You cannot configure a network-policy profile on a private-VLAN port.
-- For wired location to function, you must first enter the ip device tracking global configuration command.  
+- For wired location to function, you must first enter the ip device tracking global configuration command.
 ====
 
 .Task: Display the Location Information for an Endpoint.
 ----
-show location
+# show location
 ----
 
 == Network-Policy Profiles
 
 .Task: Display the Configured Network-Policy Profiles.
 ----
-show network-policy profile
+# show network-policy profile
 ----
 
 .Task: Display the NMSP Information.
 ----
-show nmsp
+# show nmsp
 ----
 
 == LLDP-MED
 
 - LLDP for Media Endpoint Devices
 - operates between endpoint devices (ip phones) and network devices (switches)
-- supports VoIP applications 
+- supports VoIP applications
 - TLVs enabled by default:
 
 * LLDP-MED capabilities TLV
@@ -226,4 +223,6 @@ associated with the switch.
 
 If you change a location address on the switch, the switch sends an NMSP
 location notification message that identifies the affected ports and the
-changed address information. 
+changed address information.
+
+

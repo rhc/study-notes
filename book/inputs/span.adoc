@@ -3,10 +3,10 @@
 - SPAN (Switch Port Analyzer) mirrors monitored (TX,RX or Both) traffic
 on source ports or VLANs to a destination port for analysis.
 
-
 == Local SPAN Sessions
 
 - Source and destination on the same switch
+
 image::span-topology.png[SPAN Topology]
 
 .Task: Display SPAN  Status
@@ -67,7 +67,7 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 - If ports are added to or removed from the source VLANs, the traffic on the source VLAN received by those ports is added to or removed from the sources being monitored.
 - You cannot use filter VLANs in the same session with VLAN sources.
 - You can monitor only Ethernet VLANs.
-- Ignores CDP, BPDU, VTP,, DTP and PAgP frames unless *encapsulation replicate* is configured
+- Ignores CDP, BPDU, VTP, DTP and PAgP frames unless *encapsulation replicate* is configured
 
 === Destination Port
 
@@ -76,7 +76,7 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 - By default, send packets untagged
 ** can replicate the source interface encapsulation
 - By default, disable the ingress traffic forwarding
-** can accept incoming packets with dot1q, isl or untagged
+** can accept incoming packets with dot1q, ISL or untagged
 
 - Only one SPAN/RSPAN session can send traffic to a single destination port, cannot be used by two SPAN sessions
 - Only monitored traffic passes through the SPAN destination port
@@ -92,14 +92,15 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 - You cannot mix source VLANs and filter VLANs within a single SPAN session.
 - Up to 64 SPAN destination ports can be configured on a switch
 
-//NOTE
 
 .Task: Configure the Destination Port for a SPAN Session
 ----
-(config)# monitor <session-number> destination interface <interface-id>
-                                   [encapsulation replicate]
-                                   [ingress {dot1q vlan <vlan-id> | isl | untagged vlan <vlan-id>} ]
+(config)# monitor <session-number>
+                    destination interface <interface-id>
+                    [encapsulation replicate]
+                    [ingress {dot1q vlan <vlan-id> | isl | untagged vlan <vlan-id>} ]
 ----
+
 
 === VLAN Filtering
 
@@ -130,7 +131,7 @@ Therefore monitoring a large number of ports or VLANs could potentially generate
 
 === RSPAN VLAN
 
-- Can be propagated to all switches by VTP if RSPAN VLAN < 1005
+- Can be propagated to all switches by VTP if 1 < RSPAN VLAN < 1002
 - Must be created manually on extended-range VLAN
 - Can not be vlan 1, 1002-1005
 - Can served multiple RSPAN source/destination sessions
@@ -157,8 +158,8 @@ Therefore monitoring a large number of ports or VLANs could potentially generate
 
 .Task: Configure the RSPAN Source Session
 ----
-monitor session <session-number> source {interface interface-id | vlan vlan-id} [, | -] [both | rx | tx]
-monitor session session_number destination remote vlan <rspan-vlan-id>
+monitor session <session-number> source {interface <interface-id> | vlan <vlan-id>} [, | -] [both | rx | tx]
+monitor session <session-number> destination remote vlan <rspan-vlan-id>
 ----
 
 === RSPAN Destination Session
@@ -170,6 +171,51 @@ monitor session session_number destination remote vlan <rspan-vlan-id>
 ----
 (config)# monitor session <session-number> source remote vlan <rspan-vlan-id>
 (config)#  monitor session <session-number> destination interface <interface-id>
+----
+
+== Encapsulated RSPAN
+
+- ERSPAN consists of an ERSPAN source session, routable ERSPAN GRE encapsulated traffic, and an ERSPAN destination session.
+- Supported only on high-end switches (ASR1000, Catalyst 6500/7600, Nexus platforms ) or IOS-XE
+
+image::erspan.png[]
+
+=== ERSPAN Source Session
+
+.Task: Configure ERSPAN Source Session
+----
+(config)# monitor session <id> type erspan-source
+(config-mon-erspan-src)# source { interface <interface-id> | vlan <vlan-ids> [rx|tx|both]}
+(config-mon-erspan-src)# destination
+(config-mon-erspan-src-dst)# erspan-id <erspan-flow-id>
+(config-mon-erspan-src-dst)# mtu <size>
+(config-mon-erspan-src-dst)# origin ip address <a.b.c.d> [force]
+(config-mon-erspan-src-dst)# no shutdown
+----
+
+=== ERSPAN Destination Session
+
+.Task: Configure ERSPAN Destination Session
+----
+(config)# monitor session <id> type erspan-destination
+(config-mon-erspan-dst)# destination interface <interface-id>
+(config-mon-erspan-dst)# source
+(config-mon-erspan-dst-src)# erspan-id <erspan-flow-id>
+(config-mon-erspan-dst-src)# mtu <size>
+(config-mon-erspan-dst-src)# ip address <a.b.c.d> [force]
+(config-mon-erspan-dst-src)# no shutdown
+----
+
+=== ESPAN Dummy MAC Address Rewrite
+
+- Supports customized MAC value for WAN interface and tunnel interface
+- Monitor the traffic going through WAN interface
+
+.Task: Configure ESPAN Dummy MAC Address
+----
+(config)# monitor session <session-id> type erspan-source
+(config-mon-erspan-src-dst)# s-mac <mac-address>
+(config-mon-erspan-src-dst)# d-mac <mac-address>
 ----
 
 == Interaction with Other Features
@@ -228,49 +274,4 @@ IEEE 802.1x is disabled until the port is removed as a SPAN destination.
 +
 - For SPAN sessions, do not enable IEEE 802.1x on ports with monitored egress when ingress forwarding is enabled on the destination port.
 For RSPAN source sessions, do not enable IEEE 802.1x on any ports that are egress monitored.
-
-== Encapsulated RSPAN
-
-- ERSPAN consists of an ERSPAN source session, routable ERSPAN GRE encapsulated traffic, and an ERSPAN destination session.
-- Supported only on high-end switch
-
-image::erspan.png[]
-
-=== ERSPAN Source Session
-
-.Task: Configure ERSPAN Source Session
-----
-(config)# monitor session <id> type erspan-source
-(config-mon-erspan-src)# source { interface <interface-id> | vlan <vlan-ids> [rx|tx|both]}
-(config-mon-erspan-src)# destination
-(config-mon-erspan-src-dst)# erspan-id <erspan-flow-id>
-(config-mon-erspan-src-dst)# mtu <size>
-(config-mon-erspan-src-dst)# origin ip address <a.b.c.d> [force]
-(config-mon-erspan-src-dst)# no shutdown
-----
-
-=== ERSPAN Destination Session
-
-.Task: Configure ERSPAN Destination Session
-----
-(config)# monitor session <id> type erspan-destination
-(config-mon-erspan-dst)# destination interface <interface-id>
-(config-mon-erspan-dst)# source
-(config-mon-erspan-dst-src)# erspan-id <erspan-flow-id>
-(config-mon-erspan-dst-src)# mtu <size>
-(config-mon-erspan-dst-src)# ip address <a.b.c.d> [force]
-(config-mon-erspan-dst-src)# no shutdown
-----
-
-=== ESPAN Dummy MAC Address Rewrite
-
-- Supports customizaed MAC value for WAN interface and tunnel interface
-- Monitor the traffic going through WAN interface
-
-.Task: Configure ESPAN Dummy MAC Address
-----
-(config)# monitor session <session-id> type erspan-source
-(config-mon-erspan-src-dst)# s-mac <mac-address>
-(config-mon-erspan-src-dst)# d-mac <mac-address>
-----
 

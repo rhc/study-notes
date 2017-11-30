@@ -1,4 +1,30 @@
 = ODR
 
+menu:Configuration Guides[IP Routing >  https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_odr/configuration/15-mt/ird-15-mt-book/ird-odrconfg.html#GUID-8605D10E-AB87-4880-AE63-637341612F86[On-Demand Routing] ]
+
+- provides IP routing for stub sites, with minimum cost
+- uses CDP
+  * to advertise connected IPv4 routes of a stub router to the hub
+  * to advertise default IPv4 default route back to the spokes
+  * ODR receives periodic CDP updates containing IP prefix information
+- no IP routing protocol on the stub router
+- hub router sends default route information to the stub router
+- hub router populates the RIV with ODR routes learned from stub routers
+  * the ip next hop for ODR routes is the IP address of the neighboring router as advertised throug CDP
+
+
+
+.Task: Enable ODR on a hub router
+----
+(config)# router odr
+----
+IMPORTANT: do not forget to *cdp enable* on the hub and the spokes
+
+
+.Task: Filter ODR information
+----
+(config-router)# distribute-list [<acl>| [route-map <map-tag>] ] in [<interface-type> | <interface-number>]
+----
+
 
 

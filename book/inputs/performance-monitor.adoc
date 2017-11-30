@@ -1,0 +1,16 @@
+= Performance Monitor
+
+TODO
+
+Cisco performance monitor enables you to monitor the flow of packets in your
+network and become aware of any issues that might impact the flow before it
+starts to significantly impact the performance of the application in question.
+Performance monitoring is especially important for video traffic because high
+quality interactive video traffic is highly sensitive to network conditions
+(such as packet drops). Even minor issues that may not affect other
+applications can have dramatic effects on video quality.
+
+
+Further Reading
+http://goo.gl/UReuBR
+

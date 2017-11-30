@@ -14,3 +14,13 @@ ip arp proxy disable
 ----
 (config-if)# no ip proxy-arp
 ----
+
+
+
+  When the router needs to route a packet which matches an entry in the routing
+  table with a next-hop value, it performs Layer 3 to Layer 2 resolution for the
+  next-hop address. If it matches an entry in the routing table with just the
+  outgoing/exit local interface, without a next-hop value, it performs Layer 3 to
+  Layer 2 resolution for the final destination of the IP packet.
+
+

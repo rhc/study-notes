@@ -1,3 +1,37 @@
+= TCP
+
+Transmission Control Protocol
+
+- provides a reliable, connection-oriented, byte stream, transport layer
+  service.
+
+** packetizes the user data into segments,
+** sets a timeout any time it sends data,
+** acknowledges data received by the other end,
+** reorders out-of-order data,
+** discards duplicate data,
+** provides end-to-end flow control, and
+** calculates and verifies a mandatory end-to-end checksum.
+
+- Protocol Number: 6
+
+.TCP Header Format
+["packetdiag", target="tcp-header-format",svg]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Source Port [len=16]
+  * Destination Port [len=16]
+  * Sequence Number [len=32]
+  * Acknowledgment Number [len=32]
+  * Data Offset [len=4]
+  * Reserved [len=3]
+  * NS [len=1, rotate=270]
+  * CWR [len=1, rotate=270]
+  * ECE [len=1, rotate=270]
   * URG [len=1, rotate=270]
   * ACK [len=1, rotate=270]
   * PSH [len=1, rotate=270]
@@ -6,10 +40,78 @@
   * FIN [len=1, rotate=270]
   * Window Size [len = 16]
   * Checksum [len=16]
-  * Urgent pointer (if URG set) [len=16]
+  * Urgent pointer [len=16]
   * Options (If IHL > 5) [len= 32, color=pink ]
 }
 ----
 
+== Connection establishment
 
-   
+.Three-Hand Shake
+SYN seq(A), SYN-ACK seq(B) ack(A+1), ACK seq(B+1)
+
+.Task: Set the amount of time before attempting to establish a TCP connection.
+----
+(config)# ip tcp synwait-time <seconds>
+----
+NOTE: The default is 30 seconds.
+
+
+== TCP MSS
+
+- Maximimum Segment Size: max amount of data that a host is willing to receive in a single TCP datagram
+- sent as TCP option in TCP SYN segment
+
+== TCP Window
+
+amount of unacknowledged data a sender can send on a particular connection
+before it gets an acknowledgment back from the receiver,
+that it has received some of the data.
+
+== Sliding window operations
+
+todo: Excellent lessons
+http://www.omnisecu.com/tcpip/tcp-sliding-window.php
+
+== TCP Options
+
+TODO
+
+== Ident
+
+- TCP client Identify Protocol
+- RFC 1413,
+- allows a system to query the identity of a user initiating a TCP connection
+  or a host responding to a TCP connection.
+  * When implemented, the Ident service
+  allows a user to obtain identity information by simple connecting to a TCP
+  port on a system, and issuing a simple text string requesting information.
+- disabled by default for security reasons
+
+----
+(config)# no ip identd
+----
+
+
+
+== TCP Small Servers
+
+- echo, chargen, daytime , discard services
+- disabled by default
+
+The TCP small servers are:
+
+- Echo: Echoes back whatever you type through the telnet x.x.x.x echo command.
+- Chargen: Generates a stream of ASCII data. Use the telnet x.x.x.x chargen
+command.
+- Discard: Throws away whatever you type. Use the telnet x.x.x.x discard
+command.
+- Daytime: Returns system date and time, if it is correct. It is correct if you run
+Network Time Protocol (NTP), or have set the date and time manually from the exec level. Use the telnet x.x.x.x daytime command.
+
+.Task: Enable TCP small servers
+----
+(config)# service tcp-small-servers
+----
+
+

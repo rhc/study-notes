@@ -287,9 +287,6 @@ network.
 
 
 
-
-
-
 === Candidate RP
 
 - Send multicast RP-announce messages to 224.0.1.39 every 60 seconds (default) with holdtime of 180 seconds (defauld)
@@ -699,3 +696,23 @@ Type  , Name
 (config)# ip pim [vrf <name>] ssm { default | range a<ccess-list-number> }
 ----
 NOTE: *default* defines the ssm range access list to 232/8
+
+
+
+== PIM snooping
+
+TODO
+
+== PIM stub routing
+
+TODO
+In a network using PIM stub routing, the only allowable route for IP traffic to the user is through
+a switch that is configured with PIM stub routing. PIM passive interfaces are connected to Layer
+2 access domains, such as VLANs, or to interfaces that are connected to other Layer 2 devices.
+Only directly connected multicast (IGMP) receivers and sources are allowed in the Layer 2
+access domains. The PIM passive interfaces do not send or process any received PIM control
+packets
+
+
+Further Reading
+http://goo.gl/UDQbL2

@@ -14,7 +14,7 @@ menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/
 * Weigthed
 
 - Multicast, 224.0.0.102, UDP port 3222
-- Virtual MAC address 0007.B400.xxyy, where xx the group and yy in (00-03)
+- Virtual MAC address 0007.B400._xxyy_, where xx the group and yy in (00-03)
 
 == GLBP Packet Type
 

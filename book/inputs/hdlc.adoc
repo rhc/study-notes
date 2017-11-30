@@ -2,6 +2,8 @@
 
 - High-Level Data Link Control
 - Layer 2 on point-to-point links
+- bit oriented synchronous, without retransmission
+- uses SLARP to send keepalives
 - developed by the ISO (ISO 3309)
 - modified by Cisco by adding a proprietary 2-byte Type field to the frame.
 * enabled by default on IOS serial links
@@ -10,13 +12,13 @@
 
 == HDLC Frame Format
 
-
+TODO
 
 == Encapsulation
 
 - default
 
-.Task: Set Encapsulation to Hdlc
+.Task: Set Encapsulation to HDLC
 ----
 (config-if)# encapsulation hdlc
 ----

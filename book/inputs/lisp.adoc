@@ -1,0 +1,7 @@
+= LISP
+
+TODO see EIGRP OTP
+
+LISP frame format
+
+http://www.cisco.com/c/en/us/products/collateral/ios-nx-os-software/ip-routing/whitepaper_C11-730404.html

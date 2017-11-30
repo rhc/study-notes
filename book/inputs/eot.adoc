@@ -22,10 +22,10 @@
 
 === Interface IP Routing Tracking
 
-- The IP routing State is up if 
-* ip routing is enable and active on the interface 
-* known  ip address ( static, dhcp , ppp/ipcp, unnumbered ) 
-* interface line protocol up 
+- The IP routing State is up if
+* ip routing is enable and active on the interface
+* known  ip address ( static, dhcp , ppp/ipcp, unnumbered )
+* interface line protocol up
 
 .Task: Track the IP Routing State Of an Interface
 ----
@@ -47,12 +47,12 @@
   timer.
 
 
-.Task: (Optional) Enables EOT to Consider the Carrier-Delay Timer When Tracking the Status Of an Interface. 
+.Task: (Optional) Enables EOT to Consider the Carrier-Delay Timer When Tracking the Status Of an Interface.
 ----
 (config-track)# carrier-delay
 ----
 
-.Task: (Optional) Specifies a Period Of Time (In Seconds) to Delay Communicating State Changes Of a Tracked Object. 
+.Task: (Optional) Specifies a Period Of Time (In Seconds) to Delay Communicating State Changes Of a Tracked Object.
 ----
 (config-track)# delay {up <seconds> [down <seconds>] | down <seconds [up <seconds>]}
 ----
@@ -63,14 +63,14 @@
 - polls the ip route state every 15 seconds
 
 
-.Task: Track an Ip Route
+.Task: Track an IP Route
 ----
 (config)# track <object-number> ip route <a.b.c.d/prefix> reachability
 ----
 
-.Task:(Optional) Specifies the Interval In Which the Tracking Process Polls the Tracked Object. 
+.Task:(Optional) Specifies the Interval In Which the Tracking Process Polls the Tracked Object.
 ----
-(config)# track timer ip route { <seconds> | msec <milliseconds> } 
+(config)# track timer ip route { <seconds> | msec <milliseconds> }
 ----
 
 TODO: scaled metrics
@@ -78,7 +78,7 @@ TODO: scaled metrics
 
 == IP SLA Operation Tracking
 
-- tracks the state or the reachability of IP SLA operations 
+- tracks the state or the reachability of IP SLA operations
 -
 
 .Task: Track the Reachability Of an IP SLA Host
@@ -104,7 +104,7 @@ Track 3
 
 == Tracked List
 
-- can be constructed with 
+- can be constructed with
 
 * boolean expression
 * treshold and weight
@@ -117,7 +117,7 @@ Track 3
 ----
 
 
-.Task: Configure Tracked List Object with Threshold and Weight 
+.Task: Configure Tracked List Object with Threshold and Weight
 ----
 (config)# track <list-object-number> list treshold weight
 (config-track)# object <object-number> [weight <number]
@@ -127,11 +127,11 @@ Track 3
 
 
 
-.Task: Configure Tracked List Object with Threshold and Percentage 
+.Task: Configure Tracked List Object with Threshold and Percentage
 ----
 (config)# track <list-object-number> list treshold percentage
-(config-track)# object <object-number> 
-(config-track)# object <object-number> 
+(config-track)# object <object-number>
+(config-track)# object <object-number>
 (config-track)# treshold percentage {up <number> | down <number>| up <number> down <number>  }
 ----
 

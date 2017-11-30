@@ -2,10 +2,9 @@
 
 
 TIP:
-if dmvpn phase 3, the tunnel key must be the same as the tunnel key 
+if dmvpn phase 3, the tunnel key must be the same as the tunnel key ???
 
-
-
+----
 !! DMVPN HUB
 int f0/0.123
 	enc dot1q 123
@@ -13,7 +12,7 @@ int f0/0.123
 	no shut
 int t123
   ip add 129.99.123.1 255.255.255.0
-  tunnel source f0/0.123 
+  tunnel source f0/0.123
   tunnel mode gre multipoint
   tunnel key 123
   ip nhrp network-id 123
@@ -34,7 +33,7 @@ int t123
   ip nhrp nhs 129.99.123.1
   ip nhrp map multicast 10.0.0.1
   ip nhrp map 129.99.123.1 10.0.0.1
-
+----
 
 .Task: Verify That NHRP Registration Has Been Sent from Spokes to the Hub
 ----
@@ -50,3 +49,7 @@ R1#sh ip nhrp
    NBMA address: 10.0.0.3
 ----
 
+.Task: Troubleshoot nhrp
+----
+# debug nhrp
+----

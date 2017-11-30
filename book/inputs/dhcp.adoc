@@ -1,20 +1,28 @@
 = DHCP
-:experimental:
-:icons: font
 
 menu:Configuration guides[IP Addressing > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/dhcp-overview.html[DHCP] ]
 
-* https://tools.ietf.org/html/rfc2131[RFC 2131]
+- https://tools.ietf.org/html/rfc2131[RFC 2131]
 
 - Dynamic Host Configuration Protocol
 - Based on BOOTP (itself based on RARP)
 - Client/agent relay/server model
-- UDP port 67
+- UDP port 67 (server), port 68 (client)
 
 .DHCP Request for an IP Address from a DHCP Server
 image::dhcp-request.png[DHCP request for an IP address from a DHCP Server]
 
 == Protocol Operations
+
+.DHCP
+[graphviz, target= 'dhcp']
+----
+digraph g {
+  node[shape=record]
+  node0 [label ="{MAC header}|{IP Header}|{UDP Header}|{DHCP Header}|{Data}"];
+}
+----
+
 
 .DHCP Message
 ["packetdiag", target="dhcp-message-format.png"]
@@ -24,10 +32,9 @@ diagram {
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
-  * op [len = 8]
-  * htype [len= 8]
-  * hlen [len = 8]
+  * op (request=1, reply=2) [len = 8]
+  * htype (=1 for Ethernet) [len= 8]
+  * hlen (=6 for IEEE 802 MAC )[len = 8]
   * hops [len = 8]
   * xid [len = 32]
   * secs [len = 16]
@@ -42,25 +49,184 @@ diagram {
 }
 ----
 
-[cols="10,^10,90", options="header"]
+[cols="10s,^5,90a", options="header"]
 |====
-| FIELD   | OCTETS | DESCRIPTION
+| Field   | Octets | Description
 | op      | 1      | Message op code / message type.   1 = BOOTREQUEST, 2 = BOOTREPLY
-| htype   | 1      | Hardware address type
-| hlen    | 1      | Hardware address length
-| hops    | 1      | Client sets to zero, optionally used by relay agents when booting via a relay agent.
-| xid     | 4      | Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.
-| secs    | 2      | Filled in by client, seconds elapsed since client began address acquisition or renewal process.
-| flags   | 2      | Flags
-| ciaddr  | 4      | Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond to ARP requests.
-| yiaddr  | 4      | 'your' (client) IP address.
-| siaddr  | 4      | IP address of next server to use in bootstrap returned in DHCPOFFER, DHCPACK by server.
+| htype   | 1      | Hardware address type for the local network, same value than ARP HRD field
+| hlen    | 1      | Hardware address length, same value than ARP HLN
+| hops    | 1      | Set to zero by clients, optionally incremented by 1 by each relay agent
+| xid     | 4      | Transaction ID, a random number chosen by the client, used by the client and server to match replies with requests
+| secs    | 2      | Filled in by client, seconds elapsed since client began address acquisition or renewal process. This may be used by a busy DHCP server to prioritize replies when multiple client requests are outstanding.
+| flags   | 2
+| Flags. Actually 1 B bit is used. if Broadcast flag set by a client, the server or relay knows that they should reply with a broadcast.
+
+| ciaddr  | 4
+| Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond to ARP requests. The client does not use this field to request a particular IP address in a lease; it uses the Requested IP Address DHCP option.
+| yiaddr  | 4      | 'your' (client) IP address assigned by the DHCP server.
+| siaddr  | 4
+| IP address of next server to use in bootstrap returned in DHCPOFFER, DHCPACK by server which may not be the server sending this reply.
+The sending server always includes its own IP address in the Server Identifier DHCP option.
+
 | giaddr  | 4      | Relay agent IP address, used in booting via a relay agent.
-| chaddr  | 16     | Client hardware address.
+| chaddr  | 16     | Client L2 hardware address.
 | sname   | 64     | Optional server host name, null terminated string.
-| file    | 128    | Boot file name, null terminated string; "generic" name or null in DHCPDISCOVER, fully qualified directory-path name in DHCPOFFER.
-| options | var    | Optional parameters field.
+| file    | 128
+| Boot file name, null terminated string; "generic" name or null in DHCPDISCOVER, fully qualified directory-path name in DHCPOFFER.
+Optionally used by a client to request a particular type of boot file in a DHCPDISCOVER message.
+Used by a server in a DHCPOFFER to fully specify a boot file directory path and filename.
+This field may also be used to carry DHCP options, using the “option overload” feature, indicated by the value of the DHCP Option Overload option.
+
+
+| options | var
+| Optional parameters field.
+The first four bytes contain the same BOOTP *magic cookie*  (decimal) values 99, 130, 83 and 99.
+The remainder of the field consists of a list of tagged TLV options.
+
+[horizontal]
+.Commonly used options
+
+- 0 Pad
+- 1 Subnet Mask
+- 3 Router Address
+- 6 Domain Name Server
+- 15 Domain Name
+- 50 Requested IP Address
+- 51 Address Lease Time
+- 52 Option Overload
+- 53 DHCP Message Type
+- 54 Server Identifier
+- 55 Parameter Request List
+- 56 DHCP Error Message
+- 58 Lease Renewal Time
+- 59 Lease Rebinding Time
+- 61 Client Identifier
+- 82 DHCP Relay
+- 119 Domain Search List
+- 255 End
+
 |====
+
+
+[IMPORTANT]
+====
+The DHCP Message Type option (53) is a 1-byte-long option that is always used with DHCP messages
+and has the following possible values: DHCPDISCOVER (1), DHCPOFFER (2), DHCPREQUEST (3),
+DHCPDECLINE (4), DHCPACK (5), DHCPNAK (6), DHCPRELEASE (7), DHCPINFORM (8),
+DHCPFORCERENEW (9), DHCPLEASEQUERY (10), DHCPLEASEUNASSIGNED (11),
+DHCPLEASEUNKNOWN (12), and DHCPLEASEACTIVE (13).
+====
+
+
+== DHCP Client
+
+.DHCP Client State Machine
+[graphviz]
+----
+digraph dhcp_fsm {
+  rankdir=LR
+  Init [label="INIT" fillcolor="yellow",style=filled]
+  Bound [label="Bound\n(Obtain T1 and T2)", fillcolor="green", style=filled]
+
+  Init -> Selecting [label="Send DISCOVER"]
+  Selecting -> Selecting [label="Collect OFFERs"]
+  Selecting -> Requesting [label="Send REQUEST to selected serrver"]
+  Requesting -> Init [label="Recv ACK, Send DECLINE or Recv NAK"]
+  Requesting -> Bound [label="Recv ACK(accept)"]
+  Bound -> Renewing [label="T1 expires"]
+  Renewing -> Bound [label="Recv ACK(accept)"]
+  Renewing -> Rebinding [label="T2 expires"]
+  Rebinding -> Bound [label="Recv ACK(accept)"]
+  Rebinding -> Init [label="Recv NAK or lease expires"]
+
+}
+----
+
+
+
+
+
+
+
+
+
+
+
+.Task: Acquire an IP Address on an Interface from DHCP
+----
+(config-if)# ip address dhcp
+----
+
+.Task: Display the DHCP Packets Sent and Received During Troubleshooting on the Client Side
+----
+# debug dhcp detail
+----
+
+.Task: Force a Release Of a DHCP Lease
+----
+# release dhcp
+----
+
+[NOTE]
+====
+The *release dhcp* command
+
+- Starts the process to immediately release a DHCP lease for the specified interface.
+- Does not deconfigure the *ip address dhcp* command specified in the configuration file for the interface.
+====
+
+.Task: Force a Renewal Of a DHCP Lease
+----
+# renew dhcp
+----
+
+[NOTE]
+====
+- The *renew dhcp* command advances the DHCP lease timer to the next stage,
+  at which point one of the following occurs:
+
+    ** If the lease is currently in a BOUND state, the lease is advanced to the RENEW state and a DHCP RENEW request is sent.
+    ** If the lease is currently in a RENEW state, the timer is advanced to the REBIND state and a DHCP REBIND request is sent.
+
+- If there is no response to the RENEW request,
+the interface remains in the RENEW state.
+In this case, the lease timer will advance to the REBIND state and subsequently send a REBIND request.
+
+- If a NAK response is sent in response to the RENEW request, the interface is deconfigured.
+====
+
+=== Configurable DHCP Client Feature
+
+- Allows a client to use a user-specified client identifier, class identifier or suggested lease time when requesting an address from a DHCP server.
+- Options available:
+** Option 33: configure a list of static routes in the client.
+** Option 51: request a lease time for the IP address.
+** Option 55: request certain options from the DHCP server
+** Option 60: configure the vendor class identifier string to use in the DHCP interaction.
+** Option 61: specify their unique identifier
+
+=== FORCERENEW Message Handling
+
+TODO: Explain the feature
+
+.Task: Configure FORCERENEW Message Handling
+----
+! Specify the key chain to be used in authenticating a request
+(config)# key chain <name>
+(config-keychain)# key <id>
+(config-keychain-key)# key-string <text>
+!
+! Specify the type of authentication
+(config)# interface <type number>
+(config-if)# ip dhcp client authentication key-chain <name>
+(config-if)# ip dhcp client authentication mode <type>
+!
+# ip dhcp-client forcerenew
+----
+
+
+
+
 
 == DHCP Server
 
@@ -90,7 +256,7 @@ clear ip dhcp server statistics
 
 .Task: Save Automatic Bindings on a Remote Host
 ----
-ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
+ip dhcp database <url> [timeout <seconds>] [ write-delay <seconds>]
 ----
 
 [NOTE]
@@ -179,6 +345,18 @@ ip dhcp database <url> [timeout <seconds>] [ write-dely <seconds>]
 ----
 (dhcp-config)# lease infinite
 ----
+
+[NOTE]
+====
+The DHCPOFFER message includes the lease time (T), which provides
+the upper bound on the amount of time the address can be used if it is not renewed. The message also
+contains the renewal time (T1), which is the amount of time before the client should attempt to renew its
+lease with the server from which it acquired its lease, and the rebinding time (T2), which bounds the time
+in which it should attempt to renew its address with any DHCP server. By default, T1 = (T/2) and T2 =
+(7T/8).
+====
+
+
 
 
 .Task: Configure the Utilization Mark Of the Current Address Pool Size
@@ -476,80 +654,6 @@ See more optional tasks
 http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/config-dhcp-relay-agent.html#GUID-B4DA9D20-F7A3-44BC-8019-D120136458DC[here]
 
 
-== DHCP Client
-
-.Task: Acquire an IP Address on an Interface from DHCP
-----
-(config-if)# ip address dhcp
-----
-
-.Task: Display the DHCP Packets Sent and Received During Troubleshooting on the Client Side
-----
-# debug dhcp detail
-----
-
-.Task: Force a Release Of a DHCP Lease
-----
-# release dhcp
-----
-
-[NOTE]
-====
-The *release dhcp* command
-
-- Starts the process to immediately release a DHCP lease for the specified interface.
-- Does not deconfigure the *ip address dhcp* command specified in the configuration file for the interface.
-====
-
-.Task: Force a Renewal Of a DHCP Lease
-----
-# renew dhcp
-----
-
-[NOTE]
-====
-- The *renew dhcp* command advances the DHCP lease timer to the next stage,
-  at which point one of the following occurs:
-
-    ** If the lease is currently in a BOUND state, the lease is advanced to the RENEW state and a DHCP RENEW request is sent.
-    ** If the lease is currently in a RENEW state, the timer is advanced to the REBIND state and a DHCP REBIND request is sent.
-
-- If there is no response to the RENEW request,
-the interface remains in the RENEW state.
-In this case, the lease timer will advance to the REBIND state and subsequently send a REBIND request.
-
-- If a NAK response is sent in response to the RENEW request, the interface is deconfigured.
-====
-
-=== Configurable DHCP Client Feature
-
-- Allows a client to use a user-specified client identifier, class identifier or suggested lease time when requesting an address from a DHCP server.
-- Options available:
-** Option 33: configure a list of static routes in the client.
-** Option 51: request a lease time for the IP address.
-** Option 55: request certain options from the DHCP server
-** Option 60: configure the vendor class identifier string to use in the DHCP interaction.
-** Option 61: specify their unique identifier
-
-=== FORCERENEW Message Handling
-
-TODO: Explain the feature
-
-.Task: Configure FORCERENEW Message Handling
-----
-! Specify the key chain to be used in authenticating a request
-(config)# key chain <name>
-(config-keychain)# key <id>
-(config-keychain-key)# key-string <text>
-!
-! Specify the type of authentication
-(config)# interface <type number>
-(config-if)# ip dhcp client authentication key-chain <name>
-(config-if)# ip dhcp client authentication mode <type>
-!
-# ip dhcp-client forcerenew
-----
-
 == Accounting and Security
 
 - Address vulnerability in PWLAN
@@ -576,7 +680,7 @@ debug aaa accounting
 debug aaa id
 ----
 
-=== DHC Secured IP Address Assignment
+=== DHCP Secured IP Address Assignment
 
 - Secures and synchronizes the MAC address of the client to the DHCP binding,
 preventing hackers form spoofing the DHCP server and taking over a DHCP lease of an authorized client
@@ -678,7 +782,17 @@ preventing hackers form spoofing the DHCP server and taking over a DHCP lease of
 ----
 
 
-=== DHCP Snooping
+== DHCP Snooping
+
+
+- Prevent rogue DHCP servers from answering before the real DHCP server(s).
+  Rogue DHCP servers would likely be interested in handing out a malicious default gateway that could intercept information before handing it off to the real default gateway.
+- Prevent a malicious "client" from requesting hundreds of addresses and using up the entire pool; a DOS-style attack, where new clients would be unable to get an address.
+- IP Source Guard (discussed later)
+- Dynamic ARP Inspection (discussed later)
+
+
+
 
 .TODO
 add information about option 82

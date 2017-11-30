@@ -3,6 +3,13 @@
 IT resources and sces that are abstracted from the underlying infrastructure
 and provided *on-demand* and *at scale* in a *multitenant* environment.
 
+.Characteristics
+- on-demand self-services
+- broad network access
+- resource pooling
+- rapid elasticity
+- measured services
+
 
 == Compare and Contrast Cloud Deployment Models
 
@@ -13,15 +20,15 @@ and provided *on-demand* and *at scale* in a *multitenant* environment.
 
 === Infrastructure, Platform, and Software Services [XaaS]
 
-- SaaS : Application sces 
+- SaaS : Application sces
 - PaaS: run-time environment and software development frameworks and components  presented as API
-- IaaS: compute, network and storage 
-- IT foundation: basic building blocks, core technologies 
+- IaaS: compute, network and storage
+- IT foundation: basic building blocks, core technologies
 
 
 === Performance and Reliability
 
-add comparisons table here 
+add comparisons table here
 
 === Security and Privacy
 
@@ -40,11 +47,10 @@ How to connect to the cloud
 - Internet VPN
 
 
-
 === Automation and Orchestration
 
-Automation: single task
-Orchestration: process/workflow ordered set of tasks glued together with conditions
+- Automation: single task
+- Orchestration: process/workflow ordered set of tasks glued together with conditions
 
 
 === Workload Mobility
@@ -55,27 +61,21 @@ Orchestration: process/workflow ordered set of tasks glued together with conditi
 
 === Troubleshooting and Management
 
-- Scripting languages: Python, Ruby, 
+- Scripting languages: Python, Ruby,
 
-
-- NETCONF 
-* transport protocol by which configurations are installed and changed
-* RFC 6241 
+- NETCONF
+  * transport protocol by which configurations are installed and changed
+  * RFC 6241
 
 - YANG
-* modeling language used represent device configuration and state (~ XML)
-* RFC 6020
-
-
+  * modeling language used represent device configuration and state (~ XML)
+  * RFC 6020
 
 
 === OpenStack Components
 
-TODO: change this to a table
-
-[horizontal]
 Compute (Nova):: Fabric controller (the main part of an IaaS system). Manages pools of computer resources. A compute resource could be a VM, container, or bare metal server. Side note: Containers are similar to VMs except they share a kernel. They are otherwise independent, like VMs, and are considered a lighter-weight yet secure alternative to VMs.
-Networking (Neutron):: Manages networks and IP addresses. Ensures the network is not a bottleneck or otherwise limiting factor in a production environment. This is technology-agnostic network abstraction which allows the user to create custom virtual networks, topologies, etc. For example, virtual network creation includes adding a subnet, gateway address, DNS, etc.
+Networking (Neutron):: Manages networks and IP addresses. Ensures the network is not a bottleneck or otherwise limiting factor in a production environment. This is technology-agnostic network abstraction which allows the user to create custom virtual networks, topologies, subnets, gateway addresses, DNS, etc.
 Block Storage (Cinder):: Manages creation, attaching, and detaching of block storage devices to servers. This is not an implementation of storage itself, but provides as API to access that storage. Many storage appliance vendors often have a Cinder plug-in for OpenStack integration; this ultimately abstracts the vendor-specific user interfaces from the management process. Storage volumes can be detached and moved between instances (an interesting form of file transfer, file example) to share information and migrate data between projects.
 Identity (Keystone):: Directory service contains users mapped to services they can access. Somewhat similar to group policies applied in corporate deployments. Tenants are stored here which allows them to access resources/services within OpenStack; commonly this is access to the OpenStack Dashboard (Horizon) to manage an OpenStack environment.
 Image (Glance):: Provides discovery, registration, and delivery services. These images are like ordinary images to template new virtual services.
@@ -96,7 +96,7 @@ Key Manager (Barbican):: Provides secure storage, provisioning, and management o
 === Resources and References
 
 - http://www.cisco.com/c/dam/en_us/solutions/industries/docs/gov/CiscoCloudComputing_WP.pdf
-- https://en.wikipedia.org/wiki/OpenStack#Components[Open Stack Components] 
+- https://en.wikipedia.org/wiki/OpenStack#Components[Open Stack Components]
 - http://www.cisco.com/c/en/us/solutions/cloud/overview.html[Cloud Overview]
 - http://www.unleashingit.com/
 - http://www.cisco.com/go/cloud

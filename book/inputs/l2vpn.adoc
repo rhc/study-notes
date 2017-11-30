@@ -1,0 +1,271 @@
+= L2 VPN
+
+- simplest solution where a client wants to manage his own routing
+protocols, IP management, and QoS mechanisms; this means that the service
+provider only focuses on providing high-throughput Layer 2 connections.
+
+
+== Pseudo-Wire
+
+- Ethernet Pseudo-Wire
+- allows Ethernet frames to traverse an operational MPLS cloud.
+* This implies that spanning tree will run on the links, and devices connected through these connections will use the same subnet.
+* This service has its own field name, Emulated Service, and operates over pseudowire.
+* In addition to this, it is necessary to have an operational packet label switched network (MPLS network).
+
+Two modes: raw mode and tagged mode.
+
+tagged mode::
+- uses the same 802.1Q tag at each end of the link.
+- uses pseudowire type 0x0004.
+- uses service-delimiting VLAN tag
+* Every frame sent on the PW must have a different VLAN for each customer.
+* If a frame as received by a PE from the attachment circuit is missing a service-delimiting VLAN tag,
+the PE must prepend the frame with a dummy VLAN tag before sending the frame on the PW.
+
+Raw Mode::
+- the service-delimiting tag might or might not be added in the frame and has no significance to the end points.
+- pseudowire type 0x0005.
+- service-delimiting tags are never through the attachment circuit by the PE;
+it is mandatory that they are stripped from the frame before the frame is transmitted.
+
+== L2TPv3
+
+- provides several enhancements to L2TP to tunnel any Layer 2 payload over L2TP,
+by defining how the L2TP protocol tunnels Layer 2 payloads over an IP core
+network by using Layer 2 VPNs.
+
+- RFC 3931, 4719
+- uses protocol ID 115
+- A L2TPv3 tunnel is a control connection between two PE routers.
+- One L2TPv3 tunnel can have multiple data connections,
+and each data connection is termed as an L2TPv3 session.
+- The control connection is used to establish, maintain, and release sessions.
+- Each session is identified by a session ID which is unique across the entire router.
+- L2TPv3 carries frames inside IP packets.
+- Pre-requisites on Cisco routers
+* cef or dcef
+* loopback address reachable from the remote PE device at the other end of the L2TPv3 control channel
+
+
+Further Reading
+http://goo.gl/V9egil
+
+
+== ATOM
+
+- Any Transport over MPLS (AToM) transports Layer 2 packets over a MPLS backbone.
+- AToM uses a directed LDP session between edge routers for setting up and maintaining connections. Forwarding occurs through
+the use of two levels of labels, switching between the edge routers.
+
+- The external label (tunnel label) routes the packet over the MPLS backbone to the egress Provider Edge (PE) at the
+ingress PE. The VC label is a de-multiplexing label that determines the connection at the tunnel
+endpoint (the particular egress interface on the egress PE as well as the virtual path identifier
+[VPI]/virtual channel identifier [VCI] value for an ATM Adaptation Layer 5 [AAL5] protocol data
+unit [PDU], the data-link connection identifier [DLCI] value for a Frame Relay PDU, or the virtual
+LAN [VLAN] identifier for an Ethernet frame). EoMPLS carries frames inside MPLS packets.
+
+Because the control word is included by default, so it may be necessary to explicitly disable this
+command in static pseudowire configurations. You can use *mpls control-word* command is used
+in static pseudowire configurations, the command must be configured the same way on both
+ends of the connection to work correctly. Otherwise, the provider edge routers cannot exchange
+control messages to negotiate inclusion or exclusion of the control word.
+
+
+----
+!First we will create the xconnect configuration on routers.
+R2(config)# int f0/0
+R2(config-if)# xconnect 4.4.4.4 204 encapsulation mpls
+R2(config-if-xconn)# end
+
+!Now we do the matching configuration on the other device.
+R4(config)# int f0/0
+R4(config-if)# xconnect 2.2.2.2 204 encapsulation mpls
+R4(config-if-xconn)# end
+----
+
+The xconnect command used on the F0/0 interface on both routers is used to
+create a bridged connection with the destination specified. The command is
+broken down with an xconnect keyword followed by the peering router address and
+the unique virtual circuit ID (VCID). The VCID must match on both ends of the
+connection. The encapsulation can be L2TPv2, L2TPv3, or MPLS. Never lose sight
+of the fact that there must be a unique address per router for each xconnect.
+
+.Task: Verify the status of a pseudo-wire
+----
+R2# show xconnect all
+
+   Legend: XC ST=Xconnect State, S1=Segment1 State, S2=Segment2 State
+   UP=Up, DN=Down, AD=Admin Down, IA=Inactive, NH=No Hardware
+   XC ST Segment 1 S1 Segment 2 S2
+   ------+---------------------------------+--+---------------------------------+--
+   DN ac Fa0/0(Ethernet) AD mpls 4.4.4.4:204 DN
+----
+
+An MPLS Layer 2 pseudowire has two segments. Segment 1 (S1) is for the customer-facing port. Segment 2 (S2) relates to the core configuration.
+
+
+To specify the path that traffic uses a MPLS Traffic engineering (TE) tunnel or destination IP address and Domain Name Server (DNS) name),
+use the preferred-path command in pseudowire configuration mode.
+
+
+To disable tunnel selection, use the no form of this command.
+
+preferred-path {interface tunnel tunnel-number | peer {ip-address | host-name}} [disable-fallback]
+no preferred-path {interface tunnel tunnel-number | peer {ip-address | host-name}} [disable-
+fallback]
+
+
+Further Reading
+http://goo.gl/6RsX89
+
+
+== VPLS
+
+TODO clean the notes
+
+- Virtual Private LAN Service
+- offers Layer 2 Ethernet services.
+- enables geographically separate LAN segments to be interconnected as a single bridged domain over an MPLS network.
+* VPLS over GRE enables VPLS across an IP network.
+* The provider edge (PE) routers for VPLS over GRE must support VPLS and additional GRE encapsulation and decapsulation.
+
+An instance of VPLS must be configured on each PE router.
+
+- provides multipoint Ethernet service as compared to Ethernet over MPLS (EoMPLS) that is point to point.
+- emulates a virtual IEEE Ethernet bridge network.
+- uses flooding to communicate MAC address reachability information.
+- VPLS can carry single VLAN within each instance.
+- supports MAC address aging and replicates broadcast and multicast traffic.
+- A point to point Ethernet Virtual Circuit (EVC) connecting a pair of physical UNIs is also
+known as Ethernet Wire Service (EWS) or Ethernet Private Line (EPL).
+* EPL provides VLAN transparency and control protocol tunneling are supplied by the implementation of 802.1Q-in-Q
+tag-stacking technology.
+- Ethernet Virtual Private Line (EVPL) and EPL are also considered E-Line services.
+
+Unlike Layer 3 VPN, there is no routing interaction between customer and service provider
+networks.
+
+- Multipoint-to-multipoint configuration
+- Forwarding of frames based on learned MAC addresses
+- Uses virtual forwarding instance (VFI, like VLAN) for customer separation
+
+VPLS Components:
+
+- User-facing PE (U-PE): The U-PE is the device to which the functions needed
+  to take forwarding or switching decisions at the ingress of the provider
+  network.
+- Network PE (N-PE): The N-PE is the device to which the signaling and control
+  functions are allocated when a VPLS-PE is distributed across more than one
+  box.
+- Virtual switching instance (VSI): Virtual switching instance that serves one
+  single VPLS A VSI performs standard LAN (that is, Ethernet) bridging
+  functions, including forwarding done by a VSI based on MAC addresses and VLAN
+  tags.
+- Pseudowire (PW): PWE3 is a mechanism that emulates the essential attributes
+  of a telecommunications service (such as a T1 leased line or Frame Relay)
+  over a PSN.
+- Attachment circuit (AC): The physical or virtual circuit attaching (AC) a CE
+  to a PE. An attachment circuit may be, for example, a Frame Relay DLCI, an
+  ATM VPI/VCI, an Ethernet port, a VLAN, or an MPLS LSP. One or multiple ACs
+  can belong to same VFI.
+- VC (virtual circuit): Martini-based data encapsulation, tunnel label is used
+  to reach remote PE, VC label is used to identify VFI. One or multiple VCs can
+  belong to same VFI Virtual Forwarding Instance (VFI):
+- VFI creates L2 multipoint bridging among all ACs and VCs. It’s an L2
+  broadcast domain such as VLAN.
+- Multiple VFIs can exist on the same PE box to separate user traffic such as
+  VLANs.
+- Signaling
+
+
+Signaling uses LDP to establish and tear down PWs. Using LDP as the signaling VPLS control
+plane does not have inherent support of auto-discovery. Therefore, LDP-VPLS relies on manual
+configuration to identify all PE routers. MPLS in the core, normal LDP sessions per hop to
+exchange tunnel label or IGP label. Targeted or directed LDP session between PEs to
+exchange VC label. Tunnel label is used to forward packet from PE to PE VC label and is used
+to identify L2VPN circuit.
+
+
+Further Reading
+http://goo.gl/KwPVFS
+
+
+== OTV
+
+- Overlay Transport Virtualization
+
+- OTV is a “MAC address in or over IP” technique for supporting Layer 2 VPNs to extend LANs over any transport.
+The transport can be Layer 2 based, Layer 3 based, IP switched, label switched,
+or anything else as long as it can carry IP packets.  By using the principles
+of MAC routing, OTV provides an overlay that enables Layer 2 connectivity
+between separate Layer 2 domains while keeping these domains independent and
+preserving the fault-isolation, resiliency, and load-balancing benefits of an
+IP-based interconnection.
+
+
+The core principles on which OTV operates are the use of a control protocol to advertise MAC
+address reachability information (instead of using data plane learning) and packet switching of
+IP encapsulated Layer 2 traffic (instead of using circuit switching) for data forwarding. These
+features are a significant departure from the core mechanics of traditional Layer 2 VPNs. In
+traditional Layer 2 VPNs, a static mesh of circuits is maintained among all devices in the VPN to
+enable flooding of traffic and source-based learning of MAC addresses. This full mesh of circuits
+is an unrestricted flood domain on which all traffic is forwarded. Maintaining this full mesh of
+circuits severely limits the scalability of existing Layer 2 VPN approaches. At the same time, the
+lack of a control plane limits the extensibility of current Layer 2 VPN solutions to properly
+address the requirements for extending LANs across data centers.
+
+
+OTV uses a control protocol to map MAC address destinations to IP next hops that are
+reachable through the network core. OTV can be thought of as MAC routing in which the
+destination is a MAC address, the next hop is an IP address, and traffic is encapsulated in IP so
+it can simply be carried to its MAC routing next hop over the core IP network. Thus a flow
+between source and destination host MAC addresses is translated in the overlay into an IP flow
+between the source and destination IP addresses of the relevant edge devices. This process is
+called encapsulation rather than tunneling as the encapsulation is imposed dynamically and
+tunnels are not maintained. Since traffic is IP forwarded, OTV is as efficient as the core IP
+network and will deliver optimal traffic load balancing, multicast traffic replication, and fast
+failover just like the core would. OTV also supports detection of multi-homing.
+
+
+A technology typically deployed at the customer edge (CE), unlike VPLS, OTV is
+configured on each CE router or switch. OTV provides Layer 2 LAN extension over
+Layer 3-, Layer 2-, or MPLS-based networks.
+One of the significant benefits or advantages of OTV is the
+fault-domain isolation feature; thus spanning-tree root does not change. With
+each CE having its own root, there is no intervention or planning required by
+the provider. OTV supports automatic detection of multihoming and ARP
+optimization.
+
+
+OTV entities/roles and their description
+
+edge device::
+This is a device which performs all OTV functions.
+The OTV Edge device is connected to Layer 2 segments and IP transport network.
+
+join interfaces::
+These are Layer 3 interfaces on the OTV Edge device which connects to the IP
+transport network
+
+internal  interface::
+These are Layer 2 interfaces on the OTV Edge device.
+These can be "trunk" or "access" ports.
+
+overlay   interface::
+This is a multicast-enabled multi-access network over which all OTV
+encapsulated Layer 2 frames are carried.
+
+site VLAN::
+OTV Edge devices need to elect an Authoritative Edge Device (AED) per
+VLAN so that only one device forwards traffic for that VLAN. For this election,
+the OTV Edge devices use Site VLAN for communication on the local site.
+
+authoritative edge device::
+The authoritative edge device is responsible for all MAC address reachability
+updates for a VLAN.
+
+Further Reading
+http://goo.gl/XioB96
+
+

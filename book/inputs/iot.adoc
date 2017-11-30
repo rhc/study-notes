@@ -1,9 +1,368 @@
 = Internet Of Things
 
-== Describe Architectural Framework and Deployment Considerations for Internet Of Things [IoT]
+- sometimes called Internet of Everything (IoE),
+- concept that many non-person entities (NPEs) or formerly non-networked devices in the world
+  would suddenly be networked.
+  * typically includes things like window blinds, light bulbs, water treatment plant sensors, home heating/cooling
+  units, street lights, and anything else that could be remotely controlled or monitored.
+
+- substantial business drivers for IoT:
+  * electrical devices (like lights and heaters) could consume less energy by being smartly adjusted
+  based on changing conditions,
+  * window blinds can open and close based on the luminosity of a room,
+  * chemical levels can be adjusted in a water treatment plant by networked sensors.
+
+- Low-power and Lossy Networks (LLN) describes the vast majority of IoT networks
+with the following basic characteristics (incomplete list):
+
+  * Bandwidth constraints
+  * Highly unreliable
+  * Limited resources (power, CPU, and memory)
+  * Extremely high scale (hundreds of millions and possibly more)
+
+== Describe Architectural Framework and Deployment Considerations for IoT
+
+image::iot-architecture.png[4 IoT layers, 500,500, float="right"]
+
+=== Data center (DC) Cloud
+
+- Although not a strict requirement, the understanding that a public cloud
+infrastructure exists to support IoT is a common one.
+
+- A light bulb manufacturer could partner with a networking vendor to develop
+network-addressable light bulbs which are managed from a custom application
+running in the public cloud. This might be better than a private cloud solution
+since, if the application is distributed, regionalized instances could be
+deployed in geographically dispersed areas using an “anycast” design for
+scalability and performance improvements.
+
+=== Core Networking and Services
+
+- transports to connect the public cloud to the sensors
+- can be private WAN, IXP or Internet VPN
+- use a common set of technologies/services:  seen within this layer include IP, MPLS, mobile packet
+core, QoS, multicast, security, network services, hosted cloud applications,
+big data, and centralized device management (such as a network operations
+facility).
+
+=== Multi-service Edge (access network)
+
+- Like most SP networks, the access technologies tend to vary greatly based on
+geography, cost, and other factors. Access networks can be optically-based to
+provide Ethernet handoffs to IoT devices; this would make sense for relatively
+large devices that would have Ethernet ports and would be generally immobile.
+Mobile devices, or those that are small or remote, might use cellular
+technologies such as 2G, 3G, or 4G/LTE for wireless backhaul to the closest
+POP. A combination of the two could be used by extending Ethernet to a site and
+using 802.11 WIFI to connect the sensors to the WLAN. The edge network may
+require use of “gateways” as a short-term solution for bridging (potentially
+non-IP) IoT networks into traditional IP networks. The gateways come with an
+associated high CAPEX and OPEX since they are custom devices to solve a very
+specific use-case. Specifically, gateways are designed to perform some subset
+of the following functions, according to Cisco:
+
+. Map semantics between two heterogeneous domains: The word semantics in this
+context refers to the way in which two separate networks operate and how each
+network interprets things. If the embedded systems network is a transparent
+radio mesh using a non-standard set of protocols while the multi-service edge
+uses IP over cellular, the gateway is responsible for “presenting” common
+interfaces to both networks. This allows devices in both networks to
+communicate using a “language” that is common to each.
+
+. Perform translation in terms of routing, QoS security, management, etc: These
+items are some concrete examples of semantics. An appropriate analogy for IP
+networkers is stateless NAT64; an inside-local IPv4 host must send traffic to
+some outside-local IPv4 address which represents an outside-global IPv6
+address. The source of that packet becomes an IPv6 inside-global address so
+that the IPv6 destination can properly reply.
+
+. Do more than just protocol changes: The gateways serve as interworking
+devices between architectures at an architectural level. The gateways might
+have a mechanism for presenting network status/health between layers, and more
+importantly, be able to fulfill their architectural role in ensuring end-to-end
+connectivity across disparate network types.
+
+
+=== Embedded Systems (Smart Things Network)
+
+This layer represents the host devices themselves. They can be wired or
+wireless, smart or less smart, or any other classification that is useful to
+categorize an IoT component. Often times, such devices support zero-touch
+provisioning (ZTP) which helps with the initial deployment of massive-scale IoT
+deployments. For static components, these components are literally embedded in
+the infrastructure and should be introduced during the construction of a
+building, factory, hospital, etc. These networks are rather stochastic (meaning
+that behavior can be unpredictable). The author classifies wireless devices
+into three general categories which help explain what kind of RF-level
+transmission methods are most sensible:
+
+. Long range: Some devices may be placed very far from their RF base
+stations/access points and could potentially be highly mobile. Smart
+automobiles are a good example of this; such devices are often equipped with
+cellular radios, such as 4G/LTE. Such an option is not optimal for supporting
+LLNs given the cost of radios and power required to run them. To operate a
+private cellular network, the RF bands must be licensed (in the USA, at least),
+which creates an expensive and difficult barrier for entry.
+
+. Short range with “better” performance: Devices that are within a local area,
+such as a building, floor of a large building, or courtyard area, could
+potentially use unlicensed frequency bands while transmitting at low power.
+These devices could be CCTV sensors, user devices (phones, tablets, laptops,
+etc), and other general-purpose things whereby maximum battery life and cost
+savings are eclipsed by the need for superior performance. IEEE 802.11 WIFI is
+commonly used in such environments. IEEE 802.16 WIMAX specifications could also
+be used, but in the author’s experience, it is rare.
+
+. Short range with “worse” performance: Many IoT devices fall into this final
+category whereby the device itself has a very small set of tasks it must
+perform, such as sending a small burst of data when an event occurs (i.e., some
+nondescript sensor). Devices are expected to be installed one time, rarely
+maintained, procured/operated at low cost, and be value-engineered to do very
+few things. These devices are less commonly deployed in home environments since
+many homes have WIFI; they are more commonly seen spread across cities.
+Examples might include street lights, sprinklers, and parking/ticketing meters.
+IEEE has defined 802.15.4 to support low-rate wireless personal area networks
+(LR-PANS) which is used for many such IoT devices. Note that 802.15.4 is the
+foundation for upper-layer protocols such as ZigBee and WirelessHART. ZigBee,
+for example, is becoming popular in homes to network some IoT devices, such as
+thermostats, which may not support WIFI in their hardware.
+
+
+
+IEEE 802.15.4 is worth a brief discussion by itself. Unlike WIFI, all nodes are
+“full-function” and can act as both hosts and routers; this is typical for mesh
+technologies. A device called a PAN coordinator is analogous to a WIFI access
+point (WAP) which connects the PAN to the wired infrastructure; this
+technically qualities the PAN coordinator as a “gateway” discussed earlier.
+
+As a general comment, one IoT strategy is to “mesh under” and “route over”.
+This loosely follows the 7- layer OSI model by attempting to constrain layers
+1-2 to the IoT network, to include RF networking and link-layer communications,
+then using some kind of IP overlay of sorts for network reachability.
+
+
 === Performance, Reliability and Scalability
+
+The performance of IoT devices is going to be a result of the desired security
+and the access type. Many IoT devices will be equipped with relatively
+inexpensive and weak hardware; this is sensible from a business perspective as
+the device only needs to perform a few basic functions. This could be seen a
+compromise of security since strong ciphers typically require more
+computational power for encryption/decryption functionality. In addition, some
+IoT devices may be expected to last for decades while it is highly unlikely
+that the same is true about cryptographic ciphers. In short, more expensive
+hardware is going to be more secure and resilient.
+
+The access type is mostly significant when performance is discussed. Although
+4G LTE is very popular and widespread in the United States and other countries,
+it is not available everywhere. Some parts of the world are still heavily
+reliant on 2G/3G cellular service which is less capable and slower. A widely
+distributed IoT network may have a combination of these access types with
+various levels of performance. Higher performing 802.11 WIFI speeds typically
+require more expensive radio hardware, more electricity, and a larger physical
+size. Physical access types (wired devices) will be generally immobilized which
+could be considered a detriment to physical performance, if mobility is
+required for an IoT device to do its job effectively.
+
 === Mobility
+
+
+The mobility of an IoT device is going to be largely determined by its access
+method. Devices that are on 802.11 WIFI within a factory will likely have
+mobility through the entire factory, or possibly the entire complex, but will
+not be able to travel large geographic distances. For some specific
+manufacturing work carts (containing tools, diagnostic measurement machines,
+etc), this might be an appropriate method. Devices connected via 4G LTE will
+have greater mobility but will likely represent something that isn’t supposed
+to be constrained to the factory, such as a service truck or van. Heavy
+machinery bolted to the factory floor might be wired since it is immobile.
+
+
 === Security and Privacy
+
+Providing security and private for IoT devices is challenging mostly due to the
+sheer expanse of the access network and supported clients (IoT devices).
+Similar concepts still apply as they would for normal hosts except for needing
+to work in a massively scalable and distributed network:
+
+a. Use IEEE 802.1x for wired and wireless authentication for all devices. This is normally tied into a Network Access Control (NAC) architecture which authorizes a set of permissions per device.
+b. Encrypt wired and wireless traffic using MACsec/IPsec as appropriate.
+c. Maintain physical accounting of all devices, especially small ones, to prevent theft and reverse
+engineering.
+d. Do not allow unauthorized access to sensors; ensure remote locations are secure also.
+e. Provide malware protection for sensors so that the compromise of a single sensor is detected
+quickly and suppressed.
+f. Rely on cloud-based threat analysis (again, assumes cloud is used) rather than a distributed
+model given the size of the IoT access network and device footprint. Sometimes this extension of the cloud is called the “fog” and encompasses other things that product and act on IOT data.
+
+Another discussion point on the topic of security is determining how/where to
+“connect” an IoT network. This is going to be determined based on the business
+need, as always, but the general logic is similar to what traditional corporate
+WANs use:
+
+a. Fully private connections: Some IoT networks have no legitimate need to be
+accessible via the public Internet. Such examples would include Government
+sensor networks which may be deployed in a battlefield support capacity. More
+common examples might include Cisco’s “Smart Grid” architecture which is used
+for electricity distribution and management within a city. Exposing such a
+critical resource to a highly insecure network offers little value since the
+public works department can likely control it from a dedicated NOC. System
+updates can be performed in-house and the existence of the IoT network can be
+(and often times, should be) largely unknown by the general population. In
+general, IoT networks that fall into this category are “producer-oriented”
+networks.
+
+
+b. Public Internet: Other IoT networks are designed to have their information
+shared or made public between users. One example might be a managed thermostat
+service; users can log into a web portal hosted by the service provider to
+check their home heating/cooling statistics, make changes, pay bills, request
+refunds, submit service tickets, and the like. Other networks might be
+specifically targeted to sharing information publicly, such as fitness watches
+that track how long an individual exercises. The information could be posted
+publicly and linked to one’s social media page so others can see it. A more
+practical and useful example could include public safety information via a web
+portal hosted by the Government. In general, IoT networks that fall into this
+category are “consumed-oriented” networks.
+
+
+
 === Standards and Compliance
+
+Controlling access and identifying areas of responsibility can be challenging
+with IoT. Cisco provides the following example: For example, Smart Traffic
+Lights where there are several interested parties such as Emergency Services
+(User), Municipality (owner), Manufacturer (Vendor). Who has provisioning
+access? Who accepts Liability?
+
+There is more than meets the eye with respect to standards and compliance for
+street lights. Most municipalities (such as counties or townships within the
+United States) have ordinances that dictate how street lighting works. The
+light must be a certain color, must not “trespass” into adjacent streets, must
+not negatively affect homeowners on that street, etc. This complicates the
+question above because the lines become blurred between organizations rather
+quickly. In cases like this, the discussions must occur between all
+stakeholders, generally chaired by a Government/company representative
+(depending on the consumer/customer), to draw clear boundaries between
+responsibilities.
+
+Radio frequency (RF) spectrum is a critical point as well. While WIFI can
+operate in the 2.4 GHz and 5.0 GHz bands without a license, there are no
+unlicensed 4G LTE bands at the time of this writing. Deploying 4G LTE capable
+devices on an existing carrier’s network within a developed country may not be
+a problem. Doing so in developing or undeveloped countries, especially if 4G
+LTE spectrum is tightly regulated but poorly accessible, can be a challenge.
+
+Several new protocols have been introduced specifically for IoT, some of which
+are standardized:
+
+
+==== RPL
+
+IPv6 Routing Protocol for LLNs (RFC 6550): RPL is a distance-vector
+routing protocol specifically designed to support IoT. At a high-level, RPL is
+a combination of control-plane and forwarding logic of three other
+technologies: regular IP routing, multi-topology routing (MTR), and MPLS
+traffic-engineering (MPLS TE). RPL is similar to regular IP routing in that
+directed acyclic graphs (DAG) are created through the network. This is a fancy
+way of saying “loop-free shortest path” between two points. These DAGs can be
+“colored” into different topologies which represent different network
+characteristics, such as high bandwidth or low latency. This forwarding
+paradigm is similar to MTR in concept. Last, traffic can be assigned to a
+colored DAG based on administratively-defined constraints, including node
+state, node energy, hop count, throughput, latency, reliability, and color (administrative preference). This is similar to MPLS TE’s constrained shortest path first (CSPF) process which is used for defining administrator- defined paths through a network based on a set of constraints, which might have technical and/or business drivers behind them.
+
+==== 6LoWPAN
+
+- IPv6 over Low Power WPANs (RFC 4919): This technology was specifically developed to be an adaptation layer for IPv6 for IEEE 802.15.4 wireless networks. Specifically, it “adapts” IPv6 to work over LLNs which encompasses many functions:
+
+** MTU correction: The minimum MTU for IPv6 across a link, as defined in RFC2460, is 1280 bytes. The maximum MTU for IEEE 802.15.4 networks is 127 bytes. Clearly, no value can mathematically satisfy both conditions concurrently. 6LoWPAN performs fragmentation and reassembly by breaking the large IPv6 packets into IEEE 802.15.4 frames for transmission across the wireless network.
+
+** Header compression: Many compression techniques are stateful and CPU-hungry. This strategy would not be appropriate for low-cost LLNs, so 6LoWPAN utilizes an algorithmic (stateless) mechanism. RFC4944 defines some common assumptions:
+
+*** The version is always IPv6.
+*** Both source and destination addresses are link-local.
+*** The low-order 64-bits of the link-local addresses can be derived from the layer-2 network addressing in an IEEE 802.15.4 wireless network.
+*** The packet length can be derived from the layer-2 header.
+*** Next header is always ICMP, TCP, or UDP.
+*** Flow label and traffic class are always zero.
+
+As an example, an IPv6 header (40 bytes) and a UDP header (8 bytes) are 48 bytes long when concatenated. This can be compressed down to 7 bytes by 6LoWPAN.
+
+** Mesh routing: Somewhat similar to WIFI, mesh networking is possible, but requires up to 4 unique addresses. The original source/destination addresses can be retained in a new “mesh header” while the per-hop source/destination addresses are written to the MAC header.
+** MAC level retransmissions: IP was designed to be fully stateless and any retransmission or flow control was the responsibility of upper-layer protocols, such as TCP. When using 6LoWPAN, retransmissions can occur at layer-2.
+
+==== CoAP
+
+- Constrained Application Protocol (RFC7252) designed for LLNs and M2M communications
+- At a high-level, very similar to HTTP in terms of the capabilities it provides.
+* support the transfer of application data using common methods such as GET, POST, PUT, and DELETE.
+* runs over UDP port 5683 by default (5684 for secure CoAP) and was specifically designed to be lighter weight and faster than HTTP.
+
+- Supports multicast: Because it is UDP-based, IP multicast is possible. This can be used both for application discovery (in lieu of DNS) or efficient data transfer.
+- Built-in security: CoAP supports using datagram TLS (DTLS) with both pre-shared key and digital certificate support. As mentioned earlier, CoAP DTLS uses UDP port 5684.
+- Small header: The CoAP overhead adds only 4 bytes.
+- Fast response: When a client sends a CoAP GET to a server, the requested data is immediately returned in an ACK message, which is the fastest possible data exchange.
+
+- Despite CoAP being designed for maximum efficiency, it is not a general replacement for HTTP.
+* It only supports a subset of HTTP capabilities and should only be used within IoT environments.
+* To interwork with HTTP, one can deploy an HTTP/CoAP proxy as a “gateway” device between the multi-service edge and smart device networks.
+
+==== MQTT
+
+- Message Queuing Telemetry Transport (not standardized)
+- MQTT is, in a sense, the predecessor of CoAP in that it was created in 1999
+  and was specifically designed for lightweight, web-based, machine-to-machine
+  communications. Like HTTP, it relies on TCP, except uses ports 1883 and 8883
+  for plain-text and TLS communications, respectively. Being based on TCP also
+  implies a client/server model, similar to HTTP, but not necessary like CoAP.
+  Compared to CoAP, MQTT is losing traction given the additional benefits
+  specific to modern IoT networks that CoAP offers.
+
+.CoAP, MQTT, and HTTP comparison
+[cols="40,20,20,20", options="header", format="csv"]
+|====
+                    , CoAP                              , MQTT            , HTTP
+Transport and ports , UDP 5683/5684                     , TCP 1883/1889   , TCP 80/443
+Security support    , DTLS via PSK/PKI                  , TLS via PSK/PKI , TLS via PSK/PKI
+Multicast support   , Yes but no encryption support yet , No              , No
+Lightweight         , Yes                               , Yes             , No
+Standardized        , Yes                               , No; in progress , Yes
+Rich feature set    , No                                , No              , Yes
+|====
+
 === Migration
+
+Migrating to IoT need not be swift. For example, consider an organization which
+is currently running a virtual private cloud infrastructure with some critical
+in-house applications in their private cloud. All remaining COTS applications
+are in the public cloud. Assume this public cloud is hosted locally by an ISP
+and is connected via an MPLS L3VPN extranet into the corporate VPN. If this
+corporation owns a large manufacturing company and wants to begin deploying
+various IoT components, it can begin with the large and immobile pieces.
+
+The multi-service edge (access) network from the regional SP POP to the factory
+likely already supports Ethernet as an access technology, so devices can use
+that for connectivity. Over time, a corporate WLAN can be extended for 802.11
+WIFI capable devices. Assuming this organization is not deploying a private 4G
+LTE network, sensors can immediately be added using cellular as well. The
+migration strategy towards IoT is very similar to adding new remote branch
+sites, except the number of hosts could be very large. The LAN, be it wired or
+wireless, still must be designed correctly to support all of the devices.
+
 === Environmental Impacts on the Network
+
+Environment impacts are especially important for IoT given the scale of devices
+deployed. Although wireless technologies become more resilient over time, they
+remain susceptible to interference and other natural phenomena which can
+degrade network connectivity. Some wireless technologies are even impacted by
+rain, a common occurrence in many parts of the word. The significance of this
+with IoT is to consider when to use wired or wireless communication as for a
+sensor. Some sensors may even be able to support multiple communications styles
+in an active/standby method. As is true in most networks, resilient design is
+important in ensuring that IoT-capable devices are operable.
+
+
+
+
+

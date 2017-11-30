@@ -1,19 +1,18 @@
 = LACP
 
-== Overview
-
-- IEEE 802.3ad 
+- IEEE 802.3ad
 - Automatic creation of port channels
 - Multicast address IEEE 802.3 Slow Protocols: 0180-C200-0002
 - EtherType value: 0x8809
 - Timers: hellos every second during hand shake
 - Maximum: 16 ports with max 8 active
 
-=== Restrictions
+== Restrictions
+
+TODO
 
 
-
-=== Modes
+== Modes
 
 Passive::
 - Does not initiate LACP negotiation but responds to LACP packets
@@ -65,7 +64,7 @@ Working Etherchannel for On-On, Passive-Active, Active-Active
 
 .Task: LACP Port Priority
 ----
-(config-if)# lacp port-prioriy  
+(config-if)# lacp port-prioriy
 ----
 
 == LACP Port-Channel MaxBundle Feature
@@ -82,12 +81,11 @@ Working Etherchannel for On-On, Passive-Active, Active-Active
 
 - Only for LACP Etherchannel
 - Prevents low-bandwidth interface from becoming active
-- Causes LACP etherChannels to become inactive if they have too feww active members ports to supply the required minimum bandwith
+- Causes LACP etherChannels to become inactive if they have too few active members ports to supply the required minimum bandwith
 
 
-.Task: Configure the Minimum Number Of Member Ports That Must Be In the Link-Up State and Bundled In the Etherchannel for the Port Channel Interface to Transition to the Link-Up State 
+.Task: Configure the Minimum Number Of Member Ports That Must Be In the Link-Up State and Bundled In the Etherchannel for the Port Channel Interface to Transition to the Link-Up State
 ----
 (config-if)# port-channel min-link n
 ----
-
 

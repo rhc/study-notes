@@ -1,0 +1,40 @@
+= Management Plane Protection
+
+- restrict the interfaces on which network management packets are allowed to enter a device.
+- disabled by default
+- After MPP is enabled, no interfaces except designated management interfaces
+  will accept network management traffic destined to the device.
+
+- Restricting management packets to designated interfaces provides greater
+  control over management of a device, providing more security for that device.
+  Other benefits include improved performance for data packets on nonmanagement
+  interfaces, support for network scalability, need for fewer access control
+  lists (ACLs) to restrict access to a device, and management packet floods on
+  switching and routing interfaces are prevented from reaching the CPU.
+
+- management protocols: beep, (t)ftp, http(s), ssh v1 and v2, telnet, snmp v1,v2 and v3
+
+- pre-requisites: cef
+- interfaces not supported:
+  * Out-of-band management interfaces (also called dedicated management interfaces)
+  *  Loopback and virtual interfaces not associated to physical interfaces
+  *  Fallback and standby management interfaces
+  *  Hardware-switched and distributed platforms
+
+- restrictions
+  *  Secure Copy (SCP) is supported under the Secure Shell (SSH) Protocol and not directly configurable in the command-line interface (CLI).
+  *  Uninformed management stations lose access to the router through nondesignated management interfaces when the Management Plane Protection feature is enabled.
+
+.Task:
+----
+conf t
+control-plane
+ management-interface <type slot/port> allows <protocols>
+----
+
+.Task: Displays information about the management interface such as type of interface, protocols enabled on the interface, and number of packets dropped and processed.
+----
+# show management-interface [<interface> | protocol <protocol-name>]
+----
+
+

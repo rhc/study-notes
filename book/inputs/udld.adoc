@@ -1,94 +1,102 @@
 = UDLD
 
-:experimental:
-:imagesdir: ../images
-:icons: fonts
 
 menu:Catalyst 3560 Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swudld.html[UDLD]]
 
-== Overview 
-
-- Problem:  unidirectional links 
+- Problem:  unidirectional links
   * one of the 2 transmission paths has failed but not both
   * due to miscabling, cutting on fiber cable, unplugging one fiber, GBIC problems, ...
   * can cause a loop as the previously blocking port will move to a forwarding state
 
 image::stp-unidirectional-links.png[height=150]
 
-- solutions: 
+- solutions:
 
-UDLD **u**ni**d**irectional **l**ink **d**etection:::
-Uses Layer 2 messaging to decide when a switch can no longer receive frames from
-a neighbor. The switch whose transmit interface did not fail is placed into an err-disabled
-state.
+UDLD **U**ni**D**irectional **L**ink **D**etection:::
+- Uses Layer 2 messaging to decide when a switch can no longer receive frames from
+a neighbor. The switch whose transmit interface did not fail is placed into an err-disabled state.
+- Cisco Proprietary
+- Multicast Address 01:00:0C:CC:CC:CC
 
-UDLD aggressive mode:::
-Attempts to reconnect with the other switch (eight times) 
-after realizing no messages have been received. 
-If the other switch does not reply to the repeated additional messages, 
-both sides become err-disabled.
 
-=== Modes Of Operations
+== Operations
 
-==== Normal
+- Each UDLD port  sends protocol messages that contains the own device/port ID and the neighbor's IDs seen by UDLD.
+- If the port doesn't see its own device/port ID in the incoming UDLD packet for a specific amount of time,
+  the link is considered unidirectional.
+- It is recommended to keep stem:[T_(\d\e\t\ection)<T_(reconver\g\ence)]
+  by choosing an appropriate message interval
+  which ensures that UDLD is detected before STP forward delay expires
+
+=== Normal Mode
 
 - default
-- detects unidirectional links due to misconnected ports on fiber-optic connection 
-
-==== Aggresive Mode
-
-
+- marks as *Undertermined* if port at Layer 1 is still up
+- does NOT shutdown or disable the port
+- does NOt prevent physical loops (informational and less disrupptive)
 
 
-== Tasks
+=== Aggresive Mode
 
+- Attempts to reconnect with the other switch (eight times)
+after realizing no messages have been received.
+- If the other switch does not reply to the repeated additional messages,
+both sides become err-disabled.
+- no automatic recovery unless UDLD err-disable recovery is configured
 
-=== Default Configuration
+== Default Configuration
 
-[format="dsv"]
-|===
+:===
 Feature                                                    : Default Setting
+
 UDLD global enable state                                   : Globally disabled
 UDLD per-port enable state for fiber-optic media           : Disabled on all Ethernet fiber-optic ports
 UDLD per-port enable state for UTP copper media            : Disabled on all Ethernet 10/100/1000BASE-TX ports
 UDLD aggressive mode                                       : Disabled
-|===
+:===
 
 .Task: Enable UDLD Globally
 ----
 (config)# udld {aggressive | enable | message time <seconds>}
 ----
 
-message time <seconds>::
+.Task: Configure the period of time between UDLD probe messages
+----
+(config)# udld message time <seconds>}
+----
+[NOTE]
+====
 - configure the period of time between UDLD probe messages on ports
 that are in the advertisement phase and are detected to be bidirectional.
-- range: 1 to 90 seconds 
+- range: 1 to 90 seconds
 - default: 15 seconds
 
-
-
-- This command affects fiber-optic ports only. Use *(config-if)# udld* 
+- This command affects fiber-optic ports only. Use *(config-if)# udld*
 to enable UDLD on other port types.
+====
 
 .Task: Enable UDLD on an Interface
+----
+(config-if)# udld
+----
 
 .Task: Reset an Interface Disabled by UDLD
 ----
-udld reset 
+# udld reset
 ----
 
 You can also  restart the disabled port
 
-- *shutdown* followed by *no shutdown* 
+- *shutdown* followed by *no shutdown*
 - *no udld {aggressive | enable}* followed by *udld {aggressive | enable}*
-- *no udld port* followed by *udld port [aggressive]* 
+- *no udld port* followed by *udld port [aggressive]*
 
 == UDLD Error-Disabled State
 
 .Task: Recover from the UDLD Error-Disabled State
 ----
 ! Enable UDLD to automatically recover
-(config)# errdisable recovery cause udld 
+(config)# errdisable recovery cause udld
 
 ! Specify the time to recover from the UDLD error-disabled state
 (config-if)# errdisable recovery interval <seconds>
@@ -96,5 +104,20 @@ You can also  restart the disabled port
 
 .Task: Display UDLD Status
 ----
-show udld [interface-id]
+# show udld [interface-id]
 ----
+
+
+== UDLD vs Loop Guard
+
+- complementary and can be both configured at the same time
+
+  In certain designs there are unidirectional links that Loop Guard can prevent
+  and UDLD cannot, and likewise ones that UDLD can prevent but Loop Guard cannot.
+  For example, if a loop occurs because of a physical wiring problem (for
+  example, someone mistakenly mixes up the send and receive pairs of a fiber
+  link), UDLD can detect this, but Loop Guard cannot. Likewise, if there is a
+  unidirectional link caused by a failure in the STP software itself, although
+  much more rare, Loop Guard can detect this but UDLD cannot.
+
+

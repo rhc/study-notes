@@ -1,9 +1,6 @@
 = BGP
-:icons: font
-:experimental:
 
 menu:Configuration guides[IP Routing > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/15-mt/irg-15-mt-book/configuring_a_basic_bgp_network.html[BGP] ]
-
 
 - Exterior gateway protocol
 - Creates loop-free inter-domain routing between AS.
@@ -15,10 +12,9 @@ menu:Configuration guides[IP Routing > http://www.cisco.com/c/en/us/td/docs/ios-
 == BGP Message Format
 
 - Minimum size: 19 bytes
-- Maximum size: 4096 bytes (why?)
+- Maximum size: 4096 bytes
 
 === BGP Header
-
 
 .BGP Header Format
 [packetdiag, target= 'bgp-header-format']
@@ -28,25 +24,24 @@ menu:Configuration guides[IP Routing > http://www.cisco.com/c/en/us/td/docs/ios-
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
   * Marker [len = 128]
   * Length [len = 16]
   * Type [len = 8]
 }
 ----
 
-* Marker:
-  - 16 bytes
-  - set to all 1s for OPEN message or if OPEN message without authentication
-  - computed by the authentication process
+Marker::
+- 16 bytes
+- set to all 1s for OPEN message or if OPEN message without authentication
+- computed by the authentication process
 
-* Length:
-  - 2 bytes
-  - total length in bytes of the message including the header
+Length::
+- 2 bytes
+- Total length in bytes of the message including the header
 
-* Type:
-  - 1 byte
-  - indicates message type (1: Open, 2: Update, 3: Notification, 4: Keepalive)
+Type::
+- 1 byte
+- Indicates message type (1: Open, 2: Update, 3: Notification, 4: Keepalive)
 
 
 === OPEN
@@ -61,9 +56,8 @@ diagram {
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
   * [len = 24, color=white]
-  * Version [len=8]
+  * Version (=4) [len=8]
   * My Autonomous System [len = 16]
   * Hold Time [len= 16]
   * BGP Identifier [len=32]
@@ -72,29 +66,29 @@ diagram {
 }
 ----
 
-- Version: 1 octet
-- My autonomous system:
-- Hold time:
-  * maximum interval in seconds between successive Keepalive  or Update messages.
-  * A receiver compares the value of the Hold Time and the value of its configured hold time
-  and accepts the smaller value or rejects the connection.
-  * Can be set to zero to indicates that the connection is always up //find a better formulation
-  * if not set to zero, the minimum recommended hold time is 3 seconds
+Version:: 1 octet
+My autonomous system::
+Hold time::
+- maximum interval in seconds between successive Keepalive  or Update messages.
+- A receiver compares the value of the Hold Time and the value of its configured hold time
+and accepts the smaller value or rejects the connection.
+- Can be set to zero to indicates that the connection is always up
+- if not set to zero, the minimum recommended hold time is 3 seconds
 
-- BGP identifier:
-  * router ID
-  * determined by these rules in order of preference at boot or bgp process restart:
-    ** manually configured router id
-    ** highest IP address of an up/up loopback
-    ** highest IP address of an up/up non-loopack
+BGP identifier::
+- Router ID
+- determined by these rules in order of preference at boot or BGP process restart:
+  * manually configured Router id
+  * highest IP address of an up/up loopback
+  * highest IP address of an up/up non-loopack
 
-- Optional parameters length:
-  - total length in octects of the following Optional Parameters field
+Optional parameters length::
+- total length in octects of the following Optional Parameters field
 
-- Optional Parameters:
-  - Variable length field containing a triplet <Type: 1 octet,Length: 1 octet,Value>
+Optional Parameters::
+- Variable length field containing a triplet <Type: 1 octet,Length: 1 octet,Value>
 
-.Task: Configure the Bgp Router Id
+.Task: Configure the BGP Router Id
 ----
 (config-router)# bgp router-id <ip-address>
 ----
@@ -104,12 +98,12 @@ diagram {
 - Every 60 seconds
 - Hold-time: 180 seconds
 
-.Task: Set the Bgp Network Timers
+.Task: Set the BGP Network Timers
 ----
 (config-router)# timers bgp <keepalive-seconds> <holdtime-seconds>
 ----
 
-.Task: Set the Bgp Network Timers for a Specific Neighbor
+.Task: Set the BGP Network Timers for a Specific Neighbor
 ----
 (config-router)# neighbor {<ip-address> | <peer-group-name>} timers <keepalive-seconds> <holdtime-seconds>
 ----
@@ -119,7 +113,7 @@ diagram {
 - Advertises a single feasible route to a peer and/or withdraws multiple unfeasible routes
 
 .Header Format
-[packetdiag, target=""]
+[packetdiag, target="bgp-update"]
 ----
 diagram {
   colwidth = 32
@@ -135,28 +129,26 @@ diagram {
 }
 ----
 
+Unfeasible Routes Length::
+- 2-octet field
+- total length of the following Withdrawn Routes field, in octets.
 
-- Unfeasible Routes Length
-  * 2-octet field
-  * total length of the following Withdrawn Routes field, in octets.
-
-- Withdrawn Routes
-  * variable-length
-  * lists routes to be withdrawn from service.
-  * Each route in the list is described with a (Length, Prefix) tuple in which the Length is
+Withdrawn Routes::
+- variable-length
+- lists routes to be withdrawn from service.
+- Each route in the list is described with a (Length, Prefix) tuple in which the Length is
 the length of the prefix and the Prefix is the IP address prefix of the withdrawn route.
 
-- Total Path Attribute Length
-  * 2-octet
-  * total length of the following Path Attribute field, in octets.
+Total Path Attribute Length::
+- 2-octet
+- total length of the following Path Attribute field, in octets.
 
-- Path Attributes
-  * variable-length
-  * lists the attributes associated with the NLRI in the following field.
-  Each path attribute is a variable-length triple of (Attribute Type, Attribute
+Path Attributes::
+- variable-length
+- lists the attributes associated with the NLRI in the following field.
+Each path attribute is a variable-length triple of (Attribute Type, Attribute
 Length, Attribute Value). The Attribute Type part of the triple is a 2-octet field consisting of
 four flag bits, four unused bits, and an Attribute Type code (see <<AttributeTypeCode>>).
-
 
 .Attribute Type Part Of the Path Attributes Field
 [packetdiag, target="bgp-attribute"]
@@ -166,7 +158,6 @@ diagram {
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
   * O [len=1 ]
   * T [len=1 ]
   * P [len=1 ]
@@ -201,13 +192,12 @@ Code : Attribute        : Category
 255  : Reserved
 |===
 
-
 NOTE: tasks for Internet, no-export, no-advertise, local-as
 
 === NOTIFICATION
 
-  - go out in response to error, fatal condition
-  - torn down or reset the BGP peer session
+- go out in response to error, fatal condition
+- torn down or reset the BGP peer session
 
 === BGP FSM States
 
@@ -239,17 +229,14 @@ digraph bgp_fsm {
 }
 ----
 
--  *Idle* – initial BGP state after enabling BGP process or resetting device.
--  *Connect* - waits for a TCP connection with the remote peer. If
-successful, sends OPEN message. If not, resets the ConnectRetry timer and transitions to Active state.
--  *Active* – attempts to initiate a TCP connection with the remote
+Idle:: initial BGP state after enabling BGP process or resetting device.
+Connect:: waits for a TCP connection with the remote peer. If successful, sends OPEN message. If not, resets the ConnectRetry timer and transitions to Active state.
+Active:: attempts to initiate a TCP connection with the remote
 peer. If successful, sends OPEN message. If not, resets ConnectRetry timer and transitions back to Connect state
--  *OpenSent* – TCP connection up and OPEN message sent,  transition to OpenReceive state and wait for initial
-keepalive to move into OpenConfirm state.
-If TCP session disconnect, terminate BGP session, reset ConnectRetry timer, move back to Active State.
--  *OpenConfirm* – OPEN messages sent and received. Wait for KEEPALIVE
--  *Established* – KEEPALIVE received, neighbor parameters match. the BGP peer session is fully established. UPDATE
-messages containing routing information will now be sent.
+OpenSent:: TCP connection up and OPEN message sent,  transition to OpenReceive state and wait for initial
+keepalive to move into OpenConfirm state.  If TCP session disconnect, terminate BGP session, reset ConnectRetry timer, move back to Active State.
+OpenConfirm:: OPEN messages sent and received. Wait for KEEPALIVE
+Established:: KEEPALIVE received, neighbor parameters match. the BGP peer session is fully established. UPDATE messages containing routing information will now be sent.
 
 - If peer stuck in *Active* state, potential problems can include:
   * no IP connectivity
@@ -466,7 +453,7 @@ by default for the aggregate-address command, is not added to the AS_SET.
 
 - Use *network backdoor* to cause BGP to prefer EIGRP
 
-image::bgp-backdoor-route-topology.png[]
+image::bgp-backdoor-route-topology.png[Backdoor routes, 400, 400]
 
 .Task: Indicate a Network Reachable Through a Backdoor Route
 ----
@@ -492,17 +479,19 @@ W Weight (Highest) L Local_Pref (Highest) O Originate (local originate) AS
 As_Path (shortest) O Origin Code (IGP < EGP < Incomplete) M MED (lowest) P
 Paths (External Paths preferred Over Internal) R Router ID (lowest)
 
-=== Community Attributes
+TIP: wise lip lovers apply oral medication every night
+
+== Community Attributes
 
 - No-advertise: prevents advertisements to any BGP peer
 - No-export: prevents advertisements to any eBGP peer
-- No-advertise: prevents advertisements outside the AS, or in confederation scenarios, outside the sub-AS
-- Internet:  advertises routes to any route
+- local-as:  prevents advertisements outside the AS, or in confederation scenarios, outside the sub-AS
+- Internet:  advertises routes to any peer
 
 
 == BGP Routing Process
 
-.Task: Configure a Bgp Routing Process
+.Task: Configure a BGP Routing Process
 ----
 (config)# router bgp <asn>
 ----
@@ -650,7 +639,7 @@ condition is met.
 
 == BGP Routing Table
 
-.Task: Display the Entries In the Bgp Routing Table
+.Task: Display the Entries In the BGP Routing Table
 ----
 # sh ip bgp [prefix] [mask]
 ----
@@ -735,4 +724,60 @@ show ip bgp template peer-session
 - Multiprotocol bgp concepts
 - Multiprotocol bgp extensions for IP multicast concepts
 - AFI bgp address family identifier model : ipv4, ipv6,clns, vpnv4
+
+
+== BGP PIC
+
+- BGP Prefix-Independent Convergence for IP and MPLS-VPN feature
+- creates and stores a backup/alternate path in the RIB,FIB, and CEF
+  so that when a failure is detected, the backup/alternate path can immediately take over,
+  thus enabling fast failover.
+
+
+[sidebar, float="right"]
+.How BGP Converges Under Normal Circumstances
+--
+Under normal circumstances, BGP can take several seconds to a few minutes to converge after a network change. At a high level, BGP goes through the following process:
+
+- BGP learns of failures through either IGP or BFD events or interface events.
+- BGP withdraws the routes from the RIB, and the RIB withdraws the routes from the FIB and dFIB.  This process clears the data path for the affected prefixes.
+- BGP sends withdraw messages to its neighbors.
+- BGP calculates the next best path to the affected prefixes.
+- BGP inserts the next best path for affected prefixes into the RIB, and the RIB installs them in the FIB and dFIB.
+
+This process takes a few seconds or a few minutes to complete, depending on the
+latency of the network, the convergence time across the network, and the local
+load on the devices. The data plane converges only after the control plane converges.
+--
+
+TIP: When BGP PIC is enabled, CEF recursion is disabled
+when next-hop is learned via /32 mask or next-hop is directly connected
+
+Read more
+http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/15-mt/irg-15-mt-book/irg-bgp-mp-pic.html#GUID-63551B0E-00FE-4952-AC34-E418ABF110CA[details]
+
+
+
+== BGP TTL Security Check
+
+TTL Security Check is a security feature that protects BGP peers from multi-hop
+attacks. This feature is based on the Generalized TTL Security Mechanism (GTSM,
+RFC 3682), and is currently available for BGP. Work is currently in progress to
+implement this feature for other routing protocols such as OSPF and EIGRP.
+
+TTL Security Check allows the configuration of a minimum acceptable TTL value
+for the packets exchanged between two eBGP peers. When enabled, both peering
+routers transmit all their traffic to each other with a TTL of 255. In
+addition, routers establish a peering session only if the other eBGP peer sends
+packets with a TTL equal to or greater than the TTL value configured for the
+peering session. All packets received with TTL values less than the predefined
+value are silently discarded.
+
+.Task: Enable TTL security check between BGP peers
+----
+(config-router)# neighbor <a.b.c.d> ttl-security hops <count>
+----
+
+
+
 

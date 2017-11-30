@@ -1,25 +1,358 @@
 = SDN
 
+SDN: Software-Defined Network
+
+- approach to computer networking that allows network administrators to
+programmatically initialize, control, change, and manage network behavior
+dynamically via open interfaces and abstraction of lower-level functionality.
+
+== Models
+
+Distributed::
+- control-plane distributed across all devices.
+- the statu quo,  not “SDN” model at all.
+- each network devices have their own control-plane components which rely on distributed routing protocols (such as OSPF, BGP, etc).
+
+Augmented::
+
+image:sdn-augmented.png[Augmented model, 450, 450, float="right"]
+
+- fully distributed control-plane by adding a centralized controller that can apply policy to parts of the network at will. Such a
+controller could inject shorter-match IP prefixes, policy-based routing (PBR),
+security features (ACL), or other policy objects.
+
+- good compromise between distributing intelligence between nodes to prevent singles
+points of failure (which a controller introduces) by using a known-good
+distributed control-plane underneath. The policy injection only happens when it
+“needs to”, such as offloading an overloaded link in a DC fabric or from a
+long-haul fiber link between two points of presence (POPs) in an SP core.
+
+- Examples:
+* Cisco’s Performance Routing (PfR)
+* offline path computation element (PCE) servers for automated MPLS TE tunnel creation.
+
+- lower impact on the existing network because the
+wholesale failure of the controller simply returns the network to the
+distributed model, which is known to work “well enough” in many cases.
+
+Hybrid::
+
+image:sdn-hybrid.png[Hybrid model, 450, 450, float="right"]
+
+- like the augmented model except that controller-originated policy can be imposed anywhere in the network.
+- additional granularity to network administrators;
+- the main benefit over the augmented model is that the hybrid model is always topology-independent.
+* The controller can overwrite the forward table of any device which means that
+topological restrictions are removed.
+- Example: Cisco’s Application Centric Infrastructure (ACI)  separates reachability from policy,
+  which is critical from both survivability and scalability perspectives.
+
+- The failure of the centralized control in these models has an identical effect to that of a controller in the augment model;
+the network falls back to a distributed control-plane model. The impact of a
+failed controller is a little more significant since more devices are affected
+by the controller’s policy.
+
+
+Centralized::
+
+- single controller, which hosts the entire control-plane.
+*  commands all of the devices in the forwarding-plane.
+* writes their forwarding tables with the proper information
+(which doesn’t necessarily have to be an IP-based table, it could be anything)
+as specified by the administrators.
+
+- offers very granular control, in many cases, of individual flows in the network.
+
+- can use inexpensive hardware forwarders commoditized into white boxes (or branded white boxes, sometimes called brite
+boxes)
+
+- offers more flexibility to the business because  network "device" can be almost anything: router, switch,
+firewall, load-balancer, etc. Emulating software functions on generic hardware
+
+- single point of failure
+
+* Some SDN scaling architectures suggest simply
+adding additional controllers for fault tolerance or to create a hierarchy of
+controllers for larger networks. While this is a valid technique, it somewhat
+invalidates the “centralized” model because with multiple controllers, the
+distributed control-plane is reborn. The controllers still must synchronize
+their routing information using some network-based protocol and the possibility
+of inconsistencies between the controllers is real. When using this
+multi-controller architecture, the network designer must understand that there
+is, in fact, a distributed control-plane in the network; it has just been
+moved around. The failure of all controllers means the entire failure domain
+supported by those controllers will be inoperable. The failure of the
+communication paths between controllers could likewise cause
+inconsistent/intermittent problems with forward, just like a fully distributed
+control-plane.
+
+- Example: OpenFlow
+
+TODO
+// image::sdn-centralized.png[Centralized model]
+
 == Describe Functional Elements Of Network Programmability  and How They Interact
 
-SDN: network programmability
-
-- distributed
-- augmented
-- hybrid
-- centralized
 
 === Controllers
 
 - responsible for programming forwarding tables of data-plane devices
+- can be physical routers, like Cisco’s PfR operating as a master controller (MC),
+  or they could be software-only appliances, as seen with OpenFlow networks or Cisco’s Application Policy
+Infrastructure Controller (APIC) used with ACI.
+
 
 === APIs
+
+- standard way of interfacing with a software application or operating system.
+- typically use REST (Representational State Transfer)
+* represents an “architectural style” of transferring information between clients and servers.
+* used with stateless HTTP by combining traditional HTTP methods (GET, POST, PUT, DELETE, etc) and Universal Resource Identifiers (URI).
+* The end result is that API requests look like URIs and are used to fetch/write specific
+pieces of data to a target machine.
+* promotes automation, especially for web-based applications or services.
+
 === Scripting
+
+- Ruby, Python
+
+TODO ACI Application Centric Infrastructure
+
+
 === Agents
+
+- typically on-box software components that allow an
+infrastructure device to report traffic conditions back to the controller.
+* Given this information, the controller can sense congestion, route
+around failures, and perform all manner of fancy traffic-engineering as
+required by the business applications.
+
+- perform the same general function as SNMP yet offer increased flexibility and granularity as
+they are programmable.
+
+- can be used for non-management purposes, at least from a general view.
+
+- Interface to the Routing System (I2RS) is an SDN
+technique where a specific control-plane agent is required on every data-plane
+forwarder.
+
+* This agent is effectively the control-plane client that communicates
+upstream towards the controller. This is the channel by which the controller
+consults its RIB and populates the FIB of the forwarding devices. The same is
+true for OpenFlow (OF) which is a fully centralized SDN model. The agent can be
+considered an interface to a data-plane forwarder for a control-plane SDN
+controller.
+
+- A simple categorization method is to quantify management strategies
+as “agent based” or “agent-less based”.
+
+* Agent is pull-based, which means the agent connects with master. Changes made on master are pulled down when agent
+is “ready”. This can be significant since if a network device is currently
+tolerating a microburst, the management agent can wait until the contention
+abates before passing telemetry data to the master.
+
+* Agent-less is push-based like SNMP traps, where the triggering of an event on a network device creates a
+message for the controller in unsolicited fashion. The other direction also
+true; a master can use SSH to access a device for programming whenever the
+master is “ready”.
+
+- Examples
+
+* Puppet: by Puppet labs,  agent-based (requiring software installed on the
+ client) and pushes complex data structures to managed nodes from the master
+ server. Puppet manifests are used as data structures to track node state and
+ display this state to the network operators. Uses Ruby.
+
+* Chef (by Chef Software): very similar to Puppet in that it requires agents and manages devices using
+complex data structures. The concepts of cookbooks and recipes are specific to
+Chef (hence the name) which contribute to a hierarchical data structure
+management system. A Chef cookbook is loosely equivalent to a Puppet manifest.
+
+* Ansible (by Redhat): lighter-weight than Puppet or Chef given that management is agent-less. No
+custom software needs to be installed on any device provided that it supports
+SSH. This can be a drawback since individual device CLIs must be exposed to
+network operators (or, at best, the Ansible automation engine) instead of using
+a more abstract API design.
+
+* SaltStack: CLI-based, master-client or non-centralized environments
+
+
 === Northbound Vs. Southbound Protocols
+
+
+[graphviz, target="northbound-vs-southbound",size=200]
+----
+digraph {
+  edge [dir=both]
+  node [shape=box,style=filled]
+  apps [label="Business Applications", color=yellow]
+  controller [label= "SDN Controllers", color=red]
+  devices [label="Network Infrastructure Devices",color=green]
+  apps -> controller [label="Northbound APIs"]
+  controller -> devices [label="Southbound APIs (Control-Plane)"]
+}
+----
+
+Northbound interfaces::
+- APIs interfaces to existing business applications.
+- used so that applications can make requests of the network,
+  which could include specific performance requirements
+  (bandwidth, latency, etc). Because the controller “knows” this information by
+communicating with the infrastructure devices via management agents, it can
+determine the best paths through the network to satisfy these constraints.
+- loosely analogous to the original intent of the Integrated Services QoS
+model using Resource Reservation Protocol (RSVP) where applications would
+reserve bandwidth on a per-flow basis.
+- It is also similar to MPLS TE constrained SPF (CSPF) where a single device can source-route traffic through
+the network given a set of requirements.
+- The logic is being extended to applications with a controller “shim” in between, ultimately providing a full
+network view for optimal routing.
+- Typically REST API
+
+
+Southbound interfaces::
+
+- include the control-plane protocol between the centralized controller and the
+  network forwarding hardware. These are the less intelligent network devices
+  used for forwarding only (assuming a centralized model).
+
+- Example:OpenFlow
+
+
 == Describe Aspects Of Virtualization and Automation In Network Environments
+
+- Creation of virtual topologies using a variety of technologies to achieve a
+given business goal. Sometimes these virtual topologies are overlays, sometimes
+they are forms of multiplexing, and sometimes they are a combination of the two:
+
+a. *Ethernet VLANs* using 802.1q encapsulation. Often used to create virtual
+networks at layer 2 for security segmentation, traffic hair pinning through a
+service chain, etc. This is a form of data multiplexing over Ethernet links. It
+isn’t a tunnel/overlay since the layer 2 reachability information (MAC address)
+remains exposed and used for forwarding decisions.
+
+b. *VRF tables or other layer-3 virtualization techniques*.
+Similar uses as VLANs except virtualizes an entire routing
+instance, and is often used to solve a similar set of problems. Can be combined
+with VLANs to provide a complete virtual network between layers 2 and 3. Can be
+coupled with GRE for longer-range virtualization solutions over a core network
+that may or may not have any kind of virtualization. This is a multiplexing
+technique as well but is control-plane only since there is no change to the
+packets on the wire, nor is there any inherent encapsulation (not an overlay).
+
+c. *Frame Relay DLCI encapsulation*.
+Like a VLAN, creates segmentation at layer 2
+which might be useful for last-mile access circuits between PE and CE for
+service multiplexing. The same is true for Ethernet VLANs when using EV
+services such as EV-LINE, EV-LAN, and EV-TREE. This is a data- plane
+multiplexing technique specific to frame relay.
+
+d. *MPLS VPNs*. Different VPN customers, whether at layer 2 or layer 3, are kept
+completely isolated by being placed in a different virtual overlay across a
+common core that has no/little native virtualization. This is an example of an
+overlay type of virtual network.
+
+e. *VXLAN*. Just like MPLS VPNs; creates virtual overlays atop a potentially
+non-virtualized core. Doesn’t provide a native control-plane, but that doesn’t
+matter; it’s still a virtualization technique. Could be paired with BGP EVPN if
+MAC routing is desired. This is another example of an overlay type of virtual
+network.
+
+f. *OTV*. Just like MPLS VPNs; creates virtual overlays atop a potentially
+non-virtualized core, except provides a control-plane for MAC routing. IP
+multicast traffic is also routed intelligently using GRE encapsulation with
+multicast destination addresses. This is another example of an overlay type of
+virtual network.
+
+
 === DevOps Methodologies, Tools and Workflows
+
+- Culture: People over Process over Tools
+- CI/CD: continuous Integration / Continous Deployment
+a. Everyone can see the changes: Dev, Ops, Quality Assurance (QA), management, etc
+b. Verification is an exact clone of the production environment, not simply a smoke-test on a
+developer’s test bed
+c. The build and deployment/upgrade process is automated
+d. Provide SW in short timeframes and ensure releases are always available in increments
+e. Reduce friction, increase velocity
+f. Reduce silos, increase collaboration
+
+
 === Network/Application Function Virtualization [NFV, AFV]
+
+NFV and AFV refer to taking specific network functions, virtualizing them, and
+assembling them in a sequence to meet a specific business need. NFV and AFV by
+themselves, in isolation, are generally synonymous with creating virtual
+instances of things which were once physical. Many vendors offer virtual
+routers (Cisco CSR1000v, Cisco IOS-XR9000v, etc), security appliances (Cisco
+ASAv, Cisco NGIPSv, etc), telephony and collaboration components (Cisco UCM,
+CUC, IM&P, UCCX, etc) and many other things that were once physical appliances.
+Separating these things into virtual functions allows a wide variety of
+organizations, from cloud providers to small enterprises, to select only the
+components they require. The following chapter describes a commonly used and
+powerful NFV/AFV use case.
+
+
 === Service Function Chaining
+
+- service chaining is taking NFV/AFV components and sequencing them to create
+  some customized “chain of events” to solve a business problem. NFV/AFV by
+  itself isn’t terribly useful if specific services cannot be easily linked in
+  a meaningful way. Service chaining, especially in cloud environments, can be
+  achieved in a variety of technical ways. For example, one organization may
+  require routing and firewall, while another may require routing and intrusion
+  prevention. The per- customer granularity is a powerful offering of service
+  chaining in general. The main takeaway is that all of these solutions are
+  network virtualization solutions of sorts.
+
+a. MPLS and Segment Routing. Some headend LSR needs to impose different MPLS labels for each service in the chain that must be visited to provide a given service. MPLS is a natural choice here given the label stacking capabilities and theoretically-unlimited label stack depth.
+b. Networking Services Header (NSH). Similar to the MPLS option except is purpose-built for service chaining. Being purpose-built, NSH can be extended or modified in the future to better support new service chaining requirements, where doing so with MPLS shim header formats is less likely. MPLS would need additional headers or other ways to carry “more” information.
+c. Out of band centralized forwarding. Although it seems unmanageable, a centralized controller could simply instruct the data-plane devices to forward certain traffic through the proper services without any in-band encapsulation being added to the flow. This would result in an explosion of core state which could limit scalability, similar to policy-based routing at each hop.
+d. Cisco vPath: This is a Cisco innovation that is included with the Cisco Nexus 1000v series switch for use as a distributed virtual switch (DVS) in virtualized server environments. Each service is known as a virtual service node (VSN) and the administrator can select the sequence in which each node should be transited in the forwarding path. Traffic transiting the Nexus 1000v switch is subject to redirection using some kind of overlay/encapsulation technology. Specifically, MAC- in-MAC encapsulation is used for layer-2 tunnels while MAC-in-UDP is used for layer-4 t
+
 === Performance, Availability, and Scaling Considerations
+
+
+[options="header",cols="10,20,20,20,20"]
+|===
+| Model |  Distributed | Augmented | Hybrid| Centralized
+
+| Availability:
+| Dependent on the protocol convergence times and redundancy in the network
+| Dependent on the protocol convergence times and redundancy in the network. Doesn’t matter how bad the SDN controller is ... its failure is tolerable
+| Dependent on the protocol convergence times and redundancy in the network. Doesn’t matter how bad the SDN controller is ... its failure is tolerable
+| Heavily reliant on a single SDN controller, unless one adds controllers to split failure domains or to create resilience within a single failure domain (which introduces a distributed control- plane in both cases)
+
+| Granularity / control
+| Generally low for IGPs but better for BGP.
+All devices generally need a common view of the network to prevent loops independently.
+MPLS TE helps somewhat.
+| Better than distributed
+since policy injection can happen at the network edge, or a small set of nodes.
+Can be combined with MPLS TE for more granular selection.
+| Moderately granular
+since SDN policy decisions are extended to all nodes.
+Can influence decisions based on any arbitrary information with a datagram
+| Very highly granular;
+complete control over all routing decisions based on any arbitrary information with a datagram
+
+| Scalability (assume flow- based policy and state retention)
+| Very high in a properly designed network
+(failure domain isolation, topology summarization, reachability aggregation, etc)
+| High, but gets worse with more policy injection.
+Policies are generally limited to key nodes (such as border routers)
+| Moderate, but gets worse with more policy injection.
+Policy is proliferated across the network to all nodes (though the exact quantity may vary per node)
+| Depends;
+all devices retain state for all transiting flows.
+Hardware- dependent on TCAM and whether SDN can use other tables
+such as L4 information, IPv6 flow labels, etc
+
+|===
+
+
+
+ONOS
+- Open Network Operating Systems by the Linux Foundation
+
 

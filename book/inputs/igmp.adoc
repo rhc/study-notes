@@ -4,6 +4,7 @@
 
 menu:Configuration guides[Multicast > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipmulti_igmp/configuration/15-mt/imc-igmp-15-mt-book.htm[IGMP] ]
 
+
 Check also
 http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swigmp.html#pgfId-1027678[Catalyst configuration guides]
 
@@ -15,7 +16,6 @@ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/r
 - TTL: 1
 
 == IGMP Packet Format
-
 
 .IGMP Version 2 Format
 [packetdiag, target="igmp-packet-format",size=200]
@@ -100,19 +100,19 @@ Multilayer switch as a statically connected member : Disabled.
 
 == IGMP Version
 
-v1::
+v1:: RFC 1112
 - general membership queries
 - join
 - implicit leave
 
-v2::
+v2:: RFC 2236
 - group-specific queries
 - explicit leave group process
 - explicit max response time field
 - querier election
 - Backward compatible with v1
 
-v3::
+v3:: RFC 3376
 - source filtering SSM
 - uses 224.0.0.22 for membership reports
 - Backward compatible with v1 and v2
@@ -433,7 +433,7 @@ traffic on the port.
 ====
 - applicable only to Layer 2 access ports (no routed ports, SVIs, or physical port belonging to EtherChannel  );
 - only one profile per interface
-
+====
 
 === Maximum Number Of IGMP Groups
 

@@ -1,396 +1,838 @@
-= STP
-:icons: font
+= Spanning Tree Protocols
 
-http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swstp.html
+menu:3750x Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swstp.html[STP]]
 
 
 - Creates loop-free layer 2 topology
-- prevents broadcast storms
-
+- Prevents broadcast storms
 - STP variations:
-  * 802.1d : Common Spanning Tree
-  * PVST/PVST+: Cisco per-VLAN Spanning Tree
-  * 802.1w: Rapid Spanning Tree Protocol
-  * 802.1s: Multiple STP 
+  * 802.1d     : Common Spanning Tree
+  * PVST/PVST+ : Cisco per-VLAN Spanning Tree
+  * 802.1w     : Rapid Spanning Tree Protocol
+  * 802.1s     : Multiple STP
 
+== 802.1d Common Spanning Tree
 
-== 802.1d
-
-- Uses bpdu 
+- 1 instance
+- Uses BPDU
 - Elect one root switch and one designated switch for each segment
 - One root port per non-root switch, one designated port for each segment
 - Other ports on blocking state
 
 - Steps
-  * elect the root switch with the lowest bridge id ( 2-byte priority + 6-byte MAC)
-  * determine each switch's root port: with the least cost path to the root
-  * determine the designated port for each segment: 
-    the switch that forwards the least cost hello on the segment
-  * if there is a tie, select the lowest port ID
+  * Elect the root switch with the lowest bridge id ( 2-byte priority + 6-byte MAC)
+  * Determine each switch's root port: with the least cost path to the root
+  * Determine the designated port for each segment:
+    the switch that forwards the least cost Hello on the segment
+  * If there is a tie, select the lowest port ID
 
-- Original ieee 802.1d bridge Id
-
-  * 2-byte priority 
+- Original IEEE 802.1d bridge Id
+  * 2-byte priority
   * 6-byte MAC adress
 
-
-- Revised ieee 802.1d brigde id Priority for MAC address reduction
-
+- Revised IEEE 802.1d brigde id Priority for MAC address reduction
   * 4 bits : priority multiple of 4096
-  * 12 bits : system id extension (vlan id ) to support pvst+ and ieee 802.1s
+  * 12 bits : system id extension (vlan id ) to support pvst+ and IEEE 802.1s
 
-  
-=== Root Port Election
+image::stp-bridge-id.png[Bridge ID]
+
+=== BPDU
+
+.Configuration BPDU
+[graphviz, target= 'configuration-bpdu']
+----
+digraph g {
+  node[shape=record]
+  node0 [label ="{2|Protocol ID=0x0000}|{1|Protocol Version=0x00}|{1|BPDU Type=0x00}|{1|Flags}|{8|Root Bridge ID}|{4|Root Path Cost}|{8|Sending Brigde ID}|{2|Sending Port ID}|{2|Message Age}|{2|Max Age}|{2|Hello Time}|{2|Forward Delay}"];
+}
+----
+
+- The Flags field uses 2 bits out of 8 to handle topology change
+  events: the Topology Change Acknowledgment flag and the Topology Change flag.
+
+- The MessageAge field is an estimation of the BPDU’s age since it was
+  originated by the root bridge. At the root bridge, it is set to 0. Any other
+  switch will increment this value, usually by 1, before forwarding the BPDU
+  further. The remaining lifetime of a BPDU after being received by a switch is
+  MaxAge-MessageAge. Finally, the remaining fields carry the values of STP
+  timers: MaxAge, HelloTime, ForwardDelay. These timer values always reflect the
+  timer settings on the root switch. Timers configured on a nonroot switch are
+  not used and would become effective only if the switch itself became the root switch.
+
+.Topology Change Notification BPDU
+[graphviz, target= 'tcn-bpdu']
+----
+digraph g {
+  node[shape=record]
+  node1 [label ="{2|Protocol ID=0x0000}|{1|Protocol Version=0x00}|{1|BPDU Type= 0x80}"];
+}
+----
+
+TODO: Find a better position
+
+- VLAN1 STP BPDU are sent untagged
+  * to IEEE STP MAC 0180.c200.0000
+  * to PVST+
+- Non-VLAN1 STP BPDU are sent to PVST+ MAC 0100.0CCC.CCCD
+
+
+- To determine which  BPDU out of a pair of configuration BPDUs is superior,
+compare the following sequence of values,
+looking for the first occurrence of a lower value:
+ Root Bridge ID,
+ Root Path Cost,
+ Sender Bridge ID,
+ Sender Port ID,
+ Receiver Port ID (not included in BPDU; evaluated locally)
+
+- Each port in STP stores/remembers the superior BPDU it has either sent (DP port) or received (RP and Blocking Ports).
+  Essentially, each port stores the DP’s BPDU—whether it is the port itself that is Designated or it is a neighbor’s port.
+  Should a port stores a received BPDU, it must be received again within a time interval of MaxAge-MessageAge seconds;
+  otherwise it will expire after this period.
+  This expiry is always driven by the root switch's timers in the BPDU.
+
+=== Root Bridge
+
+- Election with hello BPDU
+  ** Each switch begins its STP logic by creating and sending an Hello BPDU message,
+ claiming itself to be the root switch.
+  ** If a switch hears a superior Hello to its own Hello bridge ID,
+ it stops claiming to be root by ceasing to originate and send Hellos.
+ Instead, the switch starts forwarding the superior Hellos received from the superior candidate.
+ ** Eventually, all switches except the switch with the lowest bridge ID cease to originate Hellos;
+ that one switch wins the election and becomes the root switch.
+
+
+.Task: Force Election Of a Root Bridge
+----
+# spanning-tree vlan <id> root [primary|secondary]
+----
+
+TIP: Going towards root uses priority,
+Going away from root uses cost.
+
+=== Root Port
 
 - RP is upstream facing towards Root bridge
-- lowest root path cost ( cumulative cost of all links to get to the root)
-- cost based on inverse bandwith
+- Lowest root path cost ( cumulative cost of all links to get to the root)
+  * cost = advertised cost in the BPDU hello + cost on the receiving post
+- Cost based on inverse bandwith
 
+.Default Port Costs
+,====
+Speed    , original , revised , 802.1D-2004
 
-.Default Port Costs 
-[format="csv", options="header"]
-|====
-Speed    , original , revised
-10 Mbps  , 100      , 100
-100 Mbps , 10       , 19
-1 Gbps   , 1        , 4
-10 Gbps  , 1        , 2
-|====
+10 Mbps  , 100      , 100     , 2000000
+100 Mbps , 10       , 19      , 200000
+1 Gbps   , 1        , 4       , 20000
+10 Gbps  , 1        , 2       , 2000
+,====
+
+.Task: Choose Default STP Path Cost (Original or Revised)
+----
+(config)# spanning-tree pathcost method {short | long}
+----
 
 Tie breaker when a switch receives multiple Hellos with equal cost
 
 . Lowest Bridge Id
-. Lowest Port Priority 
+. Lowest Port Priority
 . Lowest Port Number
 
 
-To force selection of a root bridge, 
-use one of two commands below
+=== Designated Port
 
-----
-spanning-tree vlan id priority 0
-spanning-tree vlan id root
-----
-
-=== Determining the Designated Port
-
-- Designated switch: send the hello with the lowest advertised cost for the segment
+- Designated switch: send the Hello with the lowest advertised cost for the segment
 - DP: port that forward frames onto that segment
 - DP are downstream facing away from root bridge
-- elected based on lowest root path cost, BID, port ID
+- Elected based on lowest root path cost, BID, port ID
 
-
-=== Blocking All Non-RP and Non-DP Ports
+=== Blocking Ports
 
 - Receive BPDUs
-- discard all other traffic
-- cannot send traffic
-- do not send Hellos
-
+- Discard all other traffic
+- Cannot send traffic
+- Do not send Hellos
 
 === Convergence
 
 - Steady operations: one Root bridge, one RP on each non-root bridge, one DP on each segment, blocking state
 
 . Root Switch Generates a Hello Every 2 Seconds
-. Each RP on Non Root Switch Receives a Copy Of the Root'S Hello  
+. Each RP on Non-Root Switch Receives a Copy Of the Root'S Hello
 . Each DP Updates and Forwards the Hello Out
 . Each Blocking Port Receives a Copy Of the Hello from the DP Without Forwarding It
 
-===  Topology Change Notification 
-
-more at 
-http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/24062-146.html#topchng[understand new topology changes]
-
-// split this section for 802.1d and 802.1w
+===  Topology Change Notification
 
 
-. a Switch Experiencing the STP Port State Change Sends a TCN BPDU Out Its Root Port; It
-repeats this message every Hello time until it is acknowledged.
+- Topology change: event that occurs when
 
-. the Next Switch Receiving That TCN BPDU Sends Back an Acknowledgment Via Its Next
-forwarded Hello BPDU by marking the Topology Change Acknowledgment (TCA) bit in
-the Hello.
+** A TCN BPDU is received by a DP of a switch
+** A port moves to the Forwarding state and the switch has at least one DP
+    (meaning that it is not a standalone switch with just a Root Port connected to an upstream switch and no other connected ports)
+** A port moves from Learning or Forwarding to Blocking
+** A switch becomes the root switch
 
-. the Switch That Was the DP on the Segment In the First Two Steps Repeats the First Two Steps,
+more at
+http://www.CISCO.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/24062-146.html#topchng[understand new topology changes]
+
+TODO Split this section for 802.1d and 802.1w
+
+. A switch experiencing the STP port state change sends a TCN BPDU out its root port;
+it repeats this message every Hello time until it is acknowledged.
+
+. The next switch receiving that TCN BPDU sends back an acknowledgment via its next
+forwarded Hello BPDU by marking the Topology Change Acknowledgment (TCA) bit in the Hello.
+
+. The switch that was the DP on the segment in the first two steps repeats the first two steps,
 sending a TCN BPDU out its Root Port, and awaiting acknowledgment from the DP on that
 segment.
 
 By each successive switch repeating Steps 1 and 2, eventually the root receives a TCN BPDU.
-Once received, the root sets the TC flag on the next several Hellos, which are forwarded to all
+Once received, the root sets the TC flag on the next MaxAge + ForwardDelay seconds, which are forwarded to all
 switches in the network, notifying them that a change has occurred. A switch receiving a Hello
-BPDU with the TC flag set uses the short (Forward Delay time) timer to time out entries in
-the CAM.
+BPDU with the TC flag set uses the short (Forward Delay time) timer to time out entries in the CAM.
 
+.Transitioning from Blocking to Forwarding
+,===
+State      , Forward data frames , Learn source MAC , Stable?
 
-Transitioning from blocking to forwarding
-
-[format="csv"]
-|=====
-state, forward data frames, learn source MAC, stable?
-blocking, no, no, yes
-listening, no, no, no
-learning, no, yes, no
-forwarding, yes, yes, yes
-disabled, no, no, stable
-|=====
+Blocking   , No                  , No               , Yes
+Listening  , No                  , No               , No
+Learning   , No                  , Yes              , No
+Forwarding , Yes                 , Yes              , Yes
+Disabled   , No                  , No               , Yes
+,===
 
 
 === Timers
 
-Hello timer:: 
-  - 2 seconds 
+Hello timer::
+  - 2 seconds
   - Interval at which the root sends Hellos
-- Forward delay::
+Forward delay::
   - 15 seconds
   - Time that switch leaves a port in listening state and learning state
-  - also used sd the short CAM timeout timer
-- Maxage::
+  - also used for the short CAM timeout timer
+Maxage::
   - 20 seconds
   - Time without hearing a Hello before believing that the root has failed
 
 
-=== PVST+  
+TODO Add tasks to modify default timers
+.Task:
+----
+(config)#
+----
+
+== PVST+ Per-Vlan STP
 
 - Per-VLAN STP : for better load balancing
-  * one instance of legacy STP per VLAN
-  * Cisco ISL support
+  * One instance of legacy STP per VLAN
+  * CISCO ISL support
 
 - PVST+
-  * one instance of legacy STP per VLAN
-  * Cisco ISL and 802.1q support
-  * interoperability between CST and PVST
+  * One instance of legacy STP per VLAN
+  * CISCO ISL and 802.1q support
+  * Interoperability between CST and PVST
   - default mode on most Catalyst platforms
-  - allows root bridge/port placement per VLAN 
+  - allows root bridge/port placement per VLAN
 
-- Non-cisco + 802.1q => one Common Spanning Tree over vlan  1
+- Non-CISCO + 802.1q => one Common Spanning Tree over vlan  1
 
-- When mixing cisco and non cisco switches with 802.1q trunking,
-  * send bpdu to multicast destination MAC of 0100.0CCC.CCCD 
-  
-//todo: add picture here pp. 78
+- When mixing CISCO and non CISCO switches with 802.1q trunking,
+  * Send BPDU to multicast destination MAC of 0100.0CCC.CCCD
 
-=== Configuration
+TODO add picture here pp. 78
 
-show spanning-tree root
-show spanning-tree vlan 1 root detail
+.Task: Display Spanning-Tree Information
+----
+# sh spanning-tree root
+# sh spanning-tree vlan 1 root detail
+----
 
+== Optimizing, Improving Spanning Tree
 
-=== Optimizing, Improving Spanning Tree
-
-TODO:
-
-http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swstpopt.html[Add configuring optional STP features]
-
-
-==== PortFast
+=== PortFast
 
 - Used on access ports connected to end users devices not other switches
 - Puts the port into forwarding state immediately
 - Prevent them to generate TCNs
-- Can generate loops if another switch is connected. so must be used with bpdu guard and root guard features 
+- Can generate loops if another switch is connected. so must be used with BPDU guard and root guard features
 
+
+
+
+.Task: Enable Portfast on a given interface
 ----
-(cfg-if) spanning-tree portfast
-(cfg) spanning-tree portfast default
+(config-if)# spanning-tree portfast
 ----
 
-==== UplinkFast
+.Task: Enable Portfast globally
+----
+(config)# spanning-tree portfast default
+----
+[NOTE]
+====
+- The port must be an access port
+- If the port is configured as trunk,
+  ** the global portfast command will not convert the port to an edge port.
+  ** use *spanning-tree portfast trunk*
+- If BPDUs are received on the port, the port may transition to blocking
+====
+
+
+=== UplinkFast
 
 - Used on access layer switches that have multiple uplinks to distribution/core switches
 - Immediately replaces a lost RP with an alternate RP
 - Increases the root and all port priority so the switch does not become root or transit switch
 - Time-out the correct entries in their CAMs but doesnt use the TCN process. Instead, finds all the MAC
 addresses of local devices and sends one multicast frame with each local addresses as the source MAC
-causing all the other switches to update their CAMs. The access switch also clears out the rest of the 
+causing all the other switches to update their CAMs. The access switch also clears out the rest of the
 entries in its own CAM.
+- Used only if the switch runs lgacy STP because it is built in to RSTP802.1w
+- cannot be enabled on a switch that has its default STP priority modified
 
+.Task: Enable Uplink Fast
 ----
 (config)#  spanning-tree uplinkfast [max-update-rate rate]
 ----
 
-==== BackboneFast
+.Task: Use default STP priority for all VLANs
+----
+(config)# default spanning-tree vlan 1-4094 priority
+----
+
+=== BackboneFast
 
 - Used in core switches to detect indirect link failures to the Root
+  ** All switches must have backbone fast configured
+  ** Cisco proprietary for legacy 802.1d STP (now included in RSTP and MSTP)
 - Do not wait for Maxage to expire when another switch's direct link fails
 - Send a Root Link Query out the port in which the missing Hello should arrive.
-The RLQ asks the neighboring switch if that neighboring switch is still receiving Hellos from the root.
-IF that neighbor had a direct link failure, it can tell the original switch via another RLQ that this path to the root is lost. Once known, 
-the switch experiencing the indirect link failure can go ahead and converge without waiting for Axage to expire
-- All switches must have backbone fast configured 
+  * The RLQ asks the neighboring switch if that neighboring switch is still receiving Hellos from the root.
+  * If that neighbor had a direct link failure, it can tell the original switch via another RLQ that this path to the root is lost.
+  * Once known, the switch experiencing the indirect link failure can go ahead and converge without waiting for MaxAge to expire
 
 ----
 (config)#  spanning-tree backbonefast
 ----
 
-=== Bpdu Filter
 
-- Filter BPDUs in and out
+  Backbone Fast works in two stages. In the first stage, when a switch receives inferior BPDUs through a nondesignated port (NDP), it knows the switch that sent the inferior BPDUs has lost its connection to the root bridge. When the local switch receives the inferior BPDUs, it verifies if the source that generated these messages is from a local segment. If the source is from a local segment, it knows that an indirectly connected link failure has occurred. If the source of the inferior BPDUs is from a switch that is not on a local segment, the local switch will ignore them.
+  In the second stage, the local switch goes through a verification process. The switch uses a request and response protocol. This process queries other switches to determine if the connection to the root bridge is lost.
+  The verification process is done by the local switch that received the inferior BPDUs. The switch generates Root Link Query (RLQ) requests. These messages are sent out of the root port(s).
+  These messages are sent to query the upstream switch(es) if their connection to the root bridge is up. The receiving switch sends RLQ responses to reply to the[…]”
+  Therefore, it expires the max-age timer in order to speed up the convergence.”
 
 
-=== Bpdu Guard
 
-- Puts a (portfast enabled ???) port into the errdisable state when a BPDU is received and shuts down the port 
+=== BPDU Guard
+
+
+- Ensures that unauthorized switches cannot be plugged in to the network
+- Puts a portfast enabled port into the errdisable state when a BPDU is received and shuts down the port
 - The port must be manually re-enabled or it can be recovered automatically through the errdiable timeout function.
 - A port configured with bpdu guard will not be put into the root-inconsistent state.
 
+.Task: disable an interface if a BPDU is detected
+----
+(config-if)# spanning-tree bpduguard enable
+----
+
+.Task: Re-enable the interface with BPDU Guard after n seconds
+----
+(config)# errdisable recovery cause bpduguard
+(config)# errdisable recovery interval <seconds>
+----
+
+.Task: Verify the status and reason for a err-disabled interfaces
+----
+# sh interfaces <interface type id> status err-disabled
+----
+
+=== BPDU Filter
+
+- Filter BPDUs out for all portfast interfaces
+- when configured At interface level
+  ** silently drops all received inbound BPDUs
+  ** doesn't send any outbound BPDUs
+  ** the port never goes into err-disabled state
+  ** may cause permanent loops if a switch is connected
+- when configured At switch level
+  ** only affected PortFast-enabled ports
+  ** transmits 10 BPDUS at startup
+  ** disables portfast and portfast bpdu filtering if BPDU receives during that time
+  ** after startup, f BPDU are received, disables portfast and bpdufilter and acts as other STP port
+
+
+NOTE: When PortFast is enabled on a port, the port will still send
+out BPDUs and it will accept and process received BPDUs. The BPDU
+Guard feature would prevent the port from receiving any BPDUs, but it
+will not prevent it from sending them. The BPDU Filter feature
+effectively disables STP on the selected ports by preventing them
+from sending or receiving any BPDUs.
+
+
+
+.Task: Enable BPDU filter at the interface level
+----
+(config-if)# spanning-tree bpdufilter enable
+----
+
+.Task: Enable BPDU filter on all portfast-enabled ports
+----
+(config)# spanning-tree portfast bpdufilter default
+----
 
 === Loop Guard
 
-- Prevents non-designated ports from inadvertently forming layer 2 switching loops 
-if the flow of bpdus is interrupted.
-- Puts the port into the loop-inconsistent state when the steady flow of BPDUs is interrupted
+- protects against unidirectional links
+- Prevents non-designated ports from inadvertently forming layer 2 switching loops if the flow of BPDUs is interrupted.
+- Puts the port into the *loop-inconsistent* state when the steady flow of BPDUs is interrupted
 - Only used on point-to-point links
 - Can be used with *UDLD aggressive mode* to get extra protection.
+- Cannot be enabled at the time with root guard on the same port
+- When configured at the switch level, only monitors Non-Designated ports
+- takes actions on a per-VLAN level (although configured on a port)
+  ** if a trunk port is in blocking state and stops receiving BPDUs for VLAN 8 from the DP on the segment,
+     it transitions the port into *loop inconsistent only for that VLAN 8
+- recovers automatically when the port starts receiving BPDUs
+
+  STP Loop Guard is an added logic related to receiving BPDUs on Root and Alternate
+  Ports on point-to-point links. In the case of a unidirectional link, these ports could move
+  from Root or Alternate to Designated, thereby creating a switching loop. STP Loop
+  Guard assumes that after BPDUs were being received on Root and Alternate Ports, it is
+  not possible in a correctly working network for these ports to suddenly stop receiving
+  BPDUs without them actually going down. A sudden loss of incoming BPDUs on Root
+  and Alternate Ports therefore suggests that a unidirectional link condition might have
+  occurred.
+  Following this logic, STP Loop Guard prevents Root and Alternate Ports from becoming
+  Designated as a result of total loss of incoming BPDUs. If BPDUs cease being received on
+  these ports and their stored BPDUs expire, Loop Guard will put them into a loopinconsistent
+  blocking state. They will be brought out of this state automatically after
+  they start receiving BPDUs again.
+  Loop Guard can be activated either globally or on a per-port basis, and is a local protection
+  mechanism (that is, it does not require other switches to be also configured with
+  Loop Guard to work properly). If activated globally using the spanning-tree loopguard
+  default command, it automatically protects all Root and Alternate Ports on STP point-topoint
+  link types on the switch. Global Loop Guard does not protect ports on shared type
+  links. It can also be configured on a per-port basis using the spanning-tree guard loop
+  command, in which case it applies even to ports on shared links
+
+
+  “With the Loop Guard feature enabled, switches do an additional check before transitioning to the STP forwarding state. If switches stop receiving BPDUs on a nondesignated port with the Loop Guard feature enabled, the switch places the port into loop-inconsistent blocking state instead of moving through the listening, learning, and forwarding states. If a switch receives a BPDU on a port in the loop-inconsistent STP state, the port will transition through STP states in accordance with the received BPDU. As a result, recovery is automatic, and no manual intervention is necessary.
+  When implementing Loop Guard, you should be aware of the following implementation guidelines:
+   Loop Guard cannot be enabled simultaneously with Root Guard on the same device.
+   Loop Guard does not affect UplinkFast or Backbone Fast operation.
+   Loop Guard must be enabled on point-to-point links only.
+   Loop Guard operation is not affected by the spanning tree timers.
+   Loop Guard cannot actually detect a unidirectional link.
+   Loop Guard cannot be enabled on PortFast or dynamic VLAN ports.
+  “state). However, in a case where we are dealing with an aggregated link between two devices, all of the links in the aggregate will transition into the inconsistent state for the particular VLAN that is no longer receiving BPDUs.”
+
+
+You configure the Loop Guard feature on a per-port basis, even though the feature is designed to block inconsistent ports on a per-VLAN basis. In other words[…]”
+
+Excerpt From: Narbik Kocharians. “CCIE Routing and Switching v5.1 Foundations: Bridging the Gap Between CCNP and CCIE (Christian Christian Kyony's Library).” iBooks.
 
 === Root Guard
 
 //todo: check command show spanning-tree inconsistentports
 
-- Prevent a port from becoming a root port when receiving a superior bpdu (e.g. inferior priority + mac)
-- it is enabled on ports other than the root  port and on switches other than the root.
+
+- Prevent a port from becoming a root port when receiving a superior BPDU (e.g. inferior priority + mac)
+- It is enabled on ports other than the root port and on switches other than the root
 - Puts the port in *root-inconsistent* state (no data flow) until it stops receiving superior BPDUs.
   No traffic is forwarded.
 
-- enforce the root bridge placement by ensuring the the port on which root guard is enabled is the designated port.
- 
-
-http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10588-74.html
-
-- Enforce the root bridge placement
+- Enforce the root bridge placement by ensuring the port on which root guard is enabled is the designated port.
 - Ensures that the port on which root guard is enabled is the designated port.
 
-
-=== UDLD
-
-// Read more in the udld file
-
-- unidirectional links: 
-  * one of the 2 transmission path has failed but not both
-  * due to miscabling, cutting on fiber cable, unplugging one fiber, GBIC problems, ...
-  * can cause a loop as the previously blocking port will move to a forwarding state
-
-image::stp-unidirectional-links.png[height=150]
-
-- solutions: 
-
-UDLD **u**ni**d**irectional **l**ink **d**etection:::
-Uses Layer 2 messaging to decide when a switch can no longer receive frames from
-a neighbor. The switch whose transmit interface did not fail is placed into an err-disabled
-state.
-
-UDLD aggressive mode:::
-Attempts to reconnect with the other switch (eight times) 
-after realizing no messages have been received. 
-If the other switch does not reply to the repeated additional messages, 
-both sides become err-disabled.
-
-Loop Guard:::
-When normal BPDUs are no longer received, 
-the port does not go through normal STP convergence, but rather falls into an STP loop-inconsistent state.
+- differences with BBPU guard
+  ** root-inconsistent state vs err-disabled
+  ** automatic recovery vs manual recovery
 
 
-In all cases, the formerly blocking port that would now cause a loop is prevented from migrating
-to a forwarding state. With both types of UDLD, the switch can be configured to automatically
-transition out of err-disabled state. With Loop Guard, the switch automatically puts the port back
-into its former STP state when the original Hellos are received again.
+This message appears after root guard blocks a port:
 
-== 802.1w
+  %SPANTREE-2-ROOTGUARDBLOCK: Port 1/1 tried to become non-designated in VLAN 77.
+  Moved to root-inconsistent state
+
+- Read more at http://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10588-74.html[Root Guard]
+https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10588-74.html[PortFast BPDU Guard]
+
+
+
+
+
+== 802.1w Rapid STP
 
 - Improves convergence by
 
-** waiting for only 3 missed Hellos on an RP before flushing the CAM instead of 10 with 802.1d
-** bypass listening state
-** includes natively Cisco PortFast, UplinkFast, BackboneFast
-** add backup DP when multiple ports connected to the same segment
+  ** Waiting for only 3 missed Hellos on an RP before flushing the CAM instead of 10 (10x 2 seconds =MaxAge ) with 802.1d
+  ** Bypass listening state
+  ** Includes natively CISCO PortFast, UplinkFast, BackboneFast
+  ** Add backup DP when multiple ports connected to the same segment
+  ** Doesn't use MessageAge
+  ** immediate acceptance of inferior BPDUs from DP
+    ***  an inferior BPDU originated by a designated switch on a segment is
+accepted right away, immediately replacing previously stored BPDUs on receiving ports
+of attached switches. In other words, if a designated switch on a segment suddenly sends
+an inferior BPDU, other switches on the segment will immediately accept it as if the
+superior stored BPDU expired just when the inferior BPDU arrived, and reevaluate their
+own port roles and states on the segment according to usual rules. This behavior allows a
+switch to rapidly react to a situation where the neighboring switch experiences a disruptive
+change in its own connectivity toward the root switch
 
-- backward compatible with 802.1d although
+- Backward compatible with 802.1d
 
 - All bridges generate BPDUs every Hello interval
 
 
+- Use a single BPDU,  No TCN BPDU
+- Protocol Version = 0x02
+- The Flags field has been updated.
+** In 802.1D STP BPDUs, only 2 bits out of 8 are used: TC (Topology Change) and TCA (Topology Change Acknowledgment)
+** RSTP uses the 6 remaining bits as well to encode additional information:
+Proposal bit, Port Role bits, Learning bit, Forwarding bit, and Agreement bit.
+** The TCA bit is not used by RSTP.
+This change allows implementing the *Proposal/Agreement* mechanism
+and also allows a BPDU to carry information about the originating port’s role and state,
+forming the basis of RSTP’s *Dispute* mechanism,
+protecting against issues caused by unidirectional links.
+
+
 === RSTP Link Types
 
-- *Point-to-point*: switch to switch
-- *Shared* : switch to hub
-- *Edge*: switch to single end-user device
+- *Point-to-point*: Switch to Switch (default if full-duplex port )
+- *Shared* : Switch to hub (default if half-duplex port)
+
+.Task: Set the RSTP Link-Type
+----
+spanning-tree link-type { point-to-point | shared }
+----
+
+=== RSTP Port Types
+
+- *Edge* :
+- *Non-Edge*: default
 
 === RSTP Port States
 
-[format="csv", options="header"]
-|===
-administrative state, 802.1d, 802.1w
-disabled, disabled, discarding
-enabled, blocking, discarding
-enabled, listening, discarding
-enabled, learning, learning
-enabled, forwarding, forwarding
-|===
+- Default to discarding at start
 
-=== RSTP Role Ports
+TODO Improve the table below with spanning (enabled, discarding) over the row
+
+
+,===
+Administrative state , 802.1d     , 802.1w
+
+Disabled             , Disabled   , Discarding
+Enabled              , Blocking   , Discarding
+Enabled              , Listening  , Discarding
+Enabled              , Learning   , Learning
+Enabled              , Forwarding , Forwarding
+,===
+
+=== RSTP Port Roles
 
 Root Port::
 - Same role as 802.1d RP
 
 Designated Port::
 - Same role as 802.1d DP
+- Default role at boot
 
 Alternate Port::
-- an alternate root port
-- same concept as Cisco UplinkFast feature 
-- protects against the loss of a switch's RP by keeping track of the AP with a path to the root
-
+- An alternate root port
+- Same concept as CISCO UplinkFast feature
+- Protects against the loss of a switch's RP by keeping track of the AP with a path to the root
 
 Backup Port::
-- no equivalent Cisco features
-- protects against losing the DP attached to a shared liknk 
+- No equivalent CISCO feature
+- Protects against losing the DP attached to a shared link
   when the switch has another physical port attached to the same shared segment
 
-NOTE: root bridge ports are all designated port 
+NOTE: root bridge ports are all designated ports
 unless 2 or more ports of the root bridge are connected together.
 
 NOTE: a port needs to receive BPDUs to stay blocked.
 
-
-
-=== Configuration
-
+.Task: Configure Rapid PVST
 ----
 (config)#  spanning-tree mode rapid-pvst
 ----
+[NOTE]
+====
+- Rapid PVST+ immediately deletes dynamically learned MAC address entries
+  when it receives a topology change instead of a timer used by PVST+ or MST
+====
 
-== 802.1s
+=== Proposal/Agreement Process
 
+
+  The Proposal signifies the willingness
+  of a port to become Designated Forwarding, while the Agreement stands for
+  permission to do so immediately. After a new link point-to-point link is added between
+  two switches, ports on both ends will come up as Designated Discarding, the default role
+  and state for a Non-Edge port. Any Designated Port in a Discarding or Learning state
+  sends BPDUs with the Proposal bit set. Both switches will therefore attempt to exchange
+  BPDUs with the Proposal bit set (or simply a Proposal), assuming that they have the
+  right to be Designated. However, if one of the ports receiving a Proposal discovers that
+  the Proposal constitutes the best received resulting BPDU, its role will change from
+  Designated to Root (the state will remain Discarding yet). Other port roles on that switch
+  will also be updated accordingly. Furthermore, a switch receiving a Proposal on its Root
+  Port will immediately put all its Non-Edge Designated ports into a Discarding state. This
+  operation is called Sync . A switch in Sync state is now isolated from the network, preventing
+  any switching loop from passing through it: Its Root Port is still in the Discarding
+  state (and even if it was Forwarding, the neighboring Designated Port is still Discarding
+  or Learning), and its own Designated Ports are intentionally moved to the Discarding
+  state. Now it is safe to move the new Root Port to the Forwarding state and inform the
+  upstream switch that it is now allowed to move its Designated Discarding or Learning
+  port to the Forwarding state. This is accomplished by a switch sending a BPDU with the
+  Agreement bit set (or simply an Agreement) through its Root Port after performing the
+  Sync. Upon receiving an Agreement on its Designated Discarding or Learning port, the
+  upstream switch will immediately move that port into the Forwarding state, completing
+  the Proposal/Agreement exchange between two switches.
+
+
+
+=== Topology Change Handling
+
+- Only a transition of a Non-Edge port from a non-Forwarding state to the Forwarding state is considered a topology change event
+- a switch that detects a topology change on a port (that is, one of its own Non-Edge ports transitions into the Forwarding state)
+  or learns about a topology change on a port (a BPDU with the TC flag set is received on its Root or Designated Port) will do the following:
+
+  ** Set a so-called tcWhile timer to the value of the Hello time plus one second (older
+    revisions of RSTP set this value to twice the Hello time) on all remaining Non-Edge
+    Designated ports and Root Port if any, except the port on which the topology
+    change was detected or learned.
+  ** Immediately flush all MAC addresses learned on these ports.
+  ** Send BPDUs with the TC flag set on these ports every Hello seconds until the tcWhile timer expires.
+
+- This way, information about a topology change is rapidly flooded along the spanning
+tree in the form of BPDUs with the TC flag set, and causes switches to immediately flush
+their CAM tables for all ports except those ports on which the topology change was
+detected or learned, as they point in the direction of the topology change where a set of
+MAC addresses might have become reachable through a new or improved path.
+Key
+Topic
+Key
+Topic
+
+- Edge ports never cause a topology change event, and MAC addresses learned on them
+are not flushed during topology change event handling.
+
+
+== 802.1s Multiple Spanning Trees
 
 - Multiple VLANs mapped to the same STP instance.
-- enable load balancing
-- improves fault tolerance of the network 
+- Enable load balancing
+- Improves fault tolerance of the network
   because a failure in one instance or forwarding path does not affect other instances.
 - Uses 802.1w for rapid convergence
 - Highly scalable
-  * switches with same instance, configuration revision number and name form a *region*
-  * different regions see each other as virtual bridges
-- each switch have three attributes:
-  * alphanumeric configuration name (32 bytes)
-  * configuration number (2 bytes)
-  * 4096-element table that associates each of the potential 4096 VLANs to a map ???
+  * Switches with same instance, configuration revision number and name form a *region*
+  * Different regions see each other as virtual bridges
+- generates one single BPDU for all configured instances
+- runs instance 0 which forms the IST, or CIST in the case of multiple MST regions
+- doesn't use the message age and maximum age information to compute the STP topology.
+  * use the path cost to the root and a hop-count ( similar to IP TTL)
+  * the root bridge sends a BPDU (or M-record) with a cost of 0 and the hop count set the maximum value (20 by default)
+  * when a switch receives this BPDU, it removes one to the hop counts before sending downstream
+  * when the count reaches zero, the switch discards the BPDU and ages the information it holds for the port
+  * the message age and maximum age information in the BPDU remain the same  throughout the region and propagated by the region's DP at the boundary.
+
+=== MST Region
+
+- Each switch have three attributes:
+  * Alphanumeric configuration name (32 bytes)
+  * Configuration number (2 bytes)
+  * 4096-element table that associates each of the potential 4096 VLANs to a map
+
+.Task: configure a MST region
+----
+conf t
+spanning-tree mode mst
+spanning-tree mst configuration
+  name <region-name>
+  revision <number>
+  instance <x> vlan <a-b,c, ...>
+  instance <y> vlan <a-b,c, ...>
+----
+
+=== MST region ports
+
+
+- edge port: connects to a non-bridging device or a hub
+- boundary port: connects to a single region running RSTP, 802.1d or to another MST region
 
 
 
-=== Storm Control
+
+
+
+
+=== MST Revision Number
+
+=== MST Instance
+
+
+IST:: instance 0
+- instance that interacts with STP run outside the MST region
+- comprises all VLANs not associated with an instance ???
+- only one BPDU being shared over the native VLAN of the trunk
+- only instance that sends and receives BPDUs
+* other STP instances are contained in the M-record encapsulated within the BPDU
+* reduces the CPU usages
+- increments the Root Path Cost and Message Age values at the boundary of the MST region
+  as thouth the BPDU had traversed only a single switch.
+- elects *IST master*
+
+
+
+
+Common and Instance Spanning Tree::
+-  union of CST between regions and ISTs inside individual regions, and is a single spanning tree that spans the
+entire switched topology. As each MST region has its own IST root, CIST—consisting
+of ISTs inside regions and CST between regions—can have multiple root switches as a
+result. These switches are recognized as the CIST Root Switch (exactly one for the entire
+CIST) and CIST Regional Root Switches (exactly one for the IST inside each region). CIST
+Regional Root Switch is simply a different name for an IST root switch inside a particular
+region.
+- The CIST Root Switch is elected by the lowest Bridge ID from all switches that participate
+The CIST Root Switch is elected by the lowest Bridge ID from all switches that participate
+in CIST, that is, from all MST switches across all regions according to their IST
+Bridge IDs (composed of IST priority, instance number 0, and their base MAC address),
+and from all STP/RSTP switches, if present, according to the only Bridge IDs they have.
+If running a pure MST-based network, the CIST Root Switch will be the switch whose
+IST priority is the lowest (numerically), and in the case of a tie, the switch with the lowest
+base MAC address. This switch will also become the root of IST inside its own MST
+region; that is, it will also be the CIST Regional Root Switch. As the CIST Root Switch
+has the lowest known Bridge ID in the CST, it is automatically the CST Root as well,
+although this observation would be important only in cases of mixed MST and non-MST
+environments.
+
+In other MST regions that do not contain the CIST Root Switch, only MST switches at
+the region boundary (that is, having links to other regions) are allowed to assert themselves
+as IST root switches. This is done by allowing the CIST Regional Root ID to be set
+either to the Bridge ID of the switch itself if and only if the switch is also the CIST Root,
+or in all other cases, to the Bridge ID of an MST boundary switch that receives BPDUs
+from a different region. Remaining internal switches have therefore no way of participating
+in IST root elections. From boundary switches, IST root switches are elected first by
+their lowest external root path cost to the CIST Root Switch. The external root path cost
+is the sum of costs of inter-region links to reach the region with the CIST Root Switch, or
+in other words, the CST cost of reaching the region with the CIST Root Switch; costs of
+links inside regions are not taken into account. In case of a tie, the lowest IST Bridge ID
+of boundary switches is used. Note that these rules significantly depart from the usual
+concept of the root switch having the lowest Bridge ID. In MST regions that do not contain
+the CIST Root Switch, the regional IST root switches might not necessarily be the
+ones with the lowest Bridge IDs.
+
+A CIST Regional Root Switch has a particular importance for a region: Its own CIST Root
+Port, that is, the Root Port to reach the CIST Root Switch outside the region, is called
+the Master port (this is an added port role in MST), and provides connectivity from the
+region toward the CIST Root for all MST instances inside the region.
+
+
+CST:: Common Spanning Tree
+- determines loop-free between regions
+- only spanning tree that can be understood and participated in by non-
+MST (that is, STP and RSTP) switches, facilitating the interoperation between MST
+and its predecessors. In mixed environments with MST and STP/RSTP, STP/RSTP
+switches unknowingly participate in CST. Costs in CST reflect only the costs of links
+between regions and in non-MST parts of the network. These costs are called external
+costs by MST.
+
+
+== Protecting Against Unidirectional Link Issues
+
+
+.Task: Configure MST path selection with port cost
+----
+(config-if)# spanning-tree mst <instance-number> cost <number>
+----
+
+.Task: Modify MST path selection with port priority
+----
+(config-if)# spanning-tree mst <instance-number> port-priority  <number>
+----
+
+
+
+=== UDLD
+
+// Read more in the udld file
+
+- Unidirectional links:
+  * One of the 2 transmission path has failed but not both
+  * Due to miscabling, cutting on fiber cable, unplugging one fiber, GBIC problems, ...
+  * Can cause a loop as the previously blocking port will move to a forwarding state
+
+image::stp-unidirectional-links.png[height=150]
+
+- Solutions:
+
+UDLD **u**ni**d**irectional **l**ink **d**etection:::
+Uses Layer 2 messaging to decide when a switch can no longer receive frames from a neighbor.
+The switch whose transmit interface did not fail is placed into an err-disabled state.
+
+UDLD aggressive mode:::
+Attempts to reconnect with the other switch (eight times) after realizing no messages have been received.
+If the other switch does not reply to the repeated additional messages,
+both sides become err-disabled.
+
+
+=== Bridge Assurance
+
+  The Bridge Assurance, applicable only with RPVST+ and MST and only on
+  point-to-point links, is a further extension of the idea used by Loop Guard.
+  Bridge Assurance modifies the rules for sending BPDUs. With Bridge Assurance
+  activated on a port, this port always sends BPDUs each Hello interval, whether
+  it is Root, Designated, Alternate, or Backup. BPDUs thus essentially become a
+  Hello mechanism between pairs of interconnected switches. A Bridge
+  Assurance–protected port is absolutely required to receive BPDUs. If no BPDUs
+  are received, the port will be but into a *BA-inconsistent blocking* state
+  until it starts receiving BPDUs again. Apart from unidirectional links, Bridge
+  Assurance also protects against loops caused by malfunctioning switches that
+  completely stop participating in RPVST+/MST (entirely ceasing to process and
+  send BPDUs) while opening all their ports. At the time of this writing, Bridge
+  Assurance was supported on selected Catalyst 6500 and Nexus 7000 platforms.
+  Configuring it on Catalyst 6500 Series requires activating it both globally
+  using spanning-tree bridge assurance and on ports on STP point-to-point link
+  types toward other switches using the spanning-tree portfast network interface
+  command. The neighboring device must also be configured for Bridge Assurance.
+
+=== Dispute Mechanism
+
+  The Dispute mechanism is yet another and standardized means to detect a
+  unidirectional link. Its functionality is based on the information encoded in
+  the Flags field of RST and MST BPDUs, namely, the role and state of the port
+  forwarding the BPDU. The principle of operation is very simple: If a port
+  receives an inferior BPDU from a port that claims to be Designated Learning or
+  Forwarding, it will itself move to the Discarding state. Cisco has also
+  implemented the Dispute mechanism into its RPVST+. The Dispute mechanism is not
+  available with legacy STP/PVST+, as these STP versions do not encode the port
+  role and state into BPDUs. The Dispute mechanism is an integral part of
+  RSTP/MST and requires no configuration.
+
+
+
+
+
 
 === Unicast Flooding
 
-
-== Troubleshooting 
+== Troubleshooting
 
 === Flapping Port That Is Generating BPDUs with the TCN Bit Set
 
-== Questions
+== Alternatives to STP
 
-
-
-
-
+- THRILL
+- FabricPath
 
 

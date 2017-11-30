@@ -1,0 +1,148 @@
+= Embedded Packet Capture
+
+menu:Configuration Guides[Embedded Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/epc/configuration/15-mt/epc-15-mt-book.html[Embedded Packet Capture] ]
+
+
+- onboard packet capture facility
+- captures packets flowing to, through, and from the device
+- to analyze them locally or save and export them for offline analysis by using a tool such as Wireshark.
+- restrictions:
+  * only captures multicast packets on ingress and does not capture the replicated packets on egress.
+  * Currently, the capture file can only be exported off the device; for example, TFTP or FTP servers and local disk.
+- benefits:
+  * Ability to capture IPv4 and IPv6 packets in the CEF path.
+  * A flexible method for specifying the capture buffer parameters.
+  * Filter captured packets.
+  * Methods to decode data packets captured with varying degree of detail.
+  * Facility to export the packet capture in PCAP format suitable for analysis using an external tool.
+  * Extensible infrastructure for enabling packet capture points.
+
+- The network administrator may define the capture buffer size and type
+  (circular, or linear) and the maximum number of bytes of each packet to
+  capture. The packet capture rate can be throttled using further
+  administrative controls. For example, options allow for filtering the packets
+  to be captured using an Access Control List and, optionally, further defined
+  by specifying a maximum packet capture rate or by specifying a sampling
+  interval.
+
+== Capture Buffer
+
+- area in memory for holding the packet data. You can specify unique names, size and type of the buffer, and configure the buffer to handle incoming data as required.
+
+- can stored the following types of data are stored in a capture buffer: Packet data, Metadata
+  * The packet data starts from datagramstart and copies a minimum of the per-packet-capture size or datagramsize to the capture buffer.
+  * The metadata contains descriptive information about a set of packet data. It contains:
+
+    ** A timestamp of when it is added to a buffer.
+    ** The direction in which the packet data is transmitted--egress or ingress.
+    ** The switch path captured.
+    ** Encapsulation type corresponding to input or output interface to allow the decoding of L2 decoders.
+
+- The following actions can be performed on capture buffers:
+
+  * Define a capture buffer and associate it with a capture point.
+  * Clear capture buffers.
+  * Export capture buffers for offline analysis. Export writes off the file using one of the supported file transfer options: FTP, HTTP, HTTPS, PRAM, RCP, SCP, and TFTP.
+  * Display content of the capture buffers.
+
+.Task: Defines a capture buffer
+----
+(config)# monitor capture buffer <buffer-name>
+  [clear
+  | export <location>
+  | filter access-list {<acl>}
+  | limit {allow-nth-pak <nth-packet> | duration <seconds> | packet-count <total-packets> | packets-per-sec <packets>}
+  | [max-size <element-size> ] [size <buffer-size]> [circular| linear]
+  ]
+----
+
+.Task: Export EPC data for analysis
+----
+(config)# monitor capture buffer <name> export <location>
+----
+
+.Task: Display EPC data
+----
+# show monitor capture {buffer { <capture-buffer-name> [parameters] | all parameters | merged <capture-buffer-name1> <capture-buffer-name2>}
+                        [dump] [filter filter-parameters]
+                       }
+                       | point {all | capture-point-name}
+                       }
+----
+
+.Example
+----
+# sh monitor capture buffer PKTRACE  dump
+
+11:13:00.593 EDT Mar 21 2007 : IPv4 Turbo      : Fa2/1 Fa0/1
+65B6F500: 080020A2 44D90009 E94F8406 08004500  .. "DY..iO....E.
+65B6F510: 00400F00 0000FE01 92AF5801 13025801  .@....~../X...X.
+65B6F520: 58090800 4D1A1169 00000000 0005326C  X...M..i......2l
+65B6F530: 01CCABCD ABCDABCD ABCDABCD ABCDABCD  .L+M+M+M+M+M+M+M
+65B6F540: ABCDABCD ABCDABCD ABCDABCD ABCD00    +M+M+M+M+M+M+M.
+11:13:20.593 EDT Mar 21 2007 : IPv4 Turbo      : Fa2/1 Fa0/1
+----
+
+
+== Capture Point
+
+- traffic transit point where a packet is captured and associated with a buffer.
+- must be associate to one and only one capture buffer
+
+- The following capture points are available:
+  * IPv4 CEF/interrupt switching path with interface input and output
+  * IPv6 CEF/interrupt switching path with interface input and output
+
+- possible actions on the capture point:
+  * Associate or disassociate capture points with capture buffers.
+  * Destroy capture points.
+  * Activate packet capture points on a given interface. Multiple packet capture points can be made active on a given interface. For example, Border Gateway Protocol (BGP) packets can be captured into one capture buffer and Open Shortest Path First (OSPF) packets can captured into another capture buffer.
+  * Access Control Lists (ACLs) can be applied to capture points.
+
+.Task: Define a capture point
+----
+(config)# monitor capture point {ip| ipv6}
+             {cef <capture-point-name> interface-name <interface-type> { both | in | out} | process-switched <capture-point-name> {both| from-us| in | out}}
+----
+
+.Task: Associate the capture point with the capture buffer specified.
+----
+(config)# monitor capture point associate <capture-point-name> <capture-buffer-name>
+----
+
+.Task: start  packet data capture
+----
+(config)# monitor capture point start {<capture-point-name> | all}
+----
+
+.Task: Stop packet data capture
+----
+(config)# monitor capture point stop {<capture-point-name> | all}
+----
+
+
+
+.Task: Enable packet capture infra debugs
+----
+# debug packet-capture
+----
+
+
+== Using Wireshark trace analyzer
+
+Beginning with Cisco IOS Release XE 3.3.0SG, the Catalyst 4500 series switch supports
+Wireshark, a packet analyzer program, also known as Ethereal, which supports multiple
+protocols and presents information in a text-based user interface.
+The key concepts around IOS XE based wireshark are:
+
+- Capture points (a capture point is the central policy definition of the Wireshark feature)
+- Attachment points (it refers to Interfaces and traffic directions)
+- Filters (filters are attributes of a capture point that identify and limit the subset of traffic
+         traveling through the attachment point of a capture point, which is copied and passed to
+         Wireshark)
+- Actions
+- Storing captured packets to memory buffers
+
+
+Further Reading
+http://goo.gl/n67lEF

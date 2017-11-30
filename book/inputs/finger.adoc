@@ -1,0 +1,13 @@
+= Finger
+
+
+- RFC 742
+- used to obtain information about users logged into a remote host or network device.
+- disabled by default
+
+----
+(config)# no ip finger
+----
+
+
+

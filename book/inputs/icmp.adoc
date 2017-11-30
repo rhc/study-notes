@@ -1,8 +1,11 @@
 = ICMP
 
-== Concepts
+- Internet Control Management Protocol
+- RFC 792
+- Generates error messages
+- Protocol Number: 1
 
-=== Header
+== Header
 
 .ICMP Header Format
 ["packetdiag", target="icmp-header"]
@@ -12,7 +15,6 @@ diagram {
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 11
-
   * Type [len=8]
   * Code [len = 8]
   * Checksum [len=16]
@@ -21,23 +23,198 @@ diagram {
 ----
 
 
-   
+== Control Messages
 
-=== Data
+:===
+Type : Code : Description
+0    : 0    : Echo reply (used to ping)
+1-2  : -    : unassigned 	Reserved
+:===
 
-=== Control Messages
+== ICMP Unreachable Messages
 
-==== Redirect
+Type: 3
 
-==== Time Exceeded
+[cols=">10a,90a"]
+:===
+Code : Description
 
-==== Timestamp
+0  : Destination network unreachable
+1  : Destination host unreachable
+2  : Destination protocol unreachable
+3  : Destination port unreachable
+4  : Fragmentation required, and DF flag set
+5  : Source route failed
+6  : Destination network unknown
+7  : Destination host unknown
+8  : Source host isolated
+9  : Network administratively prohibited
+10 : Host administratively prohibited
+11 : Network unreachable for ToS
+12 : Host unreachable for ToS
+13 : Communication administratively prohibited
+14 : Host Precedence Violation
+15 : Precedence cutoff in effect
+:===
 
-==== Timestamp Reply
+.Task: Disable the sending of ICMP protocol unreachable and host unreachable messages
+----
+(config-if)# no ip unreachables
+----
+NOTE: Disabling the unreachable messages also disables IP Path MTU Discovery because path discovery works by having the software send unreachable messages.
 
-==== Address Mask Request
+.Task: Clear all current ICMP unreachable statistics for all configured interfaces
+----
+# clear ip icmp rate-limit [<interface type number>]
+----
 
-==== Address Mask Reply
+.Task: Specify the rate limitation of ICMP unreachable destination messages and the error message log threshold for generating a message
+----
+(config-if)# ip icmp rate-limit unreachable [df] [<ms>] [log [<packets>] [<interval-ms>]]
+----
+NOTE: The default is no unreachable messages are sent more often than once every half second.
 
-==== Destination Unreachable
+.Task: Display all current ICMP unreachable statistics for all configured interfaces.
+----
+# show ip icmp rate-limit [<interface type number>]
+
+  Interval (millisecond)     500                       500
+  Interface                  # DF bit unreachables     # All other unreachables
+  ---------                  ---------------------     ------------------------
+  Ethernet0/0                0                         0
+  Ethernet0/2                0                         0
+  Serial3/0/3                0                         19
+  The greatest number of unreachables is on serial interface 3/0/3.
+----
+
+
+== ICMP Source Quench Messages
+
+Type: 4
+
+4 – Source Quench 	0 	deprecated 	Source quench (congestion control)
+
+== ICMP Redirect Messages
+
+Type: 5
+
+[cols=">10a,90a"]
+,===
+code, description
+
+0 ,	Redirect Datagram for the Network
+1 ,	Redirect Datagram for the Host
+2 ,	Redirect Datagram for the ToS & network
+3 ,	Redirect Datagram for the ToS & host
+6 ,	deprecated 	Alternate Host Address
+7 ,	unassigned 	Reserved
+,===
+
+.Task: Disable the sending of ICMP redirect messages to learn routes
+----
+(config-if)# no ip redirects
+----
+
+.Task: Display the address of the default router and the address of hosts for which an ICMP redirect message has been received
+----
+# show ip redirects
+
+Default gateway is 172.16.80.29
+
+Host               Gateway           Last Use    Total Uses  Interface
+172.16.1.111      172.16.80.240         0:00             9  Ethernet0
+172.16.1.4        172.16.80.240         0:00             4  Ethernet0
+----
+
+
+== ICMP Echo Request
+
+8 – Echo Request
+
+
+== ICMP Router  Messages
+
+9 – Router Advertisement
+10 – Router Solicitation
+
+
+== ICMP Time Exceeded
+11 – Time Exceeded
+
+0 		TTL expired in transit
+1 		Fragment reassembly time exceeded
+
+
+== Parameter Problem
+
+12 – Parameter Problem: Bad IP header
+
+0 		Pointer indicates the error
+1 		Missing a required option
+2 		Bad length
+
+
+== Timestamp Messages
+
+13 – Timestamp
+14 – Timestamp Reply
+
+
+== Information Request
+
+15 – Information Request
+16 – Information Reply
+
+== Address Mask Messages
+
+17 – Address Mask Request
+18 – Address Mask Reply
+
+- To request the subnet mask for a particular subnetwork
+- Can be used by an attacker to gain network mapping information
+
+.Task: Disable the sending of ICMP mask reply messages
+----
+(config-if)# no ip mask-reply
+----
+
+== Ping
+
+- Packet InterNet Groper
+- uses two ICMP query messages, ICMP echo requests, and ICMP echo replies to determine whether a remote host is active
+  * The ping command first sends an echo request packet to an address, and then it waits for a reply.
+  * The ping is successful only if the ECHO REQUEST gets to the destination, and the destination is able to get an ECHO REPLY back to the
+  source of the ping within a predefined time interval.
+- measures the amount of time it takes to receive the echo reply
+
+
+== Traceroute
+
+- records the source of each ICMP "TIME EXCEEDED" message in order to provide a trace of the path the packet took
+to reach the destination.
+
+- sends out a sequence of UDP datagrams,
+  each with incrementing TTL values, to an invalid port address (Default 33434) at the remote host.
+
+* First, three datagrams are sent, each with a TTL field value set to 1. The TTL
+value of 1 causes the datagram to "timeout" as soon as it hits the first router
+in the path. This router then responds with an ICMP "time exceeded" message
+which indicates that the datagram has expired.
+
+* Next, three more UDP messages are sent, each with the TTL value set to 2. This
+causes the second router in the path to the destination to return ICMP "time
+exceeded" messages.
+
+* This process continues until the packets reach the destination and until the
+system that originates the traceroute receives ICMP "time exceeded" messages
+from every router in the path to the destination. Since these datagrams try to
+access an invalid port (Default 33434) at the destination host, the host
+responds with ICMP "port unreachable" messages that indicate an unreachable
+port. This event signals the traceroute program to finish.
+
+.Task: Disable the generation of ICMP unreachable messages
+----
+(config-if)# no ip unreachables
+----
+
 

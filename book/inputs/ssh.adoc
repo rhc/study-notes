@@ -1,7 +1,27 @@
 = SSH
 
 
+.Example
+----
+!--- Step 1: Configure a hostname and domain name
+(config)# hostname router
+(config)# ip domain-name nyc.cisco.com
 
-blabla
-xxxx
+!--- Step 2: Generate an RSA key pair, automatically enabling SSH.
+(config)# cry key generate rsa
 
+!--- Step 3: Configure time-out and number of authentication retries.
+(config)# ip ssh time-out 60
+(config)# ip ssh authentication-retries 2
+
+!--- Step 4: Configure VTYs to only accept SSH.
+(config)# line vty 0 4
+(config-line)# transport input ssh
+
+!--- Step 5: Allow SSH connections only originated from the management network.
+(config)# access-list 111 remark ACL for SSH
+(config)# access-list 111 permit tcp 172.26.0.0 0.0.255.255 any eq 22
+(config)# access-list 111 deny ip any any log-input
+(config)# line vty 0 4
+(config-line)# access-class 111 in
+----

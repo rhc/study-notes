@@ -1,14 +1,417 @@
+!R1
+En
+Conf t
+!
+!
+Ho R1
+!
+!
+int g0/1
+No shut
+!
+!
+Int g0/1.12
+Encap dot 12
+Ip addr 12.1.1.1 255.255.255.0
+!
+!
+Int g0/1.14
+Encap dot 14
+Ip addr 14.1.1.1 255.255.255.0
+!
+!
+Int g0/1.13
+Encap dot 13
+Ip addr 13.1.1.1 255.255.255.0
+!
+!
+int lo0
+ip addr 128.1.1.1 255.255.0.0
+!
+!
+int lo1
+ip addr 131.1.1.1 255.255.0.0
+!
+!
+!
+int lo2
+ip addr 180.1.4.1 255.255.255.0
+!
+!
+int lo3
+ip addr 180.1.5.1 255.255.255.0
+!
+!
+int lo4
+ip addr 180.1.6.1 255.255.255.0
+!
+!
+Router eigrp 1
+Netw 0.0.0.0 0.0.0.0
+!
+!
+End
 
-chap 3 
 
-1 e
-2 b
-3 f
-4 bc
-5 b
-6 1
-7 b
-8 cdf
-9 e
-0 udld
+!R2
+En
+Conf t
+!
+!
+Ho R2
+!
+!
+int g0/1
+Ip addr 12.1.1.2 255.255.255.0
+No shu
+!
+!
+Int lo0
+Ip addr 192.1.1.33 255.255.255.224
+!
+!
+!
+Int lo1
+Ip addr 192.1.1.1 255.255.255.255
+!
+!
+Int lo10
+Ip addr 172.16.0.1 255.255.255.0
+!
+!
+Int lo11
+Ip addr 172.16.1.1 255.255.255.0
+!
+!
+Int lo12
+Ip addr 172.16.2.1 255.255.255.0
+!
+!
+Int lo13
+Ip addr 172.16.3.1 255.255.255.0
+!
+!
+Router eigrp 1
+Netw 0.0.0.0 0.0.0.0
+!
+!
+End
+
+
+!R3
+En
+Conf t
+!
+!
+Ho R3
+!
+!
+int g0/1
+Ip addr 13.1.1.3 255.255.255.0
+No shu
+!
+int lo0
+ip addr 1.1.1.3 255.0.0.0
+!
+!
+int lo1
+ip addr 11.1.1.3 255.255.0.0
+!
+!
+int lo2
+ip addr 22.1.2.3 255.255.255.0
+!
+!
+int lo3
+ip addr 29.1.3.3 255.0.0.0
+!
+!
+int lo4
+ip addr 10.1.1.3 255.255.255.0
+!
+!
+int lo5
+ip addr 33.0.0.3 255.255.255.0
+!
+!
+int lo6
+ip addr 201.1.3.3 255.255.255.0
+!
+!
+Int lo7
+Ip addr 44.1.4.3 255.0.0.0
+!
+Router eigrp 1
+Netw 0.0.0.0 0.0.0.0
+!
+!
+End
+
+
+!R4
+En
+Conf t
+!
+!
+Ho R4
+!
+!
+int g0/1
+Ip addr 14.1.1.4 255.255.255.0
+No shu
+!
+!
+Int g0/2
+Ip addr 45.1.1.4 255.255.255.0
+No shut
+!
+!
+int lo0
+ip addr 198.1.1.4 255.255.255.0
+!
+!
+int lo1
+ip addr 199.1.1.4 255.255.255.0
+!
+!
+int lo2
+ip addr 200.1.1.4 255.255.255.0
+!
+!
+int lo3
+ip addr 223.1.1.4 255.255.255.0
+!
+!
+!
+int lo4
+ip addr 200.1.4.9 255.255.255.248
+!
+!
+int lo5
+ip addr 200.1.5.5 255.255.255.252
+!
+!
+Router eigrp 1
+Netw 0.0.0.0 0.0.0.0
+!
+!
+End
+
+
+!R5
+En
+Conf t
+!
+!
+Ho R5
+!
+!
+int g0/1
+Ip addr 56.1.1.5 255.255.255.0
+Clock rate 64000
+No shu
+!
+!
+Int g0/2
+Ip addr 45.1.1.5 255.255.255.0
+No shut
+!
+!
+Int lo2
+Ip addr 211.4.4.33 255.255.255.224
+!
+!
+Int lo101
+Ip addr 205.1.1.241 255.255.255.240
+!
+!
+int lo102
+Ip addr 206.1.1.249 255.255.255.252
+!
+!
+Int lo103
+Ip addr 207.1.1.193 255.255.255.192
+!
+!
+Int lo104
+Ip addr 208.1.1.129 255.255.255.128
+!
+!
+Int lo105
+Ip addr 189.1.1.1 255.255.255.0
+!
+!
+Int lo106
+Ip addr 185.1.1.1 255.255.0.0
+!
+!
+Int lo107
+Ip addr 186.1.128.5 255.255.128.0
+!
+!
+Int lo108
+Ip addr 99.1.1.1 255.0.0.0
+!
+!
+!
+Router eigrp 1
+Netw 0.0.0.0 0.0.0.0
+!
+End
+
+
+!R6
+En
+Conf t
+!
+!
+Ho R6
+!
+!
+int g0/1
+Ip addr 56.1.1.6 255.255.255.0
+No shu
+!
+!
+Int g0/2
+Ip addr 67.1.1.6 255.255.255.0
+No shut
+!
+!
+Int lo0
+Ip addr 146.1.1.6 255.255.255.0
+!
+!
+Int lo1
+Ip addr 146.1.2.129 255.255.255.128
+!
+!
+Int lo2
+Ip addr 146.1.3.193 255.255.255.192
+!
+!
+Int lo3
+Ip addr 146.1.4.225 255.255.255.224
+!
+!
+Int lo4
+Ip addr 146.1.5.241 255.255.255.240
+!
+!
+!
+Int lo5
+Ip addr 6.1.1.6 255.255.255.0
+!
+!
+Int lo6
+Ip addr 6.1.2.129 255.255.255.128
+!
+!
+Int lo7
+Ip addr 6.1.3.193 255.255.255.192
+!
+!
+Int lo8
+Ip addr 6.1.4.225 255.255.255.224
+!
+!
+Int lo9
+Ip addr 6.1.5.241 255.255.255.240
+!
+!
+Router eigrp 1
+Netw 0.0.0.0 0.0.0.0
+End
+
+
+!R7
+En
+Conf t
+!
+!
+Ho R7
+!
+!
+Int g0/2
+Ip addr 67.1.1.7 255.255.255.0
+No shut
+!
+Router eigrp 1
+Netw 0.0.0.0 0.0.0.0
+!
+!
+End
+
+!SW1
+En
+Conf t
+!
+!
+Ho SW1
+!
+!
+Vlan 12,13,14,56
+!
+int g1/3
+Swi trunk enc dot
+Swi mode tru
+No shu
+!
+!
+Int g2/0
+Swi mode acc
+Swi acc v 12
+Spannin portf
+No shut
+!
+!
+Int g2/1
+Swi mode acc
+Swi acc v 13
+Spannin portf
+No shut
+!
+!
+Int g2/2
+Swi mode acc
+Swi acc v 14
+Spannin portf
+No shut
+!
+!
+Int range g2/3 , g3/0
+Swi mode acc
+Swi acc v 56
+Spannin portf
+No shu
+!
+!
+End
+
+!SW2
+En
+Conf t
+!
+!
+Ho SW2
+!
+!
+Vlan 45,67
+!
+int range g3/0 - 1
+Swi mode acc
+Swi acc v 67
+Spannin portf
+No shu
+!
+!
+int range g2/2-3
+Swi mode acc
+Swi acc v 45
+Spannin portf
+No shu
+!
+!
+End
+
 

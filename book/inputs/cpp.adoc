@@ -1,0 +1,44 @@
+= CPP
+
+Control Plane Protection
+- security feature that extends the policing functionality provided by the
+  software-based Control Plane Policing (CoPP) feature. The CoPP feature
+  controls the rate in which control plane traffic is sent to he Route
+  Processor in Cisco IOS software-based devices. Control Plane Protection
+  extends this policing functionality by dividing the Control Plane into three
+  control plane sub-interfaces and allowing the enforcement of separate
+  rate-limiting policies. In addition, CPP incorporates port-filtering and
+  queue-thresholding. Port-filtering is a mechanism for the early dropping of
+  packets that are directed to closed or non-listened IOS TCP/UDP ports.
+  Queue-thresholding is a mechanism that limits the number of packets per
+  protocol hold in the control-plane input queue, preventing the input queue
+  from being overwhelmed by any single protocol traffic.
+
+
+
+- The three control plane sub-interfaces implemented by Control Plane Protection are:
+
+  * Control-plane host subinterface—This interface handles all control-plane IP packets that are destined to any of the IP addresses configured on the router interfaces. Examples of traffic falling in this category include tunnel termination traffic, management traffic or routing protocols such as SSH, SNMP, BGP, OSPF, and EIGRP. All host traffic terminates on and is processed by the router.
+  * Control-plane transit subinterface—This subinterface receives all IP packets that are software switched by the route processor. This means packets that are not directly destined to the router itself but rather traffic traversing through the router and that require process switching.
+  * Control-plane CEF-exception subinterface—This control-plane subinterface receives all IP packets that are either redirected as a result of a configured input feature in the CEF packet forwarding path for process switching or directly enqueued in the control plane input queue by the interface driver (i.e. ARP, L2 Keepalives and all non-IP host traffic).
+
+- In addition, CPP enhances the protection of the control-plane host subinterface by implementing Port-filtering and Queue-thresholding. Port-filtering is a feature that can only be applied to the control-plane host subinterface and that automatically drops packets directed toward closed or non-listened UDP/TCP ports on the router. Queue-thresholding is another feature that can only be applied to the control-plane host subinterface and that limits the number of unprocessed packets per protocol, preventing the input queue from being overwhelmed by any single protocol traffic.
+
+- At a very high level the sequence of events with Control Plane Protection is as follows:
+
+- step 1 A packet enters the router configured with CoPP on an ingress interface.
+- step 2 The interface performs the basic input port and QoS services.
+- step 3 The packet gets forwarded to the router processor.
+- step 4 The router processor makes a routing decision, determining whether or not the packet is destined to the control plane.
+- step 5 Packets destined for the control plane are processed by Aggregate CoPP, and are dropped or forward to the Control Plane Path according to the polices for each traffic class. Packets that have other destinations are forwarded normally.
+- step 6 Packets sent to the Control Plane Path are intercepted by the Control Plane Protection traffic classifier, which classifies the packets into the corresponding control-plane subinterfaces.
+- step 7 Packets received by each control-plane subinterface are dropped or forward to the Control Plane global input queue according to the configured policies.
+- step 8 In addition, packets sent to the control-plane host subinterface can be dropped or forwarded according to the Port-filter and Queue-thresholding policies before they are sent to the global input queue.
+
+Similar to CoPP, CPP helps protect the RP of Cisco IOS software-based routers by filtering unwanted traffic and by rate-limiting the traffic expected by the control plane. This shields the control plane from traffic that might be part of DoS or other attacks, helping maintain network stability even during attack conditions.
+
+CPP ability to divide the control plane traffic and rate-limit each traffic type individually, gives you greater traffic control for attack mitigation. Port-filtering and Queue-thresholding also provide for a more advanced attack protection. On one hand, Port-filtering shields the RP from packets directed to closed or non-listened TCP/UDP ports, mitigating attacks attempting to spoof legitimate traffic permitted by CoPP. On the other hand, Queue-thresholding limits protocol queue usage mitigating attacks designed to overwhelm the input queue with the flooding of a single protocol.
+
+CPP is recommended on all software-based IOS platforms,
+where hardware-based CoPP is not available. CPP is particularly useful on routers facing the Internet or other external networks.
+

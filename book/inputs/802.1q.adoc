@@ -1,62 +1,54 @@
-= IEEE 802.1Q 
+= IEEE 802.1Q
 
-== Definition
-
-- Tags frames on a trunk 
+- Tags frames on a trunk
 ** Inserts a 4-byte tag into the original frame between the Source Address and the Type/Length field
-** Recomputes the frame check sequence (FCS) before the device sends the frame over the trunk link. 
+** Recomputes the frame check sequence (FCS) before the device sends the frame over the trunk link.
 ** Removes the tag at the receiving end
 
-- Does not tag frames on the native VLAN. 
+- Does not tag frames on the native VLAN.
 ** Must use the same native VLAN on both sides of the trunk
-** Default to VLAN 1 
+** Default to VLAN 1
+** enables frames to transit switches not yet capable for 802.1g
 
-- Supports up to 4096 VLANs 
-** Defines a single instance of spanning tree that runs on the native VLAN for all the VLANs in the network. 
+- Supports up to 4096 VLANs
+** Defines a single instance of spanning tree that runs on the native VLAN for all the VLANs in the network.
 ** lacks the flexibility and load balancing capability of PVST that is available with ISL.
-** PVST+ offers the capability to retain multiple spanning tree topologies with 802.1Q trunking. 
+** PVST+ offers the capability to retain multiple spanning tree topologies with 802.1Q trunking.
 
 == Frame Format
 
 image::802-1q-frame.png[802.1Q frame]
 
-=== Field Descriptions
-
-TPID—Tag Protocol Identifier::
-
+TPID-Tag Protocol Identifier::
 - 16 bits
-- Value: 08100 
+- Value: 08100
 
 Priority::
-
 - 3 bits
 - Called also user priority or IEEE 802.p
 - Indicates the frame priority level
 - Can be used to prioritize the traffic
 
-CFI—Canonical Format Indicator::
+CFI-Canonical Format Indicator::
 - 1 bit
 - Value: 0 if MAC address is in canonical format otherwise 1
 
-VID—VLAN Identifier::
+VID-VLAN Identifier::
 - 12 bits
 - Identifies the VLAN to which the frame belongs
 
-=== Ethernet Frame Size with 802.1Q Tagging
+== Ethernet Frame Size with 802.1Q Tagging
 
 - Maximum size: 1522 bytes
 - Minimum size: 68 bytes
 
 == Native VLAN
 
+
 .Task:  Configure a Native VLAN Over a Trunk Link
 ----
 (config-if)# switchport trunk native vlan <id>
 ----
 
-
-
-
-
-
+TODO How can you force the tagging of the native vlan?
 

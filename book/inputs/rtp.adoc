@@ -1,0 +1,27 @@
+= RTP/RTCP
+
+
+Real-time Transport Control Protocol (RTCP)
+- sister protocol of RTP
+- provides out-of-band control information for an RTP flow
+  * It is used periodically to transmit control packets to
+participants in a streaming multimedia session.
+
+- gathers statistics on a media connection and information such as bytes
+sent, packets sent, lost packets, jitter, feedback and round trip delay. An
+application may use this information to increase the quality of service,
+perhaps by limiting flow or using a different codec.
+
+
+
+- type of RTCP packets: Sender report packet, Receiver report
+packet, Source Description RTCP Packet, Goodbye RTCP Packet and Application
+Specific RTCP packets.
+
+- RTCP itself does not provide any flow encryption or authentication means. SRTCP
+protocol can be used for that purpose.
+
+
+TODO question 1
+
+http://ccm.net/contents/288-rtp-rtcp-protocols

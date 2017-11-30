@@ -20,8 +20,8 @@ Normal-range [1-1005]::
 ** Stored in VLAN.DAT file in Flash
 ** Special VLANs:
 *** Vlan 1 is the default Ethernet VLAN for all access ports; cannot be deleted or changed.
-*** Vlan 1002-1004 : default for FDDI
-*** Vlan 1002-1005 : default for Token Ring translational bridge.
+*** Vlan 1002,1004 : default for FDDI (default, net)
+*** Vlan 1003,1005 : default for Token Ring (default,translational bridge).
 
 Extended-range [1006-4094] ::
 ** Cannot be advertised or pruned by VTP v1 and v2
@@ -35,7 +35,6 @@ Extended-range [1006-4094] ::
   * ISL : Cisco proprietary, 30-bytes (26-byte header + 4-byte trailer), does not modify original frame
   * 802.1q: IEEE standard, 4-byte tag except for native VLAN, modifies original frame
 
-
 == Basic Configuration
 
 Configuring VLANs requires few steps:
@@ -47,14 +46,14 @@ Configuring VLANs requires few steps:
 VLAN creation can be done either in VLAN database mode configuration (after *vlan database* ) or normal configuration mode
 
 .Catalyst 3550 VLAN Database Vs Configuration Mode
-[format="dsv"]
-|===
+:===
 VLAN Database : Configuration
+
 vtp {domain domain-name | password password | pruning | v2-mode | {server | client | transparent}} : vtp {domain domain-name | file filename | interface name | mode {client | server | transparent} | password password | pruning | version number}
 vlan vlan-id [backupcrf {enable | disable}] [mtu mtu-size] [name vlan-name] [parent parent-vlan-id] [state {suspend | active}]:  vlan vlan-id 1
 show {current | proposed | difference} : No equivalent
 apply | abort | reset : No equivalent
-|===
+:===
 
 
 == VLAN State
@@ -68,18 +67,13 @@ apply | abort | reset : No equivalent
 ----
 
 
-
-
-
 == Troubleshoot
 
 Check "Creating ethernet VLANs on catalyst switches: troubleshoot tips"
-
 
 - SVI will be in "up/down" state after being deleted
 - SVI will be in "up/up" if
   * The VLAN associated with the SVI exists in the VLAN database
   * At least one trunk or access port in the "up/up" state has been assigned to the VLAN
   * Those ports in the "up/up" state are not blocked by STP
-
 

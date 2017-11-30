@@ -1,0 +1,89 @@
+= Port-Based Traffic Control
+
+== Storm Control
+
+- limits the amount of broadcast, multicast or unicast traffic received inbound on a physical interface.
+- blocks the port when the rising threshold is reached
+- resumes normal forwards when the traffic rate drops below falling threshold
+- the threshold can be expressed in
+  ** pps (packet per second)
+  ** bps (bits per seconds)
+  ** pps for small frames (< 67 bytes)
+  ** percentage of the available bandwidth of the port
+- by default, filters outs the traffic and err-disable the port
+- can be configured to send a SNMP trap
+
+
+.Task: Configure storm control
+----
+(config-if)# storm-control {broadcast | multicast | unicast}
+                     level {<rising-thresholdl> [<failing-threshold>] | bps <bps> [<bps-low>] | pps <pps> [<pps-low>] }
+----
+
+.Task: Limit traffic in packet per second
+----
+(config-if)# storm-control {broadcast | multicast | unicast} level pps <rising-threshold> [<falling-threshold] }
+----
+
+.Task: Limit traffic in bits per second
+----
+(config-if)# storm-control {broadcast | multicast | unicast} level bps <rising-threshold> [<falling-threshold] }
+----
+
+.Task: Limit traffic in  as a percentage of the bandwidth
+----
+(config-if)# storm-control {broadcast | multicast | unicast} level <rising-threshold> [<falling-threshold] }
+----
+
+.Task: Err-disable a port during a storm
+----
+(config-if)# storm-control action shutdown
+----
+
+.Task: Generate an SNMP trap when a storm is detected
+----
+(config-if)# storm-control action trap
+----
+
+.Task: Verify the storm control suppression levels set on the interface
+----
+sh storm-control [<interface-id>] [broadcast|multicast|unicast]
+----
+
+
+== Protocol Storm Protection
+
+TODO
+https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_1_se/configuration/guide/3750xcg/swtrafc.html#71262
+
+== Protected Port
+
+TODO
+https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_1_se/configuration/guide/3750xcg/swtrafc.html#71262
+
+
+== Port Blocking
+
+- blocks a port from flooding unknown unicast or multicast to other ports
+
+.Task: Block unknown multicast forwarding out of the port
+----
+(config-if)# switchport block multicast
+----
+[NOTE]
+====
+- Only pure L2 multicast traffic is blocked
+- multicast packets that contain IPv4 or IPv6 information in the header are not blocked
+====
+
+.Task: Block unknown unicast forwarding out of the port
+----
+(config-if)# switchport block unicast
+----
+
+== Port Security
+
+TODO
+https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_1_se/configuration/guide/3750xcg/swtrafc.html#71262
+
+

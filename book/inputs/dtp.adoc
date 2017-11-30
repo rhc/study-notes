@@ -1,7 +1,6 @@
 = DTP
 
-
-== Dynamic Trunk Protocol
+Dynamic Trunk Protocol
 
 - negotiate trunk status
 - default to *dynamic auto*
@@ -56,9 +55,10 @@ show interface <type number> switchport
 ----
 
 .Task: Display DTP Information for a Specific Interface
-
 ----
 # show dtp interface <type slot/number>
+
+
 ----
 
 == Trunking Between a Switch and a Router

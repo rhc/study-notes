@@ -1,11 +1,12 @@
-= UDP 
+= UDP
 
-== Concepts
+- Protocol number: 17
+- RFC 768
 
 MSS::
 - Default 536 bytes ??
 
-=== Message Format
+== Message Format
 
 .UDP Header Format
 ["packetdiag", target="udp-header"]
@@ -23,5 +24,24 @@ diagram {
 }
 ----
 
+== UDP checksum
 
-   
+
+== UDP dominance
+
+- TCP starvation
+
+
+
+
+== UDP Small Servers
+
+- echo, chargen,  discard services
+- disabled by default
+
+
+.Task: Enable UDP small servers
+----
+(config)# service udp-small-servers
+----
+

@@ -1,13 +1,13 @@
 
-= ARP
+= RARP
 
-== Information 
+- retrieves IP address given IP address
+- Ethernet Protocol number: 0x8035
 
-
-=== Message Format
+== Message Format
 
 .Header Format
-["packetdiag", target=""]
+["packetdiag", target="rarp"]
 ----
 diagram {
   colwidth = 32

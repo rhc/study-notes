@@ -1,15 +1,25 @@
 = Virtual Switch System
 
-image::vss.png[Virtual Switch System]
+image::vss.png[Virtual Switch System, 500, 500, float='right']
 
 - VSS makes two physical switches to act and appear as one single logical network element.
 - VSS manages the redundant links from access switches  as single Multi-chassis Etherchannel
   ** No need for spanning-tree to block one of the links
   ** two active links instead of one 1/10/40b interfaces
+- on Cat6500, Cat4500 running IOS-XE
 
 == VSS Active and Standby Switch
 
 - Uses VLSP to negotiate the active and standby roles at start
+
+- The VSS active switch
+ * controls the VSS, running the Layer 2 and Layer 3 control protocols for the switching modules on both switches.
+ * provides management functions for the VSS, such as module online insertion and removal (OIR)
+and the console interface.
+- The VSS active and standby switches perform packet forwarding for ingress data traffic
+on their locally hosted interfaces. However, the VSS standby switch sends all control traffic
+to the VSS active switch for processing
+
 
 .Task: Configure VSS Domain Number and Switch Number
 ----
@@ -21,11 +31,11 @@ image::vss.png[Virtual Switch System]
 ----
 (config-vs-domain)# switch [1 | 2 ] priority [<number>]
 ----
-NOTE 1 lowest priority 255 highest priority 100 default
+NOTE: 1 lowest priority 255 highest priority 100 default
 
 == Virtual Switch Link
 
-image::vss-logical.png[Virtual Switch Link]
+image::vss-logical.png[Virtual Switch Link, 250, 250, float='right']
 
 - Normally built as etherchannel with up to 8 links
 - carries system control information
@@ -59,4 +69,83 @@ image::vss-logical.png[Virtual Switch Link]
 ----
 # sh switch virtual [role | link]
 ----
+
+.Example
+[NOTE]
+====
+
+  Executing the command on VSS member switch role = VSS Active, id = 1
+  RRP information for Instance 1
+  --------------------------------------------------------------------
+  Valid Flags Peer  Preferred Reserved
+              Count Peer      Peer
+  --------------------------------------------------------------------
+  TRUE   V    1     1         1
+
+  Switch  Switch Status     Preempt    Priority   Role      Local Remote
+          Number            Oper(Conf) Oper(Conf)           SID   SID
+  --------------------------------------------------------------------
+  LOCAL   1      UP         FALSE(N ) 100(100)    ACTIVE    0     0
+  REMOTE  2      UP         FALSE(N ) 100(100)    STANDBY   6834  6152
+
+  Peer 0 represents the local switch
+  Flags : V - Valid
+  In dual-active recovery mode: No
+
+  Executing the command on VSS member switch role = VSS Standby, id = 2
+  RRP information for Instance 2
+  --------------------------------------------------------------------
+  Valid Flags Peer  Preferred Reserved
+              Count Peer      Peer
+  --------------------------------------------------------------------
+  TRUE  V     1     1         1
+
+  Switch  Switch Status Preempt     Priority    Role    Local Remote
+          Number        Oper(Conf)  Oper(Conf)          SID   SID
+  --------------------------------------------------------------------
+  LOCAL   2       UP    FALSE(N )   100(100)    STANDBY 0     0
+  REMOTE  1       UP    FALSE(N )   100(100)    ACTIVE 6152 6834
+
+  Peer 0 represents the local switch
+  Flags : V - Valid
+  In dual-active recovery mode: No
+
+====
+
+
+.Task: Displays the VSL Information
+----
+# sh switch virtual link
+----
+.Example
+[NOTE]
+====
+----
+  Executing the command on VSS member switch role = VSS Active, id = 1
+  VSL Status : UP
+  VSL Uptime : 3 minutes
+  VSL Control Link : Gi1/7/4
+  Executing the command on VSS member switch role = VSS Standby, id = 2
+  VSL Status : UP
+  VSL Uptime : 3 minutes
+  VSL Control Link : Gi2/4/45
+----
+====
+
+
+== Multi-chassis Ethernet Channel
+
+- VSS enables the creation of Multichassis EtherChannel (MEC), which is an EtherChannel whose member ports can be
+distributed across the member switches in a VSS.
+
+- Because non-VSS switches connected to a VSS view the MEC as a standard EtherChannel,
+non-VSS switches can connect in a dual-homed manner.
+
+- Traffic traversing the MEC can be load balanced locally within a VSS member switch much like that of standard EtherChannels.
+- Cisco MEC supports dynamic configuration (LACP and PAgP) as well as static EtherChannel configuration.
+- In total, a VSS can support a maximum of 256 EtherChannels. This limit applies to the total number of regular EtherChannels and
+MECs.
+
+
+
 

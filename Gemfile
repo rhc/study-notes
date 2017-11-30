@@ -1,13 +1,12 @@
 # Gemfile
 source 'https://rubygems.org'
 
-ruby '2.3.1'
-gem 'guard-shell'
+# gem 'growl' # for mac osx
 gem 'asciidoctor'
-gem 'yajl-ruby'
-gem 'rb-readline' # for macosx
-gem 'guard-livereload'
 gem 'asciidoctor-diagram'
 gem 'asciidoctor-epub3'
 gem 'asciidoctor-pdf'
-# gem 'growl' # for mac osx
+gem 'guard-livereload'
+gem 'guard-shell'
+gem 'rb-readline' # for macosx
+gem 'yajl-ruby', require: 'yajl'

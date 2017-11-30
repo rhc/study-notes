@@ -32,11 +32,10 @@ diagram {
 }
 ----
 
-
 .Task: Assign an IP Address to an Interface
 ----
 (config-if)# ip address <ip-address> <mask>
 ----
 
 
-   
+

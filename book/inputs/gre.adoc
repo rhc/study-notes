@@ -1,7 +1,7 @@
 = GRE
-// ft:asciidoc
 
-- tunnelling protocol developed by Cisco
+- Generic Routing Encapsulation
+- Tunnelling protocol developed by Cisco
 - IP protocol 47
 - https://tools.ietf.org/html/rfc2784[RFC 2784]
 - https://tools.ietf.org/html/rfc2345[RFC 2345]
@@ -9,8 +9,8 @@
 
 == Tunneling
 
-- Tunneling uses encapsulates data packets with from one protocol inside a different protocol
-and transports the data packets unchanged across a foreign network.
+- Tunneling uses encapsulates data packets with from one protocol inside a different protocol at the same OSI layer
+and transports the data packets unchanged across a foreign network (which  may not support the passenger protocol).
 - Unlike encapsulation, tunneling allows a lower-layer protocol, or same-layer protocol,
 to be carried through the tunnel.
 
@@ -44,15 +44,13 @@ image::ip-tunneling-concepts.png[]
  }
 ----
 
-[horizontal]
-
 C::
-
 - Checksum present
 - Set to 1 if the checksum and the Reserved1 field are present
 
 K::
-- Key bit. Set to 1 if
+- Key bit
+- Set to 1 if
 
 Reserved0::
 - if any of bits 1-5 are non-zero, a receiver must discard the packet
@@ -61,8 +59,9 @@ Reserved0::
 Protocol Type::
 - Ether protocol type (e.g. IPv4 -> 0x800)
 
+IMPORTANT: GRE adds at least 24 bytes to the original IP ( 20 bytes for new IP header + 4 bytes for GRE header )
 
-=== GRE Keepalive
+== GRE Keepalive
 
 The GRE tunnel keepalive mechanism gives the ability for one side to originate
 and receive keepalive packets to and from a remote router even if the remote
@@ -91,7 +90,6 @@ This command is supported only on GRE point-to-point tunnels.
 (config-if)# keepalive [ period [retries]]
 ----
 
-
 == GRE Tunnel
 
 To build a tunnel, a tunnel interface must be defined on each of two routers
@@ -109,26 +107,32 @@ keepalive is configured), but packets going into the tunnel will be dropped.
 
 .Task: Summary Steps
 ----
-interface tunnel number
-  bandwidth kbps
-  keepalive [period [retries]]
-  tunnel source {ip-address | interface-type interface-number}
-  tunnel destination {hostname | ip-address}
-  tunnel key key-number
+interface tunnel <number>
+  bandwidth <kbps>
+  keepalive [<period> [<retries>]]
+  tunnel source {<ip-address> | <interface-type interface-number>}
+  tunnel destination { <hostname> | <ip-address>}
+  tunnel key <key-number>
   tunnel mode [gre {ip | multipoint} | dvmrp | ipip | mpls | nos]
-  ip mtu bytes
-  ip tcp mss mss-value
-  tunnel path-mtu-discovery [age-timer {aging-mins| infinite}]
+  ip mtu <bytes>
+  ip tcp mss <mss-value>
+  tunnel path-mtu-discovery [age-timer {<aging-mins>| infinite}]
 ----
 
-[TIP]
-The router should have a route to the destination address, but not through the tunnel interface.
+[NOTE]
+====
+- The router should have a route to the destination address,
+but not through the tunnel interface.
+
+- Tunnel Key ID must match on both side of the tunnel.
+It is used as a weak form of authentication
+====
+
 
 === Configuration Example
 
 Note that Ethernet interface 0/1 is the tunnel source for Router A and the tunnel destination for Router B.
 Fast Ethernet interface 0/1 is the tunnel source for Router B and the tunnel destination for Router A.
-
 
 Router A::
 +
@@ -156,6 +160,25 @@ interface FastEthernet0/1
  ip address 192.168.3.2 255.255.255.0
 ----
 
+
+== GRE backup interface
+
+  In this example, R4 and R5 use the backup interface feature along with duplicate routing information to perform both traffic engineering and redundancy. With the backup interface configured on R4’s and R5's point-to-point GRE Tunnel100 interface, R4 and R5 wait for the line protocol of Tunnel100 interface to go DOWN before GRE interface Tunnel45 is activated. The following rules and restrictions apply when implementing the backup interface functionality:
+
+  The primary/active interface being backed up must be a point-to-point interface type, because its state can be better determined.
+  The secondary/standby interface acting as backup can be any interface except sub-interface, because the state of the main interface determines the state of sub-interfaces in general
+
+
+----
+(config-if)# backup interface <intf-id>
+(config-if)# backup delay <after-down> <before-up>
+----
+
+----
+# sh backup
+----
+
+
 == Troubleshooting
 
 Three reasons for a GRE tunnel to shut down:
@@ -171,6 +194,7 @@ network.
 Also if the two routers tunnel modes do not match, the tunnel interface can
 still stay in an up/ip state but the routers cannot forward packets because of
 the mismatch encapsulation.
+
 
 
 === "%TUN-5-RECURDOWN" Error Message and Flapping EIGRP/OSPF/BGP Neighbors Over a GRE Tunnel

@@ -1,10 +1,101 @@
 = VRF
 
-== Configuration
+Virtual Routing and Forwarding
 
-- Establish an LSP between PEs: IGP + LDP , free BGP core
-- Exchange routes with customer: PE-CE IGP or BGP
-- Exchange customer routes between PEs: iBGP + MPLS VPN label
-- Label switch between PEs: Data follows the IGP + LDP transport label
+- create multiple virtual, isolated networks,
+  where each technically has its own separate RIB  and FIB .
+
+
+.steps
+----
+conf t
+ip routing
+ip vrf <case-sensitive-name>
+  rd <route-distinguisher>
+  route-target {export|import|both} <rt-ext-community>
+  import map <route-map>
+  export map <route-map>
+interface <type slot/subslot/port>
+  ip vrf forwarding <vrf-name>
+----
+
+== VRF definition
+
+- old command for ipv4 only *ip vrf <name>*
+- new command for ipv4 and ipv6 address family
+
+.Task: Create a VRF
+----
+(config)# vrf definition <name>
+(config-vrf)# description <same useful information>
+----
+
+== Route Distinguisher
+
+- 64-bit prepended to every route in the respective VRF routing table
+- create unique VPNv4 prefix in case two VPNs contain the same prefixes
+- the first 2 bytes represent the RD type
+- the last 6 bytes can be
+* Common format: ASN(2bytes):Site(4bytes) or ASN(4bytes):Site(2bytes)
+* Alternative format: a.b.c.d:NN
+
+
+== Route Target
+
+- RT is Path attribute of the NLRI
+- 1 or + for each RD/prefix
+- useful in overlapping VPNs or central service VPN offered by SP
+- Allows for granular control of traffic
+
+.task: import or export route target communities for the specified VRF
+----
+(config)# route-target {import|export|both} <ext-community>
+----
+
+== VRF Interface
+
+- can be physical (ethernet) or logical (SVI)
+- belongs to only one VRF
+- packets received are routed and forwarded using the associated VRF table
+
+.Task: Assign an interface to a VRF
+----
+(config-if)# ip vrf forwarding <vrf-name>
+----
+
+TIP: this command will erase all existing IP addresses configured on the
+interface to avoid potential address duplication in the new routing table.
+
+
+== VRF Static Route
+
+.Task: Create a VRF-bound static route
+----
+(config)# ip route vrf <name> <prefix> <mask> [<interface] [next-hop]
+----
+
+NOTE: with multi-access interfaces, specify the next-hop
+associated with the interface subnet because Cisco IOS will install a CEF entry
+in the source VRF using the information provided and will not attempt to
+resolve the next-hop recursively. Remember that this trick only works with the
+non-recursive static routes that use directly connected interfaces.
+
+
+== VRF lite
+
+- extend VRFs beyond a single router by properly mapping the VRFs to the
+links connecting two routers.
+- simplest way of creating non-overlapping VPNs
+- poor scalability because each VPN needs a dedicated inter-router links
+* Example: for two routers and 100 VPNs, you must provision 100 connections between the two routers, one
+for every VPN.
+
+- The connection could be either a separate interface or some Layer 2 virtualization technique, such as Frame-Relay PVC or Ethernet VLAN.
+
+
+== Multi-VRF
+
+TODO Maybe this belongs to the mpls l3vpns section
+
 
 

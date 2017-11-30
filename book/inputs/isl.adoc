@@ -1,7 +1,5 @@
 = ISL
 
-== Overview
-
 - Inter-Switch Link
 - Cisco proprietary
 - Provides VLAN trunking
@@ -16,10 +14,7 @@ the ISL header( 26 bytes), the original frame and the FCS (4 bytes)
 
 image::isl-frame.png[height=100]
 
-=== Field Descriptions
-
 DA—Destination Address::
-
 - 40-bit
 - Multicast address: "0100-0C00-00" or "0300-0C00-00".
 - The first 40 bits of the DA field signal the receiver that the packet is in ISL format. ???
@@ -48,17 +43,14 @@ provided.
 ** XX11 	Highest Priority
 
 SA—Source Address::
-
 - 48 bits set to set MAC address of the switch port that transmits the frame.
 - May be ignored by the receiving device
 
 LEN—Length::
-
 - 16 bits set to the length of the packet in bytes
 with the exclusion of the DA, TYPE, USER, SA, LEN, and FCS fields.
 
 AAAA03 (SNAP)—Subnetwork Access Protocol (SNAP) and Logical Link Control (LLC)::
-
 - 24 bits set to "0xAAAA03".
 
 HSA—High Bits of Source Address::
@@ -88,5 +80,4 @@ ENCAP FRAME—Encapsulated Frame::
 FCS—Frame Check Sequence::
 - 4 bytes set by the sending MAC and recalculated by the receiving bridge
 - New FCS calculated over the entire ISL packet
-
 

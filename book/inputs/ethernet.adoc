@@ -70,8 +70,8 @@ SNAP Type::
 - Using same values as the DIX Type field, overcoming deficiencies with size and use of the DSAP field.
 
 Data::
-- N bytes where 46 <= n <= 1500
-- If n < 46, use padding
+- N bytes where 46 <= N <= 1500
+- If N < 46, use padding
 
 FCS (Frame check sequence)::
 - Contains a 32-bit cyclic redundancy check (CRC) value
@@ -127,11 +127,25 @@ Cross-over       , T568A on one end;  T568B on the other , 1-3; 2-6; 3-1; 6-2
 ** Detects the wrong cable and causes the switch to swap the pair it uses for transmitting and receiving
 ** Not supported on all Cisco switch models
 
+
+.UTP Cabling References
+[cols="5,15,80"]
+:===
+UTP : Speed   : Description
+
+1   : —       : Used for telephones and not for data
+2   : 4 Mbps  : Originally intended to support Token Ring over UTP
+3   : 10 Mbps : popular option for Ethernet in years past, if Cat 3 cabling for phones was already in place
+4   : 16 Mbps : Intended for the fast Token Ring speed option;
+5   : 1 Gbps  : Very popular for cabling to the desktop
+5e  : 1 Gbps  : Added mainly for the support of copper cabling for Gigabit Ethernet
+6   : 1 Gbps+ : Cat5e replacement, with multi-gigabit support
+:===
+
 == Auto-Negotiation, Speed and Duplex
 
-- By default, Ethernet auto-negotiation uses FLP (Fast Link Pulses)to determine the speed and duplex setting.
+- By default, Ethernet auto-negotiation uses FLP (Fast Link Pulses) to determine the speed and duplex setting.
 - To disable auto-negotiation, manually configure the speed and the duplex settings.
-
 - if auto-negotation is disabled on one end by statically setting the speed , the other end
   ** detects the speed based on the incoming electrical signal
   ** sets duplex to half for 10 and 100 Mbps and full duplex for 1Gps interfaces
@@ -172,52 +186,6 @@ Rx Counter Register        [16] : 000A
 Tx Counter Register        [17] : 0008
 ----
 
-== Switch Internal Processing
-
-Switches forward frames when necessary, and do not forward when there is no need to do so, thus
-reducing overhead.
-
-To accomplish this, switches perform three actions:
-
-- Learn MAC addresses by examining the source MAC address of each received frame
-- Decide when to forward a frame or when to filter (not forward) a frame, based on the destination MAC address
-- Create a loop-free environment with other bridges by using the Spanning Tree Protocol
-
-[horizontal]
-
-Store-and-forward::
-
-The switch fully receives all bits in the frame (store) before forwarding
-the frame (forward). This allows the switch to check the FCS before
-forwarding the frame, thus ensuring that errored frames are not forwarded.
-
-Cut-through::
-
-The switch performs the address table lookup as soon as the Destination
-Address field in the header is received. The first bits in the frame can be sent out
-the outbound port before the final bits in the incoming frame are received. This
-does not allow the switch to discard frames that fail the FCS check, but the
-forwarding action is faster, resulting in lower latency.
-
-Fragment-free::
-
-This performs like cut-through switching, but the switch waits for 64 bytes to be
-received before forwarding the first bytes of the outgoing frame. According to
-Ethernet specifications, collisions should be detected during the first 64 bytes of
-the frame, so frames that are in error because of a collision will not be forwarded.
-
-== Switching and Bridging Logic
-
-[cols="20,60"]
-:===
-Type of Address : Switch Action
-
-Known unicast   : Forwards frame out the single interface associated with the destination address
-Unknown unicast : Floods frame out all interfaces, except the interface on which the frame was received
-Broadcast       : Floods frame identically to unknown unicasts
-Multicast       : Floods frame identically to unknown unicasts, unless multicast optimizations are configured
-:===
-
 
 == Standards
 
@@ -234,17 +202,54 @@ Multicast       : Floods frame identically to unknown unicasts, unless multicast
 802.3ab : Gigabit ethernet over copper cable
 :===
 
-// Replace the image by a table
-image::ethernet-cabling-standards.png[Cabling Standards]
+.Ethernet Types and Cabling Standards
+[cols='20,40,40']
+:===
+Standard    : Cabling                                : Maximum Single Cable Length
+
+10BASE5     : Thick coaxial                          : 500 m
+10BASE2     : Thin coaxial                           : 185 m
+10BASE-T    : UTP Cat 3, 4, 5, 5e, 6                 : 100 m
+100BASE-FX  : Two strands, multimode                 : 400 m
+100BASE-T   : UTP Cat 3, 4, 5, 5e, 6, 2 pair         : 100 m
+100BASE-T4  : UTP Cat 3, 4, 5, 5e, 6, 4 pair         : 100 m
+100BASE-TX  : UTP Cat 3, 4, 5, 5e, 6, or STP, 2 pair : 100 m
+1000BASE-LX : Long-wavelength laser, MM or SM fiber  : 10 km (SM) 3 km (MM)
+1000BASE-SX : Short-wavelength laser, MM fiber       : 220 m with 62.5-micron fiber; 550 m with 50-micron fiber
+1000BASE-ZX : Extended wavelength, SM fiber          : 100 km
+1000BASE-CS : STP, 2 pair                            : 25 m 100 m
+1000BASE-T  : UTP Cat 5, 5e, 6, 4 pair               : 100 m
+:===
+
+== Ethertype
+
+,===
+Protocol                  , EtherType
+
+ARP                       , 0x806
+IP                        , 0x800
+IPv6                      , 0x86DD
+MPLS (Unicast)            , 0x8847
+MPLS (Multicast)          , 0x8848
+PPPoE (Discovery Stage)   , 0x8863
+PPPoE (PPP Session Stage) , 0x8864
+RARP                      , 0x8035
+,===
 
 == Troubleshooting
-
-TODO Add something about excessive collisions, late collisions, runts, re: duplex mismatches
-
 
 [horizontal]
 Runts::
 - Runts are frames smaller than 64 bytes.
+
+Overruns::
+-  The number of times the receiver hardware was unable to hand received data to a hardware buffer.
+-  Common Cause: The input rate of traffic exceeded the ability of the receiver to handle the data.
+
+Ignores::
+- The number of received packets ignored by the interface because the interface hardware ran low on internal buffers.
+- Common Causes: Broadcast storms and bursts of noise can cause the ignored count to be increased.
+
 
 CRC errors::
 - The frame’s cyclic redundancy checksum value does not match the one calculated by the switch or router.
@@ -256,15 +261,24 @@ Alignment::
 - Alignment errors have a CRC error and an odd number of octets.
 
 Collisions::
-- Look for collisions on a full-duplex interface (meaning that the interface operated in half-duplex mode at some point in the past), or excessive collisions on a half-duplex interface.
+- Look for collisions on a full-duplex interface (meaning that the interface operated in half-duplex mode at some point in the past),
+or excessive collisions on a half-duplex interface.
+- Excessive collisions occur when a frame is dropped because the switch encounters 16 collisions in a row.
 
 Late collisions on a half-duplex interface::
 - A late collision occurs after the first 64 bytes of a frame.
+- Late collisions occur after every device on the wire should have recognized that the wire was in use.
 
+Possible causes of collisions include:
+
+- A cable that is out of specification (either too long, the wrong type, or defective)
+- A bad network interface card (NIC) card (with physical problems or driver problems)
+- A port duplex misconfiguration
+- A port duplex misconfiguration is a common cause of the errors because of failures to negotiate the speed and duplex properly between two directly connected devices (for example, a NIC that connects to a switch). Only half-duplex connections should ever have collisions in a LAN. Because of the carrier sense multiple access (CSMA) nature of Ethernet, collisions are normal for half duplex, as long as the collisions do not exceed a small percentage of traffic.
 
 === Problems and Approaches
 
-[cols="20a,30a,50a"]
+[cols="20a,50a,30a"]
 |====
 | Problem | Questions? | Commands
 
@@ -288,7 +302,9 @@ Late collisions on a half-duplex interface::
 - Spanning-tree problems such as BPDU floods or flapping MAC addresses?
 |
 - show interface
-- show spanning-tree show spanning-tree root show mac address-table
+- show spanning-tree
+- show spanning-tree root
+- show mac address-table
 
 
 | No connectivity between switches
@@ -307,3 +323,7 @@ Late collisions on a half-duplex interface::
 | - show interface
 
 |====
+
+
+
+

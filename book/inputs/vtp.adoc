@@ -4,7 +4,7 @@ menu:Catalyst Configuration guides[http://www.cisco.com/c/en/us/td/docs/switches
 
 - Vlan Trunk Protocol
 - Cisco-proprietary that distributes VLAN information among Catalyst switches
-- Advertises the VLAN Id, Name and Type but not which ports should be in each VLAN
+- Advertises the VLAN ID, Name and Type but not which ports should be in each VLAN
 - Eases administrative burden for addition, deletion and renaming of VLANs
 - Supports 1005 VLANs (IP base or IP services feature set) or 255 VLANs (LAN base feature set)
 
@@ -117,14 +117,11 @@ diagram {
 }
 ----
 
-[cols="25,75", options="header"]
-|===
-| Field            | Description
-| Followers        | Indicates that this packet is followed by a Subset Advertisement packet.
-| Updater Identity | IP address of the switch that is the last to have incremented the configuration revision.
-| Update Timestamp | Date and time of the last increment of the configuration revision.
-| MD5 Digest       | If MD5 is configured and used to authenticate the validation of a VTP update.
-|===
+[horizontal]
+Followers:: Indicates that this packet is followed by a Subset Advertisement packet.
+Updater Identity:: IP address of the switch that is the last to have incremented the configuration revision.
+Update Timestamp:: Date and time of the last increment of the configuration revision.
+MD5 Digest:: If MD5 is configured and used to authenticate the validation of a VTP update.
 
 === Subset Advertisements
 
@@ -219,12 +216,16 @@ For two switches to communicate in VTP, they must first be interconnected throug
 - Incremented by one for each configuration change
 - Higher revision indicates newer database
 
-IMPORTANT: for a newly connected VTP server or client to change another switch’s VTP database, the following must be true:
+
+[IMPORTANT]
+====
+For a newly connected VTP server or client to change another switch’s VTP database, the following must be true:
+
 - The new link connecting the new switch is trunking.
 - The new switch has the same VTP domain name as the other switches.
 - The new switch’s revision number is higher than that of the existing switches.
 - The new switch must have the same password, if configured on the existing switches.
-
+====
 
 == VTP Modes
 
@@ -270,6 +271,7 @@ Off (configurable only in CatOS switches)::
 [cols="70,10,10,10"]
 |===
 | Function                                                           | Server Mode | Client Mode | Transparent Mode
+
 | Originates VTP advertisements                                      | Yes         | Yes         | No
 | Processes received advertisements to update its VLAN configuration | Yes         | Yes         | No
 | Forwards received VTP advertisements                               | Yes         | Yes         | Yes

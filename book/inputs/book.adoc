@@ -4,7 +4,7 @@ v1.0, 2015-10-12
 :doctype: book
 :producer: asciidoctor
 :toc: left
-:toclevels: 2
+:toclevels: 3
 :experimental:
 :icons: font
 :stem:
@@ -40,19 +40,18 @@ include::isl.adoc[leveloffset=+2]
 include::802.1q.adoc[leveloffset=+2]
 include::802.1q-in-q.adoc[leveloffset=+2]
 
-== Spanning Tree
-include::spanning-tree-protocol.adoc[leveloffset=+2]
-include::mst.adoc[leveloffset=+2]
+include::stp.adoc[leveloffset=+1]
 
 == EtherChannel
 
 include::etherchannel.adoc[leveloffset=+2]
 include::lacp.adoc[leveloffset=+2]
 include::pagp.adoc[leveloffset=+2]
-
-include::span.adoc[leveloffset=+1]
-include::vss.adoc[leveloffset=+1]
-
+include::span.adoc[leveloffset=+2]
+include::vss.adoc[leveloffset=+2]
+include::vpc.adoc[leveloffset=+2]
+include::stackwise.adoc[leveloffset=+1]
+include::port-based-traffic-control.adoc[leveloffset=+2]
 
 == WAN
 
@@ -64,61 +63,70 @@ include::ewan.adoc[leveloffset=+2]
 <<<
 = Part II : Layer 3 Technologies
 
-== IP Addressing
 
-include::ipv4.adoc[leveloffset=+2]
-include::arp.adoc[leveloffset=+2]
-include::dhcp.adoc[leveloffset=+2]
-include::nat.adoc[leveloffset=+2]
-include::nhrp.adoc[leveloffset=+2]
-include::ipv6.adoc[leveloffset=+2]
+// == IP
+include::ipv4.adoc[leveloffset=+1]
+include::icmp.adoc[leveloffset=+1]
+include::tcp.adoc[leveloffset=+1]
+include::udp.adoc[leveloffset=+1]
+include::arp.adoc[leveloffset=+1]
+include::dhcp.adoc[leveloffset=+1]
+include::nat.adoc[leveloffset=+1]
+include::nhrp.adoc[leveloffset=+1]
+include::ipv6.adoc[leveloffset=+1]
 
-== IP Switching
+// == IP Switching
+include::cef.adoc[leveloffset=+1]
+include::bfd.adoc[leveloffset=+1]
 
-include::cef.adoc[leveloffset=+2]
-
-
-== IP Routing
-
-include::rip.adoc[leveloffset=+2]
-include::eigrp.adoc[leveloffset=+2]
-include::ospf.adoc[leveloffset=+2]
-include::is-is.adoc[leveloffset=+2]
-include::bgp.adoc[leveloffset=+2]
-include::redistribution.adoc[leveloffset=+2]
+// == IP Routing
+include::rip.adoc[leveloffset=+1]
+include::eigrp.adoc[leveloffset=+1]
+include::ospf.adoc[leveloffset=+1]
+include::is-is.adoc[leveloffset=+1]
+include::bgp.adoc[leveloffset=+1]
+include::redistribution.adoc[leveloffset=+1]
 
 <<<
 = Part III : VPN Technologies
 
+include::vrf.adoc[leveloffset=+1]
 include::mpls.adoc[leveloffset=+1]
+include::ldp.adoc[leveloffset=+1]
 include::gre.adoc[leveloffset=+1]
 include::dmvpn.adoc[leveloffset=+1]
 include::ipsec.adoc[leveloffset=+1]
+include::l2vpn.adoc[leveloffset=+1]
 
 <<<
 = Part IV : Infrastructure Security
 
-== Device Security
+//== Device Security
 
-include::aaa.adoc[leveloffset=+2]
+include::aaa.adoc[leveloffset=+1]
+
 
 - implement device access control
 ** lines
 ** password encryption
 ** management plane protection
-** control plane protection
 
-== Network Security
+include::copp.adoc[leveloffset=+1]
+include::cpp.adoc[leveloffset=+1]
+include::mpp.adoc[leveloffset=+1]
+
+//== Network Security
 
 
-=== Switch Security
+// == Switch Security
 
-include::acl.adoc[leveloffset=+2]
+include::acl.adoc[leveloffset=+1]
 
-- sourcecontrol
-- dhcp snooping
-- ip source-guard
-- dynamic arp inspection
+- source control
+
+include::source-guard.adoc[leveloffset=+1]
+include::dynamic-arp-inspection.adoc[leveloffset=+1]
+
 - port-security
 
 
@@ -156,6 +164,7 @@ include::rmon.adoc[leveloffset=+2]
 include::syslog.adoc[leveloffset=+2]
 include::ntp.adoc[leveloffset=+2]
 include::http.adoc[leveloffset=+2]
+include::rtp.adoc[leveloffset=+2]
 
 == QoS
 
@@ -196,6 +205,7 @@ include::ipv6-rs-ra.adoc[leveloffset=+2]
 include::ip-multicast-introduction.adoc[leveloffset=+2]
 include::igmp.adoc[leveloffset=+2]
 include::pim.adoc[leveloffset=+2]
+include::mld.adoc[leveloffset=+2]
 
 == Network Optimization
 
@@ -203,6 +213,8 @@ include::ip-sla.adoc[leveloffset=+2]
 include::eot.adoc[leveloffset=+2]
 include::netflow.adoc[leveloffset=+2]
 include::eem.adoc[leveloffset=+2]
+include::epc.adoc[leveloffset=+2]
+include::performance-monitor.adoc[leveloffset=+2]
 
 <<<
 = Part VI : Evolving Technologies
@@ -222,4 +234,32 @@ include::iot.adoc[leveloffset=+1]
 == IOS
 
 include::ios-xe.adoc[leveloffset=+1]
+include::system-management.adoc[leveloffset=+1]
+
+
+== General
+
+image::osi-vs-tcpip.png[OSI vs DoD TCP/IP]
+
+
+== Notes To Self
+
+
+2017-06-17 Sat 14:53::
+
+Do not follow the blueprint order for the book.
+Create a graph of technologies/concepts to master
+and start at the root (or from the node with less dependencies)
+
+
+
+
+
+
+2017-06-18 Sun 04:52::
+- I am considering to bring chapter on security closed to the associate feature chapter.
+- Example: DHCP snooping and DHCP, Dynamic ARP Inspection near ARP.
+
+
+
 

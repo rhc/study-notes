@@ -2,9 +2,9 @@
 
 menu:Cisco Cloud Routers Configuration guides[ WAN > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/wan_mlp/configuration/xe-16/wan-mlp-xe-16-book/dia-media-ind-multi-ppp-xe.html#GUID-382A6E17-B674-431A-AA62-6DF387F9E0FB[PPP] ]
 
-
 - error detection, error recovery, standard protocol Type field, supports synchronous and asynchronous links
 - https://tools.ietf.org/html/rfc1661[RFC 1661]
+- https://tools.ietf.org/html/rfc1662[RFC 1662]
 
 
 == PPP Frame Format
@@ -14,11 +14,15 @@ menu:Cisco Cloud Routers Configuration guides[ WAN > http://www.cisco.com/c/en/u
 
 image::ppp-vs-hdlc.png[PPP vs HDLC]
 
+- FCS:: Frame Checksum calculated over the address, control, protocol, information and payload fields
+
+
 
 == PPP LCP
 
 - link control protocol
 - controls features independent of any Layer 3 protocol
+- establishes a PPP sesion between 2 link partners.
 
 
 .Task: Configure PPP
@@ -159,6 +163,7 @@ interface Multilink1
 
 == PPP Authentication
 
+
 .Task: Enable PPP Authentication
 ----
 ppp authentication {chap | chap pap | pap chap | pap} [if-needed] [<list-name> | default] [callin]
@@ -171,4 +176,14 @@ debug ppp authentication
 
 read
 http://www.cisco.com/c/en/us/support/docs/wan/point-to-point-protocol-ppp/25440-debug-ppp-negotiation.html#sampdebug[understanding debug ppp negotiation]
+
+
+== MLPP
+
+TODO
+
+- load-balancing over multiple WAN links
+- multi-vendor
+- packet fragmentation, sequencing, load calculation
+
 

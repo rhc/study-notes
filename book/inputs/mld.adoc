@@ -1,0 +1,28 @@
+= MLD
+
+TODO
+
+
+- IP protocol: 58
+
+- ipv6
+- hop limit= 1
+- mldv1 <- igmpv2, mldv2 <- igmpv3
+- enabled globally when
+  * pimv6 enabled
+  * statically bind a local mcast group
+  * link-local group report enabled
+
+
+== MLD Snooping
+
+
+.Task: Enable pimv6 snooping
+----
+# sh ipv6 snooping
+----
+
+TODO
+
+- ND Inspection
+- RA Guard

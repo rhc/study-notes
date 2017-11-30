@@ -1,6 +1,6 @@
 = RIP
 
-menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_rip/configuration/15-mt/irr-15-mt-book/irr-cfg-info-prot.html#GUID-2651B980-3A1B-489F-98D0-93A7102AEA5D[RIP] ]
+menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_rip/configuration/15-mt/irr-15-mt-book/irr-cfg-info-prot.html#GUID-2651B980-3A1B-489F-98D0-93A7102AEA5D[Routing Internet Protocol] ]
 
 - Distance vector protocol
 - Transport: UDP 520
@@ -37,7 +37,6 @@ diagram {
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
   * Command [len=8]
   * Version = 2[len=8]
   * Must Be Zero [len=16]
@@ -123,7 +122,7 @@ When authentication is enabled,
 (config-if)# ip rip authentication mode {text | md5}
 ----
 
-TIP: Use *show key chain" to spot invisible blank space after passwords
+TIP: Use *show key chain* to spot invisible blank space after passwords
 
 == Summarization
 
@@ -146,7 +145,6 @@ when classful network boundaries are crossed.
 
 == Route Updates
 
-
 .Task: Disable Sending RIP Updates on an Interface but Continue to Receive the Update
 ----
 (config-if)# passive-interface { default | <type number>}
@@ -166,7 +164,8 @@ when classful network boundaries are crossed.
 ----
 (config-router)# neighbor <ip-address>
 ----
-
+NOTE: the *neighbor* statement does not automatically suppres sthe ssending of the broadcast or multicast update.
+The additional *passive-interface* is required.
 
 == Route Filtering
 
@@ -195,9 +194,8 @@ when classful network boundaries are crossed.
 
 .Task: Add an Offset to Incoming and Outgoing Metrics to RIP Routes
 ----
-(config-router)# offset-list {<acl>} {in | out } <offset> {interface-type-number>}
+(config-router)# offset-list <acl> {in | out } <offset> [<interface-type-number>]
 ----
-
 
 == Split Horizon
 
@@ -232,29 +230,33 @@ when classful network boundaries are crossed.
 (config-router)# timers basic <update> <invalid> <holddown> <flush> [<sleeptime>]
 ----
 
-[horizontal]
-Update timer:: Interval between updates.
+Update timer::
+* Interval between updates.
 * Default: 30 seconds
 
-Invalid After timer:: time in seconds after which a route is declared invalid.
+Invalid After timer::
+* Time in seconds after which a route is declared invalid.
 * Default: 180 seconds
 * Reset after update is received
 * Should be at least 3 times the update timer.
 * Invalid routes are still used for forwarding packets
 
-Holdown timer:: interval during which routing information about better paths is suppressed.
+Holdown timer::
+* Interval during which routing information about better paths is suppressed.
 * Default: 180 seconds
 * Should be at least 3 times the update timer
 * The route is marked inaccessible and advertised as unreachable.
 * Holdown routes are still used for forwarding packets
 
-Flush After timer:: amount of time that must pass before a route is removed from the RIB.
+Flush After timer::
+* Amount of time that must pass before a route is removed from the RIB.
 * Default: 240 seconds
 * Starts at the same time than Invalid After timer
 * Cisco IOS checks this timer only after the Invalid After timer expired
 ** No consequence If Flush timer < Invalid Timer
 
-Sleep time:: amount of time for which routing updates will be postponed.
+Sleep time::
+* Amount of time for which routing updates will be postponed.
 
 .Task: Specify a Default Update Interval on an Interface
 ----

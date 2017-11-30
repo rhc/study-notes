@@ -1,3 +1,219 @@
 = IPSEC
 
+== IPSec with pre-shared key
+
+
+=== IPv4 site to IPv4 site
+
+- IPSec between two sites such as branch and a headquarter is known as site to site or LAN to
+LAN tunnel.
+- can be configured with or without GRE.
+- IKE has two modes of operation, aggressive or main mode.
+Main mode hides IKE/IPSec peer identities.
+
+
+.Router B
+----
+crypto isakmp policy 2
+authentication pre-share
+
+crypto isakmp key cciein8weeks address 172.16.1.1
+!
+!
+!--- Configuration for IPsec policies.
+!--- Enables the crypto transform configuration mode,
+!--- where you can specify the transform sets that are used
+!--- during an IPsec negotiation.
+
+crypto ipsec transform-set Router-IPSEC esp-des esp-sha-hmac
+!
+!--- Indicates that IKE is used to establish
+!--- the IPsec Security Association for protecting the
+!--- traffic specified by this crypto map entry.
+
+crypto map cciein8weeks 1 ipsec-isakmp
+description Tunnel to172.16.1.1
+
+!--- Sets the IP address of the remote end.
+
+set peer 172.16.1.1
+
+!--- Configures IPsec to use the transform-set
+!--- "Router-IPSEC" defined earlier in this configuration.
+set transform-set Router-IPSEC
+
+!--- Specifies the interesting traffic to be encrypted.
+
+match address 100
+!
+!--- Configures the interface to use the
+!--- crypto map " cciein8weeks" for IPsec.
+
+
+interface FastEthernet0
+ip address 172.17.1.1 255.255.255.0
+duplex auto
+speed auto
+crypto map cciein8weeks
+----
+
+IPSec(validate_transform_proposal): proxy identities not supported
+ISAKMP: IPSec policy invalidated proposal
+ISAKMP (0:2): SA not acceptable!
+
+Above messages are indicative of the fact that access lists (as referenced in match address
+command inside a crypto map) for IPsec interesting traffic do not match between peers.
+
+Further Reading
+http://goo.gl/PmO6l4
+
+
+
+=== IPv6 in IPv4 tunnels
+
+Generic routing encapsulation (GRE) tunnels sometimes are combined with IPSec, because
+IPSec does not support IPv6 multicast packets. This function prevents dynamic routing
+protocols from running successfully over an IPSec VPN network. Because GRE tunnels do
+support IPv6 multicast , a dynamic routing protocol can be run over a GRE tunnel. Once a
+dynamic routing protocol is configured over a GRE tunnel, you can encrypt the GRE IPv6
+multicast packets using IPSec.
+
+
+IPSec can encrypt GRE packets using a crypto map or tunnel protection. Both methods specify
+that IPSec encryption is performed after GRE encapsulation is configured. When a crypto map
+is used, encryption is applied to the outbound physical interfaces for the GRE tunnel packets.
+When tunnel protection is used, encryption is configured on the GRE tunnel interface.
+
+“%CRPTO-4-IKMP_BAD_MESSAGE: IKE” message from 150.150.150.1 failed its sanity check
+or is malformed appears if the pre-shared keys on the peers do not match. In order to fix this
+issue, check the pre-shared keys on both sides.
+
+
+Further Reading
+http://goo.gl/pqy0E8
+http://goo.gl/RhXJDZ
+
+=== VTI
+
+Virtual Tunneling Interface
+
+The use of IPsec VTIs both greatly simplifies the configuration process when you need to
+provide protection for remote access and provides a simpler alternative to using generic routing
+encapsulation (GRE) or Layer 2 Tunneling Protocol (L2TP) tunnels for encapsulation and crypto
+maps with IPsec. A major benefit associated with IPsec VTIs is that the configuration does not
+require a static mapping of IPsec sessions to a physical interface. The IPsec tunnel endpoint is
+associated with an actual (virtual) interface. Because there is a routable interface at the tunnel
+endpoint, many common interface capabilities can be applied to the IPsec tunnel.
+The IPsec VTI allows for the flexibility of sending and receiving both IP unicast and multicast
+encrypted traffic on any physical interface, such as in the case of multiple paths. Traffic is
+encrypted or decrypted when it is forwarded from or to the tunnel interface and is managed by
+the IP routing table. Using IP routing to forward the traffic to the tunnel interface simplifies the
+IPsec VPN configuration compared to the more complex process of using access control lists
+(ACLs) with the crypto map in native IPsec configurations. DVTIs function like any other real
+interface so that you can apply quality of service (QoS), firewall, and other security services as
+soon as the tunnel is active.
+
+
+IPsec VTIs allow you to configure a virtual interface to which you can apply features. Features
+for clear-text packets are configured on the VTI. Features for encrypted packets are applied on
+the physical outside interface. When IPsec VTIs are used, you can separate the application of
+features such as NAT, ACLs, and QoS and apply them to clear-text or encrypted text, or both.
+When crypto maps are used, there is no simple way to apply encryption features to the IPsec
+tunnel.
+
+
+There are two types of VTI interfaces:
+- Static VTIs (SVTIs)
+- Dynamic VTIs (DVTIs)
+
+SVTI configurations can be used for site-to-site connectivity in which a tunnel provides always-
+on access between two sites. The advantage of using SVTIs as opposed to crypto map
+configurations is that users can enable dynamic routing protocols on the tunnel interface without
+the extra 4 bytes required for GRE headers, thus reducing the bandwidth for sending encrypted
+data. Additionally, multiple Cisco IOS software features can be configured directly on the tunnel
+interface and on the physical egress interface of the tunnel interface. This direct configuration
+allows users to have solid control on the application of the features in the pre- or post-encryption
+path.
+
+
+DVTIs can provide highly secure and scalable connectivity for remote-access VPNs. The DVTI
+technology replaces dynamic crypto maps and the dynamic hub-and-spoke method for
+establishing tunnels. Dynamic VTIs can be used for both the server and remote configuration.
+The tunnels provide an on-demand separate virtual access interface for each VPN session. The
+configuration of the virtual access interfaces is cloned from a virtual template configuration,
+which includes the IPsec configuration and any Cisco IOS software feature configured on the
+virtual template interface, such as QoS, NetFlow, or ACLs.
+Dynamic VTIs function like any other real interface so that you can apply QoS, firewall, other
+security services as soon as the tunnel is active. QoS features can be used to improve the
+performance of various applications across the network. Any combination of QoS features
+offered in Cisco IOS software can be used to support voice, video, or data applications.
+
+
+Further Reading
+http://goo.gl/0yHAkK
+
+
+
+==  GET VPN
+
+Group Encrypted Transport
+
+The IOS GETVPN is a tunnel-less (i.e. no overlay) VPN technology that provides end-to-end
+security for network traffic in a native mode and maintaining the fully meshed topology. It uses
+the core network's ability to route and replicate the packets between various sites within the
+enterprise. Cisco IOS GETVPN preserves the original source and destination IP addresses
+information in the header of the encrypted packet for optimal routing. Hence, it is largely suited
+for an enterprise running over a private Multiprotocol Label Switching (MPLS)/IP-based core
+network. It is also better suited to encrypt multicast traffic. Cisco IOS GET VPN uses Group
+Domain of Interpretation (GDOI) as the keying protocol and IPSec for encryption.
+A GETVPN deployment has primarily three components, Key Server (KS), Group Member
+(GM), and Group Domain of Interpretation (GDOI) protocol. GMs do encrypt/decrypt the traffic
+and KS distribute the encryption key to all the group members. The KS decides on one single
+data encryption key for a given lifetime. Since all GMs use the same key, any GM can decrypt
+the traffic encrypted by any other GM. GDOI protocol is used between the GM and KS for group
+key and group SA management. Minimum one KS is required for a GETVPN deployment.
+Unlike traditional IPSec encryption solutions, GET VPN uses the concept of group SA. All
+members in the GETVPN group can communicate with each other using a common encryption
+policy and a shared SA and therefore no need to negotiate IPSec between GMs on a peer to
+peer basis; thereby reducing the resource load on the GM routers.
+
+
+=== Group Member
+The group member registers with the key server to get the IPSec SA that is necessary to
+encrypt data traffic within the group. The group member provides the group ID to the key server
+to get the respective policy and keys for this group. These keys are refreshed periodically by
+KS, and before the current IPSec SAs expire, so that there is no loss of traffic.
+
+
+=== Key Server
+
+Key server is responsible for maintaining security policies, authenticating the GMs and providing
+the session key for encrypting traffic. KS authenticates the individual GMs at the time of
+registration. Only after successful registration the GMs can participate in group SA.
+A group member can register at any time and receive the most current policy and keys. When a
+GM registers with the key server, the key server verifies the group id number of the GM. If this id
+number is a valid and the GM has provided valid Internet Key Exchange (IKE) credentials, the
+key server sends the SA policy and the Keys to the group member.
+
+
+There are two types of keys that the GM will receive from the KS:
+- Key Encryption Key (KEK), for securing control plane
+- Traffic Encryption Key (TEK), for securing data plane
+The TEK becomes part of the IPSec SA with which the group members within the same group
+encrypt the data. KEK is used to secure rekey messages (i.e. control plane) between the key
+server and the group members.
+
+
+The Key Server sends out rekey messages either because of an impending IPSec SA expiration
+or because the security policy has changed on the key server. Keys can be distributed during
+rekey using either multicast or unicast transport. Multicast method is more scalable as keys
+need not be transmitted to each group member individually. Unlike in unicast, KS will not
+receive acknowledgement from GM about the success of the rekey reception in multicast rekey
+method. In unicast rekey method, KS will delete a GM from its database if three consecutive
+rekeys are not acknowledged by that particular GM.
+
+
+Further Reading
+http://goo.gl/mxG401
+
 

@@ -174,3 +174,18 @@ that is not compliant with the access-group policy.
 * DoS for version <= 4.2.4p7
 * No workaround, disable NTP on the device
 
+
+== Example
+
+
+- Step 1 Enable timestamp information for debug messages.
+- Step 2 Enable timestamp information for log messages.
+- Step 3 Define the network-wide time zone.
+- Step 4 Enable summertime adjustments.
+- Step 5 Restrict which devices can communicate with this device as an NTP server.
+- Step 6 Restrict which devices can communicate with this device as an NTP peer.
+- Step 7 Define the source IP address to be used for NTP packets.
+- Step 8 Enable NTP authentication.
+- Step 9 Define the NTP servers.
+- Step 10 Define the NTP peers.
+- Step 11 Enable NTP to update the device hardware clock

@@ -12,4 +12,26 @@
   FED that allows the drivers to affect the data plane, and it is provided by
   the platform.
 
+Cisco IOS XE consists of different modules called sub-packages that provide a specific function:
 
+- RPBase: provides the operating system software for the route processor.
+- RPControl: controls the control plane processes that interface between the IOS process and the rest of the platform.
+- RPAccess: used for access to the router through protocols like SSH / SSL.
+- RPIOS: provides the Cisco IOS kernel
+- ESPBase: provides the ESP operating system and control processes, and the ESP software. The ESP (Embedded Services Processor) is responsible for the data plane and all flows through the data plane. It is also responsible for features/tasks like QoS, ACLs, VPNs, Netflow, NAT, etc.
+- SIPBase: this controls the SIP operating system and control processes. A SIP (Shared Port Adapter Interface Processor) is a carrier card that you insert in a router slot. The SIP can hold one or more SPAs and it provides the connection between the route processor and SPA.
+- SIPSPA: provides the SPA driver and Field Programmable Device (FPD). The SPA (Shared Port Adapter) is inserted in the subslot of a SIP and provides the interface between the network and SIP.
+
+
+
+
+
+
+The complete image that has all sub-packages is called a consolidated package.
+This is the most simple solution since it’s a single image file. It’s also
+possible to run individual sub-packages, the advantage of this is that the
+router will only run the software that you require on your router so you will
+save some memory and your router will boot faster.
+
+
+http://dtdccie.blogspot.co.za/2014/08/differences-between-ios-and-ios-xe.html

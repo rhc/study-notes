@@ -1,0 +1,75 @@
+= IOS System Management
+
+
+- Configuration Fundamentals Configuration Guide, Cisco IOS Release 15M&T
+- Interface and Hardware Component Configuration Guide, Cisco IOS Release 15M&T
+- Loading and Managing System Images Configuration Guide, Cisco IOS Release 15M&T
+- Maintaining System Memory Configuration Guide, Cisco IOS Release 15M&T
+- Managing Configuration Files Configuration Guide, Cisco IOS Release 15M&T
+- Software Activation Configuration Guide, Cisco IOS Release 15M&T
+- The Integrated File System Configuration Guide, Cisco IOS Release 15M&T
+
+== Configuration files
+
+- startup-config
+- running-config
+
+
+----
+# configure [terminal|memory|network]
+----
+
+copy {ftp: | rcp: | tftp:system:running-config}
+
+
+.task: Create a configuration archive
+----
+conf t
+archive
+  path <url>
+  maximum <number>
+  time-period <minutes>
+end
+----
+
+.task: Save the running configuration file to the configuration archive
+----
+# archive config
+----
+
+
+.task: Replace the running configuration file with a saved configuration file
+----
+# configure replace <source-url> [nolock][list][force][ignorecase][time <minutes>][reverttrigger[error][timer <minutes>]]
+----
+[NOTE]
+====
+source-url:: URL of the saved Cisco IOS configuration file that is to replace the current running configuration
+list:: displays a list of the command lines applied by the Cisco IOS software parser during each pass of the configuration replace operation. The total number of passes performed is also displayed.
+force:: replaces the current running configuration file with the specified saved Cisco IOS configuration file without prompting you for confirmation.
+time:: specify minutes within which you must enter the configureconfirm command to confirm replacement of the current running configuration file. If the configureconfirm command is not entered within the specified time limit, the configuration replace operation is automatically reversed (in other words, the current running configuration file is restored to the configuration state that existed prior to entering the configurereplace command).
+nolock:: disables the locking of the running configuration file that prevents other users from changing the running configuration during a configuration replace operation.
+ignorecase:: allows the configuration to ignore the case of the confirmation command
+reverttrigger::  set the following triggers for reverting to the original configuration:
+- error--Reverts to the original configuration upon error.
+- timerminutes--Reverts to the original configuration if specified time elapses.
+====
+
+
+.task: Cancel the timed rollback immediately
+----
+# configure revert now
+----
+
+.task: Specify a new revert time
+----
+# configure revert timer <minutes>
+----
+
+.task: Set the maximum allowable time period of no activity before reverting to the saved configuration
+----
+# configure revert timer idle <minutes>
+----
+
+
+

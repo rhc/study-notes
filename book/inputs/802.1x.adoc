@@ -20,7 +20,24 @@
 
 
 
-// I am sure this is the correct location
 == Port Security
 
+TODO Redo this part
+
+  DOT1X-SP-5-SECURITY_VIOLATION: Security violation on interface GigabitEthernet4/8,
+  New MAC address 0080.ad00.c2e4 is seen on the interface in Single host mode
+  %PM-SP-4-ERR_DISABLE: security-violation error detected on Gi4/8, putting Gi4/8 in
+  err-disable state
+
+This message indicates that the port on the specified interface is configured in single-host mode.
+Any new host that is detected on the interface is treated as a security violation.
+The port has been error disabled.
+Ensure that only one host is connected to the port.
+If you need to connect to an IP phone and a host behind it, configure Multidomain Authentication Mode on that switchport.
+
+The Multidomain authentication (MDA) mode allows an IP phone and a single host behind the IP phone to authenticate independently,
+with 802.1X, MAC authentication bypass (MAB), or (for the host only) web-based authentication.
+In this application, Multidomain refers to two domains — data and voice — and only two MAC addresses are allowed per port.
+The switch can place the host in the data VLAN and the IP phone in the voice VLAN, though they appear to be on the same switch port.
+The data VLAN assignment can be obtained from the vendor-specific attributes (VSAs) received from the AAA server within authentication.
 

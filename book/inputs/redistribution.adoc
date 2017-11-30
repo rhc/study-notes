@@ -4,9 +4,9 @@
 - When redistributing protocol X into Y, take ...
   * routes in the RIB via protocol X
   * connected interfaces running protocol X
-- choose 
+- choose
   * routes with lower AD
- 
+
 == Administrative Distance
 
 [format="dsv", options="header"]
@@ -38,7 +38,7 @@ Unknown         : 255
 - assign tags to each domain
 
 ----
-  route-map ospf2eigrp permit 
+  route-map ospf2eigrp permit
     set tag 123
 ----
 
@@ -49,14 +49,14 @@ Unknown         : 255
 ----
   ! block own routes
   route-map ospf2eigrp deny 10
-    match tag 456 
+    match tag 456
   ! block some routes if requested
-  route-map deny 20 
+  route-map deny 20
     match tag 78
 ----
 
 - all tags to pass through transit domains without re-tagging them
-  
+
 ----
 ! identify the transit tags without tagging
 route-map ospf2eigrp permit 60
@@ -64,7 +64,7 @@ route-map ospf2eigrp permit 60
 ----
 
 - Use BGP community instead of tags for BGP
-  
+
 ----
 route-map ospf2bgp permit 70
   set community 110
@@ -78,13 +78,13 @@ ip community-list 1 permit 10
 
 == Connected Routes
 
-.Task: Redistribute Connected Routes 
+.Task: Redistribute Connected Routes
 ----
-redistribute connected 
+redistribute connected
 ----
 [NOTE]
 ====
-- OVerride the implicit redistribution of interfaces running the protocol X
+- Override the implicit redistribution of interfaces running the protocol X
 ====
 
 == Static Routes
@@ -110,11 +110,11 @@ redistribute connected
 == EIGRP
 
 ----
-redistribute <protocol> metric <bandwidth> <delay> <load> <reliability> <MTU> 
+redistribute <protocol> metric <bandwidth> <delay> <load> <reliability> <MTU>
 ----
 
 - internal routes AD < external routes
-- uses router-id for loop prevention 
+- uses router-id for loop prevention
 - no default seed metric unless EIGRP to EIGRP
 ** default-metric <bandwidth> <delay> <load> <reliability> <MTU>
 ** default-metric 10000 100 1 255 1500
@@ -127,18 +127,18 @@ TIP: Duplicate router-ids will prevent EIGRP to install routes
 
 - differentiates between internal and external routes but same AD= 110
 - Router-id for flooding loop prevention
-- Use *subnets* keyword  
+- Use *subnets* keyword
 - default metric is 1 for BGP and 20 for other IGP
 - default metric-type E2/N2
-- OSPF path selection 
+- OSPF path selection
 TODO: improve this part
   * E1 > E2 > N1 > N2
   * E1 & N1 vs E2 & N2 metrics
 
 ----
 router ospf 1
-  redistribute rip 
-  redistribute eigrp 
+  redistribute rip
+  redistribute eigrp
   default-metric 10
 ----
 

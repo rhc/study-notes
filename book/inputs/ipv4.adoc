@@ -6,17 +6,17 @@
 == IP Packet Format
 
 .IP Header Format
-["packetdiag", target="ospf-header-format",size=200]
+[packetdiag, target="ipv4-packet-format",size=200]
 ----
 diagram {
   colwidth = 32
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
   * Version [len=4]
   * IHL [len=4]
-  * ToS [len=8]
+  * DSCP [len=6]
+  * ECN [len=2]
   * Total Length [len=16]
   * Identification [len=16]
   * Flags [len=3]
@@ -26,39 +26,56 @@ diagram {
   * Header Checksum [len=16]
   * Source Address [len=32]
   * Destination Address [len=32]
-  * Options (+ padding) [len=32]
+  * Options (+ padding) [len=32,stacked]
   * Data (variable) [len=64, color=green]
 }
 ----
 
-[horizontal]
 IP Header Length (IHL)::
 Datagram header length in 32-bit words.
+Minimum value = 5
 
-Type-of-Service::
-Specifies how an upper-layer protocol would like a current datagram to be handled, and assigns datagrams various levels of importance.
-Currently referred to as Differentiated Services Code Point (DSCP) (6 bits).
+DSCP::
+Differentied Service Code Protocol.
+Previously known as ToS Type of Service.
+Specifies how an upper-layer protocol would like a current datagram to be handled,
+and assigns datagrams various levels of importance.
+
+ECN::
+Explicit Congestion Notification
+RFC 3168
 
 Total Length::
-Specifies the length, in bytes, of the entire IP packet, including the data and header.
+Length, in bytes, of the entire IP packet,
+including the data and header.
 
 Identification::
-Contains an integer that identifies the current datagram. This field is used to help piece together datagram fragments.
+Integer that identifies the current datagram.
+Uses for fragmentation and re-assembly
 
 Flags::
-Consists of a 3-bit field of which the two low-order (least-significant) bits control fragmentation. The low-order bit specifies whether the packet can be fragmented. The middle bit specifies whether the packet is the last fragment in a series of fragmented packets. The third or high-order bit is not used.
+3-bits in order from most significant to least significant
+- bit 0: Reserved; must be zero.
+- bit 1: Don't Fragment (DF)
+- bit 2: More Fragments (MF)
 
 Fragment Offset::
-Indicates the position of the fragment's data relative to the beginning of the data in the original datagram, which allows the destination IP process to properly reconstruct the original datagram.
+Indicates the position of the fragment's data relative to the beginning of the data in the original datagram,
+which allows the destination IP process to properly reconstruct the original datagram.
 
 Time-to-Live::
-Maintains a counter that gradually decrements down to zero, at which point the datagram is discarded. This keeps packets from looping endlessly.
+Maintains a counter that gradually decrements down to zero,
+at which point the datagram is discarded.
+This keeps packets from looping endlessly.
 
 Protocol::
 Indicates which upper-layer protocol receives incoming packets after IP processing is complete.
 
 Header Checksum::
-Helps ensure IP header integrity.
+- equals to the one’s complement of the one’s complement sum of all 16 bit
+words in the IP header.
+- initialized to all zeros at computation.
+- included
 
 Options::
 Allows IP to support various options, such as security.
@@ -81,27 +98,26 @@ Contains upper-layer information.
 
 .Task: Display the IP Parameters for the Interface
 ----
-show ip interface
+# show ip interface
 ----
 
 .Task: Display the IP Networks the Device Is Connected To
 ----
-show ip route connected
+# show ip route connected
 ----
-
 
 == CIDR
 
 - Classless interdomain routing
-- Defined in RFS 1517-1520
+- Defined in RFC 1517-1520
 - Administrative assigment of large address blocks and the related summarized
   routes for the purpose of reducing the size of the Internet routing table
-- Enable by default
+- Enabled by default
 
 
-.Task: Enable Classless Addressing
+.Task: Disable Classless Addressing
 ----
-(config)# ip classless
+(config)# no ip classless
 ----
 
 .Task: Specify the Format In Which Netmask Appear for the Current Session
@@ -145,7 +161,7 @@ show ip route connected
 (config-if)# ip unnumbered <interface-type interface-id>
 ----
 
-=== 31-Bit Prefix
+== 31-Bit Prefix
 
 - Conserve IP address space
 - Since RFC 3021
@@ -157,6 +173,136 @@ show ip route connected
 (config-if)# ip address a.b.c.d 255.255.255.254
 ----
 
+== Checksum
 
+- IP checksum is a 16-bit field in IP header used for error detection for IP header.
+It equals to the one’s complement of the one’s complement sum of all 16 bit words in the IP header. The checksum field is initialized to all zeros at computation.
+
+- One’s complement sum is calculated by summing all numbers and adding the carries to the result.
+  And one’s complement is defined by inverting all 0s and 1s in the number’s bit representation.
+
+For example, if an IP header is 0x4500003044224000800600008c7c19acae241e2b.
+
+=== Sender
+
+First, divide the header hex into 16 bits each and sum them up,
+
+    4500 + 0030 + 4422 + 4000 + 8006 + 0000 + 8c7c + 19ac + ae24 + 1e2b = 2BBCF
+
+Next fold the result into 16 bits by adding the carry to the result,
+
+    2 +  BBCF  = BBD1
+
+The final step is to compute the one’s complement of the one’s complement’s sum,
+
+    BBD1 = 1011101111010001
+
+    IP checksum = one’s complement(1011101111010001) = 0100010000101110 = 442E
+
+Note that IP header needs to be parsed at each hop,
+because IP addresses are needed to route the packet.
+To detect the errors at IP header, the checksum is validated at every hop.
+
+=== Receiver
+
+The validation is done using the same algorithm.
+But this time the initialized checksum value is 442E.
+
+    2BBCF + 442E = 2FFFD, then 2 + FFFD = FFFF
+
+Take the one’s complement of FFFF = 0.
+
+At validation, the checksum computation should evaluate to 0 if the IP header is correct.
+
+== Protocol
+
+[cols=">10a,90a"]
+,===
+Number , Protocol
+
+1      , ICMP
+2      , IGMP
+6      , TCP
+17     , UDP
+45     , IRDP
+46     , RSVP
+47     , GRE
+51     , AH IPSec
+50     , ESP IPSec
+58     , ICMPv6
+88     , EIGRP
+89     , OSPF
+103    , PIM
+112    , VRRP
+,===
+
+== IP Options
+
+- by default, cisco routers process IP options
+
+- TLV
+  ** Option-Type: 8bit
+  ** Option-Length: 8 bit
+  ** Option-Data: Variable
+
+.IP Options Format
+["packetdiag", target="ip-options-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Flag [len=1]
+  * Class [len=2]
+  * Number [len=5]
+  * Option Length [len=8]
+  * Option Data (variable) [len=36, color=green]
+  * Padding [len=12, color=lightgreen]
+}
+----
+
+Copied Flag::
+- 1 when the option is copied to each fragment
+
+Option Class::
+- 0 for Control
+- 2 for debugging and measurement for Internet Timestamp option
+
+Option Number::
+
+- 0  *End of the option list*,
+- 1  *No Operation*, again the option field is just one octet with no length or data fields.
+- 2  *Security*,  the length is 11 octets and the various security codes can be found in RFC 791.
+- 3  *Loose Source Route* which is IP routing based on information supplied by the source station where the routers can forward the datagram to any number of intermediate routers in order to get to the destination.
+- 4  *Internet Timestamp*
+- 7  *Record Route* records the route that a datagram takes.
+- 8  *Stream ID* has a length of 4 octets.
+- 9  *Strict Source Route* which is IP routing based on information supplied by the source station where the routers can only forward the datagram to a directly connected router in order to get to the next hop indicated in the source route path.
+
+
+.Task: Ignore all IP options
+----
+(config)# ip options drop
+----
+
+.Task: Discard any IP datagram containing a source-route option
+----
+(config)# no ip source-route
+----
+
+
+== IP fragmentation and Re-assembly
+
+- Fields used: Identification, DF, MF, Offset (and total length of each fragment)
+- when one fragment is lost, the entire IP datagram is resent
+  ** IP doesn't have any timeout or retransmission
+  ** TCP or higher layers have
+
+
+.Task: Set the IP MTU packet size for an interface.
+----
+(config-if)# ip mtu <bytes>
+----
 
 
