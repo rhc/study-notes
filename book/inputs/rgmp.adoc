@@ -1,0 +1,45 @@
+== RGMP
+
+- Router-Port Group Management Protocol
+- Proprietary with informational https://tools.ietf.org/html/rfc3488[RFC 3488]
+- Layer 2
+- doesn't work with CGMP
+- works well with ICMP snooping
+
+* IGMP snooping helps switches control distribution of multicast traffic on
+ ports where multicast hosts are connected, but it does not help switches
+ control distribution of multicast traffic on ports where multicast routers
+ are connected.
+
+
+
+=== Operations
+
+- When RGMP is enabled on a router, the router sends RGMP Hello messages by
+  default every 30 seconds. When the switch receives an RGMP Hello message, it
+  stops forwarding all multicast traffic on the port on which it received the
+  Hello message.
+
+- When the router wants to receive traffic for a specific multicast group, the
+  router sends an RGMP Join G message, where G is the multicast group address,
+  to the switch. When the switch receives an RGMP Join message, it starts
+  forwarding the requested group traffic on the port on which it received the
+  Hello message.
+
+- When the router does not want to receive traffic for a formerly RGMP-joined
+  specific multicast group, the router sends an RGMP Leave G message, where G
+  is the multicast group address, to the switch. When the switch receives an
+  RGMP Leave message, it stops forwarding the group traffic on the port on
+  which it received the Hello message.
+
+- When RGMP is disabled on the router, the router sends an RGMP Bye message to
+  the switch. When the switch receives an RGMP Bye message, it starts
+  forwarding all IP multicast traffic on the port on which it received the
+  Hello message.
+
+
+.Task: Enable RGMP
+----
+(config-if)# ip rgmp
+----
+

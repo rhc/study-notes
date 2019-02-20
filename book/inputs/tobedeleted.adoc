@@ -1,0 +1,20 @@
+
+!R1-5
+conf t
+key chain kc1
+  key 1
+    key-string CISCO
+int t0
+  ip rip authentication key-chain kc1 
+  ip rip authentication mode md5
+
+!R1,6
+conf t
+key chain kc2
+  key 2
+    key-string CCIE
+!
+int g0/1.146
+  ip rip auth key-chain kc2
+  ip rip auth mode text
+end

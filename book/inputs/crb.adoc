@@ -1,0 +1,131 @@
+= CRB
+
+Concurent Routing Brigding
+
+
+
+.Task: Configure basic bridging
+----
+! enables bridging of IP packets
+(config)# no ip routing
+
+! select STP for the bridge group
+(config)# bridge <number> [protocol {rstp | ieee}]
+
+! assigns priority to the bridge
+(config)# bridge <number> priority <pri>
+----
+
+.Task: Assigns a network interface to a bridge group
+----
+(config-if)# bridge-group <number>
+----
+
+.Task: Display detailed information about bridge groups
+----
+# sh bridge verbose
+----
+
+.Task: Display entries in the bridge forwarding database
+----
+# sh bridge { <number> | <interface-address> }
+----
+
+
+
+== Lab
+
+Configure router R3 with 2 interfaces in the same bridge
+Create VLAN 2,3 in SW1 and SW2
+- SW1 is the root for VLAN2,3
+- R3 is the root for VLAN 1
+
+change the native vlan on sw1 connection to R3
+- vlan 2 is the native vlan 
+
+
+! R3
+conf t
+hostname R3
+line con 0
+  logging synchronous
+  exit
+bridge 1 protocol ieee
+bridge 1 priority 1
+int g0/1
+  bridge-group 1
+  no shut
+int g0/2
+  bridge-group 1
+  no shut
+end
+
+!SW1
+en
+conf t
+hostname SW1
+line con 0
+  logging synchronous
+vlan 2-3
+span mode pvst
+span vlan 2-3 root primary
+int range g 0/1 - 2
+  swi trunk enc dot
+  swi mode trunk
+  no shut
+end
+
+
+!SW2
+en
+conf t
+hostname SW2
+line con 0
+  logging synchronous
+vlan 2-3
+span mode pvst
+int range g 0/1 - 2
+  swi trunk enc dot
+  swi mode trunk
+  no shut
+end
+sh vlan
+
+
+!! change the native vlan on SW1 connection to R3
+
+! SW1
+conf t
+int g0/2
+  swi trunk native vlan 2
+
+!! change access mode on SW2 connection to R3
+! SW2
+conf t
+int g0/2
+  swi access vlan 2
+  swi mode access
+end
+
+!! restore trunk mode on SW2 connection to R3
+en
+conf t
+hostname SW2
+line con 0
+  logging synchronous
+vlan 2-3
+int range g 0/1 - 2
+  swi trunk enc dot
+  swi mode trunk
+  no shut
+end
+
+!! set the port priority to 64 on direct connection between SW1 and SW2
+
+!SW1
+conf t
+int g0/1
+  span port-prio 64
+int g0/2
+  span port-prio 32
+end

@@ -1,0 +1,7 @@
+= Routing Process
+
+- longest match
+- lowest AD
+- lowest metric
+
+

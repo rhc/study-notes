@@ -1,0 +1,38 @@
+= CHAP
+
+Challenge-Handshake Authentication Protocol
+- RFC 1994
+
+CHAP is an authentication scheme used by Point-to-Point Protocol (PPP) servers
+to validate the identity of remote clients. CHAP periodically verifies the
+identity of the client by using a three-way handshake. This happens at the time
+of establishing the initial link (LCP), and may happen again at any time
+afterwards. The verification is based on a shared secret (such as the client's
+password).
+
+. After the completion of the link establishment phase, the authenticator sends
+a "challenge" message to the peer.
+
+. The peer responds with a value calculated using a one-way hash function on
+the challenge and the secret combined.
+
+. The authenticator checks the response against its own calculation of the
+expected hash value. If the values match, the authenticator acknowledges the
+authentication; otherwise it should terminate the connection.
+
+. At random intervals the authenticator sends a new challenge to the peer and repeats steps 1 through 3.
+
+
+== Packets
+
+TODO format 
+
+,===
+Description , Code (1 byte) , ID (1 byte) , 2 bytes , 1 byte           , Variable        , variable
+
+Challenge   , 1             , ID          , Length  , Challenge Length , Challenge value , Name
+Response    , 2             , ID          , Length  , Response Length  , Response value  , Name
+Success     , 3             , ID          , Length  ,                  , Message         ,          
+Failure     , 4             , ID          , Length  ,                  , Message         ,          
+
+,===
