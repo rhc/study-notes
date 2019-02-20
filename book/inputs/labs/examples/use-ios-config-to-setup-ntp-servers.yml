@@ -1,0 +1,21 @@
+--- 
+- name: Setup INE topology with 10 Routers
+  gather_facts: false
+  hosts: all
+  connection: network_cli
+  become: yes
+  become_method: enable 
+  tasks: 
+    - name: configure ntp server
+      ios_config:
+        lines:
+          - ntp server 2.2.2.2
+          - ntp server 1.1.1.1
+      notify: save configuration  
+  handlers:
+    - name: save configuration
+      ios_command: 
+        commands: wr
+    
+ 
+
