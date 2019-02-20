@@ -1,6 +1,27 @@
 = IP SLA
 
-- menu:Configuration Guides[Network Mgt > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipsla/configuration/15-mt/sla-15-mt-book.html[IP SLA] ]
+menu:Configuration Guides[Network Mgt > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipsla/configuration/15-mt/sla-15-mt-book.html[IP SLA] ]
+
+- formely SAA (Service Assurance Agent), a prior to that RTR (Response Time Responder)
+- generates traffic at a specified interval, with specifically configured options, and measuring the results.
+- built around a source-responder model, 
+  * one device (the source) generates traffic 
+  * either waits for a response from another device (the responder) 
+  * or another device configured as a responder captures the sender’s traffic and does something with it. 
+- Analyzes actual network performance over time, under very specific
+conditions, to measure performance, avert outages, evaluate quality of service (QoS)
+performance, identify problems, verify SLAs, and reduce network outages.
+
+The IP SLA feature allows measuring the following parameters in network performance:
+_ Delay (one-way and round-trip)
+_ Jitter (directional)
+_ Packet loss (directional)
+_ Packet sequencing
+_ Path (per hop)
+_ Connectivity (through the UDP Echo, ICMP Echo, ICMP Path Echo, and TCP Connect functions)
+- Server or website download time
+- Voice-quality metrics (MOS)
+
 
 To implement IP SLAs network performance measurement,
 
@@ -90,17 +111,16 @@ average jitter threshold, one-way packet loss, one-way jitter, one-way mean opin
 
 == History Statistics
 
-[horizontal]
 Aggregated statistics:: By default, two hours of aggregated
 statistics for each operation. Value from each operation cycle is aggregated
 with the previously available data within a given hour.
 
-Operation snapshot history::  snapshot of data for each
+Operation snapshot history:: Snapshot of data for each
 operation instance that matches a configurable filter, such as all, over
 threshold, or failures. The entire dataset is available and no aggregation
 takes place.
 
-Distribution statistics::  frequency distribution over
+Distribution statistics::  Frequency distribution over
 configurable intervals. Each time IP SLAs starts an operation, a new history
 bucket is created until the number of history buckets matches the specified
 size or the lifetime of the operation expires. By default, the history for an

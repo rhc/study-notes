@@ -1,0 +1,83 @@
+!Mgt
+# gns3hosts
+[switches]
+192.168.123.11 SW1
+192.168.123.12 SW2
+192.168.123.13 SW3
+192.168.123.14 SW4
+
+! SW1
+en
+conf t
+hostname SW1
+ip domain-name ccielab.com
+crypto key generate rsa modulus 1024
+username ckyony password sesame
+username ckyony priv 15
+line vty 0 4
+  login local
+  transport input all
+int g0/0
+  no switchport
+  ip add 192.168.123.11 255.255.255.0
+  no shut
+end
+copy run start
+
+
+! SW2
+en
+conf t
+hostname SW2
+ip domain-name ccielab.com
+crypto key generate rsa modulus 1024
+username ckyony password sesame
+username ckyony priv 15
+line vty 0 4
+  login local
+  transport input all
+int g0/0
+  no switchport
+  ip add 192.168.123.12 255.255.255.0
+  no shut
+end
+wr
+
+! SW3
+en
+conf t
+hostname SW3
+ip domain-name ccielab.com
+crypto key generate rsa modulus 1024
+username ckyony password sesame
+username ckyony priv 15
+line vty 0 4
+  login local
+  transport input all
+int g0/0
+  no switchport
+  ip add 192.168.123.13 255.255.255.0
+  no shut
+end
+wr
+!
+
+
+! SW4
+en
+conf t
+hostname SW4
+ip domain-name ccielab.com
+crypto key generate rsa modulus 1024
+username ckyony password sesame
+username ckyony priv 15
+line vty 0 4
+  login local
+  transport input all
+int g0/0
+  no switchport
+  ip add 192.168.123.14 255.255.255.0
+  no shut
+end
+wr
+!

@@ -4,8 +4,6 @@
 - Tunnelling protocol developed by Cisco
 - IP protocol 47
 - https://tools.ietf.org/html/rfc2784[RFC 2784]
-- https://tools.ietf.org/html/rfc2345[RFC 2345]
-- https://tools.ietf.org/html/rfc1234[RFC 1234]
 
 == Tunneling
 
@@ -14,9 +12,13 @@ and transports the data packets unchanged across a foreign network (which  may n
 - Unlike encapsulation, tunneling allows a lower-layer protocol, or same-layer protocol,
 to be carried through the tunnel.
 
+
+
 - *Passenger protocol* : The protocol that you are encapsulating. Examples: AppleTalk, IP, IPX.
 - *Carrier protocol* : The protocol that does the encapsulating. Examples: GRE, IP-in-IP, L2TP,MPLS, STUN,DLSw+.
 - *Transport protocol* : The protocol used to carry the encapsulated protocol. The main transport protocol is IP.
+
+TODO Place figure below at the right of the explanation
 
 .IP Tunneling Terminology and Concepts
 image::ip-tunneling-concepts.png[]
@@ -32,25 +34,27 @@ image::ip-tunneling-concepts.png[]
   default_fontsize = 12
 
 	 * C [len = 1]
+   * [len=1]
 	 * K  [len=1]
 	 * S  [len=1]
 	 * Reserved0  [len=9]
-	 * Version = 0 [len= 4]
+	 * Version = 0 [len= 3]
 	 * Protocol Type [len= 16]
 	 * Checksum (optional) [len=16]
 	 * Reserved1 (optional) [len=16]
    * Key (optional) [len=32]
    * Sequence Number (optional) [len=32]
+   * Routing (optional) [len=32]
  }
 ----
 
 C::
 - Checksum present
-- Set to 1 if the checksum and the Reserved1 field are present
+- Set to 1 if the checksum and Reserved1 field are present
 
 K::
 - Key bit
-- Set to 1 if
+- Set to 1 if 
 
 Reserved0::
 - if any of bits 1-5 are non-zero, a receiver must discard the packet
@@ -87,7 +91,7 @@ This command is supported only on GRE point-to-point tunnels.
 
 .Task: Configure GRE Keepalives
 ----
-(config-if)# keepalive [ period [retries]]
+(config-if)# keepalive [ <seconds> [<retries>]]
 ----
 
 == GRE Tunnel

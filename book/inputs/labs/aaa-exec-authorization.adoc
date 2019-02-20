@@ -1,0 +1,18 @@
+config replace flash:initial force
+
+!R1
+conf t
+username ADMIN privilege 7 password CISCO
+aaa new-model
+tacacs-server host 155.1.146.100
+tacacs-server key CISCO
+ip tacacs source-interface lo0
+aaa authentication login VTY local
+aaa authorization exec VTY group tacacs+ if-authenticated
+!
+line vty 0 4 
+  login authentication VTY 
+  authorization exec VTY
+  privilege level 15
+end
+

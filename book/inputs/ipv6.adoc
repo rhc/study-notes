@@ -1,6 +1,7 @@
 = IPv6
 
 menu:Configuration Guides[IP > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipv6/configuration/15-2mt/ip6-15-2mt-book.html[IPv6] ]
+- https:tools.ietf.org/html/rfc2460[RFC 2460]
 
 == IPv6 Header
 
@@ -8,7 +9,7 @@ menu:Configuration Guides[IP > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/
 ["packetdiag", target="ipv6-header-format",size=200]
 ----
 diagram {
-  colwidth = 32
+  colwidth = 64
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
@@ -19,8 +20,8 @@ diagram {
   * Payload Length [len=16]
   * Next Header [len=8]
   * Hop Limit [len=8]
-  * Source Address (128 bits) [len=32]
-  * Destination Address (128 bits) [len=32]
+  * Source Address (128 bits) [len=64]
+  * Destination Address (128 bits) [len=64]
 }
 ----
 
@@ -60,10 +61,10 @@ same path so that they will not be reordered.
 
 == Payload Length
 
-- Size in bytes of the payload including any extensionn header
+- Size in bytes of the payload including any extension header
 - Set to zero when a *Hop-by-Hop* extension header carries a *Jumbo Payload* option.
 
-TODO jumbo-grams
+
 
 
 
@@ -111,12 +112,15 @@ Mobility Header (currently without upper layer) : 135   : Used with Mobile IPv6
   padding—until all options are represented.
 - the *header ext len* is the size of this header in bytes excluding the first 8 octets
 
+TODO jumbo-grams
+TODO router alert option, mld multicast listener discovery
+
 
 .IPv6 Hop-By-Hop Options
 ["packetdiag", target="ipv6-hop-by-hop-options",size=200]
 ----
 diagram {
-  colwidth = 32
+  colwidth = 64
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
@@ -138,12 +142,11 @@ diagram {
   * 1 used by the Nimrod project
   * 2 for IPv6 Mobile
 
-
 .IPv6 Routing Options
 ["packetdiag", target="ipv6-routing-options",size=200]
 ----
 diagram {
-  colwidth = 32
+  colwidth = 64
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
@@ -156,6 +159,8 @@ diagram {
 }
 ----
 
+TODO used in ipv6 mobility 
+TODO  disable ipv6 source routing to protect against DDoS
 
 TODO
 .Task:
@@ -166,14 +171,15 @@ TODO
 === Fragment Extension Header
 
 - In order to send a packet that is larger than the path MTU,
-  the sending node splits the packet into fragments.
-- The Fragment extension header carries the information necessary to reassemble the original (unfragmented) packet.
+  the sending host splits the packet into fragments.
+- The Fragment extension header carries the information necessary to reassemble the original
+ (unfragmented) packet.
 
 .IPv6 Fragment Options
 ["packetdiag", target="ipv6-fragment-options",size=200]
 ----
 diagram {
-  colwidth = 32
+  colwidth = 64
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
@@ -202,6 +208,11 @@ diagram {
   conveying IPv6 data must be capable of delivering an IP packet containing
   *1280 bytes* without the need to invoke end-to-end fragmentation at the IP
   layer.
+
+IMPORTANT: if a data link layer physically cannot deliver an ipv6 datagram of 1280 bytes 
+in a single frame then the link layer must provide its own fragmentation and reassembly mechanism,
+separate from IP's own fragmentation mechanism, to ensure that a 1280-byte IP datagram can 
+be delivered intact to the IP layer.
 
 === Fragmenting
 
@@ -315,6 +326,8 @@ abbreviation method is used anywhere in the address.
 redundancy. Relies on routing metrics to determine the best destination for a particular host.
 | Link-local  unicast | FE80::/10 |  Connected-link communications.
 | Solicited-node multicast | FF02::1:FF00:0/104 | Neighbor solicitation.
+| Site Local | FEC0::/10 | Deprecated RFC 3879
+| Unique Local | FC00::/7 | RFC 4193 for private use (~ RFC 1918), non-routable via global BGP
 |===
 
 ==== Unicast
@@ -328,11 +341,16 @@ image::ipv6-unicast-address-format.png[height=150]
 ===== Link-Local Addresses
 
 - Starts with FE80::/10
+- Equivalent of Ipv4 169.254.0.0/16
 - Follows by 54 bits set to 0
 - Interface ID
 - only one link-local address per interface
-
 - Routers do not forward link-local traffic to other segments.
+** non-routable between interfaces 
+- used for 
+  * SLAAC Stateless Address Auto-Configuration
+  * ND Neighbor Discovery
+  * RD Router Discovery
 
 ===== IPv4-Compatible Addresses
 
@@ -466,19 +484,23 @@ and the host derives the last bit using EUI-64 process.
 - Set to 1 the universal/local bit (7th bit in the interface id )
 
 Given the IPv6 prefix 2001:128:1f:633 and MAC address 00:07:85:80:71:B8,
-the resulting EUI-address is 2001:128:1f:633:**2**07:85**FF:FE**80:71B8/64
+the resulting EUI-address is 2001:128:1f:633:**2**:07:85**FF:FE**80:71B8/64
 
 ----
 (config-if)# ipv6 address 2001:128:1f:633::/64 eui-64
 ----
 
-- RFC2373
+==== Modified EUI-64 Address
+
+https://www.ietf.org/rfc/4941.txt[RFC 4941 Privacy Extensiions to SLAAC]
+
+TODO check microsoft web site
 
 == Basic  IPv6 Functionality Protocols
 
 === Neighbor Discovery
 
-- https://www.ietf.org/rfc/rfc2461.txt[RFC 2461]
+- https://www.ietf.org/rfc/rfc4861.txt[RFC 4861]
 - Discover and track other IPv6 hosts on connected interfaces
 - Uses ICMPv6 messages and Solicited-node multicast addresses
 
@@ -618,7 +640,7 @@ Limit ICMPv6 error messages with default interval 100 ms , and default token-buc
 # show cdp neighbors detail
 -------
 
-=== DHCP
+=== DHCPv6
 
 - RFC 3315
 
@@ -644,6 +666,8 @@ To configure a Cisco router as a DHCPv6 server,
 you first configure a DHCP pool, just as in IPv4
 then enable the DHCPv6 service using the *ipv6 dhcp server pool-name*
 
+
+TODO stateless vs stateful managed-config-flag vs other-config-flag
 
 === Access Lists
 
@@ -805,6 +829,24 @@ http://www.cisco.com/en/US/docs/ios/ipv6/configuration/guide/ip6-ospf.html#wp106
 http://www.cisco.com/c/en/us/td/docs/ios/12_4/interface/configuration/guide/inb_tun.html#wp1045782[Implement tunnels]
 
 === IPv6 General Prefix
-TODO
+
+- as shortcut
+  * e.g. if organization is assigned a /32, then all prefixes should be derived from this /32
+  * helps in renumbering scenarios
+
+.Task: Define an IPv6 general prefix
+----
+(config)# ipv6 general-prefix <name> <X:X:X:X::X>/<0-128>
+----
+
+.Task: Apply an IPv6 general prefix to a link
+----
+(config-if)# ipv6 address <name> 0:0:0:1::1/64
+----
+
+== misc
+
+
+
 
 

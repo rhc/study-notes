@@ -65,11 +65,16 @@ How to connect to the cloud
 
 - NETCONF
   * transport protocol by which configurations are installed and changed
-  * RFC 6241
+  * https://tools.ietf.org/html/rfc6241[RFC 6241]
+  * 4 layers: 
+    ** Operations layer: RPC methods with XML-encoded parameters
+    ** Secure transport layer: communication path between the client and the server.
+    ** Content layer: outside the scope, 
+    ** Messages layer: transport-independent framing mechanisms for encoding RPCs and notifications
 
 - YANG
-  * modeling language used represent device configuration and state (~ XML)
-  * RFC 6020
+  * modeling language used to represent device configuration and state (~ XML)
+  * https://tools.ietf.org/html/rfc6020[RFC 6020]
 
 
 === OpenStack Components

@@ -3,13 +3,28 @@
 - link-state protocol
 - doesn't run over any other network protocol
 * encapsulates messages directly in data-link frames
-* sends to the layer 2 address called SNAP (sub-network point of attachment)
+* sends to the layer 2 address called SNPA (sub-network point of attachment)
+
+
+[graphviz, target= 'is-is']
+----
+digraph g {
+  node[shape=record]
+  node0 [label ="{Data Link Header}|{IS-IS Header}|{IS-IS Data}"];
+}
+----
+
+IS: Intermediate System
+ES: Endpoint System
+Domain: Autonomous System
 
 == NSAP Address
 
+- network service access point
 - variable length between 8 and 20 octets
-- assigned to the entire node
+- assigned to the entire node, not to the individual circuit(interface)
 
+image:nsap-addressing.png[NSAP addressing]
 
 IDI:: Initial Domain ID
 DSP:: Domain Specific Part
@@ -29,9 +44,6 @@ SEL::
 * identifies node NET (Network Entity Title)
 * mandatory for is-is configuration
 
-
-
-image:nsap-addressing.png[NSAP addressing]
 
 
 :===

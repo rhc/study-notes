@@ -1,0 +1,129 @@
+! initial config
+
+
+
+
+
+# NetworkAutomation
+#setup dhcp
+# verify connectivity to all switch
+ping -c 5 192.168.123.11
+ping -c 5 192.168.123.12
+ping -c 5 192.168.123.13
+ping -c 5 192.168.123.14
+ping -c 5 192.168.123.15
+
+
+#ansible.cfg
+
+!R1
+en
+conf t
+hostname R1
+ip domain-name ccielab.com
+username ckyony password sesame
+username ckyony priv 15
+line vty 0 4
+  login local 
+  transport input all
+  !
+crypto key generate rsa modulus 1024
+int g0/0
+  ip add 192.168.123.111 255.255.255.0
+  no shut
+end
+wr
+
+
+! SW1
+enable
+conf t
+hostname SW1
+ip domain-name ccielab.com
+username ckyony password sesame
+username ckyony privilege 15
+crypto key generate rsa modulus 1024
+int vlan 1 
+  ip add 192.168.123.11 255.255.255.0
+  no shut
+line vty 0 4
+  login local
+  transport input all
+  exit
+span vlan 1 root primary
+end
+wr
+
+
+! SW2
+enable
+conf t
+hostname SW2
+ip domain-name ccielab.com
+username ckyony password sesame
+username ckyony privilege 15
+crypto key generate rsa modulus 1024
+int vlan 1 
+  ip add 192.168.123.12 255.255.255.0
+  no shut
+line vty 0 4
+  login local
+  transport input all
+  exit
+span vlan 1 root secondary
+end
+wr
+
+! SW3
+enable
+conf t
+hostname SW3
+ip domain-name ccielab.com
+username ckyony password sesame
+username ckyony privilege 15
+crypto key generate rsa modulus 1024
+int vlan 1 
+  ip add 192.168.123.13 255.255.255.0
+  no shut
+line vty 0 4
+  login local
+  transport input all
+end
+wr
+
+! SW4
+enable
+conf t
+hostname SW4
+ip domain-name ccielab.com
+username ckyony password sesame
+username ckyony privilege 15
+crypto key generate rsa modulus 1024
+int vlan 1 
+  ip add 192.168.123.14 255.255.255.0
+  no shut
+line vty 0 4
+  login local
+  transport input all
+end
+wr
+
+! SW5
+enable
+conf t
+hostname SW5
+ip domain-name ccielab.com
+username ckyony password sesame
+username ckyony privilege 15
+crypto key generate rsa modulus 1024
+int vlan 1 
+  ip add 192.168.123.15 255.255.255.0
+  no shut
+line vty 0 4
+  login local
+  transport input all
+end
+wr
+
+
+

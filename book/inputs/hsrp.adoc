@@ -9,9 +9,9 @@ menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/
 - Standy router takes over if Active router fails
 - Elect new standby router if standby router fails or becomes the active router.
 - To minimize network traffic, only the active and standby router send periodic HSRP messages.
-- A router may participate in multiple groups with seperate state and timers for each group
+- A router may participate in multiple groups with different state and timers for each group
 - Unique group id per vlan
-- Multicast address = 0000.0c07.AC__xy__ (where xy is the HSRP group number in Hex)
+- Multicast address = 0000.0c07.AC__xy__ (where __xy__ is the HSRP group number in Hex)
 - Send to multicast 224.0.0.2 for v1 and 224.0.0.102 for v2
 - UDP port 1985
 
@@ -50,13 +50,17 @@ diagram {
 == HSRP Version
 
 - Version 1 by default
-- Version 2 doesn't interoperate with HSRPv1 on the same interface.
+- Version 2 doesn't interoperate with HSRPv1 on the same interface. (no RFC)
   * v1 and v2 can run on different physical interfaces of the same router
   * v1 cannot advertise and learn millisecond timers
   * v1 uses multicast 224.0.0.2 and v2 224.0.0.102
   * v2 uses jitter timers (negative for hellotimes and positive for holdtimes)
 - Group number: 0..255 for v1 and 0..4095 for v2
+- Authentication: v1 plain-text v2 MD5 
 - Different virtual MAC address
+  * v1 00:00:0C:07:ac:__xx__
+  * v2 ipv4 00:00:0C:9f:f__x__:__xx__
+  * v2 ipv6 00:05:73:a0:0__x__:__xx__ (port 2029)
 
 .Task: Change HSRP Version
 ----

@@ -1,5 +1,13 @@
 = CGMP
 
+- Cisco proprietary
+- Layer 2 protocol, well-known MAC 0X0100.0CDD.DDDD
+- configured on both the cisco router and switch.
+- permits routers to communicate L2 info it has learned from IGMP to switches
+- Only routers send CGMP messages while switches only listens to CGMP messages
+- helps switches send group traffic to only those hosts that want it -> no wasted bandwidth
+
+
 == Understanding
 
 CGMP is a protocol used on Cisco routers and multilayer switches connected to
@@ -54,10 +62,75 @@ group message to the Layer 2 switch, which updates its routing table.
 
 
 
-== Configuring
-
-xxx
 
 
+=== Message Format
 
+- GDA: Group Destination Address
+- USA: Unicast Source Address
+
+
+.CGMP Messages
+,====
+Type  , GDA       , USA        , Description
+
+Join  , Group MAC , Host MAC   , Add USA port to group
+Leave , Group MAC , Host MAC   , Delete USA port from group
+Join  , Zero      , Router MAC , Learn which port connects to the CGMO router
+Leave , Zero      , Router MAC , Release CGMP router port
+Leave , Group MAC , Zero       , Delete the group from the CAM
+Leave , Zero      , Zero       , Delete all groups from the CAM
+
+,====
+
+.Task: Clear All the CGMP Entries on the Switches
+----
+# clear ip cgmp
+----
+
+=== Process
+
+1. When a CGMP-capable router gets connected to the switch, it sends a CGMP Join
+message with the GDA set to 0 and the USA set to its own MAC address.
+The CGMP-capable switch now knows that a multicast router is connected to the port
+on which it received the router’s CGMP message. The router repeats the message
+every 60 seconds. A router can also tell the switch that it no longer
+participates in CGMP by sending a CGMP Leave message with the GDA set to 0 and
+the USA set to its own MAC address.
+
+2. When a host joins a group, it sends an IGMP Join message. Normally, a
+multicast router examines only Layer 3 information in the IGMP Join message,
+and the router does not have to process any Layer 2 information. However, when
+CGMP is configured on a router, the router also examines the Layer 2
+destination and source MAC addresses of the IGMP Join message. The source
+address is the unicast MAC address of the host that sent the IGMP Join message.
+The router then generates a CGMP Join message that includes the multicast MAC
+address associated with the multicast IP address (to the GDA field of the CGMP
+join) and the unicast MAC address of the host (to the USA field of the CGMP
+message). The router sends the CGMP Join message using the well-known CGMP
+multicast MAC address 0x0100.0cdd.dddd as the destination address.
+
+3. When switches receive a CGMP Join message, they search in their CAM tables
+for the port number associated with the host MAC address listed in the USA
+field. Switches create a new CAM table entry (or use an existing entry if it
+was already created before) for the multicast MAC address listed in the GDA
+field of the CGMP Join message, add the port number associated with the host
+MAC address listed in the USA field to the entry, and forward the group traffic
+on the port.
+
+4. When a host leaves a group, it sends an IGMP Leave message. The router
+learns the host’s unicast MAC address (USA) and the IP multicast group it has
+just left. Because the Leave messages are sent to the All Multicast Routers MAC
+address 0x0100.5e00.0002 and not to the multicast group address the host has
+just left, the router calculates the multicast MAC address (GDA) from the IP
+multicast group the host has just left. The router then generates a CGMP Leave
+message, copies the multicast MAC address it has just calculated in the GDA
+field and unicast MAC address in the USA field of the CGMP Leave message, and
+sends it to the well- known CGMP multicast MAC address.
+
+5. When switches receive a CGMP Leave message, they again search for the port
+number associated with the host MAC address listed in the USA field. Switches
+remove this port from the CAM table entry for the multicast MAC address listed
+in the GDA field of the CGMP Leave message and stop forwarding the group
+traffic on the port.
 

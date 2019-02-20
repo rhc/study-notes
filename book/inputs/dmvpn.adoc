@@ -1,8 +1,6 @@
 = DMVPN
 
-- dynamic creation of spoke-to-spoke
 - DMVPN = mGRE + NHRP + IPSec
-
 
 Start with mGRE configuration
 
@@ -13,24 +11,37 @@ interface tunnel 0
   tunnel mode gre multipoint
 ----
 
-
 == Phases
 
-Phase 1::
+=== Phase 1
+
 - Hub and spoke functionality
 - for simplified and smaller configuration
 - zero touch provisioning for adding spokes to the VPN
+- mGRE on hub, GRE on the spokes
 - supports dynamically addressed CPEs
 
-Phase 2::
+=== Phase 2
+
 - Spoke-to-spoke functionality (by changing the routing protocol behavior self-hop ?)
+  * mGRE on hub and spokes
 - on demand spoke-to-spoke tunnels avoids dual encrypts/decrypts
 - Smaller spoke CPE can participate in the virtual mesh
+- restrictions:
+  * no summarization allowed on the hub
+  * no default routing allowed on the hub
+  * spokes must always maintain next-hop reachability
 
-Phase 3::
+=== Phase 3
+
 - Architecture and scaling
 - uses ip nhrp redirect on the hub
+  * sends NHRP Traffic Indication messages
 - uses ip nhrp shortcut on the spokes to accept and install the shortcut route
+  * accepts NHRP Traffic Indication messages
+  * sends NHRP Resolution Request message for the original packet's destination
+  * install the destination network discovered through the Resolution Reply
+    into the RIB with the responding spoke router as a next hop.
 
 
 .Task: Verify NHRP Configuration

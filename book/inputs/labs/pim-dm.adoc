@@ -1,0 +1,43 @@
+!R1,4,6
+en
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim dense-mode
+end
+
+!R4,5
+en
+conf t
+ip multicast-routing
+int g0/1.45
+  ip pim dense-mode
+end
+
+
+!R5,8
+en
+conf t
+ip multicast-routing
+int g0/1.58
+  ip pim dense-mode
+end
+
+!R10,8
+en
+conf t
+ip multicast-routing
+int g0/1.108
+  ip pim dense-mode
+end
+
+
+
+!R10
+en
+conf t
+ip multicast-routing
+int g0/1.10
+  ip igmp join 224.10.10.10
+  ip pim dense-mode
+end

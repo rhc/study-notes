@@ -17,6 +17,33 @@ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/r
 
 == IGMP Packet Format
 
+
+.IGMPv1 Format
+[packetdiag, target="igmp-packet-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Version [len=4]
+  * Type [len=4]
+  * Unused [len=8]
+  * Checksum [len=16]
+  * Group Address [len=32]
+}
+----
+
+Type::
+- 1: Host membership query 
+- 2: Host membership report
+- 3: DVMRP
+
+Group Address::
+- in Host membership query, zeroed when sent, ignored when received
+- in Host membership report, IP host group address 
+
+
 .IGMP Version 2 Format
 [packetdiag, target="igmp-packet-format",size=200]
 ----
@@ -25,7 +52,6 @@ diagram {
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
   * Type [len=8]
   * Maximum Response Time [len=8]
   * Checksum [len=16]
@@ -34,21 +60,20 @@ diagram {
 ----
 
 Type::
-- Membership Query (Type code = 0x11):
+- 0x11: Membership Query
 
   * Used by multicast routers to discover the presence of group members on a subnet.
   * A General Membership Query message sets the Group Address field to 0.0.0.0.
   * A Group-Specific Query sets the Group Address field to the address of the group being queried.
   * It is sent by a router after it receives the IGMPv2 Leave Group message from a host.
 
-- Version 1 Membership Report (Type code = 0x12):
+- 0x12: Version 1 Membership Report 
   - Used by IGMPv2 hosts for backward compatibility with IGMPv1.
 
-- Version 2 Membership Report (Type Code = 0x16):
+- 0x16: Version 2 Membership Report
   * Sent by a group member to inform the router that at least one group member is present on the subnet.
 
-- Leave Group (Type code = 0x17):
-
+- 0x17: Leave Group
   * Sent by a group member if it was the last member to send a Membership Report to inform the router that it is leaving
   the group.
 
@@ -57,16 +82,56 @@ Maximum Response Time::  Specifies the time limit for the corresponding report.
 - The field has a resolution of 100 milliseconds, the value is taken directly.
 - only in Membership Query (0x11); in other messages it is set to 0 and ignored by the receiver.
 
-
 Checksum:: Carries the 16-bit checksum computed by the source.
 - computed over the entire IP payload, not just over the first 8 octets,
 even though IGMPv2 messages are only 8 bytes in length.
-
 
 Group Address::
 - Set to 0.0.0.0 in General Query messages and to the group address in Group- Specific messages.
 - Membership Report messages carry the address of the group being reported in this field
 - Leave Group messages carry the address of the group being left in this field.
+
+
+.IGMPv3 membership query
+[packetdiag, target="igmpv3-membership-query-packet-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_fontsize = 12
+  default_node_color = lightyellow
+
+  * Type = 0x11 [len=8, color=white]
+  * Maximum Response Time [len=8, color=white]
+  * Checksum [len=16, color=white]
+  * Group Address [len=32, color=white]
+  
+  * Resv [len=3]
+  * S [len=1]
+  * QRV [len=4]
+  * QQIC [len=8]
+  * Number of Sources [len=16]
+  * Source Address(i) [len=32, stacked]
+
+}
+----
+
+S::
+- Suppress Router-side Processing if flag=1
+
+QRV:: 
+- Querier's Robusteness Variable
+- If this is non-zero, it contains the Robustness Variable value used by the sender of the Query. Routers should update their Robustness Variable to match the most recently received Query unless the value is zero.
+
+QQIC :: 
+- Querier's Query Interval Code
+- This code is used to specify the Query Interval value (in seconds) used by the querier. If the number is below 128, the value is used directly. If the value is 128 or more, it is interpreted as an exponent and mantissa.
+
+Number of Sources (N)::
+- This field specifies the number of source addresses present in the Query. 
+- For General and Group-Specific Queries, this value is zero. 
+- For Group-and-Source-Specific Queries, this value is non-zero, but limited by the network's MTU.
+
 
 
 == Messages
@@ -98,21 +163,66 @@ Multilayer switch as a statically connected member : Disabled.
 # show ip igmp interface [interface-id]
 ----
 
-== IGMP Version
+== IGMP Versions
 
-v1:: RFC 1112
+=== v1
+- https://tools.ietf.org/html/rfc1112[RFC 1112] 
 - general membership queries
 - join
 - implicit leave
 
-v2:: RFC 2236
+=== v2
+
+- https://tools.ietf.org/html/rfc2236[RFC 2236] 
 - group-specific queries
 - explicit leave group process
 - explicit max response time field
 - querier election
 - Backward compatible with v1
 
-v3:: RFC 3376
+
+** IGMPv2 Host and IGMPv1 Routers
+*** When a host sends the IGMPv2 Report with the message type 0x16, which is not defined in IGMPv1,
+a version 1 router would consider 0x16 an invalid message type and ignore it. Therefore, a version 2
+host must send IGMPv1 Reports when a version 1 router is active. But how does an IGMPv2 host
+detect the presence of an IGMPv1 router on the subnet?
+
+*** IGMPv2 hosts determine whether the querying router is an IGMPv1 or IGMPv2 host based on the
+value of the MRT field of the periodic general IGMP Query. In IGMPv1 Queries, this field is 0,
+whereas in IGMPv2, it is nonzero and represents the MRT value. When an IGMPv2 host receives an
+IGMPv1 Query, it knows that the IGMPv1 router is present on the subnet and marks the interface as
+an IGMPv1 interface. The IGMPv2 host then stops sending IGMPv2 messages.
+
+*** Whenever an IGMPv2 host receives an IGMPv1 Query, it starts a 400-second Version 1 Router
+Present Timeout timer. This timer is reset whenever it receives an IGMPv1 Query. If the timer
+expires, which indicates that there are no IGMPv1 routers present on the subnet, the IGMPv2 host
+starts sending IGMPv2 messages.
+
+** IGMPv1 Host and IGMPv2 Routers
+*** IGMPv2 routers can easily determine whether any IGMPv1 hosts are present on a LAN based on
+whether any hosts send an IGMPv1 Report message (type 0x12) or IGMPv2 Report message (type
+0x16). Like IGMPv1 routers, IGMPv2 routers send periodic IGMPv2 General Queries. An IGMPv1
+host responds normally because IGMPv2 General Queries are very similar in format to IGMPv1
+Queries—except for the second octet, which is ignored by IGMPv1 hosts. So, an IGMPv2 router will
+examine all Reports to find out whether any IGMPv1 hosts exist on a LAN.
+*** While an IGMPv2 router knows that an IGMPv1 host is present on a LAN, the router ignores Leave
+messages and the Group-Specific Queries triggered by receipt of the Leave messages. This is
+necessary because if an IGMPv2 router responds to a Leave Group message with a Group-Specific
+Query, IGMPv1 hosts will not understand it and thus ignore the message. When an IGMPv2 router
+does not receive a response to its Group-Specific Query, it might erroneously conclude that nobody
+wants to receive traffic for the group and thus stop forwarding it on the subnet. So with one or more
+IGMPv1 hosts listening for a particular group, the router essentially suspends the optimizations that
+reduce leave latency.
+*** IGMPv2 routers continue to ignore Leave messages until the IGMPv1-Host-Present Countdown timer
+expires. RFC 2236 defines that when IGMPv2 routers receive an IGMPv1 Report, they must set an
+IGMPv1-host-present countdown timer. The timer value should be equal to the Group Membership
+Interval, which defaults to 180 seconds in IGMPv1 and 260 seconds in IGMPv2. (Group Membership
+Interval is a time period during which, if a router does not receive an IGMP Report, the router
+concludes that there are no more members of the group on a subnet.)
+
+=== v3
+
+- https://tools.ietf.org/html/rfc3376[RFC 3376] 
 - source filtering SSM
 - uses 224.0.0.22 for membership reports
 - Backward compatible with v1 and v2
@@ -130,18 +240,23 @@ NOTE: If you change to version 1,
 you cannot configure the *ip igmp query-interval*
 or the *ip igmp query-max-response-time* interface configuration commands.
 
-== Querier Election
+
+== Querier
+
+=== Querier Election
 
 - Selects preferred router to send Query messages when multiple routers are connected on the same subnet
 - Each IGMPv2 router sends general query message to 224.0.0.1 with its interface source address.
 - The router stops upon receiption of query messages with lowest IP address
 -> The router with the lowest IP address wins
 
-== IGMPv2 Query Timeout
+=== IGMPv2 Query Timeout
 
+- or Other Querier Present Interval
 - period of time before the router takes over as the querier for the interface.
-- By default, the router waits twice the query interval.  After that time, if
+- By default, the router waits twice the query interval + one half of Query Response Interval.  After that time, if
   the router has received no queries, it becomes the querier.
+- Default: 255 seconds ( 125 x 2 + 10/2 )
 
 ----
 (config-if)# ip igmp querier-timeout <60-300-seconds>
@@ -155,7 +270,7 @@ or the *ip igmp query-max-response-time* interface configuration commands.
 - Increasing the maximum response timer value also increases the leave latency;
 the query router must now wait longer to make sure there are no more hosts for the group on the subnet.
 
-- Default:10 seconds, range: 1..25.
+- Default:10 seconds, range: 0.1 to 25.5 seconds
 
 .Task: Change the Maximum Response Time Field
 ----
@@ -196,8 +311,8 @@ as evidenced by lack of an L (local) flag in the multicast route entry.
 
 - in v1, implicit exit
 - in v2,
-** host send leave group message to group address,
-** querier send *igmp-last-member-query-count* group-specific queries at *igmp-last-member-interval* milliseconds
+** host sends leave group message to group address,
+** querier sends *igmp-last-member-query-count* group-specific queries at *igmp-last-member-interval* milliseconds
 ** querier stops forwarding for the group if no reply within timeout period
 
 .Task: Specify the Last Member Query Interval
@@ -236,8 +351,7 @@ NOTE: Can also be in global mode but not combined with the interface mode
 directly connected to a downstream router to join a multicast group sourced
 from an upstream network.
 
-image::igmp-udlr.png[UDL scenario]
-
+image::igmp-udlr.png[UDL scenario, 400, 400, float='right']
 
 - Before you can see how this optimization improves multicast performance, you
   need to explore what a UDL routing scenario actually is. UDL creates a
@@ -250,8 +364,8 @@ image::igmp-udlr.png[UDL scenario]
   For networks that use broadcast satellite links, accomplishing two-way
   communication over broadcast satellite links presents a problem in terms of
   discovering and sharing knowledge of a network topology through traditional
-  protocols like OSPF or Enhanced Interior Gateway Routing Protocol (EIGRP).
-  This impacts Protocol Independent Multicast (PIM) operation because of PIM
+  protocols like OSPF or EIGRP.
+  This impacts PIM operation because of PIM
   reliance on these protocols.
 
 - Specifically, in unicast routing, when a router receives an update message on
@@ -266,137 +380,6 @@ image::igmp-udlr.png[UDL scenario]
 
 - Read more at  “Configuring Unidirectional Link Routing” documentation at Cisco.com or visit the following URL: http://tinyurl.com/CiscoUDLR.
 
-
-
-== CGMP
-
-
-TODO: Create a seperate files for CGMP and IGMP snooping ?
-
-- Cisco proprietary
-- Layer 2 protocol, well-known MAC 0X0100.0CDD.DDDD
-- configured on both the cisco router and switch.
-- permits routers to communicate L2 info it has learned from IGMP to switches
-- Only routers send CGMP messages while switches only listens to CGMP messages
-- helps switches send group traffic to only those hosts that want it -> no wasted bandwidth
-
-
-
-=== Message Format
-
-- GDA: Group Destination Address
-- USA: Unicast Source Address
-
-
-.CGMP Messages
-,==
-Type  , GDA       , USA        , Description
-
-Join  , Group MAC , Host MAC   , Add USA port to group
-Leave , Group MAC , Host MAC   , Delete USA port from group
-Join  , Zero      , Router MAC , Learn which port connects to the CGMO router
-Leave , Zero      , Router MAC , Release CGMP router port
-Leave , Group MAC , Zero       , Delete the group from the CAM
-Leave , Zero      , Zero       , Delete all groups from the CAM
-
-,==
-
-.Task: Clear All the CGMP Entries on the Switches
-----
-# clear ip cgmp
-----
-
-=== Process
-
-1. When a CGMP-capable router gets connected to the switch, it sends a CGMP Join
-message with the GDA set to 0 and the USA set to its own MAC address.
-The CGMP-capable switch now knows that a multicast router is connected to the port
-on which it received the router’s CGMP message. The router repeats the message
-every 60 seconds. A router can also tell the switch that it no longer
-participates in CGMP by sending a CGMP Leave message with the GDA set to 0 and
-the USA set to its own MAC address.
-
-2. When a host joins a group, it sends an IGMP Join message. Normally, a
-multicast router examines only Layer 3 information in the IGMP Join message,
-and the router does not have to process any Layer 2 information. However, when
-CGMP is configured on a router, the router also examines the Layer 2
-destination and source MAC addresses of the IGMP Join message. The source
-address is the unicast MAC address of the host that sent the IGMP Join message.
-The router then generates a CGMP Join message that includes the multicast MAC
-address associated with the multicast IP address (to the GDA field of the CGMP
-join) and the unicast MAC address of the host (to the USA field of the CGMP
-message). The router sends the CGMP Join message using the well-known CGMP
-multicast MAC address 0x0100.0cdd.dddd as the destination address.
-
-3. When switches receive a CGMP Join message, they search in their CAM tables
-for the port number associated with the host MAC address listed in the USA
-field. Switches create a new CAM table entry (or use an existing entry if it
-was already created before) for the multicast MAC address listed in the GDA
-field of the CGMP Join message, add the port number associated with the host
-MAC address listed in the USA field to the entry, and forward the group traffic
-on the port.
-
-4. When a host leaves a group, it sends an IGMP Leave message. The router
-learns the host’s unicast MAC address (USA) and the IP multicast group it has
-just left. Because the Leave messages are sent to the All Multicast Routers MAC
-address 0x0100.5e00.0002 and not to the multicast group address the host has
-just left, the router calculates the multicast MAC address (GDA) from the IP
-multicast group the host has just left. The router then generates a CGMP Leave
-message, copies the multicast MAC address it has just calculated in the GDA
-field and unicast MAC address in the USA field of the CGMP Leave message, and
-sends it to the well- known CGMP multicast MAC address.
-
-5. When switches receive a CGMP Leave message, they again search for the port
-number associated with the host MAC address listed in the USA field. Switches
-remove this port from the CAM table entry for the multicast MAC address listed
-in the GDA field of the CGMP Leave message and stop forwarding the group
-traffic on the port.
-
-
-== RGMP
-
-- Router-Port Group Management Protocol
-- Proprietary with informational RFC 3488
-- Layer 2
-- doesn't work with CGMP
-- works well with ICMP snooping
-
-* IGMP snooping helps switches control distribution of multicast traffic on
- ports where multicast hosts are connected, but it does not help switches
- control distribution of multicast traffic on ports where multicast routers
- are connected.
-
-
-
-=== Operations
-
-- When RGMP is enabled on a router, the router sends RGMP Hello messages by
-  default every 30 seconds. When the switch receives an RGMP Hello message, it
-  stops forwarding all multicast traffic on the port on which it received the
-  Hello message.
-
-- When the router wants to receive traffic for a specific multicast group, the
-  router sends an RGMP Join G message, where G is the multicast group address,
-  to the switch. When the switch receives an RGMP Join message, it starts
-  forwarding the requested group traffic on the port on which it received the
-  Hello message.
-
-- When the router does not want to receive traffic for a formerly RGMP-joined
-  specific multicast group, the router sends an RGMP Leave G message, where G
-  is the multicast group address, to the switch. When the switch receives an
-  RGMP Leave message, it stops forwarding the group traffic on the port on
-  which it received the Hello message.
-
-- When RGMP is disabled on the router, the router sends an RGMP Bye message to
-  the switch. When the switch receives an RGMP Bye message, it starts
-  forwarding all IP multicast traffic on the port on which it received the
-  Hello message.
-
-
-.Task: Enable RGMP
-----
-(config-if)# ip rgmp
-----
 
 == IGMP Filtering and Throttling
 
@@ -475,16 +458,12 @@ interface.
 (config-if)# ip igmp max-groups action {deny | replace}
 ----
 
-
-
 == IGMP Snooping
 
 - Problem: L2 switch forwards multicast packets to all interfaces -> wasted traffic
 - Solution: Tracks IGMP messages (Join/Leave) to only forward invites to interested parties.
   ** Add ports when receiving Join message
   ** Delete ports when Leave messages or no membership reports from clients
-
-
 
 
 .Default IGMP Snooping Configuration
@@ -746,6 +725,9 @@ is sent to all source ports on the switch and all interested receiver ports.
 
 
 == IGMP Filtering and Throttling
+
+- filters IGMP traffic on per SVI (Swithc Virtual Interface), per-port or per-VLAN basis on a trunk port
+- requires IGMP snooping
 
 .Default IGMP Filtering Configuration
 [format="csv", options= "header", cols="60,30"]

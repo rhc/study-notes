@@ -1,0 +1,10 @@
+
+!R1
+en
+conf t
+int l0
+  ip addr 1.1.1.1 255.255.255.0
+int g0/2 
+  ip addr 12.1.1.0 255.255.255.0
+int g0/
+end

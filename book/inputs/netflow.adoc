@@ -30,7 +30,6 @@
 
 == NetFlow Version
 
-[horizontal]
 v5::
 -
 -

@@ -235,9 +235,9 @@ NOTE: No echo packets will be sent by the router, and the router will not forwar
 
 
 [horizontal]
-interval :: Rate in milliseconds (50..999) at which BFD control packets will be sent to BFD peers.
+interval:: Rate in milliseconds (50..999) at which BFD control packets will be sent to BFD peers.
 min_rx:: Rate in milliseconds (50..999) at which BFD control packets will be expected to be received from BFD peers.
-multiplier :: Number (3..50) of consecutive BFD control packets that must be missed from a BFD peer before BFD declares that the peer is unavailable and the Layer 3 BFD peer is informed of the failure.
+multiplier:: Number (3..50) of consecutive BFD control packets that must be missed from a BFD peer before BFD declares that the peer is unavailable and the Layer 3 BFD peer is informed of the failure.
 
 
 .Task: Enables BFD on the interface.

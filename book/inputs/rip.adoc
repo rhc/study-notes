@@ -17,9 +17,8 @@ menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios
   * 16 signifying an unreachable network.
 - AD: 120
 - Support CIDR, VLSM, authentication
-- Periodic updates every 30 seconds to multicast address 224.0.0.9
-- Split horizon (without poison reverse on Cisco)
 - Subnet mask included in route entry
+- Split horizon (without poison reverse on Cisco)
 - Administrative distance: 120
 - Route tags when routes are redistributed into RIP
 - Can advertise a next-hop router that is different from itself
@@ -57,13 +56,13 @@ diagram {
 == Request Message
 
 - Command value = 1
-- ask a neighbor to send a partial or a full RIP update immediately,
+- Ask a neighbor to send a partial or a full RIP update immediately,
 - Do not wait for the Update timer to expire
 - Full RIP update
-  * if one routing entry with AF = 0 and metric = 16
+  * If one routing entry with AF = 0 and metric = 16
   * sent when RIP process start, RIP-enabled interfaces comes up, or *clear ip route*
 - Partial update
-  * if one or more route entry
+  * If one or more route entry
   * Seldom used in Cisco IOS
 
 == Response Message
@@ -164,7 +163,7 @@ when classful network boundaries are crossed.
 ----
 (config-router)# neighbor <ip-address>
 ----
-NOTE: the *neighbor* statement does not automatically suppres sthe ssending of the broadcast or multicast update.
+NOTE: the *neighbor* statement does not automatically suppress the sending of the broadcast or multicast update.
 The additional *passive-interface* is required.
 
 == Route Filtering
@@ -187,9 +186,9 @@ The additional *passive-interface* is required.
 == Route Metric
 
 - 16 unreachable network
-- Ripv2 adds 1 to the route metric while sending updates.
-* RIPNg and EIGRIP increment metric when they receive updates
-- maximum routes with same metric to the same subnet
+- RIPv2 adds 1 to the route metric while sending updates.
+* RIPng and EIGRP increment metric when they receive updates
+- Maximum routes with same metric to the same subnet
   * 4 by default
 
 .Task: Add an Offset to Incoming and Outgoing Metrics to RIP Routes
@@ -197,12 +196,32 @@ The additional *passive-interface* is required.
 (config-router)# offset-list <acl> {in | out } <offset> [<interface-type-number>]
 ----
 
+== Counting to Infinity
+
+If the next hop to a particular destination network advertises
+that network with a suddenly increased metric, accept
+the advertisement immediately and update our metric
+accordingly. 
+If the updated metric reaches infinity, stop using that next hop.
+
+
+
 == Split Horizon
+
+- Do not repeat gossip to the person who told it in the first place.
+- Enabled by default on all interfaces except physical Frame Relay and ATM interfaces.
 
 .Task: Disable Split Horizon
 ----
 (config-if)# no ip split-horizon
 ----
+
+- split horizon with poison reverse
+* All routes whose
+outgoing interface matches the interface out which the
+update would be sent are advertised with an infinite metric
+
+
 
 == Interpacket Delay for RIP Updates
 
@@ -214,7 +233,16 @@ The additional *passive-interface* is required.
 (config-if)# output-delay <milliseconds>
 ----
 
-== Rip Optimization Over WAN
+== RIP Optimization Over WAN
+
+
+There are two problems when RIP is not optimized:
+
+- Periodic broadcasting by RIP generally prevents WAN circuits from being closed.
+- Even on fixed, point-to-point links, the overhead of periodic RIP transmissions could seriously interrupt normal data transfer because of the quantity of information that passes through the line every 30 seconds.
+
+To overcome these limitations, triggered extensions to RIP cause RIP to send information on the WAN only when there has been an update to the routing database. Periodic update packets are suppressed over the interface on which this feature is enabled. RIP routing traffic is reduced on point-to-point, serial interfaces. Therefore, you can save money on an on-demand circuit for which you are charged for usage. Triggered extensions to RIP partially support RFC 2091, Triggered Extensions to RIP to Support Demand Circuits .
+
 
 .Task: Enable Triggered Extensions for RIP
 ----
@@ -243,6 +271,7 @@ Invalid After timer::
 
 Holdown timer::
 * Interval during which routing information about better paths is suppressed.
+* Starts when Invalid After timer expires
 * Default: 180 seconds
 * Should be at least 3 times the update timer
 * The route is marked inaccessible and advertised as unreachable.

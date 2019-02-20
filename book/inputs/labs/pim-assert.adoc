@@ -1,0 +1,59 @@
+!R6
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim dense 
+int l0
+  ip pim dense
+  ip igmp join 239.6.6.6
+end
+
+!R4
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim dense 
+int g0/1.45
+  ip pim dense 
+end
+
+
+!R5
+conf t
+ip multicast-routing
+int g0/1.45
+  ip pim dense 
+int g0/1.58
+  ip pim dense 
+end
+
+
+!R8
+conf t
+ip multicast-routing
+int g0/1.108
+  ip pim dense 
+int g0/1.58
+  ip pim dense 
+end
+
+!R10
+conf t
+ip multicast-routing
+int g0/1.108
+  ip pim dense 
+int g0/1.10
+  ip pim dense
+  no ip igmp join-group 239.6.6.6
+end
+
+
+! enable pim dense-mode on t10 between R1 and R5
+!R1,5
+conf t
+int t10
+  ip pim dense
+end
+
+! R1 Dr priority
+

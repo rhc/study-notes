@@ -1,0 +1,192 @@
+= lab 
+
+
+
+source: Narbick OGC
+
+
+!R1
+enable
+conf t
+hostname R1
+line con 0
+  logging sync
+ipv6 unicast-routing 
+ipv6 router eigrp 100
+  eigrp router-id 1.1.1.1
+  no shut
+  metric weights 0 0 0 1 0 0
+int g0/1 
+  no ip address 
+  ipv6 add FE80::21 link-local
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+  delay 9
+int g0/2 
+  no ip address 
+  ipv6 add FE80::31 link-local
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+  delay 15
+int g0/3 
+  no ip address 
+  ipv6 add FE80::41 link-local
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+  delay 4
+end
+
+
+!R2
+enable
+conf t
+hostname R2
+line con 0
+  logging sync
+ipv6 unicast-routing
+ipv6 router eigrp 100
+  eigrp router-id 2.2.2.2
+  no shut
+int g0/1
+  no ip address
+  ipv6 addr FE80::12 link-local
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+  delay 9
+int g0/2
+  delay 1
+  no ip address
+  ipv6 addr FE80::2 link-local
+  ipv6 addr 2001:DB8:CC1E::2/64
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+end
+
+
+
+!R3
+enable
+conf t
+hostname R3
+line con 0
+  logging sync
+ipv6 unicast-routing
+ipv6 router eigrp 100
+  eigrp router-id 3.3.3.3
+  no shut
+int g0/1
+  delay 15
+  no ip address
+  ipv6 addr FE80::13 link-local
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+int g0/2
+  delay 5
+  no ip address
+  ipv6 addr FE80::3 link-local
+  ipv6 addr 2001:DB8:CC1E::3/64
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+end
+
+
+!R4
+en
+conf t
+hostname R4
+line con 0
+  logging sync
+ipv6 unicast-routing
+ipv6 router eigrp 100
+  eigrp router-id 4.4.4.4
+  metric weights 0 0 0 1 0 0
+  no shut
+int g0/1
+  no ip address
+  ipv6 addr FE80::14 link-local
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+  delay 4
+int g0/2
+  no ip address
+  ipv6 addr FE80::4 link-local
+  ipv6 addr 2001:DB8:CC1E::4/64
+  ipv6 enable
+  no shut
+  ipv6 eigrp 100
+  delay 12
+end
+
+
+! change params
+!R1-R4
+conf t
+ipv6 router ei 100
+  metric weights 0 0 0 1 0 0
+end
+
+
+
+!! Delay 
+
+!R1-R2
+conf t
+int g0/1
+  delay 11
+end
+
+
+!! Delay
+!R2
+conf t
+int g0/2
+  delay 3
+end
+
+!! Change 
+! R1
+conf t
+  int g0/1
+    delay 7
+end
+
+! R2
+conf t
+  int g0/1
+    delay 7
+  int g0/2
+    delay 1
+end
+
+
+!! last change 
+conf t
+int g0/1
+  delay 9
+end
+
+
+!!!
+
+
+! R1
+conf t
+int g0/3
+  delay 2
+end
+
+! R4
+conf t
+int g0/2
+  shut
+int g0/1
+  delay 2
+end

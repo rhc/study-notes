@@ -1,0 +1,31 @@
+= EIGRP Unicast updates
+
+!R1-3
+conf t
+router ei 100
+  network 155.1.0.0 0.0.0.255
+  network 150.1.0.0 
+end
+
+!R4
+conf t
+router ei 100
+  network 155.1.0.0 0.0.0.255
+  network 150.1.0.0 
+  no neighbor 150.1.0.5 t0
+  neighbor 155.1.0.5 t0
+end
+
+!R5
+conf t
+router ei MULTI-AF
+  address-family ipv4 unicast as 100
+    network 155.1.0.0 0.0.0.255
+    network 150.1.0.0 
+    no neighbor 150.1.0.4 t0
+    neighbor 155.1.0.4 t0
+    !
+    af-interface t0
+      no split-horizon
+end
+

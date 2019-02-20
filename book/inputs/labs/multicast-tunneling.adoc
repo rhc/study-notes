@@ -1,0 +1,32 @@
+!R5
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5
+int g0/1.58
+  ip pim sparse
+end
+
+!R8
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5
+int g0/1.58
+  ip pim sparse
+int g0/1.108
+  ip pim sparse
+end
+
+!R10
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5
+int g0/1.108
+  ip pim sparse
+end
+
+
+!tunnel
+!r5
+conf t
+
+end

@@ -13,6 +13,7 @@
 == HDLC Frame Format
 
 TODO
+image::ppp-vs-hdlc.png[PPP vs HDLC]
 
 == Encapsulation
 

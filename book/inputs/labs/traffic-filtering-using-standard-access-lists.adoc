@@ -1,0 +1,20 @@
+!R1
+conf t
+access-list 1 permit 150.1.0.0 0.0.6.255
+access-list 1 permit 155.1.0.0 0.0.255.255
+!
+interface g0/1.13
+  ip access-group 1 in
+!
+interface g0/1.100
+  ip access-group 1 in
+!
+interface g0/1.146
+  ip access-group 1 in
+!
+interface t0
+  ip access-group 1 in
+!
+line vty 0 4
+  transport input telnet
+end

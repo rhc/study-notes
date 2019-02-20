@@ -1,6 +1,6 @@
 = IPv4
 
-- RFC 791
+- https:tools.ietf.org/html/rfc791[RFC 791]
 - IP Ethernet protocol: 0x0800
 
 == IP Packet Format
@@ -27,7 +27,7 @@ diagram {
   * Source Address [len=32]
   * Destination Address [len=32]
   * Options (+ padding) [len=32,stacked]
-  * Data (variable) [len=64, color=green]
+  * Data (variable) [len=64, color=green, stacked]
 }
 ----
 
@@ -62,6 +62,9 @@ Flags::
 Fragment Offset::
 Indicates the position of the fragment's data relative to the beginning of the data in the original datagram,
 which allows the destination IP process to properly reconstruct the original datagram.
+- the first fragment has an offset of zero
+- this allows a maximum of offset of (2Power13 - 1) * 8 = 65528 bytes,
+which would excedd the maximum IP packet length of 65535 bytes with the IHL included (65,528 + 20 = 65548 bytes)
 
 Time-to-Live::
 Maintains a counter that gradually decrements down to zero,
@@ -118,12 +121,6 @@ Contains upper-layer information.
 .Task: Disable Classless Addressing
 ----
 (config)# no ip classless
-----
-
-.Task: Specify the Format In Which Netmask Appear for the Current Session
-----
-(config)# line vty <first> <last>
-(config-line)# term ip netmask-format {bitcount | decimal | hexadecimal}
 ----
 
 .Task: Specify the Format In Which Netmask Appear for the Current Line
@@ -291,9 +288,26 @@ Option Number::
 (config)# no ip source-route
 ----
 
-
 == IP fragmentation and Re-assembly
 
+TODO
+
+- minimum MTU: 576 bytes (ipv4) 1280 bytes (ipv6)
+
+- When a router receives a packet, it examines the destination address and
+  determines the outgoing interface to use and that interface's MTU. If the
+  packet size is bigger than the MTU, and the Do not Fragment (DF) bit in the
+  packet's header is set to 0, then the router may fragment the packet.
+
+The router divides the packet into fragments. The max size of each fragment is
+the MTU minus the IP header size (20 bytes minimum; 60 bytes maximum). The
+router puts each fragment into its own packet, each fragment packet having
+following changes:
+
+The total length field is the fragment size.
+The more fragments (MF) flag is set for all fragments except the last one, which is set to 0.
+The fragment offset field is set, based on the offset of the fragment in the original data payload. This is measured in units of eight-byte blocks.
+The header checksum field is recomputed.
 - Fields used: Identification, DF, MF, Offset (and total length of each fragment)
 - when one fragment is lost, the entire IP datagram is resent
   ** IP doesn't have any timeout or retransmission
@@ -304,5 +318,4 @@ Option Number::
 ----
 (config-if)# ip mtu <bytes>
 ----
-
 

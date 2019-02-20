@@ -15,13 +15,13 @@
 
 [horizontal]
 Inside local address::
-The (private) IP address that is assigned to a host on the inside network. 
+(Private) IP address that is assigned to a host on the inside network. 
 Inside global address::
-A (public) IP address that represents one or more inside local IP addresses to the outside world.
+Public IP address that represents one or more inside local IP addresses to the outside world.
 Outside local address::
-The (private) IP address of an outside host as it appears to the inside network. 
+(Private) IP address of an outside host as it appears to the inside network. 
 Outside global address::
-The (public) IP address assigned to a host on the outside network by the owner of the host. 
+Public IP address assigned to a host on the outside network by the owner of the host. 
 
 .Task: Display NAT Translation Information
 ----
@@ -33,6 +33,7 @@ show ip nat statistics
 
 - Statically correlates the same local host to the same public IP address.
 - Does not conserve IP addresses.
+- can be used to make an inside server reachable by internet clients
 
 .Task: Configure Static Translation Of Inside Source Address
 ----

@@ -38,6 +38,11 @@ image::stp-bridge-id.png[Bridge ID]
 
 === BPDU
 
+
+image::bpdu-format.png[Bridge ID]
+
+
+
 .Configuration BPDU
 [graphviz, target= 'configuration-bpdu']
 ----
@@ -118,9 +123,11 @@ Going away from root uses cost.
   * cost = advertised cost in the BPDU hello + cost on the receiving post
 - Cost based on inverse bandwith
 
+TODO right justify the numbers in table below
+
 .Default Port Costs
 ,====
-Speed    , original , revised , 802.1D-2004
+Speed    , Original , Revised , 802.1D-2004
 
 10 Mbps  , 100      , 100     , 2000000
 100 Mbps , 10       , 19      , 200000
@@ -261,9 +268,6 @@ TODO add picture here pp. 78
 - Prevent them to generate TCNs
 - Can generate loops if another switch is connected. so must be used with BPDU guard and root guard features
 
-
-
-
 .Task: Enable Portfast on a given interface
 ----
 (config-if)# spanning-tree portfast
@@ -282,6 +286,10 @@ TODO add picture here pp. 78
 - If BPDUs are received on the port, the port may transition to blocking
 ====
 
+.Task: Disable Portfast on a given interface
+----
+(config-if)# spanning-tree portfast disable
+----
 
 === UplinkFast
 
@@ -293,10 +301,11 @@ addresses of local devices and sends one multicast frame with each local address
 causing all the other switches to update their CAMs. The access switch also clears out the rest of the
 entries in its own CAM.
 - Used only if the switch runs lgacy STP because it is built in to RSTP802.1w
-- cannot be enabled on a switch that has its default STP priority modified
+- can not be enabled on a switch that has its default STP priority modified
+- can not be enabled on root bridge
 
 .Task: Enable Uplink Fast
-----
+---- 
 (config)#  spanning-tree uplinkfast [max-update-rate rate]
 ----
 
@@ -356,16 +365,16 @@ entries in its own CAM.
 === BPDU Filter
 
 - Filter BPDUs out for all portfast interfaces
-- when configured At interface level
+- when configured at interface level
   ** silently drops all received inbound BPDUs
   ** doesn't send any outbound BPDUs
   ** the port never goes into err-disabled state
   ** may cause permanent loops if a switch is connected
-- when configured At switch level
+- when configured at switch level
   ** only affected PortFast-enabled ports
   ** transmits 10 BPDUS at startup
   ** disables portfast and portfast bpdu filtering if BPDU receives during that time
-  ** after startup, f BPDU are received, disables portfast and bpdufilter and acts as other STP port
+  ** after startup, if BPDU are received, disables portfast and bpdufilter and acts as other STP port
 
 
 NOTE: When PortFast is enabled on a port, the port will still send
@@ -389,17 +398,17 @@ from sending or receiving any BPDUs.
 
 === Loop Guard
 
-- protects against unidirectional links
+- Protects against unidirectional links
 - Prevents non-designated ports from inadvertently forming layer 2 switching loops if the flow of BPDUs is interrupted.
 - Puts the port into the *loop-inconsistent* state when the steady flow of BPDUs is interrupted
 - Only used on point-to-point links
 - Can be used with *UDLD aggressive mode* to get extra protection.
 - Cannot be enabled at the time with root guard on the same port
 - When configured at the switch level, only monitors Non-Designated ports
-- takes actions on a per-VLAN level (although configured on a port)
-  ** if a trunk port is in blocking state and stops receiving BPDUs for VLAN 8 from the DP on the segment,
+- Takes actions on a per-VLAN level (although configured on a port)
+  ** If a trunk port is in blocking state and stops receiving BPDUs for VLAN 8 from the DP on the segment,
      it transitions the port into *loop inconsistent only for that VLAN 8
-- recovers automatically when the port starts receiving BPDUs
+- Recovers automatically when the port starts receiving BPDUs
 
   STP Loop Guard is an added logic related to receiving BPDUs on Root and Alternate
   Ports on point-to-point links. In the case of a unidirectional link, these ports could move
@@ -434,9 +443,7 @@ from sending or receiving any BPDUs.
   “state). However, in a case where we are dealing with an aggregated link between two devices, all of the links in the aggregate will transition into the inconsistent state for the particular VLAN that is no longer receiving BPDUs.”
 
 
-You configure the Loop Guard feature on a per-port basis, even though the feature is designed to block inconsistent ports on a per-VLAN basis. In other words[…]”
-
-Excerpt From: Narbik Kocharians. “CCIE Routing and Switching v5.1 Foundations: Bridging the Gap Between CCNP and CCIE (Christian Christian Kyony's Library).” iBooks.
+You configure the Loop Guard feature on a per-port basis, even though the feature is designed to block inconsistent ports on a per-VLAN basis.
 
 === Root Guard
 
@@ -451,9 +458,10 @@ Excerpt From: Narbik Kocharians. “CCIE Routing and Switching v5.1 Foundations:
 - Enforce the root bridge placement by ensuring the port on which root guard is enabled is the designated port.
 - Ensures that the port on which root guard is enabled is the designated port.
 
-- differences with BBPU guard
+- differences with BPDU guard
   ** root-inconsistent state vs err-disabled
   ** automatic recovery vs manual recovery
+  ** cannot be configured globally
 
 
 This message appears after root guard blocks a port:
@@ -472,9 +480,9 @@ https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/
 
 - Improves convergence by
 
-  ** Waiting for only 3 missed Hellos on an RP before flushing the CAM instead of 10 (10x 2 seconds =MaxAge ) with 802.1d
+  ** Waiting for only 3 missed Hellos on an RP before flushing the CAM instead of 10 (10 x 2 seconds = MaxAge) with 802.1d
   ** Bypass listening state
-  ** Includes natively CISCO PortFast, UplinkFast, BackboneFast
+  ** Includes natively Cisco PortFast, UplinkFast, BackboneFast
   ** Add backup DP when multiple ports connected to the same segment
   ** Doesn't use MessageAge
   ** immediate acceptance of inferior BPDUs from DP
@@ -548,11 +556,11 @@ Designated Port::
 
 Alternate Port::
 - An alternate root port
-- Same concept as CISCO UplinkFast feature
+- Same concept as Cisco UplinkFast feature
 - Protects against the loss of a switch's RP by keeping track of the AP with a path to the root
 
 Backup Port::
-- No equivalent CISCO feature
+- No equivalent Cisco feature
 - Protects against losing the DP attached to a shared link
   when the switch has another physical port attached to the same shared segment
 
@@ -618,10 +626,6 @@ tree in the form of BPDUs with the TC flag set, and causes switches to immediate
 their CAM tables for all ports except those ports on which the topology change was
 detected or learned, as they point in the direction of the topology change where a set of
 MAC addresses might have become reachable through a new or improved path.
-Key
-Topic
-Key
-Topic
 
 - Edge ports never cause a topology change event, and MAC addresses learned on them
 are not flushed during topology change event handling.
@@ -645,6 +649,71 @@ are not flushed during topology change event handling.
   * when a switch receives this BPDU, it removes one to the hop counts before sending downstream
   * when the count reaches zero, the switch discards the BPDU and ages the information it holds for the port
   * the message age and maximum age information in the BPDU remain the same  throughout the region and propagated by the region's DP at the boundary.
+
+
+=== MST Frame format
+
+
+[ditaa]
+----
++------------------------------------+
+|              DMAC                  |
++------------------------------------+
+|              SMAC                  |
++------------------------------------+
+|            Length                  |
++------------------------------------+
+|           LLC header               |
++------------------------------------+-----------------------
+| cGRE      Protocol Identifier      |                ^
++------------------------------------+                |
+| cGRE Protocol Version Identifier   |                |
++------------------------------------+                |
+| cGRE          BPDU Type            |                |
++------------------------------------+                |
+| cGRE             Flags             |                |
++------------------------------------+                |
+| cGRE         Root Identifier       |                |
++------------------------------------+                |
+| cGRE         Root Path Cost        |                |
++------------------------------------+                |
+| cGRE      Bridge Identifier        |                |
++------------------------------------+                |
+| cGRE       Port Identifier         |                |
++------------------------------------+                |
+| cGRE          Message Age          |                |
++------------------------------------+               BPDU
+| cGRE           Max Age             |              payload
++------------------------------------+                |
+| cGRE         Hello Time            |                |
++------------------------------------+                |
+| cGRE       Forward Delay           |                |
++------------------------------------+----------      |
+| cYEL      Version 1 Length         |    RSTP/MSTP   |
+|                                    |    Extension   |
++------------------------------------+----------      |
+| cPNK      Version 3 Length         |     ^          |
++------------------------------------+     |          |
+| cPNK MST Config ID Format Selector |     |          |
++------------------------------------+     |          |
+| cPNK       MSTI Config Name        |     |          |
++------------------------------------+     |          |
+| cPNK    MSTI Config reversion      |     |          |
++------------------------------------+     |          |
+| cPNK      MSTI Config Digest       |      MSTP      |
++------------------------------------+   Extension    |
+| cPNK CIST Internal Root Path Cost  |     |          |
++------------------------------------+     |          |
+| cPNK    CIST Bridge Identifier     |     |          |
++------------------------------------+     |          |
+| cPNK     CIST Remaining Hops       |     |          |
++------------------------------------+     |          |
+| cPNK  MSTI configuration Messages  |     |          |
+|             (may be absent)        |     V          V
++------------------------------------+-----------------------
+|               FCS                  |
++------------------------------------+
+----
 
 === MST Region
 
@@ -747,10 +816,6 @@ switches unknowingly participate in CST. Costs in CST reflect only the costs of 
 between regions and in non-MST parts of the network. These costs are called external
 costs by MST.
 
-
-== Protecting Against Unidirectional Link Issues
-
-
 .Task: Configure MST path selection with port cost
 ----
 (config-if)# spanning-tree mst <instance-number> cost <number>
@@ -761,29 +826,10 @@ costs by MST.
 (config-if)# spanning-tree mst <instance-number> port-priority  <number>
 ----
 
+== Protecting Against Unidirectional Link Issues
 
 
-=== UDLD
-
-// Read more in the udld file
-
-- Unidirectional links:
-  * One of the 2 transmission path has failed but not both
-  * Due to miscabling, cutting on fiber cable, unplugging one fiber, GBIC problems, ...
-  * Can cause a loop as the previously blocking port will move to a forwarding state
-
-image::stp-unidirectional-links.png[height=150]
-
-- Solutions:
-
-UDLD **u**ni**d**irectional **l**ink **d**etection:::
-Uses Layer 2 messaging to decide when a switch can no longer receive frames from a neighbor.
-The switch whose transmit interface did not fail is placed into an err-disabled state.
-
-UDLD aggressive mode:::
-Attempts to reconnect with the other switch (eight times) after realizing no messages have been received.
-If the other switch does not reply to the repeated additional messages,
-both sides become err-disabled.
+include::udld.adoc[leveloffset=+2]
 
 
 === Bridge Assurance
@@ -822,8 +868,6 @@ both sides become err-disabled.
 
 
 
-
-
 === Unicast Flooding
 
 == Troubleshooting
@@ -834,5 +878,31 @@ both sides become err-disabled.
 
 - THRILL
 - FabricPath
+
+
+== Troubleshooting 
+
+|====
+| Inconsistency Type | Description and Probable Cause of Inconsistency Type
+
+| (*TYPE_Inc) 
+| PVST+ BPDUs are received on a non-802.1Q port. Usually caused by interconnecting access and trunk ports.
+
+| Port VLAN ID (*PVID_Inc)
+| PVST+ BPDUs are received in a different VLAN than they were originated in. Usually caused by native VLAN mismatch on a trunk.
+
+| PVST Simulation (*PVST_Inc)
+| PVST+ BPDUs received on an MST boundary port do not meet the PVST Simulation consistency criteria.
+
+| Loop (*LOOP_Inc)
+| A Root or Alternate Port tried to become Designated after BPDUs stopped arriving. Seen only on Loop Guard–protected ports.
+
+| Root (*ROOT_Inc)
+| A port tried to become a Root Port after receiving superior BPDUs.  Seen only on Root Guard-protected ports. Also
+ on older switches this state was displayed in place of the PVST_Inc state if PVST Simulation Inconsistency was encountered on a port.
+
+| Bridge Assurance (*BA_Inc)
+| A port stopped receiving BPDUs. Seen only on Bridge Assurance–protected ports
+|====
 
 

@@ -104,8 +104,7 @@ monitor session <1-66> source {interface <id> | vlan <id>} [, | -] [both | rx | 
 
 === VLAN Filtering
 
-- To limit SPAN traffic monitoring on trunk source ports to specific VLANs by using VLAN filtering.
-
+- To limit SPAN traffic monitoring on trunk source ports to specific VLANs
 - Applies only to trunk ports or to voice VLAN ports.
 - Applies only to port-based sessions
 - Not  allowed in sessions with VLAN sources.

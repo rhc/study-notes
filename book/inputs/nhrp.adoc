@@ -1,6 +1,5 @@
 = NHRP
 
-
 TIP:
 if dmvpn phase 3, the tunnel key must be the same as the tunnel key ???
 

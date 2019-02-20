@@ -8,3 +8,31 @@ SW1(config-if)#ip arp inspection trust  ! need to trust other switches
 SW1(config)#ip arp inspection vlan 100  ! turn the feature on globally for the VLAN
 ----
 
+TODO
+
+.task: enable DAI on a specified vlan
+----
+(config)# ip arp inspection vlan <vlan-range>
+----
+
+.task: disable DAI on a specified interface
+----
+(config-if)#no ip arp inspection trust
+----
+
+.task: defines static IP/MAC to be checked by DAI
+----
+(config)# ip arp inspection filter <arp-acl-name> vlan <vlan-range> [static]
+----
+
+.task: Enable additional optional checking of ARP messages 
+----
+(config)# ip arp inspection validate {[src-mac] [dst-mac] [ip]}
+----
+
+.task: Limit the ARP message rate to prevent DoS
+----
+(config)# ip arp inspection limit {rate <pps> [burst interval <seconds>] | none}
+----
+
+

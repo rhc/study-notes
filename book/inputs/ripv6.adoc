@@ -1,3 +1,64 @@
 = RIPng
 
-xxxx
+- UDP 521
+- multicast FF02::9
+- authentication offloaded to IPSec
+- Cisco implementation
+* Authentication or encryption by IPsec is not supported.
+*  Split Horizon can be activated or deactivated only on a per-process basis, not on
+individual interfaces.
+*  Passive interfaces are not supported.
+*  Static (manual) neighbors cannot be configured (no neighbor command).
+*  Per-process offset lists are not supported
+- Cisco implementation improvments 
+* Multiple RIPng processes can be run on a router; however, at the time of writing, at
+most four simultaneously running RIPng processes were supported on IOS-based
+routers. Individual processes are distinguished by an alphanumeric name that is local
+to the router and does not need to match between different routers.
+* Route Poisoning, as an enhancement of the Split Horizon mechanism, can be activated
+on a per-process basis.
+* Interfaces can be configured with a metric-offset value that is added to the metric in
+all received advertisements over that interface, effectively allowing RIPng to operate
+with link costs rather than hop counts.
+* The default route can be originated on a per-interface basis, including an option of
+suppressing all other updates over that interface.
+
+
+
+
+
+.RIP Header Format
+[packetdiag, target="rip-header-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Command [len=8, color=orange]
+  * Version = 2[len=8, color=orange]
+  * Must Be Zero [len=16, color=orange]
+  * IPv6 Prefix (1st routing entry)  [len=128]
+  * Route Tag [len=16]
+  * Prefix Len [len=8]
+  * Metric [len=8]
+  * ... [len=32]
+}
+----
+
+- As RIPng does not assume any multiprotocol capability,
+the address family ID field has been omitted
+
+- Because the next-hop field was relatively unused in RIPv2, keeping a per-prefix nexthop
+field in a route entry would uselessly occupy quite a significant space (128 bits).
+Therefore, the next hop field—if necessary—is specified by a separate route entry
+containing the IPv6 next-hop address (a link-local address) in the IPv6 prefix field,
+the metric value set to 255, and route tag and prefix length fields set to 0. All subsequent
+route entries are to be processed with this particular next hop until another
+next-hop route entry is encountered in the RIPng message. A route entry with the
+IPv6 next-hop address set to :: (all-zero) will revert to the sender of the message
+being the next hop.
+
+
+
+

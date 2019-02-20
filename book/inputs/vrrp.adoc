@@ -1,10 +1,10 @@
 = VRRP
 
-- menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html[VRRP] ]
-- https://wwwietf.org/rfc/rfc3768.txt[RFC 3768]
+menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html[VRRP] ]
 
+- https://wwwietf.org/rfc/rfc3768.txt[RFC 3768]
 - Similar to HSRP
-- Multicast virtual MAC address (0000.5E00.01xx, where xx is the hex VRRP group number).
+- Multicast virtual MAC address (0000.5E00.01__xx__, where __xx__ is the hex VRRP group number).
 - Uses the IOS object tracking feature, rather than its own internal tracking mechanism, to track interface states for failover purposes.
 - Preemption by default
 - The group IP address is the interface IP address of one of the VRRP routers.

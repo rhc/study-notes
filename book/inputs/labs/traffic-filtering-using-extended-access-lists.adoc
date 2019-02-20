@@ -1,0 +1,79 @@
+copy run flash:initial
+!R6
+conf t
+ip http server
+end 
+
+!R5
+conf t
+line vty 0 4 
+  transport input 
+end 
+
+!R4
+conf t
+no ip access-list extended OUTBOUND
+no ip access-list extended INBOUND
+ip access-list extended OUTBOUND
+  remark pmtud
+  permit icmp any any packet-too-big
+  !
+  remark ping 
+  permit icmp any any echo
+  permit icmp  any any echo-reply
+  !
+  remark traceroute
+  permit udp any any range 33434 33474
+  permit icmp any any port-unreachable
+  permit icmp any any time-exceeded
+  !
+  remark eigrp traffic
+  permit eigrp any any 
+  !
+  remark active FTP uses TCP ports 20 and 21
+  permit tcp 155.1.146.0 0.0.0.255 range 20 21 any
+  ! 
+  remark Allows any tcp traffic toward R5 if source from loopback0 subnets
+  permit tcp 150.1.0.0 0.0.255.255 any
+  !
+  remark deny and log any other packets
+  deny ip any any log
+ip access-list extended INBOUND
+  remark pmtud
+  permit icmp any any packet-too-big
+  !
+  remark ping 
+  permit icmp any any  echo
+  permit icmp any any echo-reply
+  !
+  remark traceroute
+  permit udp any any range 33434 33474
+  permit icmp any any port-unreachable
+  permit icmp any any time-exceeded
+  !
+  remark eigrp traffic
+  permit eigrp any any 
+  !
+  remark www traffic
+  permit tcp any 155.1.146.0 0.0.0.255 eq 80
+  !
+  remark Allows SMTP traffic
+  permit tcp any 155.1.146.0 0.0.0.255 eq 25
+  !
+  remark Allows FTP uses TCP ports 20 and 21
+  permit tcp any 155.1.146.0 0.0.0.255 range 20 21
+  !
+  remark Established TCP sessions are traffic returning back
+  permit tcp any 150.1.0.0 0.0.255.255 established
+  !
+  remark deny and log any other packets
+  deny ip any any log
+int g0/1.45
+  ip access-group OUTBOUND out
+  ip access-group INBOUND in
+int t0
+  ip access-group OUTBOUND out
+  ip access-group INBOUND in
+end
+
+

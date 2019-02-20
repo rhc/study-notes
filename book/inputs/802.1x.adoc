@@ -12,10 +12,17 @@
  allows only EAPoL (Extensible Authentication Protocol over LAN), CDP and STP traffic
 
 
-- supplicant: client workstation running 802.1x compliant software
-- authenticator: edge switch or wireless access point
+- supplicant: client driver that supplies username/password prompt to the user and sends/receives the EAPoL messages 
+- authenticator: edge switch or wireless access point, translates between EAPoL and RADIUS and enables/disables ports based on the authentication success/failure
 - authentication server: performs the actual authentication (Radius with EAP)
 
+image::802.1x-lan-authentication.png[802.1X Lan Authentication]
+
+- OTP https://tools.ietf.org/html/rfc2289[RFC 2289]
+- EAP https://tools.ietf.org/html/rfc3748[RFC 3748]
+
+TODO
+Add cmds
 
 
 

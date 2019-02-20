@@ -3,6 +3,23 @@
 
 - UDP 69
 
+passive-mode vs active mode
+
+FTP uses two TCP connections, a control connection to send commands, and a
+data connection to transfer files. The control connection always uses a
+destination port 21. The data connection may work in one of two modes: active
+or passive.
+
+In active mode, when a client issues a command requiring data transfer, the
+server instructs the client to listen on an ephemeral port (above 1024) and
+initiates a connection to the client sourced from port number 20. In this mode,
+the server connects to a client on a dynamic destination port. In passive mode,
+when the client needs to transfer a file, the server opens a new ephemeral port
+(above 1024) and reports it to the client. The client then connects to the
+ephemeral port and the data transfer begins. In this mode, the client connects
+to the server on a dynamic destination port. Note that port 20 is not used in
+passive mode.
+
 == FTP Client
 
 TODO

@@ -1,0 +1,13 @@
+--- 
+- name: Setup INE topology with 10 Routers
+  gather_facts: false
+  hosts: all
+  connection: network_cli
+  become: yes
+  become_method: enable 
+  tasks: 
+  
+    - name: Get Config from routers
+      ios_command:
+        commands:
+          - show version

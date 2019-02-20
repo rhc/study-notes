@@ -1,0 +1,176 @@
+= Labs
+
+== MST
+
+- Source: https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/24248-147.html
+
+[ditaa]
+----
+                                     instance 1
+                     +---------+     VLAN 20    +---------+
++----+ VLAN 10       |         |----------------|         |  VLAN 10   +----+
+| R1 |---------------| SW1     |                | SW2     |------------| R2 |
++----+               |         |----------------|         |            +----+
+                     +---------+     instance 0 +---------+
+                                     VLAN 10
+----
+
+
+- sw1 and sw2 connects with access ports each located in different VLANs
+- SW1 and SW2 are in MST name CCIE revision 1
+- SW1 is the root
+- VLAN 10 is mapped to instance 0, VLAN 20 is mapped to instance 1
+
+- Why R1 can not ping R2? 
+
+!R1
+en
+conf t
+hostname R1
+line con 0
+  logging sync
+int g0/1 
+  ip addr 10.0.0.1 255.255.255.0
+  no shut
+end
+
+!R2
+en
+conf t
+hostname R2
+line con 0
+  logging sync
+int g0/1 
+  ip addr 10.0.0.2 255.255.255.0
+  no shut
+end
+
+
+!SW1
+en
+conf t
+hostname SW1
+line con 0
+  logging sync
+int g0/0
+  shut
+int g0/1 
+  swi access vlan 10
+  swi mode access
+int g0/2 
+  swi access vlan 20
+  swi mode access
+  span port-priority 64
+int g0/3 
+  swi access vlan 10
+  swi mode access
+!
+span mode mst
+span mst configuration
+  name CCIE
+  revision 1
+  instance 1 vlan 20
+end
+
+
+!SW2
+en
+conf t
+hostname SW2
+line con 0
+  logging sync
+int g0/0
+  shut
+int g0/1 
+  swi access vlan 10
+  swi mode access
+int g0/2 
+  swi access vlan 20
+  swi mode access
+int g0/3 
+  swi access vlan 10
+  swi mode access
+!
+span mode mst
+span mst configuration
+  name CCIE
+  revision 1
+  instance 1 vlan 20
+end
+
+!! problem
+This issue is explained by the fact that MST information is conveyed with only
+one BPDU (IST BPDU), regardless of the number of internal instances. Individual
+instances do not send individual BPDUs. When Switch A and Switch B exchange STP
+information for VLAN 20, the switches send an IST BPDU with an MRecord for
+instance 1 because that is where VLAN 20 is mapped. However, because it is an
+IST BPDU, this BPDU also contains information for instance 0. This means that
+the IST instance is active on all ports inside an MST region, whether these
+ports carry VLANs mapped to the IST instance or not.
+
+!! solution
+. use one instance for vlan 10
+. allow vlan 10 in all ports
+
+!SW1
+en
+conf t
+hostname SW1
+line con 0
+  logging sync
+int g0/0
+  shut
+int g0/1 
+  swi access vlan 10
+  swi mode access
+int g0/2 
+  swi access vlan 20
+  swi mode access
+  span port-priority 64
+int g0/3 
+  swi access vlan 10
+  swi mode access
+!
+span mode mst
+span mst configuration
+  name CCIE
+  revision 1
+  instance 1 vlan 20
+  instance 2 vlan 10
+end
+
+
+!SW2
+en
+conf t
+hostname SW2
+line con 0
+  logging sync
+int g0/0
+  shut
+int g0/1 
+  swi access vlan 10
+  swi mode access
+int g0/2 
+  swi access vlan 20
+  swi mode access
+int g0/3 
+  swi access vlan 10
+  swi mode access
+!
+span mode mst
+span mst configuration
+  name CCIE
+  revision 1
+  instance 1 vlan 20
+  instance 2 vlan 10
+end
+
+
+
+=== Two VLANs mapped to the same instance block the same ports
+
+----
+
+
+----

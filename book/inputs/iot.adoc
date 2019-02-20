@@ -22,7 +22,7 @@ with the following basic characteristics (incomplete list):
 
 == Describe Architectural Framework and Deployment Considerations for IoT
 
-image::iot-architecture.png[4 IoT layers, 500,500, float="right"]
+image::iot-architecture.png[4 IoT layers, 300,300, float="right"]
 
 === Data center (DC) Cloud
 
@@ -92,9 +92,10 @@ provisioning (ZTP) which helps with the initial deployment of massive-scale IoT
 deployments. For static components, these components are literally embedded in
 the infrastructure and should be introduced during the construction of a
 building, factory, hospital, etc. These networks are rather stochastic (meaning
-that behavior can be unpredictable). The author classifies wireless devices
-into three general categories which help explain what kind of RF-level
-transmission methods are most sensible:
+that behavior can be unpredictable). 
+
+
+- General categories based on RF-level transmission methods :
 
 . Long range: Some devices may be placed very far from their RF base
 stations/access points and could potentially be highly mobile. Smart

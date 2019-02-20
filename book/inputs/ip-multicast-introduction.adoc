@@ -32,6 +32,7 @@ Address    : Usage
 224.0.0.2  : All multicast routers
 224.0.0.4  : DVMRP routers
 224.0.0.5  : All OSPF routers
+224.0.0.5  : DR and BDR OSPF routers
 2224.0.0.9 : RIPv2 routers
 224.0.0.10 : EIGRP routers
 224.0.0.13 : PIM routers

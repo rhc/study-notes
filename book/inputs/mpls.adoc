@@ -1,13 +1,13 @@
 = MPLS
 
 - Protocol number: 137 ???
+- EtherType: 0x8847 unicast, 0x8848 multicast 
 - packet-forwarding technology which uses labels in order to make data
   forwarding decisions
 - LSP Label Switching Path
 - FEC forwarding equivalence class: a group of IP packets which are forwarded
   in the same manner (e.g., over the same path, with the same forwarding
   treatment)
-
 
 == MPLS Label Stack
 
@@ -18,7 +18,6 @@ digraph g {
   node0 [label ="{Layer2 Header}|{Top Label}|{...}|{Bottom Label} |{Layer 3 Header}"];
 }
 ----
-
 
 .MPLS Header Format
 [packetdiag, target='mpls-header-format']
@@ -37,7 +36,6 @@ digraph g {
 }
 ----
 
-[horizontal]
 Label:: Locally significant to the router
 - 0 : IPv4 Explicit NULL Label. indicates that the label stack must be
   popped, and the packet forwarding must be based on the IPv4 header.
@@ -56,11 +54,31 @@ Label:: Locally significant to the router
   interface (as per the entry in Lfib). Although this value might never appear
   in the encapsulation, it needs to be specified in the Label Distribution
   Protocol, so a value is reserved
-- 4-15: Reseerved
+- 4-15: Reserved
 
 EXP:: Experimental, class of service
 S:: Bottom-of-Stack flag
 TTL:: Time to live
+
+
+== MPLS operations
+
+
+LIB = LDP + RIB
+LFIB = LIB + FIB
+
+
+local label
+remote label
+
+
+label imposition (push)
+label switching 
+label disposition (pop)
+
+PHP
+To avoid 2 lookups at the last lsr
+
 
 
 == Label Distribution

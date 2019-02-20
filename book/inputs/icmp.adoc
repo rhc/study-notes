@@ -62,6 +62,8 @@ Code : Description
 (config-if)# no ip unreachables
 ----
 NOTE: Disabling the unreachable messages also disables IP Path MTU Discovery because path discovery works by having the software send unreachable messages.
+the Path MTU Discovery (PMTUD) process relies on the ICMP message “packet too big,” also known as “fragmentation required but DF bit set.” Note that you can permit all ICMP unreachable messages by using the unreachable keyword, or permit any ICMP message selectively.
+
 
 .Task: Clear all current ICMP unreachable statistics for all configured interfaces
 ----
@@ -212,9 +214,50 @@ access an invalid port (Default 33434) at the destination host, the host
 responds with ICMP "port unreachable" messages that indicate an unreachable
 port. This event signals the traceroute program to finish.
 
-.Task: Disable the generation of ICMP unreachable messages
+TODO
+The source node learns the hop number based on the UDP port number,
+encapsulated as part of the payload in the ICMP response message. If the hop is
+the ultimate destination, it sends an ICMP port unreachable message for the
+port range selected specifically not to match any application. The source node
+learns the hop count based on the port number. By default, the traceroute
+utility only probes up to 30 hops, so the default UDP port range is
+33434…33464.
+
+
+
+== Smurf Attacks, no directed broadcast, RPF check
+
+image::icmp-smurf-attack.png[Smurf Attack, 400, 300, float=right, align=center]
+
+A smurf attack occurs when a host sends a large number of ICMP Echo Requests with a subnet broadcast destination address
+. Routers forward these packets based on normal matching of the IP routing table, until the packet reaches a router connected to the destination subnet. This final router
+then forwards the packet onto the LAN as a LAN broadcast, sending a copy to every device
+Note that the source IP address of the packet sent by the attacker is the IP address of the attacked host.
+All the hosts on the subnet will reply with an Echo reply which may overwhelm the attacked host.
+
+Solution:
+
+- no directed broadcast
+- unicast reverse path forwarding
+
+.Task: Prevent router to forward broadcast onto the LAN
 ----
-(config-if)# no ip unreachables
+(config-if)# no ip directed-broadcast
 ----
+
+.Task: Enable unicast reverse path forwarding check
+----
+(config)# ip cef ! mandatory
+(config-if)# ip verify unicast source reachable-via {rx | any} [allow-default] [allow-self-ping] [<acl>]
+----
+NOTE:
+- use *rx* for strict RPF
+- use *any* for loose RPF
+
+NOTE: Fraggle attacks use similar logic, but instead of ICMP, use the UDP Echo application
+
+
+
+
 
 

@@ -1,5 +1,9 @@
 = OSPFv3
 
+- https://tools.ietf.org/html/rfc5340[RFC 5340 OSPF for IPv6]
+
+- multicast FF02::5, FF02::6
+
 == Concepts
 
 - Type 1 : router LSA do not advertise prefixes.

@@ -22,3 +22,20 @@ Ctlr+N or Down arrow 	Shows previous commands entered.
 show history 	Shows last 10 commands entered by default.
 show terminal 	Shows terminal configurations and history buffer size.
 terminal history size [0-256] 	Changes buffer size (max 256).
+
+
+TODO How to enter a password which contains a ?
+
+press Esc
+let go
+then press q
+let go
+then ?
+
+TODO 
+
+.task: use conditional debug
+----
+# debug condition interface <intf-id>
+----
+

@@ -6,7 +6,6 @@ menu:Cisco Cloud Routers Configuration guides[ WAN > http://www.cisco.com/c/en/u
 - https://tools.ietf.org/html/rfc1661[RFC 1661]
 - https://tools.ietf.org/html/rfc1662[RFC 1662]
 
-
 == PPP Frame Format
 
 - Replaces proprietary type with standard protocol
@@ -15,8 +14,6 @@ menu:Cisco Cloud Routers Configuration guides[ WAN > http://www.cisco.com/c/en/u
 image::ppp-vs-hdlc.png[PPP vs HDLC]
 
 - FCS:: Frame Checksum calculated over the address, control, protocol, information and payload fields
-
-
 
 == PPP LCP
 
@@ -83,12 +80,10 @@ properly.
 
 - originally intended to combine multiple ISDN B-channels without requiring any Layer 3 load balancing
 - now load balance traffic accross any type of point-to-point serial link
-- add a header ( 2 or 4 bytes ) to allow reassembly on the receiving end
 - configuration with multilink interfaces or virtual templates
 - fragmenting each data link layer frame, either based on the number of parallel links or on a configured fragmentation delay.
 * sends the fragments over different links at the same time.
-* adds a header (4 or 2 bytes for Sequence Number and Flags bit) to allow reassembly on the receiving end, MLP adds a header (either 4 or 2 bytes)
-
+* adds a header (4 or 2 bytes for Sequence Number and Flags bit) to allow reassembly on the receiving end
 
 // add example
 
@@ -123,7 +118,7 @@ interface Multilink1
   ppp multilink
   ppp multilink group 1
   ppp multilink fragment-delay 10
-  ppp multilink8 interleave
+  ppp multilink interleave
   service-policy output queue-on-dsc
 ----
 
@@ -142,9 +137,9 @@ interface Multilink1
 - options: LZS (Lempel-Ziv Stacker), MPPC (microsoft point-to-point compression), Predictor
 - LZS use more CPU and less RAM than Predictor algorithm and have better compression ratio
 
-- stacker: supports hdlc, ppp, FR, ATM
-- mppc: ppp, atm
-- predictor: ppp, atm
+- stacker: supports HDLC, PPP, FR, ATM
+- mppc: PPP, ATM
+- predictor: PPP, ATM
 
 - configuration with a matching *compress* command under each interface on both end of the links
 - once configured, ppp starts ccp (compression control protocol) which is another NCP
@@ -178,12 +173,5 @@ read
 http://www.cisco.com/c/en/us/support/docs/wan/point-to-point-protocol-ppp/25440-debug-ppp-negotiation.html#sampdebug[understanding debug ppp negotiation]
 
 
-== MLPP
-
-TODO
-
-- load-balancing over multiple WAN links
-- multi-vendor
-- packet fragmentation, sequencing, load calculation
 
 

@@ -1,6 +1,6 @@
 = LACP
 
-- IEEE 802.3ad
+- IEEE 802.1ax, formely IEEE 802.3ad
 - Automatic creation of port channels
 - Multicast address IEEE 802.3 Slow Protocols: 0180-C200-0002
 - EtherType value: 0x8809

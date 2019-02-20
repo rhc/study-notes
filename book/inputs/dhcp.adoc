@@ -83,9 +83,7 @@ This field may also be used to carry DHCP options, using the “option overload�
 The first four bytes contain the same BOOTP *magic cookie*  (decimal) values 99, 130, 83 and 99.
 The remainder of the field consists of a list of tagged TLV options.
 
-[horizontal]
 .Commonly used options
-
 - 0 Pad
 - 1 Subnet Mask
 - 3 Router Address
@@ -124,10 +122,9 @@ DHCPLEASEUNKNOWN (12), and DHCPLEASEACTIVE (13).
 [graphviz]
 ----
 digraph dhcp_fsm {
-  rankdir=LR
+
   Init [label="INIT" fillcolor="yellow",style=filled]
   Bound [label="Bound\n(Obtain T1 and T2)", fillcolor="green", style=filled]
-
   Init -> Selecting [label="Send DISCOVER"]
   Selecting -> Selecting [label="Collect OFFERs"]
   Selecting -> Requesting [label="Send REQUEST to selected serrver"]
@@ -791,8 +788,50 @@ preventing hackers form spoofing the DHCP server and taking over a DHCP lease of
 - IP Source Guard (discussed later)
 - Dynamic ARP Inspection (discussed later)
 
-
+image::dhcp-attack.png[Man-in-the-middle-attack using DHCP ]
 
 
 .TODO
 add information about option 82
+- dhcp binding db 
+- trusted/untrusted port
+
+1. It filters all messages sent exclusively by DHCP servers.
+2. The switch checks DHCP release and decline messages against the DHCP snooping binding
+table. If the IP address in those messages is not listed with the port in the DHCP snooping
+binding table, the messages are filtered.
+3. Optionally, it compares a DHCP request’s client hardware address value with the source MAC
+address inside the Ethernet frame
+
+
+.Task: Enable DHCP snooping 
+----
+(config)# ip dhcp snooping vlan <vlan-range>
+----
+
+.Task: Enable a trust level on an interface
+----
+(config-if)# ip dhcp snooping trust
+----
+
+.Task: Add static entries to the DHCP snooping database
+----
+(config)# ip dhcp snooping binding <mac-address> vlan <vlan-id> <ip-address> interface <interface-id> expiry <seconds>
+----
+
+.Task: Add optional check of the Ethernet source MAC address to be equal to a DHCP request's client ID
+----
+(config)# ip dhcp snooping verify mac-address
+----
+
+.Task: Set the maximum number of DHCP messages per second to mitigate DoS attacks
+----
+(config)# ip dhcp snooping limit rate <pps>
+----
+
+.Task: Display the DHCP snooping binding database
+----
+# show ip dhcp snooping binding
+----
+
+

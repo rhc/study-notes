@@ -28,6 +28,7 @@ CS7          : network control
 - PHB: Per-Hop Behavior
 
 - Expedited Forwarding (EF):
+* RFC 2598
 * Queue EF packets so that they get scheduled quickly, to give them low latency.
 * Police the EF packets so that they do not consume all bandwidth on the link or starve other queues.
 * Binary value: 101110 Decimal value: 46
@@ -35,12 +36,15 @@ CS7          : network control
 * packets given queue priority
 
 - Assured Forwarding (AF)
+* RFC 2597
 * defines 4 queues with 3 drop priorities
 * stem:[AFx_1y_1 > AFx_2y_2 if x_1 > x_2 or (x_1 = x_2 and y_1 < y_2)]
 * AFxy -> 8x + 2y = decimal value
 
 
 === Ethernet LAN Class Of Service
+
+- Ethernet CoS in ISL or 801.Q trunking header
 
 image::ethernet-cos.png[Ethernet CoS]
 
@@ -50,6 +54,13 @@ image::ethernet-cos.png[Ethernet CoS]
 - Frame Relay DE (Discard Eligibility), 1-bit
 - ATM CLP (Cell Loss Priority ), 1-bit
 - MPLS EXP (Exprimental), 3-bit
+
+
+== MQC
+
+image::mqc.png[Modular QoS CLI]
+
+- cef is required for CB marking
 
 == NBAR
 
@@ -280,7 +291,19 @@ policies will use those markings during the configuration stage.
 # sh auto discovery qos
 ----
 
-image::autoqos-for-enterprise.png[AutoQoS for Enterprise Classes and DSCP Values]
+.AutoQoS for Enterprise Classes and DSCP values
+,===
+Class , DSCP/PHB value, Traffic Types
 
-
+Routing, CS6, EIGRP OSPF
+VoIP, EF(46), RTP Voice Media
+Interactive video, AF41, RTP Video Media
+Streaming video, CS4, Real Audio Netshow
+Control, CS3, RTCP H323 SIP
+Transactional, AF21, SAP Citrix Telnet SSH
+Bulk, AF11, FTP SMTP POP3 Exchange
+Scavenger, CS1, Peer-to-peer applications
+Management, CS2, SNMP Syslog DHCP DNS
+Best effort, All others, All others
+,===
 

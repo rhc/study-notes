@@ -1,0 +1,45 @@
+!R5
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5
+int g0/1.58
+  ip pim sparse
+  !
+ip access-list standard allowedGroups
+  permit 224.10.10.10
+  permit 224.110.110.110
+  !
+ip pim accept-rp 150.1.5.5 allowedGroups
+end
+
+!R8
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5
+int g0/1.58
+  ip pim sparse
+int g0/1.108
+  ip pim sparse
+  !
+ip access-list standard allowedGroups
+  permit 224.10.10.10
+  permit 224.110.110.110
+  !
+ip pim accept-rp 150.1.5.5 allowedGroups
+end
+
+!R10
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5
+int g0/1.108
+  ip pim sparse
+int g0/1.10
+  ip pim sparse
+  ip igmp join 224.10.10.10
+  ip igmp join 224.11.11.11
+end
+
+
+
+

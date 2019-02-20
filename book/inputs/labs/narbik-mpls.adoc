@@ -1,0 +1,287 @@
+
+
+== Addressing
+
+!R1
+conf t
+int l0
+  ip addr 1.1.1.1 255.255.255.0
+int g0/1 
+  ip addr 12.1.1.1 255.255.255.0
+end
+
+!R2
+conf t
+int l0
+  ip addr 2.2.2.2 255.255.255.255
+int g0/1 
+  ip addr 12.1.1.2 255.255.255.0
+int g0/2 
+  ip addr 23.1.1.2 255.255.255.0
+end
+
+
+!R3
+conf t
+int l0
+  ip addr 3.3.3.3 255.255.255.255
+int g0/1 
+  ip addr 23.1.1.3 255.255.255.0
+int g0/2 
+  ip addr 34.1.1.3 255.255.255.0
+end
+
+!R4
+conf t
+int l0
+  ip addr 4.4.4.4 255.255.255.255
+int g0/1 
+  ip addr 34.1.1.4 255.255.255.0
+int g0/2 
+  ip addr 45.1.1.4 255.255.255.0
+end
+
+!R5
+conf t
+int l0
+  ip addr 5.5.5.5 255.255.255.255
+int g0/1 
+  ip addr 45.1.1.5 255.255.255.0
+int g0/2 
+  ip addr 56.1.1.5 255.255.255.0
+end
+
+
+!R6
+conf t
+int l0
+  ip addr 6.6.6.6 255.255.255.0
+int g0/1 
+  ip addr 56.1.1.6 255.255.255.0
+end
+
+
+== IGP within the core
+
+Configure OSPF in the core
+
+!R2
+conf t
+router os 1
+  net 2.2.2.2 0.0.0.0 area 0
+  net 23.1.1.0 0.0.0.255 area 0
+end
+
+!R3-4
+conf t
+router os 1
+  net 0.0.0.0 255.255.255.255 area 0
+end
+
+!R5
+conf t
+router os 1
+  net 5.5.5.5 0.0.0.0 area 0
+  net 45.1.1.0 0.0.0.255 area 0
+end
+
+== LDP 
+
+
+configure LDP
+
+!R2
+conf t
+mpls label range 200 299
+mpls label proto ldp
+mpls ldp router-id l00 force
+int g0/1
+  no mpls ip
+int g0/2
+  mpls ip
+end
+
+
+
+!R3
+conf t
+mpls label range 300 399
+mpls label proto ldp
+mpls ldp router-id l00 force
+router ospf 1 
+ mpls ldp autoconfig
+end
+
+!R4
+conf t
+mpls label range 400 499
+mpls label proto ldp
+mpls ldp router-id l00 force
+router ospf 1 
+ mpls ldp autoconfig
+end
+
+!R5
+conf t
+no mpls label range 200 299
+mpls label range 500 599
+mpls label proto ldp
+mpls ldp router-id l00 force
+int g0/1
+  mpls ip
+end
+
+! Demonstrate that LDP uses UDP 646 for discovery
+
+!R2
+conf t
+access-list 100 permit udp host 23.1.1.2 any
+end
+debug ip pack det 100
+
+
+! Demonstrate that LDP uses TCP 646 for session establishment
+
+!R2
+conf t
+access-list 101 permit tcp host 23.1.1.2 any
+end
+debug ip pack det 101
+
+
+== iBGP
+
+configure R2 and R5 to exchange only vpnv4 routes
+
+Demonstrate that ibgp works only with loopbacks
+
+!R2
+conf t
+router bgp 100
+  no bgp def ipv4-unicast
+  nei 5.5.5.5 remote 100
+  nei 5.5.5.5 update l0
+  !
+  address-family vpnv4
+    nei 5.5.5.5 activate
+end
+
+!R5
+conf t
+router bgp 100
+  no bgp def ipv4-unicast
+  nei 2.2.2.2 remote 100
+  nei 2.2.2.2 update l0
+  !
+  address-family vpnv4
+    nei 2.2.2.2 activate
+ end   
+
+
+== VRF
+
+!R2
+conf t
+ip vrf A
+  rd 1:10
+  route-target both 1:100
+int g0/1
+  ip vrf forwarding A
+  ip add 12.1.1.2 255.255.255.0
+router bgp 100
+  address-family vpnv4
+    nei 5.5.5.5 send-community extended
+end
+
+
+!R5
+conf t
+ip vrf A
+  rd 1:50
+  route-target both 1:100
+int g0/2
+  ip vrf forwarding A
+  ip add 56.1.1.5 255.255.255.0
+router bgp 100
+  address-family vpnv4
+    nei 2.2.2.2 send-community extended
+end
+
+
+== PE-CE
+
+Configure EIGRP between CE and PE
+
+!R1 CE
+conf t
+router ei 1
+  net 1.1.1.1 0.0.0.0
+  net 12.1.1.0 0.0.0.255
+end
+
+
+!R2
+conf t
+router eigrp 1
+  address-family ipv4 vrf A auto 1
+    net 12.1.1.0 0.0.0.255
+end
+
+
+
+!R6 CE
+conf t
+router ei 1
+  net 6.6.6.6 0.0.0.0
+  net 56.1.1.0 0.0.0.255
+end
+
+!R5
+conf t
+router eigrp 1
+  address-family ipv4 vrf A auto 1
+    net 56.1.1.0 0.0.0.255
+end
+
+
+== Redistribution 
+
+TIP: one-way from CE-1 to CE-2
+
+!R2
+conf t
+router bgp 100
+  address-family ipv4 vrf A
+    redistribute eigrp 1
+end
+
+
+!R5
+conf t
+router eigrp 1
+  address-family ipv4 vrf A
+    redistribute bgp 100 metric 1 1 1 1 1
+end
+
+
+! Verify 
+! R1
+deb ip icmp 
+
+TIP: one-way from CE-2 to CE-1
+
+!R5
+conf t
+router bgp 100
+  address-family ipv4 vrf A
+    redistribute eigrp 1
+end
+
+
+!R2
+conf t
+router eigrp 1
+  address-family ipv4 vrf A
+    redistribute bgp 100 metric 1 1 1 1 1
+end
+

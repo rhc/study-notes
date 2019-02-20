@@ -12,6 +12,9 @@
   ** percentage of the available bandwidth of the port
 - by default, filters outs the traffic and err-disable the port
 - can be configured to send a SNMP trap
+- supports only physical ports
+  ** the configuration commands are available on EtherChannel interfaces, but they have no effect
+  
 
 
 .Task: Configure storm control

@@ -1,13 +1,12 @@
 = ARP
 
-- menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/15-mt/arp-15-mt-book.html[ARP] ]
-- https://wwwietf.org/rfc/rfc826.txt[RFC 826]
+menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/15-mt/arp-15-mt-book.html[ARP] ]
 
+- https://wwwietf.org/rfc/rfc826.txt[RFC 826]
 - Finds MAC address of a host given IP address
-- maintains ARP cache
+- Maintains ARP cache
 - ARP Ethernet protocol: 0x0806
 - ARP request for the same address rate-limited to one request every 2 seconds
-
 
 == Protocol
 
@@ -31,15 +30,15 @@ diagram {
   default_node_color = lightyellow
   default_fontsize = 12
 
-  * Hardware Type (Ethernet=1) [len=16]
-  * Protocol Type (IP= 0x0800) [len=16]
-  * Hardware Addr Length (MAC=6) [len=8]
-  * Protocol Addr Length (IP=4) [len=8]
-  * Opcode [len=16]
+  * Hardware Type (Ethernet=1) [len=16, color=lightgreen]
+  * Protocol Type (IP= 0x0800) [len=16, color=orange]
+  * Hardware Addr Length (MAC=6) [len=8, color=lightgreen]
+  * Protocol Addr Length (IP=4) [len=8, color=orange]
+  * Opcode [len=16, color=cyan]
   * Sender Hardware Address [len=48, color=lightgreen]
-  * Sender Protocol Address [len=32, color=yellow]
+  * Sender Protocol Address [len=32, color=orange]
   * Target Hardware Address [len=48, color=lightgreen]
-  * Target Protocol Address [len=32, color=yellow]
+  * Target Protocol Address [len=32, color=orange]
 }
 ----
 
@@ -110,7 +109,7 @@ Internet    10.108.33.9        -           0000.0c01.7bbd     SNAP    Fddi0
 
 - Same message as ARP
 - Allows response for IP address in remote subnet.
-- RFC 1027
+- https://wwwietf.org/rfc/rfc1027.txt[RFC 1027]
 - Mostly replaced by DHCP nowadays
 
 .Task: Disable Proxy ARP Globally
@@ -155,7 +154,7 @@ IMPORTANT: When the router needs to route a packet which matches an entry in the
 ** to update other machine ARP table
 ** to update mac table of the connected switche
 
-TIP: If we see multiple gratitous ARPs from the same host frequently,
+TIP: If we see multiple gratuitous ARPs from the same host frequently,
 it can be an indication of bad Ethernet NICs
 
 
@@ -200,3 +199,4 @@ Typical exploitation of these vulnerabilities:
 a remote system with a forged entry
 - This can be used to redirect IP traffic to other hosts
 
+include::dynamic-arp-inspection.adoc[leveloffset=+1]

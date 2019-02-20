@@ -49,6 +49,10 @@ Type::
 - Initiates the session
 - Contains BGP version , local AS number, BGP router Id
 
+TIP: If 2 BGP peers attempt to establish a connection at the same time,
+the session originated from the device with the higher BGP router-id is maintained.
+(BGP connection collision detection in RFC 4271)
+
 [packetdiag, target="bgp-open"]
 ----
 diagram {
@@ -121,11 +125,13 @@ diagram {
   default_node_color = lightyellow
   default_fontsize = 12
 
-  * Unfeasible Routes Length [len = 16, color = yellow]
-  * Withdrawn Routes (variable) [len = 48, style=dashed]
+  * Unfeasible Routes Length [len = 16, color = orange]
+  * [len=16, color=white, style=dashed]
+  * Withdrawn Routes (variable) [len=32, color=orange, stacked]
   * Total Path Attribute Length [len=16, color = yellow]
-  * Path Attributes (variable) [len=48, style=dashed]
-  * Network Layer Reachability Information (variable) [len=64,style=dashed]
+  * [len=16, color=white, style=dashed]
+  * Path Attributes (variable) [len=32, stacked]
+  * Network Layer Reachability Information (variable) [len=32,color=lime, stacked]
 }
 ----
 
@@ -134,7 +140,7 @@ Unfeasible Routes Length::
 - total length of the following Withdrawn Routes field, in octets.
 
 Withdrawn Routes::
-- variable-length
+- variable length
 - lists routes to be withdrawn from service.
 - Each route in the list is described with a (Length, Prefix) tuple in which the Length is
 the length of the prefix and the Prefix is the IP address prefix of the withdrawn route.
@@ -261,9 +267,6 @@ holdtime 180 seconds
 ----
 
 
-
-
-
 == Autonomous Systems
 
 - AS: set of routers under a single technical administration
@@ -294,21 +297,29 @@ holdtime 180 seconds
 (config-router)# bgp asnotation dot
 ----
 
+.Task: Remove private ASN from AS_PATH
+----
+(config-router)# neighbor <a.b.c.d> remove-private-as
+----
+
+
 == BGP Peers
+
+image::bgp-peer-check.png[BGP Neighbor Parameter Checking, 400, 400]
 
 - Manually configured and not automatically discovered
 - Formed over a TCP connection
+  * The router must receive a TCP connection request with a source address that the router finds in a BGP neighbor command.
+
 - Exchanges PA(Path Attributes) and NLRI (IP/prefix) with the same PA
 - Starts with full BGP routing table then incremental updates
 - Keeps table version number
-
-iBPG peers ::
-  - same AS
-  - must be fully meshed within AS
-
-eBGP peers ::
-  - different AS
-  - by default, one hop away but you can change that with *ebgp-multihop*
+- iBGP peers
+  * same AS
+  * must be fully meshed within AS
+- eBGP peers
+  * different AS
+  * by default, one hop away but you can change that with *ebgp-multihop*
 
 .Task: Configure Neighbor
 ----
@@ -332,7 +343,7 @@ eBGP peers ::
 //# show ip bgp [network-address] [network-mask] [longer-prefixes] [prefix-list prefix-list-name | route-map route-map-name] [shorter prefixes mask-length]
 
 
-== BGP Peer Groups
+=== BGP Peer Groups
 
 - Group of peers with the same update policies ( outbound route maps, distribute lists, filter lists, update source ,)
 - Benefits:
@@ -360,6 +371,23 @@ eBGP peers ::
 ----
 (config-router)# neighbor <ip-address> shutdown
 ----
+
+=== Dynamic neighbor
+
+TODO
+
+BGP dynamic neighbor support allows BGP peering to a group of remote neighbors that are
+defined by a range of IP addresses. Each range can be configured as a subnet IP address.
+BGP dynamic neighbors are configured using a range of IP addresses and BGP peer groups.
+After a subnet range is configured for a BGP peer group and a TCP session is initiated by
+another router for an IP address in the subnet range, a new BGP neighbor is dynamically
+created as a member of that group. After the initial configuration of subnet ranges and activation
+of the peer group (referred to as a listen range group ), dynamic BGP neighbor creation does
+not require any further CLI configuration on the initial router. Other routers can establish a BGP
+session with the initial router, but the initial router need not establish a BGP session to other
+routers if the IP address of the remote peer used for the BGP session is not within the
+configured range.
+
 
 == BGP Session Reset
 
@@ -447,8 +475,6 @@ identical, only the AS_PATH is advertised. The ATOMIC-AGGREGATE attribute, set
 by default for the aggregate-address command, is not added to the AS_SET.
 
 
-
-
 == BGP Backdoor Routes
 
 - Use *network backdoor* to cause BGP to prefer EIGRP
@@ -467,12 +493,16 @@ image::bgp-backdoor-route-topology.png[Backdoor routes, 400, 400]
 . Highest Local Pref
 . Locally Originated Paths (Network, Distribute, Aggregate-Summary) Over Externally Originated Paths
 . Shortest AS Path
-. Lowest Origin Type ( Internal Over External Over Incomplete)
+. Lowest Origin Type (Internal Over External Over Incomplete)
 . Lowest MED
 . EBGP Paths Over IBGP Paths
 . Lowest IGP Cost
 . Oldest Path
 . Lowest BGP Router Id
+. Lowest cluster list length
+. Lowest neighbor Id  
+
+
 
 TIP: “We Love Oranges AS Oranges Mean Pure Refreshment”.
 W Weight (Highest) L Local_Pref (Highest) O Originate (local originate) AS
@@ -480,6 +510,10 @@ As_Path (shortest) O Origin Code (IGP < EGP < Incomplete) M MED (lowest) P
 Paths (External Paths preferred Over Internal) R Router ID (lowest)
 
 TIP: wise lip lovers apply oral medication every night
+
+== Path Attributes
+
+TODO
 
 == Community Attributes
 
@@ -582,7 +616,33 @@ condition is met.
 (config-router)# bgp inject-map <name> exist-map <name> [copy-attributes]
 ----
 
-== BGP Routes
+== BGP Default Routes
+
+Default routes can be injected into BGP in one of three commands:
+- network 
+- redistribute 
+- neighbor neighbor-id default-originate [routemap route-map-name] 
+
+When you inject a default route into BGP using the network command, a route to 0.0.0.0/0 must exist
+in the local routing table, and the network 0.0.0.0 command is required. The default IP route can be
+learned through any means, but if it is removed from the IP routing table, BGP removes the default
+route from the BGP table.
+
+Injecting a default route through redistribution requires an additional configuration command
+—default-information originate. The default route must first exist in the IP routing table; for
+example, a static default route to null0 could be created. Then, the redistribute static command could
+be used to redistribute that static default route. However, in the special case of the default route,
+Cisco IOS also requires the default-originate BGP subcommand.
+
+Injecting a default route into BGP by using the neighbor neighbor-id default-originate [route-map
+route-map-name] BGP subcommand does not add a default route to the local BGP table; instead, it
+causes the advertisement of a default to the specified neighbor. In fact, this method does not even
+check for the existence of a default route in the IP routing table by default, but it can. With the routemap
+option, the referenced route map examines the entries in the IP routing table (not the BGP table);
+if a route map permit clause is matched, the default route is advertised to the neighbor
+
+
+
 
 .Task: Advertise a Default Route to BGP Peers
 ----
@@ -598,7 +658,51 @@ condition is met.
 (config-router-af)# bgp suppress-inactive
 ----
 
-==  Peer Session Template
+
+
+
+== Peer-group, template
+
+TODO
+In older versions of Cisco IOS software, BGP update messages were grouped based on peer
+group configurations. This method of grouping neighbors for BGP update message generation
+reduced the amount of system processing resources needed to scan the routing table. This
+method, however, had the following limitations:
+- All neighbors that shared the same peer group configuration also had to share the same
+         outbound routing policies.
+- All neighbors had to belong to the same peer group and address family. Neighbors
+         configured in different address-families could not belong to different peer groups.
+These limitations existed to balance optimal update generation and replication against peer
+group configuration. These limitations also caused the network operator to configure smaller
+peer groups, which reduced the efficiency of update message generation and limited the
+scalability of neighbor configuration.
+
+
+A peer template is a configuration pattern that can be applied to neighbors that share common
+policies. Peer templates are reusable and support inheritance, which allows the network
+operator to group and apply distinct neighbor configurations for BGP neighbors that share
+common policies. Peer templates also allow the network operator to define very complex
+configuration patterns through the capability of a peer template to inherit a configuration from
+another peer template.
+There are two types of peer templates:
+- Peer session templates are used to group and apply the configuration of general session
+         commands that are common to all address family and Network Layer Reachability
+         Information (NLRI) configuration modes.
+- Peer policy templates are used to group and apply the configuration of commands that
+         are applied within specific address-families and NLRI configuration modes.
+Peer templates improve the flexibility and enhance the capability of neighbor configuration. Peer
+templates also provide an alternative to peer group configuration and overcome some
+limitations of peer groups. With the configuration of the BGP Configuration Using Peer
+Templates feature and the support of the BGP Dynamic Update Peer-Groups feature, the
+network operator no longer needs to configure peer groups in BGP and can benefit from
+improved configuration flexibility and faster convergence.
+
+
+
+
+===  Peer Session Template
+
+TODO
 
 .Task: Create a Peer Session Template
 ----
@@ -615,8 +719,9 @@ condition is met.
 (config-router)# neighbor <ip-address> inherit peer-session <template-name>
 ----
 
-== Peer Policy Template
+=== Peer Policy Template
 
+TODO
 .Task: Create a Peer Policy Template
 ----
 (config-router)# template peer-policy <name>
@@ -703,6 +808,30 @@ Network            Next Hop                      RIB-failure   RIB-NH Matches
 10.1.16.0/24       10.1.15.1           Higher admin distance              n/a
 ----
 
+TODO: Add section on RIB-failure
+
+NOTE: The RIB-failure output is an informational
+message to let us know that although the BGP route is
+valid, it is not being installed in the routing table.
+This usually occurs when there is an identical match
+to a BGP route via an IGP route with a lower
+administrative distance. In the output below, we can
+see that the external EIGRP route with a distance of
+170 prevents the iBGP route from being installed,
+which would normally have a distance of 200:
+
+
+
+NOTE: RIB-failure by itself is not necessarily bad,
+but there are certain cases in which this disconnect
+between the BGP table and the routing table can cause
+traffic loops. By default, BGP routes that have
+RIB-failure can be advertised to other neighbors,
+because the command no bgp suppress-inactive is the
+default option under the routing process. To stop
+RIB-failure routes from being advertised, issue the
+bgp suppress-inactive command under the process.
+
 
 - Display locally configured peer session template
 
@@ -778,6 +907,83 @@ value are silently discarded.
 (config-router)# neighbor <a.b.c.d> ttl-security hops <count>
 ----
 
+TODO Add section on bgp network statement
+
+NOTE: Unlike the network statement used in IGP protocols configuration, the
+BGP version of the command is different. The basic command syntax is
+simple: network <subnet> mask <netmask>. It does not define a group of
+interfaces to enable the protocol, it only specifies the prefix in the IGP
+table (RIB) to be imported into BGP LocRIB. The term LocRIB stands for
+Local RIB and is another name for BGP table, which is separate from the
+routing table (RIB). For the prefix to be imported, it must exactly match
+the specification; it should have the same subnet number and network mask.
+For example, if you have interface Loopback0 with the IP address
+150.1.1.1/24, the command would be network 150.1.1.0 mask 255.255.255.0,
+not network 150.1.1.1 mask 255.255.255.255. The second statement will not
+match any route in the IGP and therefore will not import any prefix. Notice
+that you may omit the mask specification if it matches the default mask for
+the IPv4 address class (such as 255.255.255.0 for class C)
+
+TODO add section on next-hop
+
+NOTE:  When peering with another AS, the common question is how to deal
+with the external next-hop. One way is to use the next-hop-self parameter
+when peering via iBGP or advertising the external link subnet into IGP.
+Another way is to advertise the link subnet into BGP and thus propagate it
+to all iBGP peers. All BGP routers will install it into their RIBs and
+perform a recursive lookup to find the actual next hop for every BGP prefix
+learned from the external AS.
 
 
 
+== BGP Auto-Summary
+
+TODO rewrite this section
+
+BGP auto-summarization is the legacy feature that automatically summarizes
+network prefixes to their classful boundaries when the prefixes are
+advertised into BGP. The automatic summarization starts working when you
+enable it using the command auto-summary under BGP process configuration.
+It only applies in the following two cases:
+
+A network command is configured with a classful subnet, such as network
+54.0.0.0 or network 155.1.0.0 or network 192.168.1.0. In this case, the
+classful aggregate is installed into the BGP table if there is a prefix in
+the IGP table that is a subnet to the classful network. For example, if you
+advertise network 150.1.0.0, it would work if any of the prefixes
+(150.1.2.0/24 or 150.1.3.0/24, etc.) are in the IGP table. This is contrary
+to the regular exact match requirement imposed by the BGP network
+statements.  Prefixes are advertised into BGP using route redistribution.
+All redistributed networks are subject to auto-summarization; that is, only
+the major classful subnets are installed in the BGP table.
+
+
+- redistribute: If any subnets of a classful network would be redistributed, do not redistribute,
+but instead redistribute a route for the classful network.
+- network: If a network command lists a classful network number, with the classful default mask
+or no mask, and any subnets of the classful network exist, inject a route for the classful network.
+
+
+== BGP synchronization 
+
+TODO describe the problem ( black hole and false advertising  -> see narbick vol2 )
+TODO describe solutions: 
+- with sync: redistribute bgp into igp, 
+- with no sync: full-mesh ibgp, full mush inside confederations, partial messh route reflector
+
+Note
+
+Sync includes an additional odd requirement when OSPF is used as the IGP. If the OSPF
+RID of the router advertising the prefix is a different number than the BGP router
+advertising that same prefix, sync still does not allow BGP to consider the route to be the
+best route. OSPF and BGP use the same priorities and logic to choose their RIDs.
+However, when using sync, it makes sense to explicitly configure the RID for OSPF and
+BGP to be the same value on the router that redistributes from BGP into OSPF.
+
+
+== MP-BGP
+
+TODO
+RFC 4364
+
+sh bgp vpnv4 unicast alls labels

@@ -7,7 +7,6 @@ Bundler.require(:default)
 guard :shell do
   watch(%r{book/inputs/.*\.adoc$}) do
     `asciidoctor -n -r asciidoctor-diagram book/inputs/book.adoc -D book/outputs `
-    `asciidoctor-pdf -n -r asciidoctor-diagram book/inputs/book.adoc -D book/outputs`
   end
 end
 

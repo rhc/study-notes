@@ -21,6 +21,18 @@ A subscriber profile allows domain-based clients to have policy applied at the e
 level. This flexibility allows common policy to be set for all users under a domain in one place
 and applied there whether or not user authorization is done locally.
 
+----
+aaa authentication <process> [default|<name>] <methods>
+----
+
+process:
+- local
+- local-case
+- line
+- enable
+- group tacacs+ | radius
+- none
+
 
 Further Reading
 http://goo.gl/aaTqf5

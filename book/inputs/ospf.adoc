@@ -3,31 +3,31 @@
 menu:Configuration Guides[IP Routing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/15-mt/iro-15-mt-book/configuring_ospf.html[OSPF] ]
 
 - link-state interior gateway protocol
-- RFC 2328
+- https://tools.ietf.org/html/rfc2328[RFC 2328]
 - Dijkstra short path first algorithm
-- classless protocol
+- Classless protocol
 - Transport via IP protocol 89
-* multicasts to 224.0.0.5 for AllSPF routers and to 224.0.0.6 for Designated Routers
-* unicasts
-- equal-cost multipath
-- hierarchical design to reduce traffic
-- authentication updates
+* Multicasts to 224.0.0.5 for AllSPF routers and to 224.0.0.6 for Designated Routers
+* Unicasts
+- Equal-cost multipath
+- Hierarchical design to reduce traffic
+- Authentication updates
 
 == Neighbors
 
 To form adjacency neighbors must agree on
 
-- unique router ID
-- unique interface IP address
+- Unique router ID
+- Unique interface IP address
   * primary IP address for OSPFv2
   * link-local address for OSPFv3
-- common attributes
+- Common attributes
   * interface area-id
   * authentication
-  * hello and dead timers
-  * area type (normal, stub, NSSA, )
-  * interface MTU
-  * other optional capabilities
+  * Hello and Dead timers
+  * Area type (normal, stub, NSSA, )
+  * Interface MTU
+  * Other optional capabilities
 
 == Router Id
 
@@ -102,7 +102,8 @@ Router ID:: The ID of the router originating the packet.
 
 Area ID:: The area that the packet is being sent into.
 
-Checksum:: standard IP checksum of the entire contents of the packet, excluding the 64-bit authentication field.
+Checksum:: standard IP checksum of the entire contents of the packet, excluding
+the 64-bit authentication field.
 
 AuType:: Identifies the authentication scheme to be used for the packet.
 
@@ -111,6 +112,10 @@ AuType:: Identifies the authentication scheme to be used for the packet.
 - 2: cryptographic authentication
 
 Authentication:: 64-bit field for use by the authentication scheme.
+
+
+
+
 
 === Hello Packet
 
@@ -131,9 +136,10 @@ diagram {
   default_fontsize = 12
   * OSPF packet header (24 bytes) [len=32, style=dotted, color=white]
   * Network mask [len=32]
-  * Dead interval [len=16]
-  * Hello interval [len=8]
+  * Hello interval [len=16]
+  * Options [len=8]
   * Priority [len=8]
+  * Dead interval [len=32]
   * Designated Router [len=32]
   * Backup Designated Router [len=32]
   * Neighbor(s) [len=32, stacked]
@@ -150,6 +156,17 @@ diagram {
 (config-if)# ip ospf dead-interval {<seconds> | minimal hello-multiplier <number>}
 ----
 
+.Task: Configure the OSPF demand circuit to reduce periodic OSPF hello transmission and paranoid update flooding
+----
+(config-router)# ip ospf demand-circuit
+----
+NOTE: Periodic hellos are only suppressed for point-to-point and
+point-to-multipoint OSPF network types. This feature is
+is negotiated as part of the neighbor adjacency establishment,
+thus only one OSPF router on the segment requires that the feature be enabled.
+If routers on the segment do not support it,
+it will just ignore the option in the HELLO packet,
+but OSPF neighbors will still be established
 
 === Database Description Packet
 
@@ -189,13 +206,43 @@ diagram {
 Interface MTU:: Size of the largest IP message that can be sent on this router's interface
 without fragmentation
 
+I-bit:: Initial for the first in a sequence of DD messages
+M-bit:: More DD follow this one
+MS-bit:: if this message is sent by the master in the communication
+
+
 Options:: For optional OSPF capabilities
 
-I-bit:: Initial for the first in a sequence of DD messages
+[NOTE]
+====
+.Options field
+[packetdiag, target="ospf-options"]
+----
+diagram {
+  colwidth = 8
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * *
+  * *
+  * DC
+  * EA
+  * N/P
+  * MC
+  * E
+  * *
+}
+----
 
-M-bit:: More DD follow this one
+DC-bit:: describes the router's handling of demand circuits
+EA-bit:: describes the router's willingness to receive and forward External-Attributes-LSAs
+N/P-bit:: describes the handling of Type-7 LSAs
+MC-bit:: describes whether IP multicast datagrams are forwarded
+E-bit:: describes the way AS-external-LSAs are flooded
+====
 
-MS-bit:: if this message is sent by the master in the communication
+
+
 
 
 === Link State Request
@@ -254,70 +301,288 @@ LSA headers:: Contains LSA headers to identify the LSAs acknowledged.
   but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired.
 - has a unique LSID (Link State Identifier)
 
-[horizontal]
-
-Type 1:: Router LSA
-  - one per router per area
-  - lists the RouterID,  the IP Addresses and neighbors for each interface in that area
-  - represents Stub networks (subnet on which a router has not formed any neighbor relationships )
-  - flooded only within the same area
-  - LSID = Router ID
-
-Type 2::  Network LSA
-  - one per transit network
-  * network over which two or more OSPF routers have become neighors and elected a DR
-    so that traffic can transit between them
-  * except for point-to-point connection treated as a combination of p2p link and a stub IP network
-    (to facilate unnumbered p2p links)
-  - generated by DR
-  - describes the set of routers attached to a particular network
-  - describes the subnet and the router interfaces connected to the subnet
-  - flooded only within the area that contains the network
-  - LSID = DR's interface IP Address on that subnet
 
 
-Type 3:: Summary inter-area LSA
-  - Generated by ABR
-  - describes inter-area routes to network
-  * represents networks present in one area when being advertised into another area.
-  * Defines the subnets in the origin area, and cost, but no topology data.
-  - Flooded only within its area of origin; reoriginated on ABRs.
+.OSPF Link State Advertisement Header 
+[packetdiag, target="ospf-lsa-header-format"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LS Age [len=16]
+  * Options [len=8]
+  * LS Type [len=8]
+  * LS ID [len=32]
+  * Advertising Router [len=32]
+  * LS Sequence Number [len=32]
+  * LS Checksum [len=16]
+  * Length [len=16]
+}
+----
+
+LS Type::
+1- Network
+2- Router
+3- Summary Links
+4- Summary Links (ASBR)
+5-  AS External link
+
+LS Checksum:: 
+- Fletcher checksum of the complete LSA except LS Age field 
+
+==== Type 1 Router LSA
+
+- one per router per area
+- lists the RouterID,  the IP Addresses and neighbors for each interface in that area
+- represents Stub networks (subnet on which a router has not formed any neighbor relationships )
+- flooded only within the same area
+- LSID = Router ID
 
 
-Type 4:: Summary inter-area LSA
-  - Generated by ABR
-  - Flooded by ABR to all areas except the area containing the ASBR
-  - describes routes to ASBR
-  * tells other routers in the area how to get to the advertising router of an external route
-  - Flooded all areas except the area containing the ASBR
+.Router LSA
+[packetdiag, target="router-lsa"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LSA header[len=32, color=white]
+  * Reserved = 0 [len=5]
+  * V [len=1]
+  * E [len=1]
+  * B [len=1]
+  * Reserved = 0 [len=8]
+  * Number of Links [len=16]
+  * Link Id [len=32]
+  * Link Data [len=32]
+  * Type [len=8]
+  * Number of TOS [len=16]
+  * TOS 0 metric [len=8]
+  * TOS [len=8]
+  * 0 [len=8]
+  * Metric [len=16]
+  * ... [len=32]
+  * TOS [len=8]
+  * 0 [len=8]
+  * Metric [len=16]
+}
+----
 
-Type 5:: AS external LSA
-  - originated by ASBR
-  - describes routes to destinations external to the AS
-  - flooded all over except stub areas
+V:: 
+When set, the router is an endpoint of an active virtual link that is using the described area as a Transit area (V is for virtual link endpoint).
 
-Type 6:: Group Membership LSA
-  - defined for MOSPF
-  - Not supported by Cisco
+E::
+When set, the router is an AS boundary router (E is for external)
 
-Type 7:: NSSA External LSA
-  - Created by ASBRs inside an NSSA, instead of a type 5 LSA.
-  - Flooded only within its area of origin;
-  - converted to type 5 LSA on an ABR toward other areas.
+B::
+When set, the router is an area border router (B is for border)
 
-Type 8:: External Attributes LSA
-  - Created by ASBRs during BGP-to-OSPF redistribution to preserve BGP attributes of redistributed networks.
-  - Not implemented in Cisco routers
+Number of links::
+The number of router links described by this advertisement.
+This must be the total collection of router links (i.e.,
+interfaces) to the area.
+
+The following fields are used to describe each router link
+(i.e., interface). Each router link is typed (see the below
+Type field). The Type field indicates the kind of link being
+described. It may be a link to a transit network, to another
+router or to a stub network. The values of all the other
+fields describing a router link depend on the link's Type.
+For example, each link has an associated 32-bit data field.
+For links to stub networks this field specifies the
+network's IP address mask. For other link types the Link
+Data specifies the router's associated IP interface address.
 
 
-Type 9-11:: Opaque LSA
-  - Used as generic LSAs to allow for easy future extension of OSPF;
-    * for example, type 10 has been adapted for MPLS traffic engineering.
-  - have different flooding scope:
-    * Type 9 has link-local flooding scope,
-    * type 10 has area-local flooding scope,
-    * type 11 has autonomous system flooding scope equivalent to the flooding scope of type 5 LSAs
-    (not flooded into stubby areas and NSSAs).
+
+Type::
+A quick description of the router link. One of the following. Note that host routes are classified as links to stub networks whose network mask is 0xffffffff.
+
+.     Point-to-point connection to another router
+.     Connection to a transit network
+.     Connection to a stub network
+.     Virtual link
+
+Link ID::
+Identifies the object that this router link connects to. Value depends on the link's Type. When connecting to an object that also originates a link state advertisement (i.e., another router or a transit network) the Link ID is equal to the neighboring advertisement's Link State ID. This provides the key for looking up said advertisement in the link state database. See Section 12.2 for more details.
+
+.   Neighboring router's Router ID
+.   IP address of Designated Router
+.   IP network/subnet number
+.   Neighboring router's Router ID
+
+Link Data::
+Contents again depend on the link's Type field. For connections to stub networks, it specifies the network's IP address mask. For unnumbered point-to-point connections, it specifies the interface's MIB-II [RFC 1213] ifIndex value. For the other link types it specifies the router's associated IP interface address. This latter piece of information is needed during the routing table build process, when calculating the IP address of the next hop. See Section 16.1.1 for more details.
+
+Number of TOS::
+The number of different TOS metrics given for this link, not counting the required metric for TOS 0. For example, if no additional TOS metrics are given, this field should be set to 0.
+
+TOS 0 metric::
+The cost of using this router link for TOS 0.
+
+For each link, separate metrics may be specified for each Type of Service (TOS). The metric for TOS 0 must always be included, and was discussed above. Metrics for non-zero TOS are described below. The encoding of TOS in OSPF link state advertisements is described in Section 12.3. Note that the cost for non-zero TOS values that are not specified defaults to the TOS 0 cost. Metrics must be listed in order of increasing TOS encoding. For example, the metric for TOS 16 must always follow the metric for TOS 8 when both are specified.
+
+TOS::
+IP Type of Service that this metric refers to. The encoding of TOS in OSPF link state advertisements is described in Section 12.3.
+
+metric::
+The cost of using this outbound router link, for traffic of
+the specified TOS.
+
+
+===== Type 2  Network LSA
+
+- one per transit network
+* network over which two or more OSPF routers have become neighors and elected a DR
+  so that traffic can transit between them
+* except for point-to-point connection treated as a combination of p2p link and a stub IP network
+  (to facilate unnumbered p2p links)
+- generated by DR
+- describes the set of routers attached to a particular network
+- describes the subnet and the router interfaces connected to the subnet
+- flooded only within the area that contains the network
+- LSID = DR's interface IP Address on that subnet
+
+
+.Network LSA
+[packetdiag, target="network-lsa"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LSA header[len=32, color=white]
+  * Network Mask [len=32]
+  * Attached Router [len=32, stacked]
+}
+----
+
+ 
+==== Type 3 Summary inter-area LSA
+
+- Generated by ABR
+- describes inter-area routes to network
+* represents networks present in one area when being advertised into another area.
+* Defines the subnets in the origin area, and cost, but no topology data.
+- Flooded only within its area of origin; reoriginated on ABRs.
+- Link State ID -> prefix 
+
+
+.Summary LSA
+[packetdiag, target="summary-lsa"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LSA header[len=32, color=white]
+  * Network Mask [len=32]
+  * TOS [len=8]
+  * Metric [len=24]
+}
+----
+
+ 
+==== Type 4 Summary inter-area LSA
+
+- Generated by ABR
+- Flooded by ABR to all areas except the area containing the ASBR
+- describes routes to ASBR
+* tells other routers in the area how to get to the advertising router of an external route
+- Flooded all areas except the area containing the ASBR
+
+.Summary LSA
+[packetdiag, target="summary-lsa"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LSA header[len=32, color=white]
+  * Network Mask [len=32]
+  * TOS [len=8]
+  * Metric [len=24]
+}
+----
+
+==== Type 5 AS external LSA
+
+- Originated by ASBR
+- Describes routes to destinations external to the AS
+- Flooded all over except stub areas
+ 
+
+.AS External LSA
+[packetdiag, target="external-lsa"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * LSA header[len=32, color=white]
+  * Network Mask [len=32]
+  * E [len=1]
+  * TOS [len=7]
+  * Metric [len=24]
+  * Forwarding Address [len=32]
+  * External Route Tag [len=32]
+}
+----
+
+
+Network Mask::
+The IP address mask for the advertised destination. For example, when advertising a class A network the mask 0xff000000 would be used.
+
+For each specified Type of Service, the following fields are defined. The number of TOS routes included can be calculated from the link state advertisement header's length field. Values for TOS 0 must be specified; they are listed first. Other values must be listed in order of increasing TOS encoding. For example, the cost for TOS 16 must always follow the cost for TOS 8 when both are specified.
+
+bit E::
+The type of external metric. If bit E is set, the metric specified is a Type 2 external metric. This means the metric is considered larger than any link state path. If bit E is zero, the specified metric is a Type 1 external metric. This means that is is comparable directly (without translation) to the link state metric.
+
+Forwarding address::
+Data traffic for the advertised destination will be forwarded to this address. If the Forwarding address is set to 0.0.0.0, data traffic will be forwarded instead to the advertisement's originator (i.e., the responsible AS boundary router).
+
+TOS::
+The Type of Service that the following cost concerns. The encoding of TOS in OSPF link state advertisements is described in Section 12.3.
+
+metric::
+The cost of this route. Interpretation depends on the external type indication (bit E above).
+
+External Route Tag::
+A 32-bit field attached to each external route. This is not used by the OSPF protocol itself. It may be used to communicate information between AS boundary routers; the precise nature of such information is outside the scope of this specification.
+
+
+==== Type 6 Group Membership LSA
+
+- defined for MOSPF
+- Not supported by Cisco
+ 
+==== Type 7 NSSA External LSA
+
+- Created by ASBRs inside an NSSA, instead of a type 5 LSA.
+- Flooded only within its area of origin;
+- converted to type 5 LSA on an ABR toward other areas.
+ 
+==== Type 8 External Attributes LSA
+
+- Created by ASBRs during BGP-to-OSPF redistribution to preserve BGP attributes of redistributed networks.
+- Not implemented in Cisco routers
+ 
+==== Type 9-11 Opaque LSA
+
+- Used as generic LSAs to allow for easy future extension of OSPF;
+  * for example, type 10 has been adapted for MPLS traffic engineering.
+- have different flooding scope:
+  * Type 9 has link-local flooding scope,
+  * type 10 has area-local flooding scope,
+  * type 11 has autonomous system flooding scope equivalent to the flooding scope of type 5 LSAs
+  (not flooded into stubby areas and NSSAs).
 
 . OSPF'S SPF Algorithm Links Different Pieces Of Information Together.
 ****
@@ -340,7 +605,9 @@ https://supportforums.cisco.com/document/133976/reading-and-understanding-ospf-d
 
 == Backbone
 
-ABR:: Router actively connected to multiple areas *including* Area 0
+ABR:: 
+Router actively connected to multiple areas *including* Area 0
+
 * has one LSDB for each area
 * runs the SPF for each LSDB then combines the result in a single routing table
 * can summarize and filter routes
@@ -387,6 +654,12 @@ All stubby area types
 (config-router)# area <id> nssa
 ----
 
+.Task: TODO
+----
+(config-router)# area <id> nssa translate type7 suppress-fa
+----
+NOTE: See INE lab for good explanation
+
 
 .Task: Inject Default Routes In NSSA
 ----
@@ -396,12 +669,14 @@ All stubby area types
 === Totally NSSA
 
 - NSSA  where Type 3 are blocked
-
+- but a Type 3 0/0 is created instead
 
 .Task: Configure Totally NSSA
 ----
 (config-router)# area <id> nssa no-summary
 ----
+
+
 
 
 
@@ -455,7 +730,7 @@ http://www.cisco.com/en/US/tech/tk365/technologies_tech_note09186a0080094aaa.sht
 
 == Network Types
 
-broadcast::
+Broadcast::
   - multicast hellos every 10 seconds
   - automatic neighbor discovery
   - DR/BDR election
@@ -636,8 +911,15 @@ NOTE: - inject any and all secondary subnets
 - Null , default: type 0
 - Plain-text, simple password authentication
 
+.Task: Disable authentication
+----
+(config-if)# ip ospf authentication null
+----
+
+.Task: Configure clear-text OSPF authentication
 ----
 (config-router)# area <id> authentication
+(config-if)# ip ospf authentication
 (config-if)# ip ospf authentication-key <string>
 ----
 
@@ -686,7 +968,7 @@ This allows for graceful key migration where a new key can be added without disr
 
 .Task: Configure a Cryptographic Algorithm for the Key Chain
 ----
-(config)# key-chain <name>
+(config)# key chain <name>
 (config-keychain)# key <number>
 (config-keychain-key)# cryptographic-algorithm ?
 
@@ -892,6 +1174,22 @@ prefixes are considered nontransit prefixes.
 * a nontransit routers only forward packets to and from locally attached subnets.
 
 TODO Better explanation
+
+.Task: Advertise the maximum metric value to all neighbors inside its Type-1 Router LSA
+----
+(config-router)# max-metric router-lsa
+----
+
+.Task: Advertise the maximum metric until BGP converges
+----
+(config-router)# max-metric router-lsa on-startup wait-for-bgp
+----
+
+.Task: Advertise the maximu metric for a specified amount of time
+----
+(config-router)# max-metric router-lsa on-startup anounce-time <minutes>
+----
+
 
 
 

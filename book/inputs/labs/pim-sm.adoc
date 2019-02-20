@@ -1,0 +1,70 @@
+copy run flash:pim-sparse-mode.txt
+config replace flash:pim-sparse-mode force
+
+!R6
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim sparse-dense-mode
+end
+
+!R1
+conf t
+ip multicast-routing
+int g0/1.146
+  no ip pim sparse-dense-mode
+int t0
+  no ip pim sparse-dense-mode
+end
+
+
+!R4
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim sparse-dense-mode
+int g0/1.45
+  ip pim sparse-dense-mode
+end
+
+!R5
+conf t
+ip multicast-routing
+int g0/1.58
+  ip pim sparse-dense-mode
+int g0/1.45
+  ip pim sparse-dense-mode
+int t0
+  no ip pim sparse-dense-mode
+end
+
+!R8
+conf t
+ip multicast-routing
+int g0/1.58
+  ip pim sparse-dense-mode
+int g0/1.108
+  ip pim sparse-dense-mode
+end
+
+
+!R10
+conf t
+ip multicast-routing
+int g0/1.108
+  ip pim sparse-dense-mode
+int g0/1.10
+  ip pim sparse-dense-mode
+  ip igmp join-group 224.10.10.10
+  ip igmp join-group 239.0.0.1
+end
+
+!static RP for 224.0.0.0/8 groups
+!R1,4,5,6,8,10
+conf t
+ip access-list standard sparseGroups
+  permit 224.0.0.0 0.255.255.255
+  exit
+ip pim rp-address 150.1.5.5 sparseGroups
+end
+

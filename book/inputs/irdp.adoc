@@ -33,7 +33,6 @@ that can be used as gateway to reach IP-based devices on other networks.
 }
 ------
 
-[horizontal]
 Checksum::
 The 16-bit one's complement of the one's complement sum of the ICMP message,
 starting with the ICMP Type.
@@ -64,7 +63,6 @@ relative to other router addresses on the same subnet. Higher values more prefer
 }
 ----
 
-[horizontal]
 Checksum::
 The 16-bit one's complement of the one's complement sum of the ICMP message,
 starting with the ICMP Type.

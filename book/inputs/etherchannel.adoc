@@ -12,9 +12,10 @@
 
 * Same speed and duplex settings
 * If not trunking, same access VLAN
-* If trunking, same trunk type, allowed VLANs, and native VLAN
+* If trunking, same trunk encapsulation, allowed VLANs, native VLAN, DTP mode
 * On a single switch, each port in a PortChannel must have the same STP cost per VLAN on all links in the PortChannel
 * No ports with SPAN configured
+* If Layer 3, IP address on port-channel and not the physical interface
 
 - When several EtherChannel bundles exist between two switches,
 STP blocks one of the bundles to prevent redundant links.

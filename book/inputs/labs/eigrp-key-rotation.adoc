@@ -1,0 +1,28 @@
+!R1 - 4
+conf t
+!
+no clock timezone 
+end
+clock set 19:34:00 20 OCT 2018
+conf t
+ntp server 155.1.0.5 prefer
+ntp logging
+ntp source-interface t0
+router ei 100
+  network 155.1.0.0 0.0.0.255
+end
+sh clock
+
+!R5
+conf t
+!
+no clock timezone
+end
+clock set 19:34:00 20 OCT 2018
+conf t
+ntp master 2
+router ei MULTI-AF
+  address-family ipv4 unicast as 100
+    network 155.1.0.0 0.0.0.255
+end
+sh clock

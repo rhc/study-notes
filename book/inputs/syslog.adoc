@@ -1,6 +1,6 @@
 = Syslog
 
-- RFC 5424
+- https://www.ietf.org/rfc/rfc5424.txt[RFC 5424]
 - Clear-text protocol that provides event notifications without requiring difficult, time-intensive configuration or opening attack vectors.
 
 .Steps

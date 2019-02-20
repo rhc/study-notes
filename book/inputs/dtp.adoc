@@ -88,7 +88,22 @@ int e0/0.1
 
 What is TOS/TAT in
 
+! The TOS/TAS/TNS stand for Trunk Operating/Administrative/Negotiation Status
+! The TOT/TAT/TNT stand for Trunk Operating/Administrative/Negotiation Type
+
 ----
 sh dtp interface fa 0/19
 ----
 
+== DTP and VTP
+
+While DTP and VTP are independent protocols, DTP carries the VTP domain name in
+its messages. Switches will successfully negotiate the link operating mode only if the
+VTP domain name on both switches is the same, or one switch has no VTP domain name
+configured yet (that is, it uses a NULL domain name). The reason behind tying the DTP
+negotiation to the VTP domain name is that in different VTP domains, there might be different
+sets of VLANs, and identically numbered VLANs might be used for different purposes
+(that is why the network was split into several VTP domains in the first place—to
+keep the VLAN databases separate and independent). As a result, switches should not try
+to bring up the link as a trunk, as extending VLANs from one VTP domain to another can
+have undesired consequences.

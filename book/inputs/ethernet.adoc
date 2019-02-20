@@ -238,7 +238,6 @@ RARP                      , 0x8035
 
 == Troubleshooting
 
-[horizontal]
 Runts::
 - Runts are frames smaller than 64 bytes.
 
@@ -324,6 +323,30 @@ Possible causes of collisions include:
 
 |====
 
+==== Misc: how does Ethennet know how long a frame is ?
 
+TODO
+
+Answer1
+The Physical Coding Sublayer is responsible for delimiting the frames, and
+sending them up to the MAC layer.
+
+In Gigabit Ethernet, for example, the 8B/10B encoding scheme uses a 10 bit
+codegroup to encode an 8-bit byte. The extra two bits tell whether a byte is
+control information or data. Control information can be Configuration,
+Start_of_packet, End_of_packet, IDLE, Carrier_extend, Error_propagation.
+
+That is how a NIC knows where a frame start and ends. This also means that the
+length of the frame is not known before it has fully decoded, analogous to a
+NULL-terminated string in C.
+
+Answer2
+The length field inside the frame is not needed for layer1.
+
+Layer1 uses other means to detect the end of a frame which vary depending on the type of physical layer.
+
+with 10Base-T a frame is followed by a TP_IDL waveform. The lack of further Manchester coded data bits can be detected.
+with 100Base-T a frame is ended with an End of Stream Delimiter bit pattern that may not occur in payload data (because of its 4B/5B encoding).
+A rough description you can find e.g. here: http://ww1.microchip.com/downloads/en/AppNotes/01120a.pdf "Ethernet Theory of Operation"
 
 

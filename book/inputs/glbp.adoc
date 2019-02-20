@@ -6,7 +6,7 @@ menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/
 - Up to 4 primary AVFs (active virtual forwarder)
 - Up to 1024 GLBP groups per physical interface
 
-- AVG responds to all ARP requests with MAC from all particapating AVF
+- AVG responds to all ARP requests with MAC from all participating AVF
 * Not with own MAC address like HSRP
 - Load-balancing
 * Round-robin (default)
@@ -19,9 +19,9 @@ menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/
 == GLBP Packet Type
 
 [horizontal]
-Hello:: advertise protocol info, multicast, sent by any AVG or AVF in [Speak, Standby, Active] State
-Request:: request virtual MAC, unicast sent to AVG
-Reply:: get virtual MAC, unicast sent from AVG
+Hello:: Advertise protocol info, multicast, sent by any AVG or AVF in [Speak, Standby, Active] State
+Request:: Request virtual MAC, unicast sent to AVG
+Reply:: Get virtual MAC, unicast sent from AVG
 
 == Active Virtual Gateway
 

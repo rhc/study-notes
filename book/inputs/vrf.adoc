@@ -27,22 +27,22 @@ interface <type slot/subslot/port>
 .Task: Create a VRF
 ----
 (config)# vrf definition <name>
-(config-vrf)# description <same useful information>
+(config-vrf)# description <some useful information>
 ----
 
 == Route Distinguisher
 
 - 64-bit prepended to every route in the respective VRF routing table
 - create unique VPNv4 prefix in case two VPNs contain the same prefixes
-- the first 2 bytes represent the RD type
-- the last 6 bytes can be
+- The first 2 bytes represent the RD type
+- The last 6 bytes can be
 * Common format: ASN(2bytes):Site(4bytes) or ASN(4bytes):Site(2bytes)
 * Alternative format: a.b.c.d:NN
 
 
 == Route Target
 
-- RT is Path attribute of the NLRI
+- RT is Path Attribute of the NLRI
 - 1 or + for each RD/prefix
 - useful in overlapping VPNs or central service VPN offered by SP
 - Allows for granular control of traffic

@@ -8,7 +8,7 @@ menu:Configuration Guides[MPLS > http://www.cisco.com/c/en/us/td/docs/ios-xml/io
 - Hellos multicast to 224.0.0.2
 - Updates unicast TCP to LDP ID
 - supercedes Cisco TDP
-
+- must uses /32 loopback addresses
 
 == LDP process
 
@@ -22,12 +22,12 @@ menu:Configuration Guides[MPLS > http://www.cisco.com/c/en/us/td/docs/ios-xml/io
 (config)# mpls label protocol {ldp|tdp}
 ----
 
-.Task: Enable Ldp at IGP Process
+.Task: Enable LDP at IGP Process
 ----
 (config-router)#mpls ldp autoconfig
 ----
 
-.Task: Verify Ldp Is Enabled
+.Task: Verify LDP Is Enabled
 ----
 # sh mpls interfaces
 ----

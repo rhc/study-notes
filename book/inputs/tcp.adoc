@@ -45,6 +45,8 @@ diagram {
 }
 ----
 
+
+
 == Connection establishment
 
 .Three-Hand Shake
@@ -76,6 +78,11 @@ http://www.omnisecu.com/tcpip/tcp-sliding-window.php
 == TCP Options
 
 TODO
+TODO
+how tcp options work
+
+
+what is the ACL IP otions selective drop feature
 
 == Ident
 
@@ -101,17 +108,36 @@ TODO
 
 The TCP small servers are:
 
-- Echo: Echoes back whatever you type through the telnet x.x.x.x echo command.
-- Chargen: Generates a stream of ASCII data. Use the telnet x.x.x.x chargen
+- Echo: (port 7) Echoes back whatever you type through the telnet x.x.x.x echo command.
+- Chargen: (port 19) Generates a stream of ASCII data. Use the telnet x.x.x.x chargen
 command.
-- Discard: Throws away whatever you type. Use the telnet x.x.x.x discard
+- Discard: (port 9) Throws away whatever you type. Use the telnet x.x.x.x discard
 command.
-- Daytime: Returns system date and time, if it is correct. It is correct if you run
+- Daytime: (port 13) Returns system date and time, if it is correct. It is correct if you run
 Network Time Protocol (NTP), or have set the date and time manually from the exec level. Use the telnet x.x.x.x daytime command.
 
 .Task: Enable TCP small servers
 ----
 (config)# service tcp-small-servers
 ----
+
+== TCP SYN flood 
+
+- attack directed at servers by initiating large numbers of TCP connections, but
+not completing the connections. Essentially, the attacker initiates many TCP connections, each with
+only the TCP SYN flag set, as usual. The server then sends a reply (with TCP SYN and ACK flags
+set)—but then the attacker simply does not reply with the expected third message in the three-way
+TCP connection setup flow. The server consumes memory and resources while waiting on its
+timeouts to occur before clearing up the partially initialized connections. The server might also reject
+additional TCP connections, and load balancers in front of a server farm might unbalance the load of
+actual working connections as well.
+
+- solution:
+* filter packets whose TCP header shows only the SYN
+flag set—in other words, filter all packets that are the first packet in a new TCP connection. 
+* use an ACL with the *established* keyword
+* use *TCP intercept* 
+TODO
+
 
 

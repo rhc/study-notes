@@ -1,0 +1,55 @@
+!R1
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim dense
+int t10
+  ip pim dense
+end
+
+!R4
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim dense
+end
+
+
+!R5
+conf t
+ip multicast-routing
+int t10
+  ip pim dense
+int g0/1.58
+  ip pim dense
+ip mroute 0.0.0.0 0.0.0.0 t10 
+end
+
+!R6
+conf t
+ip multicast-routing
+int g0/1.146
+  ip pim dense
+end
+
+!R8
+ip multicast-routing
+int g0/1.108
+  ip pim dense
+int g0/1.58
+  ip pim dense
+end
+
+!R10
+ip multicast-routing
+int g0/1.108
+  ip pim dense
+end  
+
+! debug on R5
+conf t
+int t10
+  no ip mfib cef input
+  no ip mfib cef output
+end
+deb ip mfib pak

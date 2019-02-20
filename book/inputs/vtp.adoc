@@ -47,7 +47,7 @@ VTP version running: 2
 === V3
 
 - Supports the whole IEEE 802.1q vlan range up to 4095 ( v1 and v2 support only normal range VLANs 1-1005)
-- Can send private LAN information in addition to normal VLAN information.
+- Can send PVLAN information in addition to normal VLAN information.
 - Backward compatible with VTP 2
 - Add support for databases other than VLAN databases such as MST databases.
 - Clear text or hidden password protection
@@ -58,7 +58,7 @@ VTP version running: 2
 - Can deactivate VTP on a per-trunk basis
 - VTPv3 is a generalized mechanism for distributing contents of an arbitrary database,
   and is not limited to synchronizing VLAN information over a set of switches:
-  * As an example, VTPv3 is also capable of distributing and synchronizing the MST region configuration among all switches in a VTP domain
+  * For example, VTPv3 is capable of distributing and synchronizing the MST region configuration among all switches in a VTP domain
 
 
 For more information, read
@@ -117,7 +117,6 @@ diagram {
 }
 ----
 
-[horizontal]
 Followers:: Indicates that this packet is followed by a Subset Advertisement packet.
 Updater Identity:: IP address of the switch that is the last to have incremented the configuration revision.
 Update Timestamp:: Date and time of the last increment of the configuration revision.
@@ -204,6 +203,8 @@ For two switches to communicate in VTP, they must first be interconnected throug
 - Defaults to NULL value
 - Switch inherits VTP domain name of first received advertisement over trunk links
 - A switch can only be part of one domain at a time
+- case-insentive ??? CHECK in lab
+- vtp needs at least 10Mb Ethernet CHECK
 
 .Task: Set the VTP Domain Name
 ----
@@ -281,7 +282,7 @@ Off (configurable only in CatOS switches)::
 
 == VTP Security
 
-- MD5 authentication prevents against certain attack
+- MD5 authentication prevents against certain attacks
   * Does not prevent against misconfiguration
   * Password must be setup manually because switches only exchanges MD5 digest of the password.
 

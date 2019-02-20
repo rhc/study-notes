@@ -1,7 +1,7 @@
 = PPPoE
 
-
 - Ethertype:	0x8863 (Discovery Stage), 0x8864 (PPP Session Stage)
+- RFC 2516
 
 - used for digital subscriber line (DSL) Internet access
 because the public telephone network uses ATM for its transport protocol;
@@ -57,13 +57,14 @@ Length:: Size of the data field in bytes
 
 mnemo (ROTIS, SORTI)
 
-.Packet types
- - PADR
- - PADO
- - PADT
- - PADI
- - PADS
+.PPPoE Active Discovery  frames (EtherType = 0x8863)
+ - PADI: Initiation broadcasted by the clients
+ - PADO: Offer unicasted by Access Concentrators
+ - PADR: Request unicast by client
+ - PADS: Session-confirmation unicast by server with unique Session Id
+ - PADT: Termination
 
+.PPPoE Session Stage (Ethertype = 0x8864)
 
 == PPPoE Server
 
@@ -136,17 +137,15 @@ image::pppoe-topology-example.png[height=150]
 
 .Task: Verify PPPoE Connectivity
 ----
-show pppoe session
+# show pppoe session
 ----
 
 .Task: Debug
 ----
-debug pppoe [data | errors | events | packets]
+# debug pppoe [data | errors | events | packets]
 ----
 
 == PPPoE Authentication
 
 TODO: Add section from configuration guides
-
-
 

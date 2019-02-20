@@ -1,0 +1,36 @@
+!R1
+conf t
+aaa new-model
+ip tacacs source-interface lo0
+tacacs-server host 155.1.146.100
+tacacs-server key CISCO
+!
+line con 0
+  login authentication CONSOLE
+  exit
+  !
+line vty 0 4 
+  login authentication VTY
+  password cisco
+  transport input telnet
+  exit
+  !
+enable secret cisco
+username ADMIN password CISCO
+aaa authentication login CONSOLE local
+aaa authentication login VTY group tacacs+ line
+aaa authentication enable default group tacacs+ enable
+!
+aaa authentication username-prompt "Please Enter Your ID:"
+aaa authentication password-prompt "Please Enter Your Password:"
+aaa authentication banner #
+This system requires you to identify yourself
+#
+aaa authentication fail-message #
+Authentication failed, Sorry
+#
+end
+
+!! Enable aaa debugging
+debug aaa authentication
+

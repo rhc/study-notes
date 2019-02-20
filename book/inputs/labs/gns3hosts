@@ -1,0 +1,11 @@
+[routers]
+R1 ansible_host=172.16.201.101
+R2 ansible_host=172.16.201.102
+R3 ansible_host=172.16.201.103
+R4 ansible_host=172.16.201.104
+R5 ansible_host=172.16.201.105
+R6 ansible_host=172.16.201.106
+R7 ansible_host=172.16.201.107
+R8 ansible_host=172.16.201.108
+R9 ansible_host=172.16.201.109
+R10 ansible_host=172.16.201.110

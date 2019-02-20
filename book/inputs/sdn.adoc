@@ -15,7 +15,7 @@ Distributed::
 
 Augmented::
 
-image:sdn-augmented.png[Augmented model, 450, 450, float="right"]
+image:sdn-augmented.png[Augmented model, 350, 350, float="right"]
 
 - fully distributed control-plane by adding a centralized controller that can apply policy to parts of the network at will. Such a
 controller could inject shorter-match IP prefixes, policy-based routing (PBR),
@@ -37,7 +37,7 @@ distributed model, which is known to work “well enough” in many cases.
 
 Hybrid::
 
-image:sdn-hybrid.png[Hybrid model, 450, 450, float="right"]
+image:sdn-hybrid.png[Hybrid model, 350, 350, float="right"]
 
 - like the augmented model except that controller-originated policy can be imposed anywhere in the network.
 - additional granularity to network administrators;
@@ -172,7 +172,7 @@ management system. A Chef cookbook is loosely equivalent to a Puppet manifest.
 custom software needs to be installed on any device provided that it supports
 SSH. This can be a drawback since individual device CLIs must be exposed to
 network operators (or, at best, the Ansible automation engine) instead of using
-a more abstract API design.
+a more abstract API design. Uses Python and Powershell. 
 
 * SaltStack: CLI-based, master-client or non-centralized environments
 
@@ -268,7 +268,7 @@ virtual network.
 === DevOps Methodologies, Tools and Workflows
 
 - Culture: People over Process over Tools
-- CI/CD: continuous Integration / Continous Deployment
+- CI/CD: Continuous Integration / Continous Deployment
 a. Everyone can see the changes: Dev, Ops, Quality Assurance (QA), management, etc
 b. Verification is an exact clone of the production environment, not simply a smoke-test on a
 developer’s test bed
@@ -289,8 +289,7 @@ ASAv, Cisco NGIPSv, etc), telephony and collaboration components (Cisco UCM,
 CUC, IM&P, UCCX, etc) and many other things that were once physical appliances.
 Separating these things into virtual functions allows a wide variety of
 organizations, from cloud providers to small enterprises, to select only the
-components they require. The following chapter describes a commonly used and
-powerful NFV/AFV use case.
+components they require. 
 
 
 === Service Function Chaining
@@ -317,7 +316,7 @@ d. Cisco vPath: This is a Cisco innovation that is included with the Cisco Nexus
 |===
 | Model |  Distributed | Augmented | Hybrid| Centralized
 
-| Availability:
+| Availability
 | Dependent on the protocol convergence times and redundancy in the network
 | Dependent on the protocol convergence times and redundancy in the network. Doesn’t matter how bad the SDN controller is ... its failure is tolerable
 | Dependent on the protocol convergence times and redundancy in the network. Doesn’t matter how bad the SDN controller is ... its failure is tolerable

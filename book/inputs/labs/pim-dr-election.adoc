@@ -1,0 +1,38 @@
+config replace flash:initial-multicast.txt  force
+copy run flash:initial-multicast.txt
+
+!R1
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5 
+int g0/1.146
+  ip pim sparse-mode
+  ip pim dr-priority 0
+end
+
+!R4
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5 
+int g0/1.146
+  ip pim sparse-mode
+end
+
+!R5
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5 
+int g0/1.45
+  ip pim sparse
+end
+
+!R6
+conf t
+ip multicast-routing
+ip pim rp-address 150.1.5.5 
+int g0/1.146
+  ip pim sparse-mode
+  ip pim dr-priority 0
+end
+
+

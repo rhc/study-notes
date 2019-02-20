@@ -1,7 +1,7 @@
 = CEF
 
-- enabled by default
-- can be central or distributed accross multiple line cards
+- Enabled by default
+- Central or distributed accross multiple line cards
 - Uses the FIB and the adjacency table
 - Improves over process switching and fast switching methods
 
@@ -29,10 +29,21 @@ CEF               , FIB tree and adjacency table                    , Per a hash
 # sh ip interface <type number>
 ----
 
+== RIB
+
+- routing information base for each protocol( RIP, EIGRP, OSPF, ... )
+- may contain many routes going to the same destination prefix
+
+
 == FIB
 
-- contains the prefixes and next-hop address from each entry in the IP routing table structured in a way that is optimized for forwarding.
-- no need for route cache maintenance because there is a one-to-one correlation between FIB entries and routing table entries
+- best routes from possibly many routing protocols in the RIB
+- contains the prefixes and next-hop address from each entry in the IP routing
+table structured in a way that is optimized for forwarding.
+- no need for route cache maintenance because there is a one-to-one correlation
+between FIB entries and routing table entries
+- one FIB for centralized forwarding platforms or one for each line card for distributed systems
+
 
 .Task: Display the FIB Contents
 ----
@@ -46,8 +57,16 @@ Prefix              Next Hop            Interface
 
 ----
 
+
+TODO
+
+----
+# sh ip cef exact-route [source] [destination]
+----
+
 == Adjacency Table
 
+- 'adjacent' devices (single hop across a link layer)
 - stores outbound interface and MAC header rewrite for adjacent nodes
 
 .Task: Display the Contents Of the Adjacency Table
@@ -124,20 +143,19 @@ Thus, the adjacency is resolved.
 ----
 [NOTE]
 ====
-[horizontal ]
 Original algorithm::
 - produces distortions in load sharing across multiple routers
   because the same algorithm is used on every router.
-
++
 Universal algorithm::
 - allows each router on the network to make a different load sharing decision for each source-destination address pair,
 - avoids original CEF polarization
 - Use a randomly generated Universal ID as seed for the hash function
 - default
-
++
 Tunnel algorithm::
 - when there are only a few source and destination pairs
-
++
 Include-ports algorithm::
 - uses Layer 4 source and destination ports in the load-balancing decision.
 - benefits traffic streams running over equal cost paths that are not load shared
@@ -153,5 +171,16 @@ GTP-U TEID-Based ECMP Load-Balancing Algorithm::
 ----
 (config)# ip cef load-sharing algorithm universal <id>
 ----
+
+== Misc
+
+C4K_L3HWFORWARDING-2-FWDCAMFULL
+
+sh platform hardware ip route summary
+
+%MLSCEF-DFC4-7FIB_EXCEPTION: FIB TCAM exception
+
+when BGP PIC enabled, CEF recursion is disabled when next-hop is learned via /32 mask
+or next-hop is directly connected.
 
 

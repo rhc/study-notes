@@ -4,6 +4,12 @@
 
 sec-data-acl
 
+standard vs numbered
+wildcard mask
+
 
 == Reflexive ACL
+
+TODO PACL vs VACL
+
 

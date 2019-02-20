@@ -1,18 +1,19 @@
 = EIGRP
 
-- classless protocol (VLSM, summarization)
-- multiprotocol support (ipv4, ipv6, ipx, appletalk, )
-- uses its own transport protocol
+- Classless protocol (VLSM, summarization)
+- Multiprotocol support (ipv4, ipv6, ipx, appletalk, )
+- Uses its own transport protocol
   ** IP protocol 88: RTP
   ** Uses multicast to 224.0.0.10 and unicast
 - Administrative distance : 90 internal routes, 5 summary routes , 170 external routes
 - Forms active neighbor adjacencies
-- DUAL for loop-free topology and fast convergence
-- granular metric
-- unequal cost load balancing
-- summarization
-- Supports MD5 and SHA based authentication
-- https://tools.ietf.org/html/rfc7868[rfc7868]
+- DUAL for loop-free topology and fast convergence (Garcia-Luna-Acenes, 1993)
+  ** loop free at every instant including periods of topology changes and network reconvergence
+- Granular metric
+- Unequal cost load balancing
+- Summarization
+- supports MD5 and SHA based authentication
+d https://tools.ietf.org/html/rfc7868[rfc7868]
 
 == EIGRP Packet Format
 
@@ -24,10 +25,9 @@ diagram {
   node_height = 32
   default_node_color = lightyellow
   default_fontsize = 12
-
-  * Version = 2[len=4]
-  * Opcode [len=4]
-  * Checksum [len=24]
+  * Version = 2[len=8]
+  * Opcode [len=8]
+  * Checksum [len=16]
   * Flags [len=32]
   * Sequence Number [len=32]
   * Acknowledgement Number [len=32]
@@ -39,34 +39,69 @@ diagram {
 
 Opcode:: EIGRP packet type
 - 1 = Update, 3 = Query, 4 = Reply, 5 = Hello/Ack, 10 = SIA Query, 11 = SIA Reply.
-- Other types have been allocated for different, mostly unimplemented
-  purposes, or are obsolete
+- Other types have been allocated for different, mostly unimplemented purposes, or are obsolete
 
 Checksum::
 - based on the entire EIGRP packet excluding the IP header.
 
-Flags::
-- 0x1 = Init (used during initial adjacency buildup)
-- 0x2 = Conditional Receive (used by RTP to allow this message to be received only by a subset of receivers)
-- 0x4 = Restart (indicates that a router has restarted)
-- 0x8 = End-of-Table (indicates that the transmission of the entire EIGRP database is complete).
+Flags:
+- 0x1 = Init: set in the initial UPDATE packet sent to  a newly discovered neighbor. Requests the neighbor to advertise its  full set of routes.
+- 0x2 = CR: Conditional Receive (used by RTP to allow this message to be received only by a subset of receivers)
+  * A router enters in CR mode when it receives and processes a HELLO packet with a Sequence TLV present.
+- 0x4 = RS: Restart (indicates that a router has restarted)
+- 0x8 = EOT: End-of-Table (indicates that the transmission of the entire EIGRP database is complete).
+  *  The End-of-Table flag marks the end of the startup
+      process with a neighbor.  If the flag is set, it indicates the
+      neighbor has completed sending all UPDATEs.  At this point, the
+      router will remove any stale routes learned from the neighbor
+      prior to the restart event.  A stale route is any route that
+      existed before the restart and was not refreshed by the neighbor
+      via and UPDATE.
 
-Sequence::
+Sequence Number::
 - Facilates orderly delivery of packets
+- seq=0 means that an acknowledgment is not required
 
 Acknowledgement::
-- sequence number of the last packet heard from the neighbor to which this
-packet is being sent.
+- Sequence number of the last packet heard from the neighbor to which this packet is being sent.
 - A Hello packet with a nonzero ACK field  will be treated as an ACK packet rather than as a Hello.
 - only unicast because acknowledgments are never multicasted.
 
 Virtual Router Id::
-- 0x1 = Unicast Address Family
-- 0x2 = Multicast Address Family
+- Packets received with an unknown, or unsupported value will be discarded
+- 0x0 = Unicast Address Family
+- 0x1 = Multicast Address Family
 - 0x8000 = Unicast Service Address Family (in service advertisement framework)
+- 0x2 - 0x7FFF, 0x8001 - 0xFFFF = Reserved
 
 TLV::
 - Field used to carry route entries as well as provide EIGRP DUAL information.
+
+
+[packetdiag, target="eigrp-tlv",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Type high [len=8]
+  * Type low [len=8]
+  * Length [len=16]
+  * Value (variable length) [len=32, color=orange]
+}
+----
+
+.Type High: defines the protocol classification
+,==
+Protocol     , Id   , Version
+
+General       , 0x00 , 1.2
+IPv4          , 0x01 , 1.2
+IPv6          , 0x04 , 1.2
+SAF           , 0x05 , 3.0
+Multiprotocol , 0x06 , 2.0
+,==
 
 * 0x0001 EIGRP Parameters (General TLV Types)
 * 0x0002 Authentication Type (General TLV Types)
@@ -80,15 +115,172 @@ TLV::
 * 0x0602 Multi Protocol Internal Routes (AFI-Specific TLV Types)
 * 0x0603 Multi Protocol External Routes (AFI-Specific TLV Types)
 
+
+.Parameter TLV
+[packetdiag, target="eigrp-parameter-tlv",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Type = 0x0001 [len=16]
+  * Length = 0x000C [len=16]
+  * K1 [len=8]
+  * K2 [len=8]
+  * K3 [len=8]
+  * K4 [len=8]
+  * K5 [len=8]
+  * K6 [len=8]
+  * Hold Time [len=16]
+}
+----
+
+
+Hold Time:: 
+The amount of time in seconds that a receiving router
+should consider the sending neighbor valid.  A valid neighbor is
+one that is able to forward packets and participates in EIGRP.  A
+router that considers a neighbor valid will store all routing
+information advertised by the neighbor.
+
+
+.Authentication TLV
+[packetdiag, target="eigrp-authentication-tlv",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Type = 0x0002 [len=16]
+  * Length [len=16]
+  * Auth Type [len=8]
+  * Auth Length [len=8]
+  * Auth Data (variable) [len=16, color=orange]
+}
+----
+
+- may be used in any EIGRP packet
+- routers receiving a mismatch in authentication TLV shall discard the packet
+- Auth Type 
+* 0x02 : MD5
+* 0x03 : SHA2-256 
+
+
+.Sequence TLV
+[packetdiag, target="eigrp-sequence-tlv",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Type = 0x0003 [len=16]
+  * Length [len=16]
+  * Address Length [len=8, color=orange, stacked]
+  * Protocol Address (variable) [len=24, color=orange, stacked]
+}
+----
+
+.Next Multicast Sequence
+[packetdiag, target="eigrp-next-multicast-sequence-tlv",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Type = 0x0005 [len=16]
+  * Length = 0x0008 [len=16]
+  * Sequence Number [len=8, color=orange, stacked]
+}
+----
+
+
+
+
+.IPv4 Internal Routes TLV
+[packetdiag, target="eigrp-ip-internal-route-tlv",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Type = 0x0102 [len=16]
+  * Length [len=16]
+  * Next Hop [len=32]
+  * Delay [len=32]
+  * Bandwidth [len=32]
+  * MTU [len=24]
+  * Hop Count [len=8]
+  * Reliability [len=8]
+  * Load [len=8]
+  * Reserved=-0x0000 [len=16]
+  * Prefix Length [len=8]
+  * Destination [len=24]
+}
+----
+
+
+.IPv4 External Routes TLV
+[packetdiag, target="eigrp-ip-external-route-tlv",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Type = 0x0103 [len=16]
+  * Length [len=16]
+  * Next Hop [len=32]
+  * Originating Router [len=32]
+  * Originating AS Number [len=32]
+  * Arbitrary Tag [len=32]
+  * External Protocol Metric [len=32]
+  * Reserved [len=16]
+  * External Protocol Id [len=8]
+  * Flags [len=8]
+  * Delay [len=32]
+  * Bandwidth [len=32]
+  * MTU [len=24]
+  * Hop Count [len=8]
+  * Reliability [len=8]
+  * Load [len=8]
+  * Reserved=-0x0000 [len=16]
+  * Prefix Length [len=8]
+  * Destination [len=24]
+}
+----
+
+Next Hop:: 
+- next-hop IP address. 
+- On a multiaccess network, the router advertising the route might not be the best next-hop router to the destination. 
+* The Next Hop field allows the “bilingual” router to tell its EIGRP neighbors, “Use address A.B.C.D as the next hop instead of using my interface address.”
+
+Originating Router:: 
+router ID of the router that redistributed the external route into the EIGRP autonomous system.
+Originating Autonomous System Number – is the autonomous system number of the router originating the route.
+Arbitrary Tag:: may be used to carry a tag set by route maps.
+External Protocol Metric:: metric of the external protocol.
+External Protocol ID::  specifies the protocol from which the external route was learned. 
+0x01 = IGRP, 0x02 = EIGRP, 0x03 = Static Route, 0x04 = RIP, 0x05 = Hello, 0x06 = OSPF, 0x07 = IS-IS, 0x08 = EGP, 0x09 = BGP, 0x0A = IDRP, 0x0B = Connected Link.
+Flags:: currently constitute just two flags. 
+- If the right-most bit of the eight-bit field is set (0x01), the route is an external route. 
+- If the second bit is set (0x02), the route is a candidate default route.
+
+
 == EIGRP Messages
 
-- Unreliable packets: Hello and Ack (with Seq=0)
+- Unreliable packets: Hello and Ack (with SEQ=0)
 - Reliable packets: Update, Query/Reply, SIA-Query/SIA-Reply
- * sent with non-zero SEQ
- * Must be ACK
- * are retransmitted at most 16 times for a max window of 5 secons
+ * Sent with non-zero SEQ
+ * Must be ACK'ed
+ * Retransmitted at most 16 times for a max window of 5 seconds
 
-Hello::
+=== Hello
+
 - Opcode = 5
 - Multicast to 224.0.0.10 or FF02::A
 - unicast to static neighbors
@@ -98,11 +290,12 @@ Hello::
 - Non-reliable
 
 
-Ack::
+=== Ack
+
 - unicast in response to Update, Query, Reply, SIA-Query, and SIA-Reply packets
 - contains a nonzero acknowledgement number set to the Sequence number of the reliable packet being acknowledged.
-- uses the same Opcode as the Hello packet
-- Non-reliable
+- Same Opcode = 5 as the Hello packet but no TLV, 
+- Non-reliable 
 
 NOTE: it is allowed to use any unicast reliable packet to also carry an acknowledgment number.
 If a router has both a unicast reliable packet to send to a neighbor and also needs to acknowledge a previously received reliable packet from that neighbor,
@@ -111,10 +304,10 @@ It is not necessary to send a standalone ACK in this case;
 the unicast reliable packet carrying a nonzero Acknowledgment number field will be processed by its recipient both by its true type and as an ACK.
 
 
-Update::
+=== Update
+
 * reliable
-* unicast during a new adjacency buildup, Update packets are unicasted between the
-  newly discovered neighbors.
+* unicast during a new adjacency buildup, Update packets are unicasted between the newly discovered neighbors.
 
   ** In specific cases, when multiple new neighbors are detected on a single multiaccess interface in a short time span,
   EIGRP might choose to synchronize to them using multicasts for efficiency reasons
@@ -124,23 +317,30 @@ Update::
 * unicast if a neighbor does not acknowledge the arrival of an Update packet
 * always unicasts on point-to-point interfaces and for statically configured neighbors
 
-Query::
+
+TODO Add note on initialization sequence NULL UPDATE packet , INIT and RS flags RFC 7868 section 5.3.3
+
+=== Query
+
 - Opcode = 3
 - reliable
 - multicast unless in response to a received query
 
-Reply::
+=== Reply
+
 - Opcode = 4
 - unicast
 - indicates that it does not need to go into Active state
 because it has a FS
 
-Request::
+=== Request
+
 - unicast or multicast
 - get specific info from neighbors
 - used in route server applications
 
-SIA-Query::
+=== SIA-Query
+
 - Opcode = 10
 - unicast
 - used during a prolonged diffusing computation to verify whether a neighbor
@@ -153,7 +353,8 @@ SIA-Query::
   governs the maximum time a diffusing computation is allowed to run is reset,
   giving the computation extra time to finish
 
-SIA-Request::
+=== SIA-Request
+
 - Opcode = 11
 - unicast
 
@@ -187,8 +388,8 @@ debug ip eigrp packet [hello | ack | update } quey | reply]
 == Neighbors
 
 - Discovered with Hello packets
-- can be set manually
-- must agree on
+- Can be set manually
+- Must agree on
   * Primary IPv4 subnet
   * Autonomous System Number
   * Authentication
@@ -269,6 +470,29 @@ IMPORTANT: EIGRP does not build peer relationships over secondary addresses. All
 
 === Split Horizon
 
+- Split horizon suppresses a QUERY and Poison Reverse advertises a destination as unreachable 
+under the following conditions: 
+* two routers are in startup or restart mode
+  ** When two routers first become neighbors, they exchange topology
+   tables during startup mode.  For each destination a router receives
+   during startup mode, it advertises the same destination back to its
+   new neighbor with a maximum metric (Poison Route).
+* advertising a topology table change
+  ** If a router uses a neighbor as the successor for a given destination,
+   it will send an UPDATE for the destination with a metric of infinity.
+* sending a QUERY/UPDATE
+  ** In most cases, EIGRP follows normal split-horizon rules.  When a
+   metric change is received from the successor via QUERY or UPDATE that
+   causes the route to go ACTIVE, the router will send a QUERY to
+   neighbors on all interfaces except the interface toward the
+   successor.
+   ** An exception to this can occur if a router receives a QUERY from its
+   successor while already reacting to an event that did not cause it to
+   go ACTIVE, for example, a metric change from the successor that did
+   not cause an ACTIVE transition, but was followed by the UPDATE/QUERY
+   that does result the router to transition to ACTIVE.
+
+
 - Enabled by default on all interfaces
 
 .Task: Disable Split Horizon for EIGRP
@@ -309,9 +533,17 @@ asciimath:[Metric = 256 * ((k_1 * B\a\n\dwidth + (k_2 * B\a\n\dwidth)/(256 - Loa
 === Delay Metric Component
 
 * in tens-of-microseconds
+* estimates the serialization delay incurred by the interface 
+** in theory, dynamic value depends on both the interface transmission speed as well as the serialized packet's size 
+** in practice, static value depends on interface hardware type 
 * sum of delay on the path to the destination
 * Range: 1..16_777_214
 * EIGRP split horizon with poison reverse, route withdrawal uses max delay 16,777,215 to indicate an  unreachable network
+estimates the serialization delay incurred by the interface. Of
+course, in real life, the serialization delay would depend both on the interface transmission
+speed as well as the serialized packet’s size
+
+
 
 IMPORTANT: *show ip interface* displays delay in micro-seconds
 
@@ -330,9 +562,8 @@ IMPORTANT: *show ip interface* displays delay in micro-seconds
 === Load Metric Component
 
 * Maximum effective Txload of the route with 255 means 100% loading
-
 * To account for large differences in the momentary load caused by bursty traffic,
-IOS actually computes an exponentially weighted average over the
+IOS actually computes a five-minute exponentially weighted average over the
 momentary load that smooths out short-lived load swings.
 
 * Because an interface can be differently utilized in the ingress and egress data flow direction,
@@ -682,12 +913,11 @@ r - Reply:: status Flag that is set after the software has sent a query and is w
 RD:: Reported Distance
 
 CD::
-- Computed Distance = RD + link cost
+- Computed Distance = RD + link cost from peer
 - Total metric along a path from the current router to a destination network
   through a particular neighbor computed using that neighbor's Reported
   Distance (RD) and the cost of the link between the two routers.
-- Exactly one CD is computed and maintained per the [Destination, Advertising
-  Neighbor] pair.
+- Exactly one CD is computed and maintained per (Destination, Advertising Neighbor) pair.
 
 FD::
 - Feasible Distance
@@ -711,8 +941,7 @@ whose value is never advertised to another router.
 === Feasibility Condition
 
 - Feasibility condition: RD < FD
-* sufficient but not necessary condition
-* not every loop-free path satisfies the FC
+* sufficient but not necessary condition (not every loop-free path satisfies the FC)
 * proven by Dr. J. J. Garcia-Luna-Aceves
 * also called the Source Node Condition
 
@@ -730,9 +959,13 @@ SDAG::
 
 === Topology Changes
 
-- A topology change occurs whenever the distance to a network changes or a new neighbor comes online that advertises the network.
-* The distance change can be detected either through receiving an Update, Query, Reply, SIA- Query, or SIA-Reply packet from a neighbor that carries updated
-metric information about the network, or because a local interface metric has changed.
+TODO check RFC section 3.3
+
+- A topology change occurs whenever the distance to a network changes or a new
+  neighbor comes online that advertises the network.
+* The distance change can be detected either through receiving an Update,
+* Query, Reply, SIA- Query, or SIA-Reply packet from a neighbor that carries
+* updated metric information about the network, or because a local interface metric has changed.
 * Also, the event of a neighbor going down is processed by setting the CD/RD of all networks reachable through that neighbor to infinity.
 
 - Whenever EIGRP detects a topology change,
@@ -1182,6 +1415,10 @@ TODO
 
 == EIGRP Route Authentication
 
+
+
+
+
 - Supports MD5 in classic mode
 - Supports MD5 and SHA-256 in multi-af mode
 
@@ -1296,6 +1533,8 @@ over the usual reconvergence process in EIGRP to learn about the other route.
  Add-Path feature, apart from possible tuning of the maximum-paths command to
  be allowed to insert multiple equal-cost paths into their routing tables.
 
+NOTE: Add-Path not compatible with variance. Variance must be = 1 if using Add-Path 
+
 == Passive Interface
 
 - Suppresses EIGRP hello packets and routing updates on interfaces
@@ -1402,7 +1641,5 @@ log-neighbor-warnings :  Enable/Disable IP-EIGRP neighbor warnings (default=ever
 ----
 
 === SoO
-
-TODO
 
 
