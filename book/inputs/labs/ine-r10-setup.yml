@@ -6,13 +6,16 @@
   become: yes
   become_method: enable 
   tasks: 
-  
-    - name: Get Config from routers
-      ios_command:
-        commands:
-          - show version
-      register: output1
+    - name: configure ntp server
+      ios_config:
+        lines:
+          - ntp server 2.2.2.2
+          - ntp server 1.1.1.1
+      notify: save configuration  
+  handlers:
+    - name: save configuration
+      ios_command: 
+        commands: wr
+    
+ 
 
-    - name: print result
-      debug:
-        var: output1.stdout_lines
