@@ -1,0 +1,6 @@
+basic.layer.2.switching.cfg
+catalyst.multicast.cfg
+ip.services.initial.cfg
+lan.switching.initial.spanning.tree.cfg
+lan.switching.initial.vtp.cfg
+security.initial.cfg
