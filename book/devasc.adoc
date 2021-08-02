@@ -1,0 +1,13 @@
+= software development and design
+
+SDLC
+- software development Life Cycle
+- phases:
+  * planning
+  * defining
+  * designing
+  * building
+  * testing
+  * deployment 
+
+

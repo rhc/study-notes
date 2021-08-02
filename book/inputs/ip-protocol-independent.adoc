@@ -5,6 +5,32 @@
 
 == Static Routes
 
+- directly attached static routes
+- recursive static routes
+  * requires next-hop address (connected, static, dynamic) to exist in RIB
+  * may not resolve the next-hop forwarding address using default route entry 0/0 (TODO lab)
+- fully specified static routes
+  * removes recursive lookup 
+  * does not involve ARP
+
+.Task: Configure a directly attached static routes  
+----
+(config)# ip route <network> <subnet-mask> <next-hop-interface-id>
+----
+
+
+.Task: Configure a fully specified  static routes  
+----
+(config)# ip route <network> <subnet-mask> <next-hop-interface-id>  
+----
+
+.Task: Configure a static Null routes  
+----
+(config)# ip route <network> <subnet-mask> <next-hop-interface-id>  
+----
+
+
+
 == Default Routes
 
 == Variable-Length Subnet Masks

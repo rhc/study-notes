@@ -226,6 +226,7 @@ concludes that there are no more members of the group on a subnet.)
 - source filtering SSM
 - uses 224.0.0.22 for membership reports
 - Backward compatible with v1 and v2
+- include and exclude mode
 
 .Task: Specify the IGMP Version
 ----
@@ -248,7 +249,7 @@ or the *ip igmp query-max-response-time* interface configuration commands.
 - Selects preferred router to send Query messages when multiple routers are connected on the same subnet
 - Each IGMPv2 router sends general query message to 224.0.0.1 with its interface source address.
 - The router stops upon receiption of query messages with lowest IP address
--> The router with the lowest IP address wins
+- => The router with the lowest IP address wins
 
 === IGMPv2 Query Timeout
 

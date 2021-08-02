@@ -31,9 +31,9 @@ a neighbor. The switch whose transmit interface did not fail is placed into an e
 === Normal Mode
 
 - default
-- marks as *Undertermined* if port at Layer 1 is still up
+- marks as *Undetermined* if port at Layer 1 is still up
 - does NOT shutdown or disable the port
-- does NOt prevent physical loops (informational and less disrupptive)
+- does NOT prevent physical loops (informational and less disrupptive)
 
 
 === Aggresive Mode

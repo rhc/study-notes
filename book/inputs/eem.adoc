@@ -4,19 +4,11 @@ menu:Configuration Guides[Embedded Management > http://www.cisco.com/c/en/us/td/
 
 - in-box, event tracking management
 - EEM Components:
-
-
-* EEM server – an internal process that handles the interaction between the
-publishers and subscribers.
-
-* EEM publisher (detector) – software that screens events, publishes if there is
-a policy match. Some of the different detectors are CLI, NetFlow, SNMP, syslog,
-timers and counters.
-
-* EEM subscriber (policy) – defines an event and actions to be taken. There are
-two policy types, applets with IOS CLI and scripts written using TCL.
-
-
+  * EEM server: an internal process that handles the interaction between the publishers and subscribers.
+  * EEM publisher (detector): software that screens events, publishes if there is a policy match.
+    Some of the different detectors are CLI, NetFlow, SNMP, syslog, timers and counters.
+  * EEM subscriber (policy): defines an event and actions to be taken.
+    There are two policy types, applets with IOS CLI and scripts written using TCL.
 
 The creation of an EEM policy involves:
 
@@ -25,10 +17,64 @@ The creation of an EEM policy involves:
 - Defining the environment variables, if required.
 - Choosing the actions to be performed when the event occurs.
 
+== Example
 
 
+----
+event manager applet gigaEthernet0_down
+  event syslog pattern "Interface GigabitEthernet0/0, changed state to administratively down" period 1
+  action 1.0 cli command "enable"
+  action 2.0 cli command "config terminal"
+  action 3.0 cli command "interface g0/0"
+  action 4.0 cli command "shutdown"
+  action 5.0 cli command "no shutdown"
+  action 6.0 cli syslog msg "GIG 0/0 went down!"
+  action 7.0 mail server 10.0.0.25 to ckyony@changamuka.com
+    from no-reply@gmail.com 
+    subject "Interface g0/0 issues"
+    body "G0/0 interface was bounced. Please monitor accordingly. "_cli_result""
+!
+end
+
+debug event manager action cli
+----
 
 
+----
+event manager environment filename Router.cfg
+event manager environment tftpserver tftp://12.10.19.66/
+event manager applet BACKUP-CONFIG
+  event cli pattern "write mem.*" sync yes
+  action 1.0 cli command "enable"
+  action 2.0 cli command "configure terminal"
+  action 3.0 cli command "file prompt quiet"
+  action 4.0 cli command "end"
+  action 5.0 cli command "copy start $tftpserver$filename"
+  action 6.0 cli command "configure terminal"
+  action 7.0 cli command "no file prompt quiet"
+  action 8.0 syslog priority informational message "Configuration File Changed! TFTP backup successful."
+----
+
+
+.Example EEM applet calling Tcl script
+----
+event manager applet Ping
+  event none
+  action 1.0 cli command "enable"
+  action 2.0 cli command "tclsh flash:/ping.tcl"
+----
+
+
+# event manager run Ping
+
+== Variables
+
+common variables
+
+_email_server_ 
+_email_to_
+_email_from_
+_email_cc_
 
 
 

@@ -1,0 +1,67 @@
+= MACSec
+
+- IEEE 802.1AE
+- hop-by-hop encryption with symmetric key cryptography
+- can be used with SGT to secure the payload of the frame.
+
+
+
+== Frame format
+
+image::macsec.png[]
+
+
+
+TODO
+
+MACsec provides MAC-layer encryption over wired networks. MACsec uses
+out-of-band methods for encryption keying. Required session keys are provided,
+and encryption keys managed by MACsec Key Agreement (MKA) Protocol. After
+successful authentication, MKA and MACsec are implemented using the 802.1x
+Extensible Authentication Protocol (EAP) framework. Host facing links (links
+between network access devices and endpoint devices such as a PC or IP phone)
+can only be secured using MACsec MKA encryption.
+
+Depending on the policy assigned to the client connected to a secured port,
+(access port the client is connected to requiring MACsec), a switch will accept
+either MACsec or non-MACsec frames. An Integrity Check Value (ICV) encrypts and
+protects MACsec frames. Frames received at the switch from the client are
+decrypted and the correct ICV is calculated using the session keys provided by
+MKA. If the locally calculated ICV does not match the ICV within the frame, the
+frame is dropped. Any frames that the switch sends to the client over the
+secured port are also encrypted and have an ICV added.
+
+Encryption keys used by the underlying MACsec protocol are managed by the MKA
+Protocol. The basic requirements of MKA are defined in 802.1x-REV. The MKA
+Protocol extends 802.1x to allow peer discovery with confirmation of mutual
+authentication and sharing of MACsec secret keys to protect data exchanged by
+the peers.
+
+The EAP framework implements MKA as a newly defined EAP-over-LAN (EAPOL)
+packet. EAP authentication produces a master session key (MSK), shared by both
+partners in the data exchange. Entering the EAP session ID generates a secure
+connectivity association key name (CKN). Because the switch is the
+authenticator, it is also the key server, and is responsible for selecting and
+advertising a cipher suite. The switch performs this action by generating a
+random 128-bit secure association key (SAK), which it sends it to the client
+partner. Cisco components all support the default cipher suite Galois/Counter
+Mode Advanced Encryption Standard 128 (GCM-AES-128).
+
+The client is never a key server and can only interact with a single MKA
+entity, the key server (switch). To successfully encrypt traffic, the client
+must also possess the SAK. Using MKA, the switch will send the SAK to the
+supplicant. To keep the SAK secure, the switch encrypts it with some additional
+CAK-derived keys and the AES key wrap (RFC 3394) function. Because the
+supplicant possesses the CAK, it can decrypt the key wrap and retrieve the SAK.
+
+The packet body in an EAPOL Protocol Data Unit (PDU) is referred to as a MACsec
+Key Agreement PDU (MKPDU). After key derivation and generation, the switch
+sends periodic transports to the partner at a default interval of 2 seconds.
+For example, if the client is connected through a Cisco phone and disconnects,
+the switch will not see the connection go down and will continue to operate MKA
+until 6 seconds have elapsed with no new MKPDUs received.
+
+
+
+
+

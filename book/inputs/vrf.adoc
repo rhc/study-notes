@@ -2,15 +2,16 @@
 
 Virtual Routing and Forwarding
 
-- create multiple virtual, isolated networks,
-  where each technically has its own separate RIB  and FIB .
+- Create multiple virtual, isolated networks,
+  where each vrf has its own separate RIB  and FIB.
 
 
 .steps
 ----
 conf t
 ip routing
-ip vrf <case-sensitive-name>
+vrf definition <case-sensitive-name>
+  description <some-useful-info>
   rd <route-distinguisher>
   route-target {export|import|both} <rt-ext-community>
   import map <route-map>

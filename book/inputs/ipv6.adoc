@@ -25,6 +25,12 @@ diagram {
 }
 ----
 
+
+image::ipv6-subnetting.png[IPv6 Subnetting]
+
+
+
+
 .Comparison with IPv4
 
 Streamlined::
@@ -159,7 +165,7 @@ diagram {
 }
 ----
 
-TODO used in ipv6 mobility 
+TODO used in ipv6 mobility
 TODO  disable ipv6 source routing to protect against DDoS
 
 TODO
@@ -209,9 +215,9 @@ diagram {
   *1280 bytes* without the need to invoke end-to-end fragmentation at the IP
   layer.
 
-IMPORTANT: if a data link layer physically cannot deliver an ipv6 datagram of 1280 bytes 
+IMPORTANT: if a data link layer physically cannot deliver an ipv6 datagram of 1280 bytes
 in a single frame then the link layer must provide its own fragmentation and reassembly mechanism,
-separate from IP's own fragmentation mechanism, to ensure that a 1280-byte IP datagram can 
+separate from IP's own fragmentation mechanism, to ensure that a 1280-byte IP datagram can
 be delivered intact to the IP layer.
 
 === Fragmenting
@@ -346,8 +352,8 @@ image::ipv6-unicast-address-format.png[height=150]
 - Interface ID
 - only one link-local address per interface
 - Routers do not forward link-local traffic to other segments.
-** non-routable between interfaces 
-- used for 
+** non-routable between interfaces
+- used for
   * SLAAC Stateless Address Auto-Configuration
   * ND Neighbor Discovery
   * RD Router Discovery
@@ -816,12 +822,14 @@ show ipv6 route
 
 http://www.cisco.com/en/US/docs/ios/ipv6/configuration/guide/ip6-ospf.html#wp1069821[implementing OSPF for IPv6]
 
+
+TODO add differences between ospfv2 vs ospfv3, see rfc 5340
+TODO add encor-350 official guide page 229
+
+
 === EIGRPv6
 
 
-== Ospfv3
-
-- Router id is highest ipv4 loopback, highest ipv4, or *router-id* id command
 
 
 == Readings

@@ -42,8 +42,7 @@ image:sdn-hybrid.png[Hybrid model, 350, 350, float="right"]
 - like the augmented model except that controller-originated policy can be imposed anywhere in the network.
 - additional granularity to network administrators;
 - the main benefit over the augmented model is that the hybrid model is always topology-independent.
-* The controller can overwrite the forward table of any device which means that
-topological restrictions are removed.
+  * The controller can overwrite the forward table of any device which means that topological restrictions are removed.
 - Example: Cisco’s Application Centric Infrastructure (ACI)  separates reachability from policy,
   which is critical from both survivability and scalability perspectives.
 
@@ -172,7 +171,7 @@ management system. A Chef cookbook is loosely equivalent to a Puppet manifest.
 custom software needs to be installed on any device provided that it supports
 SSH. This can be a drawback since individual device CLIs must be exposed to
 network operators (or, at best, the Ansible automation engine) instead of using
-a more abstract API design. Uses Python and Powershell. 
+a more abstract API design. Uses Python and Powershell.
 
 * SaltStack: CLI-based, master-client or non-centralized environments
 
@@ -285,11 +284,9 @@ assembling them in a sequence to meet a specific business need. NFV and AFV by
 themselves, in isolation, are generally synonymous with creating virtual
 instances of things which were once physical. Many vendors offer virtual
 routers (Cisco CSR1000v, Cisco IOS-XR9000v, etc), security appliances (Cisco
-ASAv, Cisco NGIPSv, etc), telephony and collaboration components (Cisco UCM,
-CUC, IM&P, UCCX, etc) and many other things that were once physical appliances.
+ASAv, Cisco NGIPSv, etc), telephony and collaboration components (Cisco UCM, CUC, IM&P, UCCX, etc) and many other things that were once physical appliances.
 Separating these things into virtual functions allows a wide variety of
-organizations, from cloud providers to small enterprises, to select only the
-components they require. 
+organizations, from cloud providers to small enterprises, to select only the components they require.
 
 
 === Service Function Chaining
@@ -353,5 +350,68 @@ such as L4 information, IPv6 flow labels, etc
 
 ONOS
 - Open Network Operating Systems by the Linux Foundation
+
+TODO find a more appropriate location for the figure below
+
+image: :overlay-underlay.png[]
+
+
+
+
+|===
+| HTTP Status | Code Result  | Common Reason for Response Code
+
+| 200         | OK           | Using GET or POST to exchange data with an API
+| 201         | Created      | Creating resources by using a REST API call
+| 400         | Bad Request  | Request failed due to client-side issue
+| 401         | Unauthorized | Client not authenticated to access site or API call
+| 403         | Forbidden    | Access not granted based on supplied credentials
+| 404         | Not Found    | Page at HTTP URL location does not exist or is hidden
+|===
+
+
+== SD-Access
+
+- fabric: virtualized network
+- SD-Access = Campus Fabric + Cisco DNA center
+
+image::sd-access.png[]
+
+- physical layer:
+  * cisco switches:
+  * cisco routers
+  * cisco wireless: WLCs and APs
+  * cisco controller appliances: cisco DNA Center, Cisco ISE
+
+- network layer:
+  * underlay network:
+    ** avoid layer 2 using STP, =>
+       prefers layer 3 routed access using IS-IS as the IGP
+       because IS-IS neighbor establishment without IP dependencies,
+       peering capabilities using loopback addresses,
+       agnostic treatment of IPv4, IPv6, and non-IP traffic
+    ** 2 models:
+      *** manual underlay:
+      *** automated underlay: managed by Cisco DNA Center LAN automation.
+
+  * overlay network (SD-Access Fabric)
+    ** fully automated (vs manual  configuration of campus fabric solution with CLI/APi NETCONF/YANG)
+    ** control plane: LISP
+    ** data plane: vxlan-GPO with support for  64000 Cisco TrustSec SGTs (scalable group tag)
+    ** policy plane: assigns Cisco TrustSec SGTs to users or end devices.
+      *** support for both network-based segmentation using VNs (VRF instances) and group-based segmentation (policies)
+      *** network address-independent group-basd policies based on SGT rather than MAC, IPv4, IPv6
+      *** dynamic enforcement on wired and wireless traffic
+      *** policy constructs over a legacy or third-party network using vxlan
+      *** extended policy enforcement to external networks (cloud, DCs) by transporting the tags to Cisco TrustSec-aware devices using SXP (SGT Exchange Protocol)
+
+    ** components (5)
+      1. control plane node: contains settings, protocols, mapping tables to provide EID-to-RLOC mapping for the fabric overlay
+      2. fabric border node:  connects external L3 networks to the SDA fabric (e.g. core layer device)
+      3. fabric edge node: connects wired endpoints to the SDA fabric (e.g. access, distribution layer device)
+      4. fabric WLC: connects APs and wireless endpoints to the SDA fabric
+      5. intermediate nodes: routers or extended switches in the underlay
+
+image::sda-fabric-roles.png[]
 
 

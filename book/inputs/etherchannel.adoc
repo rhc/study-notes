@@ -74,6 +74,19 @@ interface <type slot/number>
   channel-group <n> mode {active | passive | on | {auto [non-silent] | desirable [non-silent]  }
 ----
 
+
+[NOTE]
+====
+- By default, PAgP ports operate in silent mode, which allows a port
+to establish an EtherChannel with a device that is not PAgP capable.
+- Using the optional *non-silent* keyword requires a port to receive PAgP packets
+before adding it the EtherChannel.
+* The *non-silent* mode is recommended when connecting PAgP-compliant switches together.
+* The *non-silent* option results in a link established more quickly than if this keyword were not used.
+
+====
+
+
 == Layer 3 EtherChannels
 
 .Task: Create the Port Channel Logical Interface
@@ -136,10 +149,14 @@ auto       : passive      : waits on other side to start negotiation
   * Source IP address
   * Destination IP address
 - Uses only source MAC address by default
+- The hash value is a binary function which works number of links n = 2^k^
 
 .Task: Configure the EtherChannel Load-Balancing Method
 ----
-(config)# port-channel load-balance { dst-ip | dst-mac | src-dst-ip | src-dst-mac | src-ip | src-mac}
+(config)# port-channel load-balance { src-mac |
+  dst-ip | dst-mac | src-dst-mac | src-ip |   src-dst-ip | src-dest-ip-only |
+  src-mixed-ip-port | src-dst-mixed-ip-port
+  }
 ----
 
 .Task: Display the EtherChannel Load-Balancing Method
@@ -155,6 +172,18 @@ IPv4: Source MAC address
 IPv6: Source MAC address
 ----
 
+
+TODO
+Using the src-dest-ip option when an EtherChannel operates as a Layer 3 routed
+port is the option most likely to evenly distribute the traffic. Transit
+traffic across the link will have the greatest chance of providing a different
+link-hash result due to the changing src/dst IP address pairs of the packets.
+All the other options would result in some form of link polarization because
+the algorithm would only be considering inputs that would remain the same; for
+example, dst-mac would always be the same between two routers.
+
+
+
 == EtherChannel Misconfiguration Guard
 
 - This mechanism makes an assumption that if multiple ports are correctly bundled
@@ -166,7 +195,7 @@ Port-channel interface, it is an indication that the neighbor is still treating
 the links as individual, and the entire Port-channel will be err-disabled
 - Enabled by default
 
-.Task: Deactivate EtherChannal Misconfig Guard
+.Task: Deactivate EtherChannel Misconfig Guard
 ----
 (config)# no spanning-tree etherchannel guard misconfig
 ----
@@ -178,4 +207,21 @@ the links as individual, and the entire Port-channel will be err-disabled
 ----
 (config)# vlan internal allocation policy ascending
 ----
+
+== Troubleshooting EtherChannel bundles
+
+The following settings must match on the member interfaces:
+
+- port type: layer 2 switch port or layer 3 routed port
+- port mode: access port or trunk ports, not mixed
+- native VLAN: on L2 trunk channel
+- allowed VLAN
+- speed:
+- duplex
+- MTU
+- Load interval
+- storm control
+
+
+
 

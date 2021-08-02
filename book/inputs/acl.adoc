@@ -4,12 +4,91 @@
 
 sec-data-acl
 
-standard vs numbered
+standard vs extended
+numbered vs named
 wildcard mask
+
+
+- only one inbound ACL and one outbound ACL
+
+
+=== numbered standard
+
+- Range: 1..99, 1300..1999
+
+----
+(config)# access-list <number> {deny|permit} <source> [<source-wildcard>] [log]
+(config-if)# ip access-group <number> [in|out]
+----
+
+=== numbered extended
+
+- range: 100..199, 2000..2699
+-
+
+----
+(config)# access-list <number> {deny|permit}
+                      <source> [<source-wildcard>]
+                      <destination> [<destination-wildcard>]
+                      [<protocol-options>]
+                      [log]
+----
+
+=== named
+
+.Task:
+----
+(config)# ip access-list {standard|extended} $name
+(config-acl)# <sequence> {permit|deny} <source> [<source-wildcard>]
+----
+
+.Task:
+----
+access-list resequence
+----
+
+
+TIP: Place standard ACLs as close to the destination of traffic as possible,
+whereas place extended ACLs as close to the source of discarded traffic as
+possible.
+
+
+== PACL
+
+- Layer 2 MAC address-based filtering
+- filters only incoming traffic
+- cannot filter layer 2 control packets (CDP, VTP, DTP, PAgP, UDLD, STP)
+- supports only in hardware
+- do not filter IPv6, ARP, MPLS
+
+
+== VACL
+
+----
+vlan access-map $name $sequence
+  match {ip address {<acl-number>| <acl-name>} | mac address <acl-name>}
+  action [forward|drop] [log]
+vlan filter <name> <vlan-list>
+----
+
+.Interaction between PACL, VACL, RACL configured in the same VLAM
+====
+- bridged traffic: inbound PACL, inbound VACL, outbound VACL within the same vlan
+- routed traffic: inbound (PACL, VACL, ACL on the SVI), outbound (ACL on the SVI, VACL)
+====
+
 
 
 == Reflexive ACL
 
-TODO PACL vs VACL
+
+
+
+== dACL
+
+- Downloadable ACL: dynamically assigned by RADIUS authentication server (e.g Cisco ISE)
+- dACL overwrites the pre-configured PACL
+
+
 
 

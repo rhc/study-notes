@@ -1,0 +1,9 @@
+= TACACS+
+
+- developed by Cisco from original TACACS (rfc1492)
+- separates authentication, authorization, and accounting
+- tcp port 49
+- clear-text header + encrypted body
+- does not support translation of EAPoL packets for authentication
+- does not support common network-access authorization attributes
+

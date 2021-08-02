@@ -1,0 +1,14 @@
+= RADIUS
+
+- rfc 2865
+- combines authentication and authorization
+- udp port 1645/1812 for authentication
+- udp port 1646/1813 for authorization
+- uses MD5 hash to protect user's password
+- uses attributes 
+  * IETF standard defined
+  * Vendor Specific Attributes
+
+
+
+NOTE: udp port 1645/1646 were also used by datametrics service 

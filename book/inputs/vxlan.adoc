@@ -1,0 +1,141 @@
+= VXLAN
+
+TODO
+
+read
+https://www.cisco.com/c/en/us/products/collateral/switches/nexus-7000-series-switches/white-paper-c11-737022.html#CiscoVXLANMPBGPEVPNspineandleafnetwork[Data Centre evolution]
+
+- Virtual eXtensible LAN
+- MAC-in-IP/UDP encapsulation
+- VNI (VXLAN Network Identifier)  24-bit = 16 million) vs VLAN ID 12-bit (4096)
+  * outer header that encapsulates the inner MAC frame originates by a VM
+- extends LAN segment over L3 networks using L3 ECMP
+- RFC 7348
+- Port 4789 (IANA), Port 8472 (default on Linux)
+- uses VTEPS (vxlan tunnel endpoints) to originate/terminate VXLAN tunnels
+- each VTEP has at least 2 interfaces:
+  * a switch interface on the overlay L2 LAN segment,
+  * an IP interface in the transport, underlay, L3 network
+
+- L2 overlay over L3 network
+- used to flood BUM (broadcast, unknow unicast, multicast) with HER (head-end replication)
+
+
+image::vxlan-overlay.png[]
+
+== Problem statement
+
+- limitations imposed by STP and VLAN ranges
+  * 12-bit vlan id gives only 4094 vlans
+  * stp 802.1d blocks redundant links to avoid loops
+- multi-tenant environments
+  *
+- inadequate table sizes at ToR (top of the rack) switch
+
+
+== Frame Format
+
+
+=== VXLAN Header Format
+[packetdiag, target="vxlan-header-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Outer Destination MAC address [len=48, color=lightblue]
+  * Outer Source MAC address [len=48, color=lightblue]
+  * OptnlEthtype= C-Tag 802.1q [len=16, color=lightblue]
+  * Outer.VLAN Tag Information [len=16, color=lightblue]
+  * Ethertype= 0x0800 [len=16, color=lightblue]
+  * [len=16, color=white]
+  * Version [len=4, color=cyan]
+  * IHL [len=4, color=cyan]
+  * Type of Service [len=8, color=cyan]
+  * Total Length [len=16, color=cyan]
+  * Identification [len=16, color=cyan]
+  * Flags [len=3, color=cyan]
+  * Fragment Offset [len=13, color=cyan]
+  * TTL [len=8, color=cyan]
+  * Protocol [len=8, color=cyan]
+  * Header Checksum [len=16, color=cyan]
+  * Outer Source IPv4 Address [len=32, color=cyan]
+  * Outer Destination IPv4 Address [len=32, color=cyan]
+  * Outer Source Port [len=16, color=cornflowerblue]
+  * Outer Destination Port = VXLAN Port = 4789  [len=16, color=cornflowerblue]
+  * UDP Length [len=16, color=cornflowerblue]
+  * UDP Checksum [len=16, color=cornflowerblue]
+  * R [len=1, color=yellow]
+  * R [len=1, color=yellow]
+  * R [len=1, color=yellow]
+  * R [len=1, color=yellow]
+  * I [len=1, color=yellow]
+  * R [len=1, color=yellow]
+  * R [len=1, color=yellow]
+  * R [len=1, color=yellow]
+  * Reserved [len=24, color=yellow]
+  * VXLAN Network Identifier (VNI) [len=24, color=yellow]
+  * Reserved [len=8, color=yellow]
+  * Inner Destination MAC Address [len=48, color=lime]
+  * Inner Source MAC Address [len=48, color=lime]
+  * OptnlEthtype = C-Tag 802.1Q [len=16, color=lime]
+  * Inner.VLAN Tag Information [len=16, color=lime]
+  * Ethertype of Original Payload [len=16, color=oldlace]
+  * Original Payload [len=48, color=oldlace]
+  * (Note: The original Ethernet Frame's FCS is not included) [len=32, color= oldlace]
+  * New FCS (Frame Check Sequence) for Outer Ethernet Frame [len=32, color=lightblue]
+}
+----
+
+
+=== VXLAN-GPO packet format
+
+image::vxlan-gpo.png[]
+
+- VXLAN Group Policy Extension (GPO)
+- latest version of VXLAN
+- adds special reserved  fields in the header to carry the virtual network IDs and the SGTs. (segment ID - 16 bits)
+- The source port is a hash value that is created using the original source information
+  and prevents polarization in the underlay.
+- destination port  always 4789.
+
+
+- group policy ID: 16-bit
+- Group based policy extension bit (G Bit)
+- Don't learn Bit (D Bit)
+- Policy applied bit (A Bit)
+
+
+
+NOTE: Both Cisco OTV and VXLAN technologies enable you to stretch your Layer 2
+network. The primary difference between these two technologies is in usage.
+Cisco OTV’s primary use is to provide you with Layer 2 connectivity over Layer
+3 network between two data centers. Cisco OTV uses mechanisms, such as ARP
+caching and IS-IS routing, to greatly reduce amount of broadcast traffic; VXLAN
+is not that conservative because it is intended to use within a single data center.
+
+
+== VXLAN gateways
+
+The VXLAN is a relatively new technology, so data centers contain devices that
+are not capable of supporting VXLAN, such as legacy hypervisors, physical
+servers, and network services appliances. Those devices reside on classic VLAN
+segments. You would enable VLAN-VXLAN connectivity by using a VXLAN Layer 2
+gateway. A VXLAN Layer 2 gateway is a VTEP device that combines a VXLAN segment
+and a classic VLAN segment into one common Layer 2 domain.
+
+image::vxlan-gateways.png[]
+
+
+Similar to traditional routing between different VLANs, a VXLAN Layer 3
+gateway, also known as VXLAN router, routes between different VXLAN segments.
+The VXLAN router translates frames from one VNI to another. Depending on the
+source and destination, this process might require de-encapsulation and
+re-encapsulation of a frame. You could also implement routing between native
+Layer 3 interfaces and VXLAN segments.
+
+
+
+
+

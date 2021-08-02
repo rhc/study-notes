@@ -189,6 +189,9 @@ Host               Gateway           Last Use    Total Uses  Interface
   source of the ping within a predefined time interval.
 - measures the amount of time it takes to receive the echo reply
 
+TODO add extended ping
+TODO add possible responses *
+
 
 == Traceroute
 
@@ -224,6 +227,7 @@ utility only probes up to 30 hops, so the default UDP port range is
 33434…33464.
 
 
+TODO possible responses with IOS
 
 == Smurf Attacks, no directed broadcast, RPF check
 

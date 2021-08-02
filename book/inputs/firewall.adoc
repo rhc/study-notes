@@ -1,0 +1,299 @@
+= Firewalls
+
+- defines traffic policies  between security zones (trusted/untrusted/semi-trusted)
+- inside / dmz / outside
+
+
+.3 zone firewall design
+[graphviz]
+----
+digraph zone_firewall_design {
+  edge [dir=none]
+  node [shape=box,style=filled]
+  firewall [shape="Msquare"] 
+  inside [label="INSIDE", shape="cloud", color=green]
+  outside [label="OUTSIDE", color=red, shape="cloud"]
+  dmz [label="DMZ", color=orange, shape="cloud"]
+  firewall -> inside
+  firewall -> dmz
+  firewall -> outside
+}
+----
+
+== Firewall evolution
+
+- acl - stateless packet filters
+- alg application level gateway (web proxy)
+- stateful packet filters
+- ngfw
+
+=== stateless packet filters
+
+- classic ACL (standard, extended)
+* RACL: ip filter on L3 interface
+* VACL: ip and non-ip on vlan level 
+* PACL: ip and non-ip on L2 interface
+
+- cannot prevent L7 attacks
+- not aware of the session concept
+- adds management overhead 
+
+
+=== alg
+
+=== stateful packet filters
+
+=== ngfw
+
+- identity based access
+- url filtering
+- granular application visibility and control
+  * facebook: video, audio, video traffic
+- NG IPS
+- Advanced malware protection
+- Actionable indications of compromises
+-  
+
+=== asa vs cbac
+
+- asa fw: dedicated platform
+- ios cbac(context based access control): security feature on routers, obsolete
+- ios zbf(zone based fw)
+
+== ASA
+
+=== platforms
+
+- physical ASA 5500
+- virtual ASAv
+
+=== features
+
+- app aware stateful filtering: ipv4, ipv6
+- routing: static, ripv2, eigrp, ospf, bgp, multicast, dhcp
+- nat: static, dynamic, pat, source/dest nat, twice-nat
+- vpn: ssl, ikev1, ikev2
+- firepower module
+
+=== deployment modes
+
+- routed fw
+  * traffic is routed between interfaces in different subnets/vlans
+  * physical interfaces are L3 ports with ip addresses 
+- transparent fw
+  * traffic is bridged between interfaces in the same subnet
+
+NOTE: SVI interfaces can be used for routed fw deployment ???
+
+=== modes of operation
+
+- single-context (default)
+- multiple-context
+  * pseudo-virtualization
+  * physical box resources shared between contexts, configurable
+  * each context is virtual fw (with its own policies)
+
+=== high availability
+
+active-standby::
+- pair of 2 identical firewalls   
+- single-context mode
+- same release/major code , minor version can be different
+- configuration and session state table replicated from active to standby
+
+active-active::
+- pair of 2 identical firewalls
+- multi-context: 
+  * both forwarding but for different contexts
+  * within one context , it is still active-standby mode
+  * configs and session state table replicated from active to standby within each context
+
+clustering::
+- pair of multiple ASA's grouped as one logical unit
+- higher performance, 
+- load-sharing traffic
+- built-in redundancy 
+
+=== ASA routed mode initialization
+
+- mandatory config on each intf
+  * ip address
+  * nameif: logical name 
+  * security-level: 0(outside,untrusted)..100(inside, trusted)
+
+=== basic routing
+
+- similar to ios
+- ASA uses subnet masks instead of wildcard
+- closed-mode: by default, no access for management by telnet/ssh/http/https access 
+- to manage it remotely, 
+  * enable the protocol (only telnet by default)
+  * configure allowed IP addresses to connect for mgt
+  * configure AAA for auth
+  * define users in the local db 
+- ASDM: 
+
+.example 
+conf t
+int gi0/0
+  ip addresss
+  no shut
+  nameif INSIDE
+int gi0/1
+  ip address 
+  no shut
+  nameif OUTSIDE
+
+
+=== basic fw policies
+
+- by default,
+* permit outbound traffic, from higher security level to lower sec lvl
+* block inbound traffic, from lower sec level to higher sec level 
+
+- ACL can be applied globally or at interface level 
+
+- like ios, asa ACL matches traffic based on:
+  source, destination, ip address, tcp/udp port, protocol number
+
+NOTE: ASA uses subnet masks instead of IOS wildcard mask
+
+
+=== object groups
+
+- protocol: tcp, udp, esp, gre
+- network: ip address, subnet address
+- service: tcp/udp port numbers
+- icmp type: echo, echo-reply, unreachable
+
+
+== mpf
+
+modular policy framework
+
+- match on traffic using class-maps 
+- define fw policy using policy-maps
+- activate fw policy using service-policy
+  * globally 
+  * interface level 
+
+- inspection config
+  with asa default
+  wihout asa default
+
+sh run class-map
+sh run policy-map
+sh run service-policy
+sh service-policy
+
+
+== nat implementation
+
+
+- object-nat
+- twice-nat 
+
+=== order of processing
+
+- manual nat (twice-nat)
+- auto nat (object-nat)
+- after-auto manual nat
+
+=== configuration
+
+- identify which nat type (static/dynamic/policy)
+- identify which configuration option best meets the requirements (object-nat, twice-nat)
+- object-nat
+  * define the object
+  * configure the nat statement within the object
+- twice-nat
+  * define objects or object-groups to be used 
+  * configure the nat statement globally
+
+sh nat [detail]
+sh xlate
+sh conn long
+
+
+== zbf
+
+- stateful fw implementation on ios router
+- 
+
+c3pl cisco common classification policy language
+
+- define security zone
+- classify traffic to be inspected by the  fw
+- define fw policies for classified traffic
+- activate fw policies between security zones
+- attach interfaces to security zones
+
+=== security zones
+  
+- system pre-defined:
+  * name: self-zone
+  * cannot be changed or deleted
+  * for traffic destined to or initiated by the router (management plane, control plane)
+  * interfaces cannot be assigned to self zone
+- user-defined
+  * for data plane traffic
+  * interface belongs to only one zone
+
+
+=== traffic classification
+  
+-  class-maps
+  * L4 for traffic classification
+    ** access-lists or protocol
+    ** other class-maps (nesting)
+    ** match-any (OR operation)
+    ** match-all (AND operation, default)
+  * L7 for deep packet inspection
+
+- policy-maps
+  * L4, for fw policies
+  * L7 for dpi 
+  * class-default with default action of drop
+
+
+=== traffic control
+
+- intra-zone
+- inter-zone: drop by default
+- zone to no-zone: drop
+
+
+=== config
+
+- sh policy-firewall config zone
+- sh policy-firewall config class-map
+- sh policy-firewall config policy-map
+- sh policy-firewall config zone-pair
+- sh policy-firewall session zone-pair <name>
+
+
+== client ssl vpn 
+
+== clientless ssl vpn
+
+- no need to install  vpn client 
+- uses browser for the ssl vpn tunnel
+- does not support all IP traffic
+- does not support DTLS and real-time applications due to proxying nature
+- remote client is not allocated an ip address
+- remote access client access 2 types of resources:
+  * bookmarks: published in the web portal
+    ** configurable only via ASDM
+    ** stored in xml format in the flash
+    ** natively supported bookmarks (http, https, ftp, cifs)
+    ** non-native, require plug-ins (Citrix ICA, microsoft RDP/RDP2 terminal, telnet, ssh, vnc)
+  * directly via native client application
+    ** port forwarding: old, not recommended, supports only tcp client-server with static ports (ftp doesn't work)
+    ** smart tunnels: transparently tunnels tcp apps inside ssl vpn tunnel, supports all tcp client-server apps
+
+
+
+
+
+
+

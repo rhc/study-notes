@@ -81,7 +81,7 @@ image::vtp-in-isl.png[height=80]
 
 === Summary Advertisements
 
-- Sent by Server and Client every 5 minutes intervals, and in addition, after each modificaton of the VLAN database
+- Sent by Server and Client every 5 minutes intervals, and in addition, after each modification of the VLAN database
 - carries information about VTP domain name,
   revision number,
   identity of the last updater,
@@ -110,13 +110,14 @@ diagram {
   * Followers [len = 8]
   * MgmtD Len [len = 8]
   * Management Domain Name (zero-padded to 32 bytes) [len = 32]
-  * Configuration Revison Number [len = 32]
+  * Configuration Revision Number [len = 32]
   * Updater Identity [len = 32]
   * Update Timestamp (12 bytes) [len = 32]
   * MD5 Digest (16 bytes) [len=32]
 }
 ----
 
+[horizontal]
 Followers:: Indicates that this packet is followed by a Subset Advertisement packet.
 Updater Identity:: IP address of the switch that is the last to have incremented the configuration revision.
 Update Timestamp:: Date and time of the last increment of the configuration revision.

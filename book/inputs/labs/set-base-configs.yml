@@ -16,21 +16,16 @@
       - 5012
       - 5043
   tasks: 
-    - name: no shutdown all management interfaces
+    - name: load the baseline configuration
       with_items: "{{ nodes }}"
       telnet: 
         host: 127.0.0.1
         port: "{{ item }}"
         send_newline: yes
-        timeout: 60 
+        timeout: 10 
         login_prompt: ''
         password_prompt: '' 
         prompts:
           - '[>|#]'
         commands:
-          - configure terminal
-          - interface GigabitEthernet 0/0
-          - no shutdown
-          - end
-          - show ip int GigabitEthernet 0/0
-        
+          - configure replace flash:baseline.cfg

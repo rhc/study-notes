@@ -9,8 +9,33 @@ menu:Configuration guides[IP Addressing > http://www.cisco.com/c/en/us/td/docs/i
 - Client/agent relay/server model
 - UDP port 67 (server), port 68 (client)
 
+// .DHCP Request for an IP Address from a DHCP Server
+// image::dhcp-request.png[DHCP request for an IP address from a DHCP Server]
+
+//TODO:
+
 .DHCP Request for an IP Address from a DHCP Server
-image::dhcp-request.png[DHCP request for an IP address from a DHCP Server]
+["seqdiag", target="DORA-operations"]
+----
+diagram {
+  autonumber = true;
+  activation = none;
+  client [label="Host A"]
+  relay [label ="DHCP relay agent"]
+  server [label="DHCP server"]
+
+  client -> relay [label = "DHCPDISCOVER(broadcast)"]
+  relay -> server [label = "DHCPDISCOVER(unicast)", leftnote="ip helper-address command\n takes DHCP requests \nand unicasts to DHCP server"]
+  relay <- server [label="DHCPOFFER(unicast)"]
+  client <-- relay
+  client -> relay [label = "DHCPREQUEST(broadcast)"]
+  relay --> server
+  relay <- server [label="DHCPACK(unicast)"]
+  client <-- relay
+}
+----
+
+
 
 == Protocol Operations
 
@@ -89,6 +114,7 @@ The remainder of the field consists of a list of tagged TLV options.
 - 3 Router Address
 - 6 Domain Name Server
 - 15 Domain Name
+- 43 Cisco Wireless LAN controllers
 - 50 Requested IP Address
 - 51 Address Lease Time
 - 52 Option Overload
@@ -101,6 +127,7 @@ The remainder of the field consists of a list of tagged TLV options.
 - 61 Client Identifier
 - 82 DHCP Relay
 - 119 Domain Search List
+- 150 TFTP servers for Cisco IP Phones
 - 255 End
 
 |====
@@ -793,7 +820,7 @@ image::dhcp-attack.png[Man-in-the-middle-attack using DHCP ]
 
 .TODO
 add information about option 82
-- dhcp binding db 
+- dhcp binding db
 - trusted/untrusted port
 
 1. It filters all messages sent exclusively by DHCP servers.
@@ -804,7 +831,7 @@ binding table, the messages are filtered.
 address inside the Ethernet frame
 
 
-.Task: Enable DHCP snooping 
+.Task: Enable DHCP snooping
 ----
 (config)# ip dhcp snooping vlan <vlan-range>
 ----
@@ -833,5 +860,18 @@ address inside the Ethernet frame
 ----
 # show ip dhcp snooping binding
 ----
+
+
+== DHCP starvation attack
+
+.dhcp server has finite ip address scope
+- attacker sends flood of dhcp requests with spoofed source mac addresses
+- dhcp server leases on IP address per MAC addresses until pool is depleted
+- victim hosts are "starved" of a dhcp lease
+
+.spoofed dhcp server on the segment
+- offers rogue ip address to clients
+- results in mitm attecks
+- some clients may become isolated
 
 

@@ -1,9 +1,7 @@
 = NAT
-:experimental:
-:icons: font
 
 - menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/15-mt/nat-15-mt-book/iadnat-addr-consv.html#GUID-C79465FE-A23C-4341-88DC-E43E342D4977[NAT] ]
-- https://www.ietf.org/rfc/rfc1631.txt[RFC 1631]
+- https://www.ietf.org/rfc/rfc1631.txt[RFC 1631: The IP Network Address Translator]
 
 == Purpose
 
@@ -11,17 +9,16 @@
 - can be static, dynamic or pat
 
 
-== Inside and Outside Address 
+== Inside and Outside Address
 
-[horizontal]
 Inside local address::
-(Private) IP address that is assigned to a host on the inside network. 
+(Private) IP address that is assigned to a host on the inside network.
 Inside global address::
 Public IP address that represents one or more inside local IP addresses to the outside world.
 Outside local address::
-(Private) IP address of an outside host as it appears to the inside network. 
+(Private) IP address of an outside host as it appears to the inside network.
 Outside global address::
-Public IP address assigned to a host on the outside network by the owner of the host. 
+Public IP address assigned to a host on the outside network by the owner of the host.
 
 .Task: Display NAT Translation Information
 ----
@@ -43,7 +40,7 @@ ip nat inside source static <local-ip> <global-ip>
 interface <type number>
   ip address <ip-address> <mask> [secondary]
   ip nat inside
-  
+
 interface type number
   ip address <ip-address> <mask>
   ip nat outside
@@ -51,7 +48,7 @@ interface type number
 
 == Dynamic NAT Without PAT
 
-- One local host uses an available public IP address in a pool. 
+- One local host uses an available public IP address in a pool.
 - Does not conserve IP addresses.
 - Timeout after period of nonuse
 
@@ -126,7 +123,7 @@ Configure dynamic translation of overlapping networks if your IP addresses in th
 legitimate IP addresses belonging to another network and you want to communicate with those hosts or
 routers using dynamic translation.
 
-.Task: Configure Overlapping Network 
+.Task: Configure Overlapping Network
 ----
 ip nat pool name start-ip end-ip {netmask netmask | prefix-length prefix-length}
 access-list access-list-number permit source [source-wildcard]
@@ -135,7 +132,7 @@ ip nat outside source list access-list-number pool name
 interface type number
   ip address ip-address mask
   ip nat inside
-  
+
 interface type number
   ip address ip-address mask
   ip nat outside
@@ -151,7 +148,7 @@ ip nat inside destination-list access-list-number pool name
 interface type number
   ip address ip-address mask
   ip nat inside
-  
+
 interface type number
   ip address ip-address mask
   ip nat outside
@@ -172,10 +169,19 @@ ip nat log translations syslog
 no logging console
 ----
 
+== Policy NAT
 
-== NAT Order Of Operations 
+TODO
 
-=== Inside-to-Outside 	
+- translation done only if specific conditions are met
+- allows one socket (ip,tcp/udp port) to be translated into
+  another socket based on source/destination of the traffic
+
+
+
+== NAT Order Of Operations
+
+=== Inside-to-Outside
 
 . If IPSec Then Check Input Access List
 . Decryption - for CET (Cisco Encryption Technology) or IPSec
@@ -211,6 +217,36 @@ no logging console
 . Encryption
 . Queueing
 
-Read more: 
+Read more:
+
 http://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html#topic1NAT[Order of operations]
+
+== NVI
+
+- TODO
+- NAT virtual interface
+- introduced in IOS 12.3(14)T
+- not supported on IOS XE
+
+----
+access-list 10 permit 192.168.10.0 0.0.0.255
+ip nat source list 10 interface e0/1 overload
+int e0/0
+  ip nat enable
+int e0/1
+  ip nat enable
+----
+
+
+NVI removes the requirements to configure an interface as either inside or
+outside. Also, the NAT order of operations is slightly different with NVI.
+Classic NAT first performs routing and then translates the addresses when
+going from an inside interface to an outside interface, and vice versa when
+traffic flow is reversed. NVI, however, performs routing, translation, and
+then routing again. NVI performs the routing operation twice, before and
+after translation, before forwarding the packet to an exit interface, and
+the whole process is symmetrical. Because of the added routing step,
+packets can flow from an inside to an inside interface, in classic NAT
+terms, which would fail if classic NAT was used.
+
 

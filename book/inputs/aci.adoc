@@ -1,0 +1,8 @@
+= ACI
+
+- Application Centric Infrastructure 
+- SDN solution for data center deployment, mgmt and monitoring
+- components:
+  * Nexus 9000 in ACI mode
+  * APIC  : application policy infrastructure policy controller
+

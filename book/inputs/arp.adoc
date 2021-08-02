@@ -2,7 +2,7 @@
 
 menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/15-mt/arp-15-mt-book.html[ARP] ]
 
-- https://wwwietf.org/rfc/rfc826.txt[RFC 826]
+- https://www.ietf.org/rfc/rfc826.txt[RFC 826]
 - Finds MAC address of a host given IP address
 - Maintains ARP cache
 - ARP Ethernet protocol: 0x0806
@@ -10,7 +10,7 @@ menu:Configuration Guides[IP Addressing >  http://www.cisco.com/c/en/us/td/docs/
 
 == Protocol
 
-TODO: better work to show that ARP is encapsulated in Ethernet frame, use color
+TODO: show that ARP is encapsulated in Ethernet frame, use color
 
 .ARP
 [graphviz, target= 'ethernet-arp']

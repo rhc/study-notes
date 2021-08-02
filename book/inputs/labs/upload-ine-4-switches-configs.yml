@@ -1,0 +1,31 @@
+--- 
+- name: Setup INE topology with 4 switches
+  gather_facts: false
+  hosts: switches
+  connection: network_cli
+  become: yes
+  become_method: enable 
+  tasks: 
+    - name: Erase the previous config directory
+      ios_command: 
+        commands:
+          - delete /force /recursive flash:config
+    - name: Extract the archive
+      notify: save configuration
+      ios_command:
+        commands:
+          - "archive tar /xtract tftp://172.16.201.1/ine/iosv/{{inventory_hostname}}.tar flash:config/"
+    - name: dir  flash:config/
+      register: output1
+      ios_command:
+        commands:
+          - dir flash:/config
+    - name: Display the contents of flash:config/
+      debug: 
+        var: output1.stdout_lines
+      
+  handlers:
+    - name: Save configuration
+      ios_command: 
+        commands: wr
+

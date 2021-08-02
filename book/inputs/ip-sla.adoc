@@ -2,23 +2,26 @@
 
 menu:Configuration Guides[Network Mgt > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipsla/configuration/15-mt/sla-15-mt-book.html[IP SLA] ]
 
+
 - formely SAA (Service Assurance Agent), a prior to that RTR (Response Time Responder)
 - generates traffic at a specified interval, with specifically configured options, and measuring the results.
-- built around a source-responder model, 
-  * one device (the source) generates traffic 
-  * either waits for a response from another device (the responder) 
-  * or another device configured as a responder captures the sender’s traffic and does something with it. 
+- built around a source-responder model,
+  * one device (the source) generates traffic
+  * either waits for a response from another device (the responder)
+  * or another device configured as a responder captures the sender’s traffic and does something with it.
 - Analyzes actual network performance over time, under very specific
 conditions, to measure performance, avert outages, evaluate quality of service (QoS)
 performance, identify problems, verify SLAs, and reduce network outages.
+- uses UDP 1967 for control messages
 
 The IP SLA feature allows measuring the following parameters in network performance:
-_ Delay (one-way and round-trip)
-_ Jitter (directional)
-_ Packet loss (directional)
-_ Packet sequencing
-_ Path (per hop)
-_ Connectivity (through the UDP Echo, ICMP Echo, ICMP Path Echo, and TCP Connect functions)
+
+- Delay (one-way and round-trip)
+- Jitter (directional)
+- Packet loss (directional)
+- Packet sequencing
+- Path (per hop)
+- Connectivity (through the UDP Echo, ICMP Echo, ICMP Path Echo, and TCP Connect functions)
 - Server or website download time
 - Voice-quality metrics (MOS)
 
@@ -75,7 +78,7 @@ image::ip-sla-responder-timestamps.png[IP SLA Responder Time Stamping]
 
 .Task: Verify IP SLA Configuration
 ----
-# sh ip sla configuration
+# show ip sla configuration
 ----
 
 - You can create a multioperation group
@@ -133,3 +136,6 @@ wrap.
 - If IP SLAs operation is not running and not generating stats,
 add the *verify-data* command in ip sla configuration mode
 - Use *debug ip sla trace* and *debug ip sla error* commands
+
+
+

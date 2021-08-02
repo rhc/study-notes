@@ -1,5 +1,8 @@
 = IOS Configuration
 
+- IOS-XE for enterprise
+- IOS-XR for service provider
+- NX-OS for data center
 
 == Searching and Filtering CLI Output
 
@@ -10,6 +13,6 @@ http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/configuration/15_s
 # more <any-command> | begin <regular-expression>
 ----
 
-keywords: append, begin, count, exclude, include, format, redirect, tee 
+keywords: append, begin, count, exclude, include, format, redirect, tee
 
 == Show Command Output Redirection

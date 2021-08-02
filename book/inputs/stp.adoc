@@ -38,9 +38,9 @@ image::stp-bridge-id.png[Bridge ID]
 
 === BPDU
 
+|DA|SA|Len|DSAP=0x42|SSAP=0x42|Ctrl=0x03| BPDU|
 
 image::bpdu-format.png[Bridge ID]
-
 
 
 .Configuration BPDU
@@ -126,14 +126,15 @@ Going away from root uses cost.
 TODO right justify the numbers in table below
 
 .Default Port Costs
-,====
-Speed    , Original , Revised , 802.1D-2004
+[cols="a,3*>"]
+|====
+|Speed    | Original | Revised | 802.1D-2004
 
-10 Mbps  , 100      , 100     , 2000000
-100 Mbps , 10       , 19      , 200000
-1 Gbps   , 1        , 4       , 20000
-10 Gbps  , 1        , 2       , 2000
-,====
+|10 Mbps  | 100      | 100     | 2000000
+|100 Mbps | 10       | 19      | 200000
+|1 Gbps   | 1        | 4       | 20000
+|10 Gbps  | 1        | 2       | 2000
+|====
 
 .Task: Choose Default STP Path Cost (Original or Revised)
 ----
@@ -192,6 +193,8 @@ it repeats this message every Hello time until it is acknowledged.
 . The next switch receiving that TCN BPDU sends back an acknowledgment via its next
 forwarded Hello BPDU by marking the Topology Change Acknowledgment (TCA) bit in the Hello.
 
+NOTE: What happens if there is no acknowledgment? xxx
+
 . The switch that was the DP on the segment in the first two steps repeats the first two steps,
 sending a TCN BPDU out its Root Port, and awaiting acknowledgment from the DP on that
 segment.
@@ -202,15 +205,15 @@ switches in the network, notifying them that a change has occurred. A switch rec
 BPDU with the TC flag set uses the short (Forward Delay time) timer to time out entries in the CAM.
 
 .Transitioning from Blocking to Forwarding
-,===
-State      , Forward data frames , Learn source MAC , Stable?
+|===
+| State      | Receive BPDU | Transmit BPDU | Forward data frames | Learn source MAC | Stable?
 
-Blocking   , No                  , No               , Yes
-Listening  , No                  , No               , No
-Learning   , No                  , Yes              , No
-Forwarding , Yes                 , Yes              , Yes
-Disabled   , No                  , No               , Yes
-,===
+| Disabled   | No           | No            | No                  | No               | Yes
+| Blocking   | Yes          | No            | No                  | No               | Yes
+| Listening  | Yes          | Yes           | No                  | No               | No
+| Learning   | Yes          | Yes           | No                  | Yes              | No
+| Forwarding | Yes          | Yes           | Yes                 | Yes              | Yes
+|===
 
 
 === Timers
@@ -228,6 +231,7 @@ Maxage::
 
 
 TODO Add tasks to modify default timers
+
 .Task:
 ----
 (config)#
@@ -291,6 +295,8 @@ TODO add picture here pp. 78
 (config-if)# spanning-tree portfast disable
 ----
 
+.Task: Set a port as a switchport, set spanning-tree portfast and
+
 === UplinkFast
 
 - Used on access layer switches that have multiple uplinks to distribution/core switches
@@ -300,12 +306,12 @@ TODO add picture here pp. 78
 addresses of local devices and sends one multicast frame with each local addresses as the source MAC
 causing all the other switches to update their CAMs. The access switch also clears out the rest of the
 entries in its own CAM.
-- Used only if the switch runs lgacy STP because it is built in to RSTP802.1w
+- Used only if the switch runs legacy STP because it is built in to RSTP802.1w
 - can not be enabled on a switch that has its default STP priority modified
 - can not be enabled on root bridge
 
 .Task: Enable Uplink Fast
----- 
+----
 (config)#  spanning-tree uplinkfast [max-update-rate rate]
 ----
 
@@ -343,7 +349,7 @@ entries in its own CAM.
 
 - Ensures that unauthorized switches cannot be plugged in to the network
 - Puts a portfast enabled port into the errdisable state when a BPDU is received and shuts down the port
-- The port must be manually re-enabled or it can be recovered automatically through the errdiable timeout function.
+- The port must be manually re-enabled or it can be recovered automatically through the errdisable timeout function.
 - A port configured with bpdu guard will not be put into the root-inconsistent state.
 
 .Task: disable an interface if a BPDU is detected
@@ -361,6 +367,13 @@ entries in its own CAM.
 ----
 # sh interfaces <interface type id> status err-disabled
 ----
+
+.Task: Set a port as as a switchport, set spanning-tree portfast, and disable port-channeling
+----
+(config-if)# switchport host
+----
+
+
 
 === BPDU Filter
 
@@ -403,11 +416,11 @@ from sending or receiving any BPDUs.
 - Puts the port into the *loop-inconsistent* state when the steady flow of BPDUs is interrupted
 - Only used on point-to-point links
 - Can be used with *UDLD aggressive mode* to get extra protection.
-- Cannot be enabled at the time with root guard on the same port
+- Cannot be enabled with root guard on the same port
 - When configured at the switch level, only monitors Non-Designated ports
-- Takes actions on a per-VLAN level (although configured on a port)
+- Takes actions on a per-VLAN level
   ** If a trunk port is in blocking state and stops receiving BPDUs for VLAN 8 from the DP on the segment,
-     it transitions the port into *loop inconsistent only for that VLAN 8
+     it transitions the port into *loop inconsistent* only for that VLAN 8
 - Recovers automatically when the port starts receiving BPDUs
 
   STP Loop Guard is an added logic related to receiving BPDUs on Root and Alternate
@@ -535,15 +548,15 @@ spanning-tree link-type { point-to-point | shared }
 TODO Improve the table below with spanning (enabled, discarding) over the row
 
 
-,===
-Administrative state , 802.1d     , 802.1w
+|===
+| Administrative state | 802.1d     | 802.1w
 
-Disabled             , Disabled   , Discarding
-Enabled              , Blocking   , Discarding
-Enabled              , Listening  , Discarding
-Enabled              , Learning   , Learning
-Enabled              , Forwarding , Forwarding
-,===
+| Disabled             | Disabled   | Discarding
+.4+.^| Enabled           | Blocking   | Discarding
+                       | Listening  | Discarding
+                       | Learning   | Learning
+                       | Forwarding | Forwarding
+|===
 
 === RSTP Port Roles
 
@@ -665,12 +678,12 @@ are not flushed during topology change event handling.
 +------------------------------------+
 |           LLC header               |
 +------------------------------------+-----------------------
-| cGRE      Protocol Identifier      |                ^
-+------------------------------------+                |
-| cGRE Protocol Version Identifier   |                |
-+------------------------------------+                |
-| cGRE          BPDU Type            |                |
-+------------------------------------+                |
+| cGRE      Protocol Identifier             |         ^
++-------------------------------------------+         |
+| cGRE Protocol Version Identifier =0x03    |         |
++-------------------------------------------+         |
+| cGRE          BPDU Type = 0x02            |         |
++-------------------------------------------+         |
 | cGRE             Flags             |                |
 +------------------------------------+                |
 | cGRE         Root Identifier       |                |
@@ -714,6 +727,9 @@ are not flushed during topology change event handling.
 |               FCS                  |
 +------------------------------------+
 ----
+
+
+
 
 === MST Region
 
@@ -880,12 +896,12 @@ include::udld.adoc[leveloffset=+2]
 - FabricPath
 
 
-== Troubleshooting 
+== Troubleshooting
 
 |====
 | Inconsistency Type | Description and Probable Cause of Inconsistency Type
 
-| (*TYPE_Inc) 
+| (*TYPE_Inc)
 | PVST+ BPDUs are received on a non-802.1Q port. Usually caused by interconnecting access and trunk ports.
 
 | Port VLAN ID (*PVID_Inc)

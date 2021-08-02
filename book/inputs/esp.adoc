@@ -1,0 +1,7 @@
+= ESP
+
+- encapsulating security payload 
+- ip protocol 50
+- offers CIA (data encryption, data origin auth, data integrity) and anti-replay
+
+

@@ -2,10 +2,10 @@
 
 menu:Cat3560-X Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_2_se/configuration/guide/3750x_cg/swpvlan.html[Private VLANs] ]
 
-- Separate ports as if they are on different VLAN while consuming only one subset.
+- Separates ports as if they are on different VLAN while consuming only one subset.
 - Typically used by service provider in a multi-tenant offerings: one router, one switch, multiple customers
 - PVLAN
-  * one primary VLAN ( promiscuous ports) + multiple secondary VLANs
+  * one primary VLAN (promiscuous ports) + multiple secondary VLANs
   * At most one isolated secondary VLAN
   * Zero or more community secondary VLANs
 - Cannot use vlan 1, 1002-1005 as private vlans
@@ -13,7 +13,7 @@ menu:Cat3560-X Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switch
 
 .Task: Display Private VLAN Information
 ----
-# sh vlan private-vlan [type]
+# sh vlan private-vlan [<type>]
 
 Primary     Secondary   Type                Ports
 -------     ---------   ----                ---------------------
@@ -36,7 +36,8 @@ Primary     Secondary   Type                Ports
 
 == Isolated VLANs
 
-- carries unidirectional traffic upstream from the hosts toward the promiscuous ports and the gateway.
+- carries unidirectional traffic upstream from the hosts toward the promiscuous
+  ports and the gateway.
 
 .Task: Configure Isolated VLANs
 ----
@@ -47,15 +48,15 @@ Primary     Secondary   Type                Ports
 
 == Community VLANs
 
-- carries unidirectional traffic upstream from the hosts toward the promiscuous ports and the gateway.
+- carries unidirectional traffic upstream from the hosts toward the promiscuous
+  ports and the gateway.
 
-.Task: Configure Isolated VLANs
+.Task: Configure Community VLANs
 ----
 (config)# vtp mode transparent
-(config)# vlan 102
-(config-vlan)# private-vlan isolated
+(config)# vlan 103
+(config-vlan)# private-vlan community
 ----
-
 
 == Private-Vlan Host Port
 

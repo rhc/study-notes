@@ -28,6 +28,8 @@ On::
 Working Etherchannel for On-On, Passive-Active, Active-Active
 
 
+
+
 == LACP Hot-Standby Ports
 
 - Only 8 LACP links can be active at one time
@@ -56,6 +58,9 @@ Working Etherchannel for On-On, Passive-Active, Active-Active
 ----
 (config)# lacp system-priority <priority>
 ----
+NOTE: The master switch on a port channel (with the lower system priority) is responsible 
+for choosing which member interfaces are active in a port channel when there are more 
+member interfaces than the max number of member interfaces associated with a port-channel interface.
 
 .Task: Show the LACP System Priority
 ----
@@ -66,6 +71,45 @@ Working Etherchannel for On-On, Passive-Active, Active-Active
 ----
 (config-if)# lacp port-prioriy
 ----
+
+.Task: Show LACP counters
+----
+# sh lacp counters
+
+TODO actual result
+----
+NOTE: An interface should see the sent and received columns increment over time.
+The failure of the counters to increment indicates a problem 
+(physical link, incomplete/incompatible configuration with remote device )
+
+.Task: clear LACP counters
+----
+# clear lacp counters
+----
+
+== LACP Fast
+
+- send LACP packets every 1 second
+  * instead of every 30 seconds in the original standard
+
+.Task: Send LACP every 1 second
+----
+(config-if)# lacp rate fast
+----
+
+.Task: Send LACP every 30 second
+----
+(config-if)# lacp rate slow
+----
+
+
+.Task: Verify LACP speed rate
+----
+# sh lacp internal
+
+TODO: Actual
+----
+
 
 == LACP Port-Channel MaxBundle Feature
 
@@ -86,6 +130,6 @@ Working Etherchannel for On-On, Passive-Active, Active-Active
 
 .Task: Configure the Minimum Number Of Member Ports That Must Be In the Link-Up State and Bundled In the Etherchannel for the Port Channel Interface to Transition to the Link-Up State
 ----
-(config-if)# port-channel min-link n
+(config-if)# port-channel min-link <number>
 ----
 

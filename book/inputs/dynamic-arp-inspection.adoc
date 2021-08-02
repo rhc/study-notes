@@ -1,6 +1,6 @@
 = Dynamic ARP Inspection
 
-Dynamic ARP inspection blocks "a variety of ARP-based attacks", according to the documentation.
+Dynamic ARP inspection blocks "a variety of ARP-based attacks",
 Drop ARPs that shouldn't be coming based on the information seen in the DHCP snooping table.
 
 ----

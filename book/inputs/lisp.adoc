@@ -1,6 +1,176 @@
 = LISP
 
-TODO see EIGRP OTP
+- Cisco Location/ID Separation Protocol
+- routing architecture and a data and control plane protocol created to address routing capability scalability problems
+  * aggregation issues:
+  * traffic engineering:
+  * multihoming:
+  * routing instability:
+- can be used in data centers, campus networks, branches, next-gen WANs, SP cores
+- can be used for mobility, network virtualization, IoT, IPv4-to-IPv6 transition, traffic engineering
+
+- RFC 6830
+
+image::lisp-topology.png[]
+image::lisp-topology-bis.png[]
+
+- EID Endpoint Identifier: Endpoint IP address within a LISP site
+- ITR Ingress tunnel router: LISP-encapsulates IP packets coming from EIDs that are destined outside the LISP site
+- ETR Egress tunnel router: de-encapsulates LISP-encapsulated IP packets coming from sites outside the LISP and destined to EIDs within the LISP site.
+- xTR tunnel router performs ITR and ETR functions.
+- Proxy ITR: like ITR but for non-LISP sites that send traffic to EID destinations
+- Proxy ETR: like ETR but for EID that send traffic to destinations at non-LISP sites
+- Proxy xTR: performs PITR and PETR functions
+- ALT: Alternative topology advertises EID prefixes in an  alternate BGP topology over GRE, including to the MR
+- RLOC: Routing locator
+  * IPv4 or IPv6 address of an ETR that is internet facing or network core facing
+- MS Map server
+  * learns EID-to-prefic mapping entries from an ETR
+  * stores them in a local EID-to-RLOC mapping db
+- MR Map resolver
+  * receives LISP-encapsulated map requests from an ITR
+  * finds the appropriate ETR to answer those requests by consulting the map server
+- MS/MR map server/map resolver
+
+
+== Header Format
+
+.LISP IPv4-in-IPv4 header format
+[packetdiag, target="lisp-packet-format",size=200]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * Version [len=4]
+  * IHL [len=4]
+  * DSCP [len=6]
+  * ECN [len=2]
+  * Total Length [len=16]
+  * Identification [len=16]
+  * Flags [len=3]
+  * Fragment offset [len=13]
+  * TTL [len=8]
+  * Protocol = 17 [len=8]
+  * Header Checksum [len=16]
+  * Source Routing Locator [len=32]
+  * Destination Routing Locator [len=32]
+  * Source port = xxxx [len=16,color=orange]
+  * Destination port = 4341 [len = 16,color=orange]
+  * Length [len = 16,color=orange]
+  * Checksum [len=16,color=orange]
+  * N [len=1, color=yellow]
+  * L [len=1, color=yellow]
+  * E [len=1, color=yellow]
+  * V [len=1, color=yellow]
+  * I [len=1, color=yellow]
+  * flags [len=3, color=yellow]
+  * Nonce/Map-version [len=24, color=yellow]
+  * Instance ID/Locator-Status-Bits [len=32, color=yellow]
+  # Inner header
+  * Version [len=4, color=oldlace]
+  * IHL [len=4, color=oldlace]
+  * DSCP [len=6, color=oldlace]
+  * ECN [len=2, color=oldlace]
+  * Total Length [len=16, color=oldlace]
+  * Identification [len=16, color=oldlace]
+  * Flags [len=3, color=oldlace]
+  * Fragment offset [len=13, color=oldlace]
+  * TTL [len=8, color=oldlace]
+  * Protocol = 17 [len=8, color=oldlace]
+  * Header Checksum [len=16, color=oldlace]
+  * Source EID [len=32, color=oldlace]
+  * Destination EID [len=32, color=oldlace]
+}
+----
+
+
+== LISP routing architecture
+
+- LISP separates IP addresses into EIDs and RLOCs.
+  * Endpoints can roam from site to site
+  * The only thing that changes is their RLOC, the EIDs remains the same
+
+== LISP control plane
+
+- operates like DNS
+- resolves an EID into an RLOC by sending map requests to the MR
+- scalable on-demand routing protocol because it is based on a pull model
+  * only the needed routing information is requested
+  * not all the routes to all routers including unnecessary ones
+
+== LISP data plane
+
+- ITRs performs IP-in-IP/UDP encapsulation
+  * LISP-encapsulates IP packets received from EIDs in an outer IP UDP header with source and destination in the RLOC space
+  * The original IP header and data are preserved => inner header
+  * A LISP shim header is included between the outer UDP header and the inner header
+
+image::lisp-packet-format.png[]
+
+== LISP packet flow
+
+image::lisp-packet-flow.png[]
+
+1. The source endpoint, at a remote site, performs a DNS lookup to find the destination.
+
+2. Traffic is remote, so it has to go through the branch router,
+which is a LISP-enabled device, in this scenario, playing the role of ITR.
+
+3. The branch router does not know how to get to the specific address of the
+destination. It is LISP-enabled, so it performs a LISP lookup to find a locator
+address. Notice how the destination EID subnet (10.1.0.1/24) is associated to
+the RLOCs (172.16.1.1 and 172.16.2.1) identifying both ETR devices at the data
+center LISP-enabled site. Also, each entry has associated priority and weight
+values that by the destination site controls to influence the way inbound
+traffic is received from the transport infrastructure. The priority is used to
+determine if both ETR devices can be used to receive LISP encapsulated traffic
+that is destined to a local EID subnet (load-balancing scenario). The weight
+allows tuning the amount of traffic that each ETR receives in a load-balancing
+scenario (hence the weight configuration makes sense only when specifying equal
+priorities for the local ETRs).
+
+4. The ITR (branch router) performs an IP-in-IP encapsulation and transmits the
+data out the appropriate interface based on standard IP routing decisions. The
+destination is one of the RLOCs of the data center ETRs. Assuming the priority
+and weight values are configured the same on the ETR devices (as the following
+figure shows), the selection of the specific ETR RLOC is done on a per-flow
+basis based on hashing that is performed on the Layer 3 and Layer 4 information
+of the IP packet of the original client.
+
+5. The receiving LISP-enabled router receives the packet, de-encapsulates the
+packet, and forwards the packet to the final destination.
+
+
+NOTE: In the current Cisco IOS and NX-OS LISP implementation,
+the LISP control plane is triggered
+if the lookup for the destination address produces
+no results (no match)
+or if the only available match is a default route.
+
+image::lisp-packet-flow-2.png[]
+
+
+
+== LISP operations
+
+
+
+=== map registration and map notify
+
+=== map request and map reply
+
+=== LISP data path
+
+=== Proxy ETR
+
+=== Proxy ITR
+
+
+
+
+TODO see also EIGRP OTP
 
 LISP frame format
 

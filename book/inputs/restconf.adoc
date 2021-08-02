@@ -1,0 +1,65 @@
+= RESTCONF
+
+- RFC 8040
+- Programmatically interface with data defined in YANG models while using NETCONF datastores
+- RESTful APi (GET, POST, PUT, DELETE, OPTIONS)
+
+
+|===
+| RESTCONF  | NETCONF
+
+| GET  | <get>, <get-config>
+| POST  | <edit-config> (operation="create")
+| PUT  | <edit-config> (operation="create/replace")
+| PATCH  | <edit-config> (operation="merge")
+| DELETE  | <edit-config> (operation="delete")
+|===
+
+
+- media types for RESTCONF
+  * application/yang.api+xml
+  * application/yang.api+json
+
+- RESTCONF API format: https://<address>/<root>/data/<[yang_module:]container>/<leaf>[?<options>]
+  * address: IP or hostname and port number where the agent is available
+  * root: main entry for RESTCONF requests. Found programmatically using the resource */.well-known/host-meta*
+  * [yang_module:]container : base mode container
+  * leaf: individual element from within the container
+  * [?<options>] : optional for example
+    ** depth=unbounded
+    ** content=[all, config, nonconfig]
+    ** fields=expr
+
+.Task: Enable RESTCONF on Cisco IOS XE
+----
+(config)# ip http secure-server
+(config)# restconf
+----
+
+
+== Telemetry subscriptions
+
+dynamic vs configured::
+
+- Dynamic:
+  * The subscriber sends a request, usually via *ietf-yangpush.yang* data model.
+  * The device approves the request, replies with a subscription ID and begins streaming telemetry data.
+  * cannot be changed but can be terminated at any time, usually by closing the NETCONF
+- Configured:
+  * configured via CLI, NETCONF, or RESTCONF
+  * persisted between reboots
+  * can be modified and terminated at any time
+  * can be used to stream data to more than one receiver
+
+
+periodic vs on-change notifications::
+
+- Periodic:
+  * sent with fixed rate
+  * ideal for device counters or measures (CPU utilization, interface stats)
+
+- On-change:
+  * sent only when the data change
+  * ideal for faults, new neighbors, thresholds.
+
+

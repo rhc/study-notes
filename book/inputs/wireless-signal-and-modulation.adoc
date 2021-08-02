@@ -1,0 +1,117 @@
+= Wireless Signals and Modulation
+:stem: asciimath
+
+- electro-magnetic waves
+- frequency f in Hz = 1 cycle/s
+- 3kHz .. 300 kHz radio frequency
+
+
+image::continuous-frequency-spectrum.png[Continuous Frequency Spectrum]
+
+2.4 GHz band
+5 GHz band
+  - 5.150 .. 5.250
+  - 5.250 .. 5.350
+  - 5.450 .. 5.725
+  - 5.725 .. 5.825
+
+- band: multiple channels
+* channel number
+* channel spacing
+
+
+image::non-overlapping-channel-spacing.png[Non-Overlapping Channel Spacing]
+image::overlapping-channel-spacing.png[Overlapping Channel Spacing]
+
+
+- phase
+  * shift relative to the start of a cycle
+  * measured in degres
+
+- wavelength
+  * lambda = c / frequency
+
+- amplitude: from top peak to bottom peak of the signal's waveform
+
+- decibel
+
+stem:[dB = 10 (log_10 P2 - log_10 P1) = 10 log_10 ((P2 )/ (P1))]
+
+  P1 reference value
+  P2 source of interest
+
+[NOTE]
+====
+law of zero: dB=0 => P1 = P2
+Law of 3s: dB=3 => P2 = 2 * P1
+Law of 10s: dB=10 => P2 = 10 * P1
+
+====
+
+- dBm
+  * where P1= 1mW
+
+- dBi
+
+- dBi = dBd (dipole) + 2.14 dBi //TODO
+
+- EIRP
+  * effective isotropic radiated power
+  * EIRP = Tx(Power) - Tx(Cable) + Tx(Antenna)
+
+- Free space path loss
+
+ * stem:[FSPL(dB) = 20 log_10(d) + 20log_10 (f) +32.44]
+ ** d distance in km,
+ ** f frequency in MHz
+
+- RSSI
+  * Received Signal Strength Indicator
+  * 0..255
+  * not standard between vendors
+
+- noise floor
+  * average signal strength of the noise
+
+
+- SNR signal-to-noise
+
+image::signal-to-noise.png[]
+
+
+.Link budget
+image::rx-signal.png[]
+
+== Modulation
+
+- DSSS: direct sequence spread spectrum
+  * used in 2.4 GHz band,
+  * a small number of fixed, wide channels support complex phase modulation schemes
+
+- OFDM: orthogonal frequency division multiplexing
+  * used in 2.4 and 5 GHz bands
+  * a single 20 MHz channel contains data that is sent in parallel over multiple frequency
+  * each channel is divided into many subcarriers (subchannels, tones)
+  * both phase and amplitude are modulated with quadrature amplitude modulation (QAM)
+
+[cols=""]
+|====
+| Standard | 2.4 GHz ? | 5 GHz | Data rates | Channel Widths
+
+| 802.11b | Yes | No | 1,2,5.5, 11 Mbps | 22 MHz
+| 802.11g | Yes | No | 6, 9, 12, 18, 24, 36, 48, 54 Mbps | 22 MHz
+| 802.11a | No | Yes | 6, 9, 12, 18, 24, 36, 48, 54 Mbps | 20 MHz
+| 802.11n | Yes | Yes | Up to 150 Mbps per spatial streams, up to 4 spatial streams | 20, 40 MHz
+| 802.11ac | No | Yes | Up to 866 Mbps per spatial streams, up to 4 spatial streams | 20, 40, 80, 160 MHz
+| 802.11ax | Yes | Yes | Up to 1.2 Gbps per spatial streams, up to 4 spatial streams | 20, 40, 80, 160 MHz
+|====
+
+- DRS dynamic rate shifting
+  * a.k.a link adaptation, amc adaptative modulation and coding
+
+
+= Wi-fi fundamental
+
+- traditional 802.11 (DCF), CSMA/CA
+
+

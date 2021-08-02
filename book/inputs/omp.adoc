@@ -1,0 +1,12 @@
+= OMP
+
+- Overlay Management Protocol
+- between vSmart -- vSmart, vEdge -- vSmart 
+- sys-IP (~ Router ID)
+- built over DTLS/TLS
+- no interop with other non-cisco sd-wan devices 
+- works like BGP
+- carries routes, TLOCs (sys-ip, color, encapsulation), services, data-policies
+
+- graceful restart
+

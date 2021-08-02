@@ -1,0 +1,5 @@
+how to send the config to all tmux windows
+
+1-windows config
+2- all console in a windows,
+

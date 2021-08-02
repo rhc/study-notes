@@ -1,4 +1,10 @@
-= HTTP
+= HTTP(S)
+
+
+- TCP 80
+- TCP 443
+
+
 
 Cisco IOS routers and switches support web access for administration, through
 both HTTP and HTTPS. Enabling HTTP access requires the *ip http server* global
@@ -38,9 +44,52 @@ HTTP secure server active session modules : ALL
 
 
 
+.Task: check if the cisco device supports the HTTP client
+----
+# show ip http client all
+----
 
 
 
 
+image:url.png[Anatomy of an HTTP URL]
+
+
+- response codes
+
+* 1xx: informational
+* 2xx: success
+* 3xx: redirection
+* 4xx: client error
+* 5xx: server error
+
+|===
+code| meaning
+
+| 100 | Continue                                 | The server received the request and is in the process of giving the response.
+| 200 | Okay                                     | The request is fulfilled                                                                                                                                                                                                                                                     |
+| 301 | Move permanently                         | The resource requested has been permanently moved to a new location. The URL of the new location is given in the Location response header. The client should issue a new request to the new location, and the application should update all references to this new location.
+| 302 | Found and redirect (or move temporarily) | the new location is temporary in nature. The client should issue a new request, but applications need not update the references.
+| 304 | Not modified                             | In response to the if-modified-since conditional GET request, the server notifies that the resource requested has not been modified.
+| 400 | Bad request                              | The server could not interpret or understand the request; there is probably a syntax error in the request message.
+| 401 | Authentication required                  | The requested resource is protected and requires the client’s credentials (username and password). The client should resubmit the request with the appropriate credentials (username and password).
+| 403 | Forbidden                                | The server refuses to supply the resource, regardless of the identity of the client.
+| 404 | Not found                                | The requested resource cannot be found on the server.
+| 405 | Method not allowed                       | The request method used (for example, POST, PUT, DELETE) is a valid method. However, the server does not allow that method for the resource requested.
+| 408 | Request timeout                          | The request sent to the server took longer than the website’s server was prepared to wait.
+| 414 | Request URI too large                    | The URI requested by the client is longer than the server is willing to interpret.
+| 429 | Too many requests | The user sent too many requests in in a given amount of time (rate-limiting)
+| 500 | Internal server error                    | The server is confused; this may be caused by an error in the server-side program responding to the request.
+| 501 | Method not implemented                   | The request method used is invalid; this could be caused by a typing error, such as Get in place of GET.
+| 502 | Bad gateway                              | The proxy or gateway indicates that it received a bad response from the upstream server.
+| 503 | Service unavailable                      | The server cannot respond due to overloading or maintenance. The client can try again later.
+| 504 | Gateway timeout                          | The proxy or gateway indicates that it received a timeout from an upstream server. 7 Now that we have looked at HTTP methods and return codes, let’s look at the data that is
+
+|===
+
+
+
+TODO add
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
 
 

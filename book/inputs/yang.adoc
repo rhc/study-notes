@@ -1,0 +1,6 @@
+= YANG
+
+- Yet Another Next Generation data modelling language
+- RFC 6020 in 2010
+- 
+

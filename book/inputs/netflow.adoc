@@ -2,6 +2,7 @@
 
 - Cisco IOS application
 - provides statistics on packets flowing through the routing
+- used to identify suspicious activity by SIEM and Big Data Security Analytics 
 
 == NetFlow Flows
 

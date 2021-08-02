@@ -1,0 +1,81 @@
+= QoS introduction
+
+== Quality Issues
+
+The leading causes of quality issues:
+
+- lack of bandwidth
+- latency and jitter
+- packet loss
+
+
+=== Latency
+
+- one-way end-to-end delay (or network latency): time for packets to travel from source to destination
+- < 400 ms (ITU recommendations G.114) for general traffic
+- < 150 - 200ms for real-time traffic
+- consists of: 
+
+** propagation delay (fixed)
+** serialization delay (fixed)
+** processing delay (fixed)
+** delay variation (variable)
+
+==== propagation delay
+
+- time for a packet from source to destination at the speed of light 
+* c = 300 000 km/s in a vacuum
+* c/n with n=refractive index ~ 1.5 for fibre
+
+.Why 200 ms
+....
+If a single fiber-optic cable around the equator  (40 000 km)
+distance = 40 000 km
+n = 1.5 
+c = 300 000 km/s 
+v = c/n = 200 000 km/s
+delay = d/v = 40 000 /200 000 = 200 ms 
+....
+
+
+==== Serialization delay
+
+- fixed time to place all the bits of a packet onto a link
+- sd = packet size / line speed
+* example: 1500-byte packet over 1 Gbps
+* s = 1500 * 8 / 10E9 = 0.012 ms
+
+==== Processing delay
+
+- fixed time to take the packet from an input interface to the output queue of the output interface
+- depends on 
+
+  ** CPU speed for software-based platforms
+  ** CPU utilization or load
+  ** IP packet switching mode (process/fast/CEF)
+  ** router architecture (centralized or distributed)
+  ** configured features on both input and output interfaces
+
+==== Delay variation or jitter
+
+- difference in the latency between packets in a single flow
+- use LLQ to prevent jitter for high-priority real-time traffic
+
+
+=== Packet loss
+
+- usually a result of congestion on an interface
+- can be prevented by
+  ** increasing link speed
+  ** implementing QoS congestion-avoidance and congestion-management mechanism
+  ** implementing traffic policing to drop low-priority packets
+  ** implementing traffic shaping to delay packets instead of dropping themce
+
+
+== QoS models
+
+- Best effort: no QoS
+- IntServ (Integrated Services) with RSVP signalling protocol
+- DiffServ (Differentiated Services) without RSVP and PHB
+
+

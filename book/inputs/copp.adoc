@@ -1,5 +1,14 @@
 = CoPP
 
+control plane
+- ip traffic from/to the router
+- used to learn information required for packet forwarding( arp, ospf, bgp, pim )
+- always process-switched
+
+copp:
+- control plane policing
+- rate-limit control-plane packets 
+
 
 
 

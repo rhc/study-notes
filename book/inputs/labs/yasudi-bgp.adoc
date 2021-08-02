@@ -1,0 +1,44 @@
+!r1
+en
+conf t
+hostname R1
+int lo1
+ ip add 1.1.1.1 255.255.255.255
+int g0/1
+  ip add 10.12.12.1 255.255.255.0
+  no shut
+router bgp 100
+  network 1.1.1.1 mask 255.255.255.255
+  no nei 10.12.12.2 remote-as 23456
+  nei 10.12.12.2 remote-as 1.200
+end
+
+!r2
+en
+conf t
+hostname R2
+int g0/1
+  ip add 10.12.12.2 255.255.255.0
+  no shut
+int g0/2
+  ip add 10.13.13.2 255.255.255.0
+  no shut
+router bgp 1.200
+  bgp asnotation dot 
+  redistribute connected
+  nei 10.12.12.1 remote-as 100
+  nei 10.13.13.3 remote-as 3.300
+end
+
+!r3
+en
+conf t
+hostname R3
+int g0/2
+  ip add 10.13.13.3 255.255.255.0
+  no shut
+router bgp 3.300
+  bgp asnotation dot 
+  nei 10.13.13.2 remote-as 1.200
+end
+

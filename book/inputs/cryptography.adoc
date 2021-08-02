@@ -1,0 +1,118 @@
+= cryptography
+
+- secure data in-transit and at rest  
+- confidentiality (encryption)
+- integrity (hashing, digital signature)
+- origin authentication (hashing, digital certificate)
+- non-repudiation (digital signature)
+
+== hashing
+
+- hashing: one-way math fx, irreversible
+  * from data of arbitrary
+  * to specific size
+
+- attacks:
+* collusion (multiple inputs can produce the same output)
+* inversion 
+
+- security strength depends on both algorithm and the length
+
+hmac 
+keyed hash message authentication code 
+- data + salt (shared with receiver) -> hash
+
+== encryption
+
+
+TODO read https://en.wikipedia.org/wiki/Public-key_cryptography
+TODO add graphviz diagram for public-private key, symmetric algo
+
+- two-way math fx
+* encrypt (plaintext , encryption key)  -> cyphertext
+* decrypt ( cyphertext, decryption key ) -> plain text
+
+===  symmetric algorithm
+
+- same key for encryption and decryption
+- cheap, fast
+- key length varies between 512 and ??? 
+- main use 
+*  secure IPSec/SSL VPN traffic
+* secure folders, hdd, application containers
+
+- examples
+  * DES (Data Encryption Standard): 64-bit key but only 56 used for encryption
+  * 3DES (Triple DES): 168-bit key, uses 3 keys of 56bits 
+  * AES (Advanced Encryption Standard): 3 versions (128, 192, 256) bits
+
+
+===  asymmetric algorithm
+
+- different key for encryption and decruption
+- expensive, slow
+- key length varies between 512 and 32768 bits ???
+- commonly used 
+  * RSA: Rivest Shamir Adleman
+  * DSA: Digital Signature Algorithm
+  * DH: Diffie Hellman Algorithm
+  * ECC: Elliptic Curve Cryptography (ECDH, ECDSA)
+
+TODO read elliptic curves wikipedia pages
+
+== PKI
+
+- CA (certificate authority): trusted third-party that verifies, issues, revokes digital certificates
+- Applicant:
+- 
+- Digital certificate: 
+  * public-key certificate
+  * electronic document to prove ownership of a public key
+  * includes information about public key owner's identity
+  * signed by the CA's private key
+
+- main standards
+  * pkcs#10: format of 
+  * X.509: v3
+    ** version and serial number
+    ** subject name
+    ** subject PK and PK algorithm
+    ** validity period
+    ** issuer name (CA)
+    ** CA signature algorithm and CA signature
+
+TODO read PKI standards
+
+
+TODO redo this section
+
+- PKI enrollment process
+. CA generates a self-signed certificate
+  .. private-public key pair
+  .. identity information
+  .. validity information (for the self-signed certificate and certificates issues to applicants) 
+  .. signature algorithm
+  .. CSR (identity information and PK)
+. applicant
+  .. receives CA's certificate in order to trust the CA
+  .. generates a private-public key par
+
+- PKI certification revocation
+  * CRL: certificate revocation list 
+  * OCSP: online certificate status protocol
+    
+- Digital certificates security functions
+* origin authentication: 
+* confidentiality
+* integrity: 
+* non-repudiation
+
+=== digital signature
+
+- uses hashing and asymmetric
+- the signer computes a hash/fingerprint of the data
+- the signer uses its private key to encrypt the hash
+- the encrypted hash (signature) is attached to the data
+- the verifier decrypt the signature with the signer's PK
+- the verifier computes a hash of the data and compares it with the decrypted hash
+

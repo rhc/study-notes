@@ -1,0 +1,8 @@
+= IOS Shell
+
+menu:Configuration Guides[https://www.cisco.com/c/en/us/td/docs/ios/netmgmt/configuration/guide/Convert/IOS_Shell/nm_ios_shell.html]
+
+
+
+
+

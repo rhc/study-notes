@@ -4,13 +4,23 @@
 
 menu:Configuration guides[Network Management > Basic System Management > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/configuration/15-mt/bsm-15-mt-book/bsm-time-calendar-set.html[Setting Time and Calendar Services] ]
 
-* Version 3 https://tools.ietf.org/html/rfc1305[RFC 1305]
-* UDP port 123
-* IOS does not support stratum 1 service, cannot be linked to stratum 0 atomic clock
-* Accuracy < milliseconds with 1 NTP packet per minute
-* Stratum
-** 0 : atomic clock
-** 8 : default value
+- Version 3 https://tools.ietf.org/html/rfc1305[RFC 1305]
+- Version 4 https://tools.ietf.org/html/rfc1305[RFC 1305]
+	* supports IPv6
+	* more secure with public key cryptography and standard X.509 certificates.
+	* Using specific multicast groups, NTPv4 can automatically calculate its time-distribution hierarchy through an entire network. NTPv4 automatically configures the hierarchy of the servers to achieve the best time accuracy for the lowest bandwidth cost.
+	* In NTPv4 for IPv6, IPv6 multicast messages instead of IPv4 broadcast messages are used to send and receive clock updates.
+
+- UDP port 123
+- IOS does not support stratum 1 service, cannot be linked to stratum 0 atomic clock
+- Accuracy < milliseconds with 1 NTP packet per minute
+- crucial for
+  * certification validation
+  * time-based traffic restrictions (ACL)
+  * log file analysis and correlation (siem)
+- Stratum
+  * 0 : atomic clock
+  * 8 : default value
 
 == NTP Associations
 
@@ -23,12 +33,12 @@ menu:Configuration guides[Network Management > Basic System Management > http://
 
 .Task: Verify NTP Status
 ----
-# show ntp status
+# sh ntp status
 ----
 
 .Task: Verify NTP Associations
 ----
-# show ntp associations
+# sh ntp associations
 ----
 
 .Task: Troubleshoot NTP Associations
@@ -83,6 +93,8 @@ that is not compliant with the access-group policy.
 (config)# ntp trusted-key <key-number> [-<end-key-number]
 (config)# ntp server <ip-address> key <id>
 ----
+NOTE: *ntp authenticate* only on the ntp client
+
 
 == Source IP Address
 

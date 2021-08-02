@@ -1,0 +1,184 @@
+= SD-WAN
+
+- The Cisco SD-WAN solution is a software-based, virtual IP fabric overlay
+  network that builds a secure, unified connectivity over any transport network
+  (the underlay). The underlay transport network is the physical infrastructure
+  for the WAN, such as public internet, MPLS, Metro Ethernet, and LTE/4G. The
+  underlay network provides a service to the overlay network and is responsible
+  for the delivery of packets across networks.
+
+- SD-WAN represents the shift from an older, hardware-based model of legacy WAN
+  to a secure, software-based, virtual IP fabric overlay that runs over
+  standard network transport services.
+
+== SD-WAN components
+
+image::sd-wan-components.png[]
+
+- vEdge (physical ) routers or vEdge (VM) cloud router
+- vSmart controllers:
+- vBond orchestrator: authenticates all SD-WAN devices when they join the SD-WAN overlay network
+- vManage NMS:
+
+
+=== vBond - Orchestrator plane
+
+- responsible for Zero touch deployment and security validation during deployment
+  * first point of authentication
+  * orchestrates connectivity between management, control and data plane
+  * requires public IP or 1:1 NAT
+  * facilitates NAT transversal
+  * all other components need to know the vBond IP address or DNS information
+  * authorizes all control connections (zero-trust certificate-based white-list model)
+  * distributes list of vSmart controllers to all vEdge Routers
+  * can run in single or multi-tenant mode
+
+=== vManage - Management Plane
+
+image::sd-wan-vManage.png[]
+
+- single pane of glass for day0, day1, day2 operations
+  * Web GUI with RBAC (Role based access control)
+- real time alerting
+- centralized provisioning
+- configuration standardization
+- simplicity of deploying
+- simplicity of change
+- supports various APIs
+
+=== vSmart - Control Plane
+
+- centralized brain of the solution
+- establishes OMP (overly management protocol) peering with all vEdge routers
+- implements service chaining, traffic engineering, per-VPN topology
+- acts as distribution point to establish the data plane connectivity between vEdge routes
+  * service LAN-side reachability
+  * transport WAN-side IP addressing
+  * IPsec encryption keys
+  * site identifiers
+- acts as a router reflector between vEdge routers and other vSmart
+  * solves the n^2^ complexity
+- HA deployment in geographically dispersed DCs in Cisco Cloud or on-premisses
+
+
+=== vEdge - Data Plane
+
+- responsible for tunnel establishment and data forwarding within the fabric
+- physical and VM form factors (100Mb, 1Gb, 10Gb)
+  * public clouds (AWS, Azure)
+  * network function virtualization on the virtual customer premise equipment/universal customer premise equipment (vCPE/uCPE)
+    platforms with KVM (kernel-based VM) or ESXi (Elastic Sky X Integrated) hypervisors
+- supports ZTD (zero touch deployment)
+- uses traditional routing protocols (ospf, bgp, vrrp) for integration with non-fabric networks
+
+
+
+=== vAnalytics - Automation and Analytics
+
+- graphical representations of the performance of the entire SD-WAN overlay network
+- display information for the last 24 hours by default
+- calculates vQoE (Quality of Experience) = function( latency, loss, jitter, application )
+
+image::sd-wan-vAnalytics.png[]
+
+- provides real-time information for failure correlation, cross-customer benchmarking, application performances scores
+- enables future planning based on intelligent data ( application and bandwidth forecasting, branch expansion analysis, policy change what-if's )
+- provides QoE score for apps
+
+== Terminology
+
+- TLOc
+- Color (Public, Private)
+- VPNs
+- OMP,
+- DTLS/TLS
+- Site ID
+- Reserved VPNs
+- Transport and Service Sides
+
+
+
+wan -- transport --- vpn 0
+lan -- service --- vpn 1 ... 65595 (except vlan management 512)
+
+
+== Deployment options
+
+- cloud delivered (cisco cloud )
+- partner delivered (partner cloud)
+- customer on-prem (private DC)
+  * eSXi, KVM hypervisors
+
+=== Cisco cloud
+
+- 6 continents
+- single / multi-tenant option
+- 30 minutes on-boarding
+- availability
+  * 99.5% uptime
+  * built-in backup / DR (RTO and RPO = 1 day)
+- security / compliance
+  * per-customer isolation
+  * controlled access
+  * hosted on SOC 2 compliant
+
+=== Partner Cloud
+
+- hosted in partner infrastructure
+  * ESXi/KVM farm, cloud (aws, azure, cisco?)
+- partner automation tools, cisco NSO (Network Service Orchestrator), cisco VMS
+-
+
+=== On-Prem
+
+- self deployed by organization
+-
+
+== Service Management
+
+
+
+TODO insert slide here
+
+== Tenancy options
+
+- supported in all deployment models
+
+=== single tenancy
+
+=== vpn tenancy
+
+- vpn as a tenant
+- all control elements are shared accross customers
+- must have service orchestrator for per-tenant operations on top on vManage
+
+=== enterprice tenancy
+
+- vBond and vManage are shared accross customer
+- vSmart is dedicated to specific customer deployment
+- VPNs can be used to segregate application traffic
+
+
+== Security deep dive
+
+TODO
+- signature on vEdge
+
+* TPM (Tamper Proof Module) hardware chip generates public/private key
+* Avnet signing authority
+* Symantec
+
+- signature on vManage, vBond, vSmart
+
+*
+
+
+
+
+
+
+
+
+
+
+

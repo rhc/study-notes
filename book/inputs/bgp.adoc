@@ -1,4 +1,6 @@
 = BGP
+:experimental:
+
 
 menu:Configuration guides[IP Routing > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/15-mt/irg-15-mt-book/configuring_a_basic_bgp_network.html[BGP] ]
 
@@ -8,6 +10,7 @@ menu:Configuration guides[IP Routing > http://www.cisco.com/c/en/us/td/docs/ios-
 - TCP 179
 - AD: external 20 , internal and local 200
 - RFC 1771
+- supports only MD5 authentication via TCP option 19
 
 == BGP Message Format
 
@@ -182,28 +185,82 @@ Flag bits (1/0)::
 
 [[AttributeTypeCode]]
 .Attribute Type Code
-[format="dsv",options="header",cols="10,40,40"]
-|===
-Code : Attribute        : Category
-1    : ORIGIN           : Well-known mandatory
-2    : AS_PATH          : Well-known mandatory
-3    : NEXT_HOP         : Well-known mandatory
-4    : MULTI_EXIT_DISC  : Optional nontransitive
-5    : LOCAL_REF        : Optional transitive
-6    : ATOMIC_AGGREGATE : Well-known discretionary
-7    : AGGREGATOR       : Optional transitive
-8    : COMMUNITY        : Optional transitive
-9    : ORIGINATOR_ID    : Optional nontransitive
-10   : CLUSTER_LIST     : Optional nontransitive
-255  : Reserved
-|===
+[cols="10,40,40", frame="topbottom"]
+,====
+Code , Attribute        , Category
+
+1    , ORIGIN           , Well-known mandatory
+2    , AS_PATH          , Well-known mandatory
+3    , NEXT_HOP         , Well-known mandatory
+4    , MULTI_EXIT_DISC  , Optional nontransitive
+5    , LOCAL_REF        , Optional transitive
+6    , ATOMIC_AGGREGATE , Well-known discretionary
+7    , AGGREGATOR       , Optional transitive
+8    , COMMUNITY        , Optional transitive
+9    , ORIGINATOR_ID    , Optional nontransitive
+10   , CLUSTER_LIST     , Optional nontransitive
+255  , Reserved
+,====
 
 NOTE: tasks for Internet, no-export, no-advertise, local-as
 
 === NOTIFICATION
 
-- go out in response to error, fatal condition
-- torn down or reset the BGP peer session
+- sent when an error condition is detected
+- closes or reset the BGP peer session
+
+
+[packetdiag, target="bgp-notification"]
+----
+diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * [len = 24, color=white]
+  * Error code [len=8]
+  * Error subcode [len=8]
+  * Data (variable)[len=16]
+}
+----
+
+.Error codes
+1.     Message Header Error
+  . Connection not synchronized
+  . Bad message length
+  . Bad message type
+2.     OPEN message error
+  . Unsupported version number
+  . Bad peer AS
+  . Bad BGP identifier
+  . Unsupported optional parameter
+  . [Deprecated]
+  . Unacceptable hold time
+3.     UPDATE message error
+  . Malformed attribute list
+  . Unrecognized well-known attribute
+  . Missing well-known attribute
+  . Attribute flags error
+  . Attribute length error
+  . Invalid ORIGN attribute
+  . [deprecated]
+  . Invalid NEXT_HOP attribute
+  . Invalid network field
+  . Malformed AS_PATH
+4.     Hold Timer Expired
+5.     Finite State Machine Error
+6.     Cease
+
+
+
+
+
+
+
+k
+
+
+
 
 === BGP FSM States
 
@@ -290,7 +347,11 @@ holdtime 180 seconds
   * Asdot: decimal value notation for 2-byte and dot notation for 4-byte ASN
   * Documentation: 65536-65551 (RFC 5398)
 
-- AS 23456: reserved for gradual transition from 2-byte to 4-byte (RFC 4893)
+- AS 23456 (AS_TRANS): reserved for gradual transition from 2-byte to 4-byte (RFC 4893)
+* A BGP session uses an initial handshake to determine the identity of its neighbor.
+To allow a 4-byte speaker to speak to an 2-byte only speaker,
+it presents itself as the 16-bit AS 23456 in the initial handshake and includes a 32-bit capabitility advertisement.
+
 
 .Task: Modify the Default Output and Regex Match Format for 4-Byte ASN
 ----
@@ -489,18 +550,18 @@ image::bgp-backdoor-route-topology.png[Backdoor routes, 400, 400]
 == Best Path Selection Algorithm
 
 . Reachable Next Hop (Well-Known Mandatory)
-. Highest Weight
-. Highest Local Pref
+. Highest Weight (local to router)
+. Highest Local Pref (global within AS)
 . Locally Originated Paths (Network, Distribute, Aggregate-Summary) Over Externally Originated Paths
-. Shortest AS Path
+. Shortest AS Path 
 . Lowest Origin Type (Internal Over External Over Incomplete)
-. Lowest MED
+. Lowest MED (exchanged between ASes)
 . EBGP Paths Over IBGP Paths
 . Lowest IGP Cost
 . Oldest Path
 . Lowest BGP Router Id
 . Lowest cluster list length
-. Lowest neighbor Id  
+. Lowest neighbor Id
 
 
 
@@ -619,9 +680,9 @@ condition is met.
 == BGP Default Routes
 
 Default routes can be injected into BGP in one of three commands:
-- network 
-- redistribute 
-- neighbor neighbor-id default-originate [routemap route-map-name] 
+- network
+- redistribute
+- neighbor neighbor-id default-originate [routemap route-map-name]
 
 When you inject a default route into BGP using the network command, a route to 0.0.0.0/0 must exist
 in the local routing table, and the network 0.0.0.0 command is required. The default IP route can be
@@ -964,11 +1025,11 @@ but instead redistribute a route for the classful network.
 or no mask, and any subnets of the classful network exist, inject a route for the classful network.
 
 
-== BGP synchronization 
+== BGP synchronization
 
 TODO describe the problem ( black hole and false advertising  -> see narbick vol2 )
-TODO describe solutions: 
-- with sync: redistribute bgp into igp, 
+TODO describe solutions:
+- with sync: redistribute bgp into igp,
 - with no sync: full-mesh ibgp, full mush inside confederations, partial messh route reflector
 
 Note

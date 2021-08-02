@@ -8,7 +8,7 @@
 (config)# ip domain-name nyc.cisco.com
 
 !--- Step 2: Generate an RSA key pair, automatically enabling SSH.
-(config)# cry key generate rsa
+(config)# crypto key generate rsa
 
 !--- Step 3: Configure time-out and number of authentication retries.
 (config)# ip ssh time-out 60
@@ -25,3 +25,21 @@
 (config)# line vty 0 4
 (config-line)# access-class 111 in
 ----
+
+.Task: Verify the SSH version
+----
+# show ip ssh
+
+  SSH Enabled
+  - version 1.99 
+  Authentication timeout: 120 secs; 
+  Authentication retries: 3 
+  Minimum expected Diffie Hellman key size : 1024 bits 
+  IOS Keys in SECSH format(ssh-rsa, base64 encoded): 
+  ssh-rsa
+  AAAAB3NzaC1yc2EAAAADAQABAAAAgQDtRqwdcEI+aGEXYmklh4G6pSJW1th6/Ivg4BCp19tO
+  BmdoW6NZahL2SxdzjKW8VIBjO1lVeaMfdmvKlpLjUlx7JDAkPs4Q39kzdPHY74MzD1/u+Fwvir8O5AQO
+----
+
+
+

@@ -13,12 +13,16 @@
 Reserved [0, 4095] ::
 
 ** Not available for use
+*** Vlan 0x000 is reserved for 802.1p traffic; cannot be deleted or changed
+*** Vlan 0xFFF: reserved for implementation used; can be used to indicate a wildcard match
+  in management operations or filtering database entries
 
 Normal-range [1-1005]::
 ** Advertised and pruned by VTP v1 and v2 except vlan 1, 1002-1005
 ** Configured in both vlan database mode and configuration mode
 ** Stored in VLAN.DAT file in Flash
 ** Special VLANs:
+*** Vlan 0 is reserved for 802.1p traffic; cannot be deleted or changed
 *** Vlan 1 is the default Ethernet VLAN for all access ports; cannot be deleted or changed.
 *** Vlan 1002,1004 : default for FDDI (default, net)
 *** Vlan 1003,1005 : default for Token Ring (default,translational bridge).
@@ -35,25 +39,59 @@ Extended-range [1006-4094] ::
   * ISL : Cisco proprietary, 30-bytes (26-byte header + 4-byte trailer), does not modify original frame
   * 802.1q: IEEE standard, 4-byte tag except for native VLAN, modifies original frame
 
+
+.Task: Specify the allowed vlans on a trunk link
+----
+switchport trunk allowed {<vlan-ids> | all | none| add <vlan-ids>| remove <vlan-ids> | except <vlan-ids>}
+----
+
+
+
 == Basic Configuration
 
 Configuring VLANs requires few steps:
 
 . Create the VLAN Itself
-. Associate the Correct Ports with VLAN
+. Associate the Correct Ports with the VLAN
 
 
 VLAN creation can be done either in VLAN database mode configuration (after *vlan database* ) or normal configuration mode
 
 .Catalyst 3550 VLAN Database Vs Configuration Mode
-:===
+:====
 VLAN Database : Configuration
 
 vtp {domain domain-name | password password | pruning | v2-mode | {server | client | transparent}} : vtp {domain domain-name | file filename | interface name | mode {client | server | transparent} | password password | pruning | version number}
 vlan vlan-id [backupcrf {enable | disable}] [mtu mtu-size] [name vlan-name] [parent parent-vlan-id] [state {suspend | active}]:  vlan vlan-id 1
 show {current | proposed | difference} : No equivalent
 apply | abort | reset : No equivalent
-:===
+:====
+
+.Task: Displays only the relevant port-to-VLAN mappings
+----
+# show vlan brief
+----
+
+.Task: Displays a count of VLANs, VLANs participating in VTP, and extended VLANs
+----
+# show vlan summary
+
+  Number of existing VLANs : 8
+  Number of existing VTP VLANs : 8
+  Number of existing extended VLANS : 0
+----
+
+.Task: Displays information for a specified vlan Id
+----
+# show vlan id <number>
+----
+
+.Task: Displays information for a specified vlan name
+----
+# show vlan name <string>
+----
+
+
 
 
 == VLAN State
@@ -65,6 +103,29 @@ apply | abort | reset : No equivalent
 (config)# vlan <id>
 (config-vlan)#state [active | suspend]
 ----
+
+
+== VLAN hopping attack
+
+- Attacking host attached to Ethernet network sends 802.1Q/ISL tagged
+  frames into switched network in order to hop over VLAN barriers
+- two variations:
+  * attacker runs DTP to form a trunk link with the adjacent switch
+  * attacker sends frames double tagged with 802.1q headers
+    - outside header is padding
+    - inside header is tagged with destination VLAN of victim (???)
+
+TODO mitigation
+- host facing interface should not be dynamic ports *switchport mode access*
+- static access ports have DTP disabled by default.
+  otherwise, disable DTP manually *switchport nonegotiate*
+- don't use VLAN 1
+  * assign unused ports to unused vlans (<> vlan 1)
+  * set native VLAN to vlan <> 1
+
+
+
+
 
 
 == Troubleshoot

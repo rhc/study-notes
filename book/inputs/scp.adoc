@@ -1,1 +1,14 @@
 = SCP
+
+.Task: enable SCP
+----
+ip scp server enable
+----
+
+.Task: debug SCP
+----
+debug ip scp
+----
+
+
+

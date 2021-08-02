@@ -1,0 +1,99 @@
+= Wireless Infrastructure
+
+== Wireless LAN topologies
+
+- autonomous AP
+
+- lightweight AP
+
+
+capwap (control and provisioning of wireless access points):
+- protocol that enables an access controller to manage a collection of wireless termination points
+- rfc 5415
+
+
+== AP operations
+
+=== universal AP Priming
+
+- manual priming
+  * with smartphone running Cisco AirProvision app
+  * connected to the AP SSID (service set identifier)
+  * uses GPS unit and country code.
+  * must use WPA-PSK
+
+- automatic priming
+  * cisco NDP (Neighbor discovery protocol)
+
+=== capwap discovery
+
+- subnetwork bcast
+- locally stored
+- dhcp:
+  * AP send dhcp discover request with option 43 ipv4, 52 ipv6
+
+- dns: CISCO-CAPWAP-CONTROLLER.<localdomain>
+
+
+- ap join order: primary, secondary, tertiary, master, least loaded
+
+=== ap failover
+
+- hello heartbeat: 30s if ack, 5 x 1s if no ack
+
+- ap fallback: to primary controller when primary back
+
+
+=== HA
+
+
+
+=== AP modes
+
+- local mode
+- flexConnect mode
+  * connected mode
+    ** central auth- central switching
+    ** central auth- local switching
+    ** local auth- local switching
+  * standalone mode
+    ** auth down - central switching
+    ** auth down - local switching
+    ** local auth - local switching
+- bridge mode:
+  * point-to-point
+  * point-to-multipoint
+  * mesh controller
+    * RAP: root AP connected to the wired network
+    * MAP: Mesh AP
+
+
+- oeap mode
+  * office extend AP mode
+- ap monitor mode
+- ap rogue detector mode
+- ap sniffer mode
+- ap se-connect mode
+
+
+
+
+
+== Troubleshooting
+
+
+- Client to AP connectivity:
+	* Antennas and RF Interference:
+	* AP Power (PoE)
+	* Client Association with AP
+
+- WLAN Configuration
+	* Network-Side Issues
+	* Client-Side Issues
+
+- Infrastructure Configuration:
+	* VLAN/Trunk Configuration
+	* AP Association with Wireless LAN Controller
+	* Time Synchronization
+	* RF Groups and Mobility Groups
+	* Wireless LAN Controller Security Settings

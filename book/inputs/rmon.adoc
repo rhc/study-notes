@@ -51,14 +51,3 @@ rmon alarm 20 ifInErrors.2 60 absolute rising-threshold 20 3 falling-threshold 1
 # sh rmon event
 ----
 
-
-
-
-
-
-
-
-
-
-
-

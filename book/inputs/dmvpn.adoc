@@ -32,6 +32,23 @@ interface tunnel 0
   * no default routing allowed on the hub
   * spokes must always maintain next-hop reachability
 
+
+.Task: Display the tunnel interface, role, state and peers with uptime
+----
+# show dmvpn
+
+----
+.tunnel states
+====
+- INTF: DMVPN tunnel line protocol is down
+- IKE: not yet established an IKE session
+- IPSec: IKE session established, but IPSec SA not yet established
+- NHRP: Spoke router not yet registered
+- Up: Spoke router registered and ACK received from hub
+====
+
+
+
 === Phase 3
 
 - Architecture and scaling

@@ -32,10 +32,34 @@ then press q
 let go
 then ?
 
-TODO 
+TO 
 
 .task: use conditional debug
 ----
 # debug condition interface <intf-id>
 ----
+
+=== privilege levels 
+
+- assigned to user through *exec* authorization
+- changed by user through *enable* authentication
+- 0: no access
+- 1: user mode access
+- 15: privileged mode access 
+
+
+----
+sh privilege
+----
+
+=== how to decrypt username password
+
+service password encryption
+
+keychain 
+  key
+key-string 7
+  
+why you should use the username secret password
+
 

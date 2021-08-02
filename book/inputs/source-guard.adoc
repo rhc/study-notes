@@ -25,7 +25,7 @@ above command to populate the reference table, however, you must still enable
 dhcp snooping globally and on the specific VLAN in order for source guard to
 function!
 
-[WARNING]
-GNS3 doesn't support this feature
+WARNING: GNS3 doesn't support this feature
+
 
 

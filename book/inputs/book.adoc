@@ -9,7 +9,7 @@ v1.0, 2015-10-12
 :icons: font
 :stem:
 :imagesdir: ../images
-:frame: none
+:frame: topbot
 :grid: rows
 :stylesheet: ../stylesheets/asciidoctor.css
 
@@ -22,33 +22,44 @@ To Cyril "Matiere" Kalenga
 
 include::ethernet.adoc[leveloffset=+1]
 
-== CDP, LLDP 
+== Neighbor Discovery
 
 include::cdp.adoc[leveloffset=+2]
+
 include::lldp.adoc[leveloffset=+2]
 
 == VLANs and Trunking
 
 include::vlan.adoc[leveloffset=+2]
-include::voice-vlan.adoc[leveloffset=+2]
-include::private-vlan.adoc[leveloffset=+2]
-include::vtp.adoc[leveloffset=+2]
-include::dtp.adoc[leveloffset=+2]
-include::isl.adoc[leveloffset=+2]
-include::802.1q.adoc[leveloffset=+2]
-include::802.1q-in-q.adoc[leveloffset=+2]
 
+include::voice-vlan.adoc[leveloffset=+2]
+
+include::private-vlan.adoc[leveloffset=+2]
+
+include::vtp.adoc[leveloffset=+2]
+
+include::dtp.adoc[leveloffset=+2]
+
+include::isl.adoc[leveloffset=+2]
+
+include::802.1q.adoc[leveloffset=+2]
+
+// include::802.1q-in-q.adoc[leveloffset=+2]
 include::stp.adoc[leveloffset=+1]
 
 == Link Aggregation
 
 include::etherchannel.adoc[leveloffset=+2]
+
 include::lacp.adoc[leveloffset=+2]
 include::pagp.adoc[leveloffset=+2]
 include::vss.adoc[leveloffset=+2]
+
 include::vpc.adoc[leveloffset=+3]
 include::stackwise.adoc[leveloffset=+3]
+
 include::span.adoc[leveloffset=+1]
+
 include::port-based-traffic-control.adoc[leveloffset=+1]
 
 == WAN
@@ -59,9 +70,16 @@ include::chap.adoc[leveloffset=+3]
 include::pppoe.adoc[leveloffset=+2]
 include::ewan.adoc[leveloffset=+2]
 
+== Wireless
+
+include::wireless-signal-and-modulation.adoc[leveloffset=+2]
+include::wireless-infrastructure.adoc[leveloffset=+2]
+include::wireless-roaming-and-location-services.adoc[leveloffset=+2]
+include::wireless-client-authentication.adoc[leveloffset=+2]
+include::wireless-troubleshooting.adoc[leveloffset=+2]
+
 <<<
 = Part II : Layer 3 Technologies
-
 
 // == IP
 include::ipv4.adoc[leveloffset=+1]
@@ -76,6 +94,8 @@ include::ipv6.adoc[leveloffset=+1]
 
 // == IP Switching
 include::routing.adoc[leveloffset=+1]
+// include::process-switching.adoc[leveloffset=+1]
+// include::fast-switching.adoc[leveloffset=+1]
 include::cef.adoc[leveloffset=+1]
 include::bfd.adoc[leveloffset=+1]
 
@@ -84,6 +104,7 @@ include::rip.adoc[leveloffset=+1]
 include::ripv6.adoc[leveloffset=+2]
 include::eigrp.adoc[leveloffset=+1]
 include::ospf.adoc[leveloffset=+1]
+include::ospfv3.adoc[leveloffset=+1]
 include::is-is.adoc[leveloffset=+1]
 include::bgp.adoc[leveloffset=+1]
 include::redistribution.adoc[leveloffset=+1]
@@ -97,7 +118,11 @@ include::ldp.adoc[leveloffset=+1]
 include::gre.adoc[leveloffset=+1]
 include::dmvpn.adoc[leveloffset=+1]
 include::ipsec.adoc[leveloffset=+1]
+include::ike.adoc[leveloffset=+2]
+include::ssl.adoc[leveloffset=+2]
 include::l2vpn.adoc[leveloffset=+1]
+include::vxlan.adoc[leveloffset=+1]
+include::lisp.adoc[leveloffset=+1]
 
 <<<
 = Part IV : Infrastructure Security
@@ -105,7 +130,6 @@ include::l2vpn.adoc[leveloffset=+1]
 //== Device Security
 
 include::aaa.adoc[leveloffset=+1]
-
 
 - implement device access control
 ** lines
@@ -124,12 +148,11 @@ include::mpp.adoc[leveloffset=+1]
 include::acl.adoc[leveloffset=+1]
 
 - source control
-
-include::source-guard.adoc[leveloffset=+1]
-
 - port-security
 
+include::source-guard.adoc[leveloffset=+2]
 
+// askdfj
 
 == Router Security
 
@@ -145,10 +168,7 @@ include::source-guard.adoc[leveloffset=+1]
 ** ND inspection/snooping
 ** source guard
 
-
 include::802.1x.adoc[leveloffset=+1]
-
-
 
 <<<
 = Part V : Infrastructure Services
@@ -185,6 +205,7 @@ include::rtp.adoc[leveloffset=+2]
   6.2.c [ii] Classification, marking
 
 
+include::qos-introduction.adoc[leveloffset=+2]
 include::qos-classification-and-marking.adoc[leveloffset=+2]
 include::qos-congestion-management-and-avoidance.adoc[leveloffset=+2]
 include::qos-shaping-policing-and-link-fragmentation.adoc[leveloffset=+2]
@@ -195,8 +216,8 @@ include::rsvp.adoc[leveloffset=+2]
 == First Host Redundancy Protocols
 
 include::hsrp.adoc[leveloffset=+2]
-include::glbp.adoc[leveloffset=+2]
 include::vrrp.adoc[leveloffset=+2]
+include::glbp.adoc[leveloffset=+2]
 include::irdp.adoc[leveloffset=+2]
 include::ipv6-rs-ra.adoc[leveloffset=+2]
 
@@ -222,6 +243,8 @@ include::performance-monitor.adoc[leveloffset=+2]
 
 include::cloud.adoc[leveloffset=+1]
 include::sdn.adoc[leveloffset=+1]
+include::sd-wan.adoc[leveloffset=+1]
+include::sd-access.adoc[leveloffset=+1]
 include::iot.adoc[leveloffset=+1]
 
 <<<
@@ -241,11 +264,13 @@ include::labs/labs.adoc[leveloffset=+1]
 include::ios-xe.adoc[leveloffset=+1]
 include::system-management.adoc[leveloffset=+1]
 
+include::firewall.adoc[leveloffset=+1]
+
 
 == General
 
 image::osi-vs-tcpip.png[OSI vs DoD TCP/IP]
-
+image::osi.png[Open System Interconnection model]
 
 == Notes To Self
 

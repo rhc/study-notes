@@ -1,6 +1,84 @@
 = Security
 
 
+== passwords
+
+=== type 0
+
+- insecure, plain-text, 
+- *enable passwords*
+
+=== type 5 
+
+- MD5 hashing algo
+- *enable secret*
+- *username secret*
+
+
+=== type 7
+
+- cisco Vigenere cypher encryption algo
+- weak
+- *service password-encryption*
+- *enable password*
+- * username password*
+
+=== type 8
+
+- PBDF2 password based key derivation function 2
+- SHA-256 hash
+
+=== type 9
+
+- SCRYPT hashing algorithm
+
+== usernames
+
+.Task: configure a username with plain-text password
+----
+username <usr> password <password>
+----
+
+.Task: configure a username with type 5 encryption
+----
+username <usr> secret <password>
+----
+
+.Task: configure a username with type 5,8 or 9 encryption
+----
+username <usr> algorithm-type {md5| sha256 | scrypt} secret <password>
+----
+
+
+== privilege levels
+
+- 0: disable, enable, exit, help, logout
+- 1: 
+- 15: privileged exec mode 
+
+
+.example
+----
+conf t
+
+username noc privilege 5 algorithm-type scrypt secret cisco123
+privilege exec level 5 configure terminal
+privilege configure level 5 interface
+privilege interface level 5 shutdown
+privilege interface level 5 no shutdown
+privilege interface level 5 ip address
+----
+
+----
+show running config | inc privilege
+----
+
+----
+show privilege
+----
+
+
+
 
 == ACL
 

@@ -1,0 +1,162 @@
+= IKE
+
+- Internet Key Exchange
+- part of ISAKMP (Internet Security Association Key Management Protocol) framework
+  for authentication and key exchange between 2 peers
+  to establish, modify and tear down SAs.
+- uses UDP 500
+- Establishes SA (security associations) or IKE tunnels
+  which carry control plane and data plane traffic for IPsec
+- uses Oakley and Skeme  key exchange technique
+  * Oakley provides PFS (perfect forward secrecy) for keys, identity protection, authentication
+  * Skeme provides anonymity, repudiability, and quick key refreshment.
+
+
+== v1
+
+rfc 2409, 4109
+
+- phase 1: IKE SA negotiation (standard )
+- phase 1.5: used only for remote-access (non-standard)
+- phase 2: IPSec SA negotiation (standard)
+
+=== Phase 1
+
+- establishes a bidirectional SA between 2 IKE peers,
+  * once established, either peer may initiate negotiation for phase 2
+- negotiate a secure transmission channel between VPN peers
+  * common shared secret key via DH exchange
+  * additional secure keys derived from the common shared secret key
+
+- Diffie-Hellman Exchange: algorithm for exchanging some public information to obtain common shared secret key
+
+TODO algo graphviz
+
+- modes:
+* main mode: longer to negotiate, first 4 messages in clear-text, last 2 encrypted, usually seen in site-to-site vpn
+  ** MM1: initiator sends SA proposal(hash, encryption, authentication, DH, lifetime),
+  ** MM2: responder sends the matched SA proposal
+  ** MM3: initiator starts the DH key exchange
+  ** MM4: responder sends its own key => encryption is established for the SA
+  ** MM5: initiator authenticates with its IP address
+  ** MM6: responder authenticates with its IP address
+
+* aggressive mode: faster to negotiate with 3 unidirectional messages, last message encrypted, not mandatory per RFC, usually seen in remote-access vpn
+  ** AM1: initiator sends all information contained in MM1,MM2,MM3, and MM5
+  ** AM2: responder sends all information contained in MM2,MM4, and MM6 (??? Check this)
+  ** AM3: ?? sends the authentication that is contained in MM5
+
+- vpn peers exchanges isakmp policies which consists of 5 attributes:
+* authentication method: psk, rsa-sig, rsa-encr
+* encryption algorithm: des, 3des, aes
+* hash algo: md5, sha-1, sha-2
+* dh group: 1,2,5, 14, 15, 16
+* lifetime : negotiated value in seconds, default to 24h
+
+Read more https://www.omnisecu.com/tcpip/ikev1-main-aggressive-and-quick-mode-message-exchanges.php
+
+=== Phase 2
+
+- establishes 2 or more unidirectional SAs
+* quick mode:
+  ** QM1: initiator starts multiple IPsec SAs in a single exchange message with agreed-upon algorithms for encryption and hashing as well as what trafic is to be secured
+  ** QM2: responder sends matching IPsec parameters
+  ** QM3: After this message, there should be 2 unidirectional IPSec SAs between the peers
+
+
+- what to protect (proxy-ACL/encryption-domain)
+- how to protect (transform-set)
+	** encapsulation protocol (esp, ah)
+	** encryption (des, 3des, aes)
+	** hashing (md5, sha-1, sha-2)
+- lifetime in seconds/Kbytes (negotiated)
+
+
+- proxy-ACL
+* also known as crypto-ACL
+* statically defined via extended ACL
+* dynamically negotiated by vpn peers
+
+- encapsulation mode
+* transport
+  ** less overhead
+  ** preserves the original ip src/dest
+  ** used for intra-site tunnels (encrypted traffic between host and server on LAN)
+* tunnel
+  ** hides original packet ip src and dest
+  ** more overhead
+  ** used for inter-site tunnels (router encrypts traffic on behalf of hosts)
+
+- original Packet -> IP|TCP|Data
+- AH transport mode -> IP|AH|TCP|Data
+- AH tunnel mode -> IP~new~|AH| IP~original~|TCP|Data
+- ESP transport mode -> IP|ESP~header~|TCP|Data|ESP~trailer~
+- AH tunnel mode -> IP~new~|ESP~header~| IP~original~|TCP|Data |ESP~trailer~
+
+- Phase 2 result is 2 unidirectional IPsec SA
+- IPsec SA
+  * defines the security used to protect data-plane traffic
+  * combines secure keys, cipher algorithms and spi (security parameter index)
+
+- Phase 2 perfect forward secrecy
+  * optional
+  * run additional dh exchange so Phase 2 IPsec SA keys are not derived from Phase 1 IKE SA keys
+    => a compromised key does not compromise future keys
+  * dh group has to match between vpn peers
+  * dh group does not need to match with dh group from pahse 1
+  * more secure, more CPU overhead
+
+== IKEv2
+
+- uses exchanges or request/response pairs
+  * IKE_SA_INIT
+    ** negotiates cryptographic algorithms
+    ** exchanges nonces
+    ** performs DH exchange
+    ** equivalent to IKEv1 MM1,MM2,MM3,MM4 but done as a single request/response pair
+  * IKE_AUTH
+    ** authenticates the previous messages
+    ** exchanges identities and certificates
+    ** establishes an IKE SA and a child IPsec SA
+    ** equivalent to IKEv1 MM5,MM6 as well as QM1,QM2 but done as a single request/response pair
+
+
+- incompatible with IKEv1
+  * rfc 7296 for difference between IKEv1 and IKEv2
+  * ECDSA-SIG:
+  * EAP
+
+[cols="4a,6a,6a", stripes=odd]
+|===
+|    | IKEv1 | IKEv2
+
+.3+| Exchange modes
+     | Main mode      | IKE_SA_INIT
+     | Agressive mode | IKE_AUTH
+     | Quick mode     | CREATE_CHILD_SA
+
+.2+| Minimum Number of Messages needed to establish IPsec SAs
+     | 9 with main mode        .2+| 4
+     | 6 with aggressive mode
+
+.5+| Supported authentication methods
+    | PSK | PSK
+    |RSA-SIG | RSA-SIG
+    | Public Key | ECDSA-SIG
+   .2+| Both peers muse use the the same authentication method | EAP
+     | supports assymetric authentication
+.7+| Next Generation Encryption
+    | AES-GCM (Galois/Counter Mode)
+    | SHA-256 |SHA-384 |SHA-512
+    | HMAC-SHA-256
+    | ECDH-384
+    | ECDSA-384
+.2+| Attack Protection
+  | MitM protection | MitM protection
+  .2+| Eavesdropping protection | Eavesdropping protection
+                                | Anti-DoS protection
+
+|===
+
+
+

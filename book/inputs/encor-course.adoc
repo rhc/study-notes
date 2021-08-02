@@ -1,0 +1,27 @@
+= Encor 
+
+
+https://ondemandelearning.cisco.com/cisco-cte-lite/encor10/sections/3/pages/4
+
+
+== vlan
+
+=== troubleshoot
+
+sh vlan
+sh mac address-table
+  vlan | mac address | type | ports
+
+
+sh interfaces 
+sh interfaces switchport
+
+- lab about mst best practices
+
+== cmds
+
+sh spanning-tree mst digest
+:
+
+
+

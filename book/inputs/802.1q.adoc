@@ -8,7 +8,7 @@
 - Does not tag frames on the native VLAN.
 ** Must use the same native VLAN on both sides of the trunk
 ** Default to VLAN 1
-** enables frames to transit switches not yet capable for 802.1g
+** enables frames to transit switches not yet capable for 802.1q
 
 - Supports up to 4096 VLANs
 ** Defines a single instance of spanning tree that runs on the native VLAN for all the VLANs in the network.
@@ -19,19 +19,24 @@
 
 image::802-1q-frame.png[802.1Q frame]
 
+TODO
+
+image::802-1q-fields.png[802.1Q frame]
+
 TPID-Tag Protocol Identifier::
 - 16 bits
-- Value: 08100
+- Value: 0x8100
 
-Priority::
+PCP-Priority Code Point::
 - 3 bits
 - Called also user priority or IEEE 802.p
 - Indicates the frame priority level
 - Can be used to prioritize the traffic
 
-CFI-Canonical Format Indicator::
+DEI-Drop Eligible Indicator::
 - 1 bit
-- Value: 0 if MAC address is in canonical format otherwise 1
+- Indicates if the packet can be dropped
+- formerly CFI(Canonical Format Indicator = 0 if MAC address is in canonical format)
 
 VID-VLAN Identifier::
 - 12 bits
@@ -39,8 +44,8 @@ VID-VLAN Identifier::
 
 == Ethernet Frame Size with 802.1Q Tagging
 
-- Maximum size: 1522 bytes
 - Minimum size: 68 bytes
+- Maximum size: 1522 bytes
 
 == Native VLAN
 
@@ -51,4 +56,6 @@ VID-VLAN Identifier::
 ----
 
 TODO How can you force the tagging of the native vlan?
+
+NOTE: Change native vlan to vlan <> 1. Better, to a vlan not used at all (without host attached)
 

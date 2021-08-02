@@ -1,0 +1,15 @@
+= DEVASC notes
+
+== SOAP
+
+- simple object access protocol
+- components:
+  - envelope
+  - header
+  - body
+  - fault(optional)
+
+image::soap.png[SOAP message format]
+
+image::soap-alt.png[SOAP message format - TODO]
+

@@ -1,7 +1,7 @@
 = Ethernet
 
 - IEEE 802.3 standards
-- CSMA/CD protocol
+- CSMA/CD protocol (carrier sense multiple access with collision detection)
 - Medium: coaxial, twisted-pair, optical fiber
 - Data rates: 10/100/1000/10000 Mbps
 
@@ -21,7 +21,7 @@ digraph g {
 ----
 digraph g {
   node [shape=record,height=.1];
-  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Length}|{1|DSAP}|{1|SSAP}|{1-2|Control}|{43\-1500|Data\ and\ Padding}|{4|FCS}"];
+  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Length\ \ \ \ \ \ \ \  }|{1|DSAP}|{1|SSAP}|{1-2|Control}|{43\-1500|Data\ and\ Padding}|{4|FCS}"];
 }
 ----
 
@@ -30,7 +30,7 @@ digraph g {
 ----
 digraph g {
   node [shape = record,height=.1];
-  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Length}|{1|DSAP}|{1|SSAP}|{1-2|Control}|{3|OUI}|{2|Type}|{43\-1500|Data\ and\ Padding}|{4|FCS}"];
+  node0 [label ="{8|Preamble}|{6|DA}|{6|SA}|{2|Length\ \ \ \ \ \ \ \  }|{1|DSAP}|{1|SSAP}|{1-2|Control}|{3|OUI}|{2|Type}|{38\-1500|Data\ and\ Padding}|{4|FCS}"];
 }
 ----
 
@@ -43,6 +43,8 @@ Type::
 
 Length::
 - Length in bytes of the data following the Length field, up to the Ethernet trailer.
+- the max length of the ethernet frame is 1518 bytes
+- the min length of the ethernet frame is 64 bytes
 
 DA::
 - Destination address can be an individual or group address
@@ -99,8 +101,7 @@ Transmission    : 00110101 00001000 11010110 01011100 01001010 00111100
 (config-if)# mac-address AC-10-BE-EF-DE-AD
 ----
 [NOTE]
-Even if you change the MAC address of the swithch port,
-STP will continue to use the BIA.
+Even if you change the MAC address of the switch port, STP will continue to use the BIA.
 
 === Types Of MAC Addresses
 
@@ -113,6 +114,11 @@ STP will continue to use the BIA.
 - Defined by http://www.eia.org[EIA] / http://www.tiaonline.org[TIA]
 
 image::ethernet-pinouts.png["Ehernet and ISO", height=50]
+
+TODO Why they use a pair?  How does it work?
+PC transmission on 1,2 and reception on 3,6
+switch transmission on 3,6 and reception on 1,2
+
 
 .Ethernet Cabling Types
 [cols="20,50,40"]
@@ -148,7 +154,7 @@ UTP : Speed   : Description
 - To disable auto-negotiation, manually configure the speed and the duplex settings.
 - if auto-negotation is disabled on one end by statically setting the speed , the other end
   ** detects the speed based on the incoming electrical signal
-  ** sets duplex to half for 10 and 100 Mbps and full duplex for 1Gps interfaces
+  ** sets duplex to half for 10 and 100 Mbps and full duplex for 1Gbps interfaces
 
 - if auto-negotation is disabled on both end and different speeds statically configured, link down
 
@@ -189,7 +195,7 @@ Tx Counter Register        [17] : 0008
 
 == Standards
 
-[format="csv", cols="10,90", grid="none"]
+[cols="10,90", grid="none"]
 :===
 802.1Q  : dot1q trunking
 802.1d  : STP

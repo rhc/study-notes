@@ -1,0 +1,11 @@
+
+
+
+REST architectural constraints
+- client/server
+- stateless
+- cache
+- uniform interface
+- layered system
+- code on demand
+

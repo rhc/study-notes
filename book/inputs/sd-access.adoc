@@ -1,0 +1,109 @@
+= SD-Access
+
+- fabric: virtualized network
+- SD-Access = Campus Fabric + Cisco DNA center
+
+image::sd-access.png[]
+
+- physical layer:
+  * cisco switches:
+  * cisco routers
+  * cisco wireless: WLCs and APs
+  * cisco controller appliances: cisco DNA Center, Cisco ISE
+
+- network layer:
+  * underlay network:
+    ** avoid layer 2 using STP, =>
+       prefers layer 3 routed access using IS-IS as the IGP
+       because IS-IS neighbor establishment without IP dependencies,
+       peering capabilities using loopback addresses,
+       agnostic treatment of IPv4, IPv6, and non-IP traffic
+    ** 2 models:
+      *** manual underlay:
+      *** automated underlay: managed by Cisco DNA Center LAN automation.
+
+  * overlay network (SD-Access Fabric)
+    ** fully automated (vs manual  configuration of campus fabric solution with CLI/APi NETCONF/YANG)
+    ** control plane: LISP
+    ** data plane: vxlan-GPO with support for  64000 Cisco TrustSec SGTs (scalable group tag)
+    ** policy plane: assigns Cisco TrustSec SGTs to users or end devices.
+      *** support for both network-based segmentation using VNs (VRF instances) and group-based segmentation (policies)
+      *** network address-independent group-basd policies based on SGT rather than MAC, IPv4, IPv6
+      *** dynamic enforcement on wired and wireless traffic
+      *** policy constructs over a legacy or third-party network using vxlan
+      *** extended policy enforcement to external networks (cloud, DCs) by transporting the tags to Cisco TrustSec-aware devices using SXP (SGT Exchange Protocol)
+
+    ** components (5)
+      1. control plane node: contains settings, protocols, mapping tables to provide EID-to-RLOC mapping for the fabric overlay
+      2. fabric border node:  connects external L3 networks to the SDA fabric (e.g. core layer device)
+      3. fabric edge node: connects wired endpoints to the SDA fabric (e.g. access, distribution layer device)
+      4. fabric WLC: connects APs and wireless endpoints to the SDA fabric
+      5. intermediate nodes: routers or extended switches in the underlay
+
+image::sda-fabric-roles.png[]
+
+== Control Plane - LISP
+
+== Data Plane - VXLAN-GPO
+
+== Policy Plane - Cisco TrustSec
+
+- Traffic is segmented  based on a scalable group, and not based on topology (VLAN or IP subnet)
+- SGTs are assigned to enforce access policies for users, applications, devices
+
+image::trustsec-in-campus-fabric.png[]
+
+- The traditional approach to security in enterprise network creates several
+  limitations and complexities. Security policies that are based on IP
+  addresses within subnets and VLANs tend to be complex and difficult to
+  manage. The enforcement and management of these policies throughout the
+  network can be an administrative task that requires much skill as access
+  lists tend to grow with the organization. Another drawback of this current
+  approach is the static nature of access lists. As network become more
+  dynamic, constant changes with network policy become difficult.
+
+image::trustsec-sgacl.png[]
+
+- The ultimate goal of Cisco TrustSec technology is to assign a tag (known as a
+  Scalable Group Tag, or SGT) to the user’s or device’s traffic at the ingress
+  (inbound into the network), and then enforce the access policy based on the
+  tag elsewhere in the infrastructure (for example, data center). Switches,
+  routers, and firewalls use the SGT to make forwarding decisions. For
+  instance, an SGT may be assigned to a Guest user, so that the Guest traffic
+  may be isolated from non-Guest traffic throughout the infrastructure.
+
+- The Cisco Identity Services Engine (ISE) acts as a controller for
+  software-defined segmentation groups and policies, providing a layer of
+  policy abstraction and centralized administration. Cisco ISE allows
+  segmentation policies to be applied to networks of any size using a simple
+  and clear policy matrix.
+
+image::trustsec-ise.png[]
+
+In Cisco SD-access fabric, Cisco ISE defines and manages SGTs on your network
+by enforcing the policies on the edge nodes. An SGT is a 16-bit value that
+Cisco ISE assigns to the user or endpoint’s session upon login. The network
+infrastructure views the SGT as another attribute to assign to the session and
+inserts the Layer 2 tag to all traffic from that session. The SGT value is
+inserted as part of the Cisco Meta Data header field that is added by the
+infrastructure to frames sourcing from the endpoint. The endpoint itself is not
+aware of the tag. It is known in the network infrastructure. Within the network
+infrastructure, only the trusted or authenticated peers can apply the tag.
+
+An SGT can be assigned dynamically or statically. Dynamic classification occurs
+via an authentication sequence, via 802.1x, MAB, or web authentication. When
+the authentication is not available, static classification methods are
+necessary. In static classification, you can map the tag to an IP address,
+subnet, VLAN, or interface rather than relying on an authorization from Cisco
+ISE.
+
+image::trustsec-sgt.png[]
+
+The Cisco TrustSec Network Device Admission Control (NDAC) feature creates an
+independent layer of trust between Cisco TrustSec devices to prohibit rogue
+devices from being allowed on the network.
+
+
+
+
+

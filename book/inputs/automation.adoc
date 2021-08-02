@@ -1,0 +1,191 @@
+
+
+== python
+- pyATS
+-
+
+
+== json
+
+- JavaScript Object Notation
+- Object
+  * unordered set of key:value pairs separated by commas but not a trailing commas   .
+  * Data surrounded by {}
+  * use double quotes, not single quotes
+  * boolean values must be lowercase
+
+https://www.json.org/json-en.html
+
+yang
+
+dna centre and vManage
+rest api
+restconf
+eem
+orchestration tools
+chef
+puppet
+ansible
+saltStack
+
+
+== agent-based automation tools
+
+=== Puppet
+
+- Puppet master, agent
+- Ruby
+- TCP connections
+- installation types:
+  * monolithic: < 4000 nodes
+  * monolithic with compile masters: 4000 ... 20000 nodes
+  * monolithic with compile masters and standalone PE-PostgreSQL: > 20000 nodes
+- community https://forge.puppet.com
+
+image::large-scale-puppet-enterprise-deployment.png[]
+
+
+- Puppet modules
+  * manifests: configures the clients running the puppet agents
+    ** pushed to the devices using SSL and certificates
+    ** .pp extension
+  * templates
+  * files
+
+.Puppet NTP_Server.pp Manifest
+----
+ntp_server { '1.2.3.4':
+  ensure => 'present',
+  key => 94,
+  prefer => true,
+  minpoll => 4,
+  maxpoll => 14,
+  source_interface => 'Vlan 42',
+
+}
+----
+
+.Puppet MOTD.pp Manifest
+----
+banner { 'default':
+  motd => 'Violators will be prosecuted',
+}
+----
+
+=== Chef
+
+- Ruby, Erlang
+- push, pull model
+- Chef server deployments:
+  * Chef Solo: hosted locally on the workstation
+  * Chef Client and Server:
+  * Hosted chef: in the cloud
+  * Private Chef: on-prem
+
+image::chef-architecture.png[]
+
+.Puppet vs Chef
+|===
+|Chef components | Puppet components | server/master functions
+
+| chef server | puppet master | server/master functions
+| chef client | Puppet agent | client/agent functions
+| cookbook | module | collection of code or files
+| recipe | manifest | code
+| workstation | console | where users interact with configuration management tool and create code
+|===
+
+- upload cookbooks to server with *knife upload <cookbook-name>*
+- OHAI service on the nodes
+- tests recipes and cookbooks in the kitchen prior to production
+- supports minitest, RSpec, Serverspec, BATS(bash automated testing system)
+
+
+=== SaltStack (Agent and Server mode)
+
+- Python
+- Salt formulas
+- masters and minions
+- runs remote commands in parallel
+- event-driven technology
+  * reactors: on the masters,
+  * beacons: on the minions
+- pillars and grains
+- DSL with targets, commands, arguments
+
+
+image::saltstack-architecture.png[]
+
+
+== agentless-based automation tools
+
+=== Ansible
+
+- Python
+- agentless
+- connects with SSH or WinRM (Windows Remote Management)
+- PPDIOO (Prepare, Plan, Design, Implement, Observe, Optimize)
+- components:
+  * playbooks: set of plays for remote systems written in YAML
+  * play: set of tasks applied to a group of hosts
+  * task: call to Ansible module
+- CLI commands
+  * ansible: runs modules against targets
+  * ansible-playbook: runs playbooks
+  * ansible-docs: documents parameters in the CLI
+  * ansible-pull: changes clients from default push model to pull model
+  * ansible-vault: encrypts YAML files that contain sensitive data
+
+----
+---
+- hosts: RouterA
+
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Configure GigabitEthernet0 Interface
+    - ios_config:
+        lines:
+          - description Configured by ANSIBLE!!
+          - ip address 10.1.1.1 255.255.255.0
+          - no shutdown
+        parents: interface GigabitEthernet0
+
+        host: "{{ ansible_host }}"
+        username: cisco
+        password: sesame
+----
+
+=== Puppet Bolt
+
+- orchestrator-driven tasks: for large-scale environments
+- standalone tasks: connects directly to devices.
+
+- runs *bolt command run <command-name> <devices>*
+- runs *bold script <script-name>*
+- operations:
+  * copies the script into a temporary directory on the remote device
+  * executes the script
+  * captures the results
+  * removes the script from the remote system
+- task naming convention: <modulename>::<taskfilename>
+
+=== SaltStack SSH (Server-only mode)
+
+- needs SSH and Python installed on the client
+- slower than the 0MQ distributed messaging library
+
+
+
+== Comparisons
+
+,==
+Factor, Puppet, Chef, Ansible, SaltStack
+
+Architecture, master/agent, server/client, control station/remote host, master/minions
+Language, Puppet DSL, Ruby DSL, YAML, YAML
+Terminology, modules/manifests, cookbooks/recipes, playbooks/plays, pillars/grains
+Can Scale?, yes, yes, yes, yes
+agentless version, puppet bolt, n/a, yes, salt ssh
+,==

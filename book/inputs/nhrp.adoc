@@ -52,3 +52,11 @@ R1#sh ip nhrp
 ----
 # debug nhrp
 ----
+
+.Task: Show the NHRP cache
+----
+# show ip nhrp [brief]
+----
+
+
+

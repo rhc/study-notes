@@ -1,0 +1,7 @@
+= NBAR
+
+//TODO
+
+- 2 modes
+  - passive mode: discovery
+  - active mode:

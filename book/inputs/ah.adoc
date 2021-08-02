@@ -1,0 +1,7 @@
+= AH
+
+- authentication header
+- ip protocol 51
+- offers only IA (data origin auth, data integrity) and anti-replay
+- does not offer encryption 
+- has lower overhead than ESP

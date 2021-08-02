@@ -1,0 +1,112 @@
+= SSL/TLS
+
+
+- secure socket layer
+- ISO L6 layer where the socket is opened
+- created by netscape in 1994 to secure web transactions
+- SSLv3 RFC 6101
+- replaced by TLS (transport layer security) (read RFC 7568 for build-in design flaws)
+* TCP/IP transport layer, where the socket is opened
+* TLS v1.0: rfc 2246
+* TLS v1.2: rfc 5246
+* TLS v1.3: draft
+
+
+== Use cases
+
+- Protocol, port
+- HTTPS, 443
+- SMTPS, 465
+- imaps, 993
+- pop3s, 995
+- ftps, 990
+- ldaps, 636
+
+
+- ssl/tls can be used to secure vpn tunnel instead of IPsec
+
+- ssl/tls session works in 2 phases
+  * negotiate ssl/tls tunnel (control-plane)
+  * transmit data over the ssl/tls tunnel (data-plane)
+
+- both phases make use of the ssl/tls record protocol
+
+== tunnel negotiation
+
+- uses tcp port 443 for negotiation
+* negotiate ssl/tls version
+* authenticate each other
+* negotiate key exchange algorithms
+* negotiate cypher suite algorithms
+
+TODO graphviz
+
+image::tls.png[tls session establishment]
+
+=== authentication 
+
+
+- server uses digital certificate with (RSA, DSA, ECDSA) algorithm
+- client uses simple or multiple auth:
+  * only digital certificate or username/password
+  * digital certificate + username/password
+  * digital certificate + 2 sets of username/password
+
+
+=== key management/exchange algorithm
+
+- derives the keying material which is used to secure/protect 
+  * last messages of tunnel negotiation
+  * data-plane traffic
+- RSA, DH/DHE, ECDH/ECDHE
+
+
+=== Cypher suite algorithm
+
+- protects the data-plane traffic 
+- negotiates integrity/hashing: MD5, SHA-1, SHA-2
+- negotiates encryption: RCA, IDEA, DES, DES3, AES
+
+== data-plane
+
+- can uses TLS over tcp 
+- can uses DTLS over udp (for real-time sensitive traffic) 
+  * dtls only supported by tls
+  * dtls v1.2 in RFC 6347
+
+
+
+== SSL VPN
+
+- Why it was invented? what purpose ?
+- most vendors support only remote-access ssl vpn and not site-to-site vpns
+- 2 variations:
+  * client-based: (cisco AnyConnect)
+  * clientless: (browser based)
+
+
+=== client-based ssl vpn
+
+- requires vpn client software to be installed
+- needs client profiles
+  * old config in  *.pcf file
+  * current in xml format
+- benefits:
+  * supports  all IP apps
+  * supports real-time applications and DTLS
+- allocates an IP address to the AnyConnect client NIC card
+  * on the protect network, traffic seems to be sourced from AnyConnect IP address
+  * remote client sends traffic through the ssl tunnel,
+  * ASA decrypts the traffic and routes it further on the protected network 
+
+
+TODO configure ASA 
+
+- provision the certificate
+- enable client-based ssl vpn 
+- configure remote-access client ip addressing
+- configure split-tuneling policy
+- configure connection-profile/tunnel-group
+- configure group policy
+- configure RRI (reverse route injection)
+

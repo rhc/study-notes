@@ -27,6 +27,8 @@ sessions between routers.
 * BFD control packets sourced from 49152 and sent to 3784.
 * BFD echo packets sourced from 3785 and sent to 3785
 
+image::bfd-loss-of-signal-detection.png[Loss of Signal Detection Challenges]
+
 
 == BFD Control Packet Format
 

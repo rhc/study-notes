@@ -1,0 +1,75 @@
+= AMP
+
+- Advanced Malware Protection
+
+
+== AMP for endpoints
+
+image::amp-for-endpoints.png[]
+
+- Cisco Collective Security Intelligence Cloud:  where the various detection and analytics engines reside.
+
+  * SPERO:  machine-learning malware detection engine in the cloud,
+    relies  fingerprint that contains many attributes of the file being processed and the SHA-256 hash of the file in initial message.
+
+  * ETHOS: fuzzy logic-based malware detection engine invoked if the file being checked is not known or returns a neutral disposition.
+
+- Client Connector: runs on the endpoints, communicates with the cloud to send information about files and to receive file disposition information.
+
+   * Cisco AMP for Endpoints Mobile:  only Android >= 2.1
+   * Cisco AMP for Endpoints Mac Connector: OS X >= 10.7.
+
+- AMP for Networks: Gives FirePOWER devices the ability to query the cloud to obtain file disposition information on files that are detected by the FirePOWER device.
+
+|===
+| Features | Cisco AMP for Endpoints for Windows | Cisco AMP for Endpoints for Mac| Cisco AMP for Endpoints Mobile
+
+| Protection
+|
+- SHA-256-based disposition check
+- SPERO detection engine
+- ETHOS detection engine
+- Advanced analytics
+- Quarantine
+
+|
+- SHA-256-based disposition check
+- Antivirus signatures
+- Advanced analytics
+- Quarantine
+
+|
+- SHA-1-based disposition check
+- Post-installation detection
+
+| Visibility
+
+|
+- File trajectory
+- File analytics
+- Device trajectory
+
+|
+- File trajectory
+- File analytics
+- Device trajectory
+
+|
+
+| Control
+
+|
+- Simple custom detection
+- Advanced custom detection
+- Application blocking
+- IP blacklists
+
+|
+- Simple custom detection
+- Application blocking
+- IP blacklists
+
+|
+- Simple custom detection
+
+|===

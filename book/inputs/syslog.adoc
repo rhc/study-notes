@@ -1,13 +1,92 @@
 = Syslog
 
+
+- UDP 514
+- syslog over TLS uses TCP port 6514
+
+
 - https://www.ietf.org/rfc/rfc5424.txt[RFC 5424]
 - Clear-text protocol that provides event notifications without requiring difficult, time-intensive configuration or opening attack vectors.
+- sends log messages to
+  * console
+  * vty lines
+  * memory buffer
+  * remote syslog server (udp 514 by default)
+
+
+.template
+seq no:time stamp: %facility-severity-MNEMONIC:description
+
+.example
+*Apr 22 11:05:55.423: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/22, changed state to up
+
 
 .Steps
 - Install a Syslog server on a workstation with a fixed IP address.
 - Configure the logging process to send events to the Syslog server’s IP address using the *logging host* command.
 - Configure any options, such as which severity levels (0–7) you want to send to the Syslog server using the logging trap command.
 
+== logging levels
+
+|===
+| 0| emergency
+| 1| alert
+| 2| critical
+| 3| error
+| 4| warning
+| 5| notification
+| 6| informational
+| 7| debugging
+|===
+
+WARNING: never enable level 7 at the console. it may melt high CPU usage
+
+.task: enable logging
+----
+(config)# logging on
+----
+
+.task: logging to the console
+----
+(config)# logging console <level>
+----
+
+.task: logging to the vty
+----
+(config)# logging monitor <level>
+----
+
+.task: logging to the buffer
+----
+(config)# logging buffer <buffer_size> <level>
+----
+
+NOTE: default size buffer 8192 bytes
+
+.task: define syslog server
+----
+logging trap informational
+logging host 172.16.9.1 transport udp
+----
 
 
+.task: display logs stored in buffer
+----
+#show logging
+----
 
+.task: display log messages at vty lines
+----
+# terminal monitor
+----
+
+.task: secure and reliable transportation to its default port
+----
+(config)# logging host <a.b.c.d> [vrf <name>] transport tcp port 6514
+----
+
+
+.task: configure timestamps
+----
+(config)# service timestamps [debug|log] [datetime | uptime]
+----

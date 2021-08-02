@@ -1,0 +1,27 @@
+= Network Virtualization
+
+
+image::network-virtualization.png[]
+
+
+Access Control is responsible for authenticating and authorizing devices
+connecting at the edge of the network. Access Control allows customers to
+assign devices to a specific network "segment," which usually corresponds to
+deploying a device in a dedicated VLAN.
+
+Services Edge is responsible for centralizing policy enforcement points where
+it is possible to control and restrict communications between separate logical
+partitions or access to services that can be dedicated or shared between
+virtual networks.
+
+Path isolation is an overlay network and refers to the creation of independent
+logical traffic paths to isolate traffic between users belonging to separate
+groups (example guest and partners) over a shared physical network
+infrastructure.
+
+TODO put this in a better place
+
+== Type 1/2 hypervisor
+
+- type 1: bare metal
+- type 2: on top of another OS

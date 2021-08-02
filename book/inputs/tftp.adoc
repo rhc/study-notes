@@ -29,3 +29,19 @@ TODO
 TODO
 
 
+.Task: Verify the amount of free space available on the cisco device
+----
+show flash
+----
+
+
+NOTE: If you copy a file larger than the available space,
+it will be partially copied. The failure message is 'buffer overflow -xxxx/yyyy'
+where xxxx bytes read from the source and yyyy bytes available on the destination.
+
+.Task: specify the management interface used to source the TFTP traffic
+----
+ip tftp source-interface <interface-type interface-number>
+----
+
+

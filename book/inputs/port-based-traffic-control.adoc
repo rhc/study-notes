@@ -90,3 +90,17 @@ TODO
 https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/15-0_1_se/configuration/guide/3750xcg/swtrafc.html#71262
 
 
+default: 1 max mac addresse
+
+
+----
+show port-security
+----
+
+conf t
+switchport port-security
+errdisable recovery cause <...>
+errdisable recovery interval <...>
+
+ 
+

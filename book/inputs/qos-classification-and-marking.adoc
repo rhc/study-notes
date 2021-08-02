@@ -1,45 +1,88 @@
 = Classification and Marking
 
-== Fields That Can Be Marked for QoS Purposes
 
-- Layer 3:  IPP, IP DSCP, DS field, ToS byte
-- Layer 2:  Ethernet CoS,Frame Relay  DE, ATM CLP, MPLS EXP
+== Traffic descriptors used for classification
+
+- Internal: QoS groups (locally significant to a router)
+- Layer 1: physical interface, subinterface, or port
+- Layer 2:  Mac Address, Ethernet 802.Q/p CoS,Frame Relay  DE, ATM CLP,
+- Layer 2.5: MPLS EXP
+- Layer 3:  IPP, IP DSCP, DS field, ToS byte, source/destination IP address
+- Layer 4: TCP or UDP ports
+- Layer 7: NBAR (next generation network based application recognition)
+
+=== Layer-2 classification
+
+- Ethernet frames contain no distinctive "priority" field
+  unless carried on 802.1q or ISL trunks.
+
+,===
+PCP value, Acronym, Traffic type
+0, BK, Background
+1 (default), BE, Best effort
+2, EE, Excellent effort
+3, CA, Critical applications
+4, VI, Video with < 100 ms latency and jitter
+5, VO, Video with < 10 ms latency and jitter
+6, IC, Internetwork control
+7, NC, Network control
+,===
+
+
+
 
 ===  IPP
 
 image::ipp-vs-dscp.png[]
 
 .IPP and Class Selector DSCP Values
-:===
-DSCP CS name : IPP names
+|===
+| DSCP CS name | IPP names
 
-CS0/Default  : routine
-CS1          : priority
-CS2          : immediate
-CS3          : flash
-CS4          : flash override
-CS5          : critical
-CS6          : internetwork control
-CS7          : network control
-:===
+| CS0/Default  | routine
+| CS1          | priority
+| CS2          | immediate
+| CS3          | flash
+| CS4          | flash override
+| CS5          | critical
+| CS6          | internetwork control
+| CS7          | network control
+|===
+
+.Scavenger Class
+TIP: The scavenger class is intended to provide less than best-effort services.
+Per convention since RFC 4594, CS1 is assigned to scavenger class
 
 === DSCP
 
 - PHB: Per-Hop Behavior
+
+- Class Selector (CS) PHB:
+* uses first 3 bits of the DSCP field. (set last 3 bits to 000)
+* compatible with IPP
+* RFC 2474
+
+- Default Forwarding (DF) PHB
+* default forward used for best-effort service
+* DSCP = 000000
+* ~ CS)
+*
+
+- Assured Forwarding (AF) PHB
+* RFC 2574 97
+* for guaranted bandwidth service
+* defines 4 queues with 3 drop priorities
+* stem:[AFx_1y_1 > AFx_2y_2 if x_1 > x_2 or (x_1 = x_2 and y_1 < y_2)]
+* AFxy -> 8x + 2y = decimal value
+*
 
 - Expedited Forwarding (EF):
 * RFC 2598
 * Queue EF packets so that they get scheduled quickly, to give them low latency.
 * Police the EF packets so that they do not consume all bandwidth on the link or starve other queues.
 * Binary value: 101110 Decimal value: 46
-
 * packets given queue priority
 
-- Assured Forwarding (AF)
-* RFC 2597
-* defines 4 queues with 3 drop priorities
-* stem:[AFx_1y_1 > AFx_2y_2 if x_1 > x_2 or (x_1 = x_2 and y_1 < y_2)]
-* AFxy -> 8x + 2y = decimal value
 
 
 === Ethernet LAN Class Of Service
@@ -74,25 +117,27 @@ image::mqc.png[Modular QoS CLI]
 * Subport classification or classification based on deep-packet inspection.
   ** URL, Hostname, or MIME type
 
-- uses MQC match protocol
+- 2 modes of operations
+  ** protocol discovery:
+  ** MQC modular QoS cli
 
 
 .NBAR Match Protocol
 [cols="25,75"]
-:===
-Command                  : Purpose
-
-match protocol           : Configures the match criteria for a class map on the basis of the specified protocol.
-match protocol citrix    : Configures NBAR to match Citrix traffic.
-match protocol fasttrack : Configures NBAR to match FastTrack peer-to-peer traffic.
-match protocol gnutella  : Configures NBAR to match Gnutella peer-to-peer traffic.
-match protocol http      : Configures NBAR to match HTTP traffic by URL, host,MIME type, or fields in HTTP packet headers.
-match protocol rtp       : Configures NBAR to match Real-Time Transport Protocol (RTP) traffic.
-match qos-group          : Identifies a specific QoS group value as a match criterion.
-match source-address mac : Uses the source MAC address as a match criterion.
-match start              : Configures the match criteria for a class map on the basis of the datagram header (Layer 2) or the network header (Layer 3).
-match tag                : Specifies tag type as a match criterion.
-:===
+|===
+|Command                  | Purpose
+|
+| match protocol           | Configures the match criteria for a class map on the basis of the specified protocol.
+| match protocol citrix    | Configures NBAR to match Citrix traffic.
+| match protocol fasttrack | Configures NBAR to match FastTrack peer-to-peer traffic.
+| match protocol gnutella  | Configures NBAR to match Gnutella peer-to-peer traffic.
+| match protocol http      | Configures NBAR to match HTTP traffic by URL, host,MIME type, or fields in HTTP packet headers.
+| match protocol rtp       | Configures NBAR to match Real-Time Transport Protocol (RTP) traffic.
+| match qos-group          | Identifies a specific QoS group value as a match criterion.
+| match source-address mac | Uses the source MAC address as a match criterion.
+| match start              | Configures the match criteria for a class map on the basis of the datagram header (Layer 2) or the network header (Layer 3).
+| match tag                | Specifies tag type as a match criterion.
+|===
 
 .Restrictions
 - NBAR cannot classify ipx
@@ -122,21 +167,27 @@ port-map dhcp     tcp 67 68
 - Mark as close to the ingress edge of the network as possible, but not so close
 to the edge that the marking is made by an untrusted device.
 
+- traffic descriptor used for marking traffic
+  ** internal: QoS groups
+  ** L2: 802.1Q/p CoS
+  ** L2.5: MPLS EXP
+  ** L3: DSCP, IPP
 
 
 For any class inside the policy map for which there is no set command, packets in that class are not marked.
 
 
 .Recommended Values for Traffic Marking
-:===
-Traffic Type              : IP Precedence : IP DSCP        : Class of Service
-Voice payload             : 5             : EF             : 5
-Video payload             : 4             : AF41           : 4
-Voice and video signaling : 3             : AF31 3
-High priority data        : 2             : AF21 AF22 AF23 : 2
-Medium priority data      : 1             : AF11 AF12 AF13 : 1
-All other traffic         : 0             : Default        : 0
-:===
+|===
+| Traffic Type              | IP Precedence | IP DSCP        | Class of Service
+
+| Voice payload )           | 5             | EF             | 5
+| Video payload             | 4             | AF41           | 4
+| Voice and video signaling | 3             | AF31 3
+| High priority data        | 2             | AF21 AF22 AF23 | 2
+| Medium priority data      | 1             | AF11 AF12 AF13 | 1
+| All other traffic         | 0             | Default        | 0
+|===
 
 .Task: Set the DSCP Value In the ToS Byte
 ----
@@ -292,18 +343,17 @@ policies will use those markings during the configuration stage.
 ----
 
 .AutoQoS for Enterprise Classes and DSCP values
-,===
-Class , DSCP/PHB value, Traffic Types
-
-Routing, CS6, EIGRP OSPF
-VoIP, EF(46), RTP Voice Media
-Interactive video, AF41, RTP Video Media
-Streaming video, CS4, Real Audio Netshow
-Control, CS3, RTCP H323 SIP
-Transactional, AF21, SAP Citrix Telnet SSH
-Bulk, AF11, FTP SMTP POP3 Exchange
-Scavenger, CS1, Peer-to-peer applications
-Management, CS2, SNMP Syslog DHCP DNS
-Best effort, All others, All others
-,===
+|===
+| Class             | DSCP/PHB value | Traffic Types
+| Routing           | CS6            | EIGRP OSPF
+| VoIP              | EF(46)         | RTP Voice Media
+| Interactive video | AF41           | RTP Video Media
+| Streaming video   | CS4            | Real Audio Netshow
+| Control           | CS3            | RTCP H323 SIP
+| Transactional     | AF21           | SAP Citrix Telnet SSH
+| Bulk              | AF11           | FTP SMTP POP3 Exchange
+| Scavenger         | CS1            | Peer-to-peer applications
+| Management        | CS2            | SNMP Syslog DHCP DNS
+| Best effort       | All others     | All others
+|===
 

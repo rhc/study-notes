@@ -2,12 +2,46 @@
 
 menu:Configuration Guides[First Hop Redundancy Protocols > http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipapp_fhrp/configuration/15-mt/fhp-15-mt-book/fhp-vrrp.html[VRRP] ]
 
-- https://wwwietf.org/rfc/rfc3768.txt[RFC 3768]
+- https://www.ietf.org/rfc/rfc3768.txt[RFC 3768]
 - Similar to HSRP
 - Multicast virtual MAC address (0000.5E00.01__xx__, where __xx__ is the hex VRRP group number).
 - Uses the IOS object tracking feature, rather than its own internal tracking mechanism, to track interface states for failover purposes.
 - Preemption by default
 - The group IP address is the interface IP address of one of the VRRP routers.
+- multicasts advertisements to 224.0.0.18 with protocol number 112
+- default advertisement interval: 1s
+- default hold time: 3s
+
+
+VRRP is similar to HSRP, both in operation and configuration. The VRRP master
+is analogous to the HSRP active gateway, while the VRRP backup is analogous to
+the HSRP standby gateway. A VRRP group has one master device and one or
+multiple backup devices. A device with the highest priority is the elected
+master. The priority can be a number between 0 and 255. The priority value 0
+has a special meaning—it indicates that the current master has stopped
+participating in VRRP. This setting is used to trigger backup devices to
+quickly transition to master without having to wait for the current master to
+time out.
+
+VRRP differs from HSRP in that it allows you to use an address of one of the
+physical VRRP group members as a virtual IP address. In this case, the device
+with the used physical address is a VRRP master whenever it is available.
+
+The master is the only device that sends advertisements (analogous to HSRP
+hellos). Advertisements are sent to the 224.0.0.18 multicast address, with the
+protocol number 112. The default advertisement interval is 1 second. The
+default holdtime is 3 seconds. HSRP, in comparison, has the default hello timer
+set to 3 seconds and the hold timer to 10 seconds.
+
+Although the VRRP protocol as per RFC 3768 does not support millisecond timers,
+Cisco devices allow you to configure millisecond timers. You need to manually
+configure the millisecond timer values on both the master and the backup
+devices. Use the millisecond timers only when absolutely necessary and with
+careful consideration and testing. Millisecond values work only under favorable
+circumstances, and you must be aware that the use of the millisecond timer
+values restricts VRRP operation to Cisco devices only.
+
+Note
 
 .Task: Enable VRRP
 ----
@@ -30,5 +64,13 @@ interface <type number>
   vrrp <group> timers learn
 ----
 
+- cisco supports vrrp authentification even if authentication support was removed in last RFCs
+- VRRP used plaintext and MD5 authentication with RFC 2338.
+- RFC 3768 and RFC 5798 remove authentication support for VRRP.
+- Cisco IOS Software still supports the RFC 2338 authentication mechanisms.
 
+.Task: Configure MD5 authentication to VRRP 
+----
+(config-if)# vrrp <group> authentication md5 key-string <shared-secret>
+----
 

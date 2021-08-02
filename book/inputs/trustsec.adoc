@@ -1,0 +1,82 @@
+= Cisco TrustSec
+
+- Short answer: Initially defined as as architecture comprising of several components but most of the time, people thing of Security Group Tags (SGTs) when they think of Trustsec
+  * ingress tagging
+  * egress enforcement with a matrix
+
+
+image::trustsec.png[]
+
+image::sgt-enforcement-matrix.png[]
+
+- Long Answer: Several components including -
+  * Centralized policy management, distributed policy enforcement and microsegmentation using Security Group Tags (SGTs)
+  * Confidentiality and integrity using encryption based on IEEE 802.1AE (AES-GCM 128-bit)
+    ** Wire-rate hop-by-hop layer 2 encryption
+    ** Key management is based on 802.1n
+
+  * Authenticated networking environment
+    ** Endpoints are authenticated via 802.1x, Easyconnect, MAB, WebAuth, etc
+    ** Network devices are authenticated and admitted into the Trustsec environment via 802.1x which creates a trusted networking environment
+
+== Terminology:
+
+Security Group:: Used for grouping users, endpoints, and resources that should have a similar access control policy
+
+Security Group Tag (SGT) :: - Unique security group number that’s assigned to the security group
+
+Trustsec-Capable Device:: - Network access device that’s capable hardware- and software-wise of understanding security group tags
+
+Trustsec Seed Device:: - Network access device that authenticates directly against ISE and acts as both the authenticator and supplicant for other network access devices
+
+Network Device Admission Control (NDAC):: - In a Trustsec cloud, network devices are verified with credentials by the peer device:
+
+** 802.1x
+** EAP-FAST
+** Upon authentication and authorization, network devices negotiate for IEEE 802.1AE encryption
+
+Protected Access Credential (PAC):: - Unique shared credential used to mutually authenticate client and server
+
+Endpoint Authentication Control:: - Devices authenticated to the Trustsec cloud via 802.1x, Easyconnect, MAB, Webauth, etc
+
+Security Group Access Control List (SGACL):: - Used for access and permissions based on SGTs, not IP addresses or subnets. Simplifies the security policy.
+
+Security Exchange Protocol (SXP):: - A service that’s used to propagate IP-to-SGT bindings across network devices that don’t support SGTs. Think of it like BGP propagating routes across a provider’s MPLS.
+
+Environment Data Download:: - Download from ISE to the Network Access Device when it joins the trusted network. When it does this, it downloads the following:
+
+** ISE RADIUS server list it can use for future RADIUS authentications and authorizations
+** Device SGT - SGT for the network access device itself
+** Expiry Timeout - How often the network access device should download or refresh the environment data
+
+Identity to port mapping:: - Switch defining the identity on a port and using this identity to look up a particular SGT value from ISE
+
+
+== Operations
+
+- classification: assignment of an SGT to an IP address
+  * statically in DC
+    ** based on (ip address, vlan, port)
+    ** can be configured on Cisco ISE and downloaded to NAD
+  * dynamically at the access layer
+    ** using IEEE 802.1x, MAB, WebAuth
+    ** based on (user, device type, posture status, location, time)
+- transport:
+  * inline tagging: embedded in the Ethernet frame
+  * SXP (SGT eXchange Protocol): for devices that do not support inline tagging
+- enforcement:
+  * based on source and destination SGTs
+  * accomplished with SGACLs on switches and SGFW on routers and firewalls
+
+
+== Frame Format
+
+TODO
+
+image::sgt-frame-format.png[]
+
+- Ethertype: 0x8909
+- overhead: 40 bytes = (MACsec 802.1AE + Trustsec overhead) + 20 bytes (MACsec)
+
+
+

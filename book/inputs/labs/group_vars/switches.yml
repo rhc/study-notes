@@ -1,0 +1,4 @@
+---
+ansible_ssh_user: ckyony
+ansible_ssh_pass: sesame 
+ansible_network_os: ios

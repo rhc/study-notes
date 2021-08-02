@@ -2,6 +2,7 @@
 source 'https://rubygems.org'
 
 # gem 'growl' # for mac osx
+gem 'guard'
 gem 'asciidoctor'
 gem 'asciidoctor-diagram'
 gem 'asciidoctor-epub3'

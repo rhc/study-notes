@@ -28,6 +28,4 @@
     - name: Save configuration
       ios_command: 
         commands: wr
-    
- 
 

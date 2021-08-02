@@ -9,3 +9,9 @@ R7 ansible_host=172.16.201.107
 R8 ansible_host=172.16.201.108
 R9 ansible_host=172.16.201.109
 R10 ansible_host=172.16.201.110
+
+[switches]
+SW1 ansible_host=172.16.201.201
+SW2 ansible_host=172.16.201.202
+SW3 ansible_host=172.16.201.203
+SW4 ansible_host=172.16.201.204

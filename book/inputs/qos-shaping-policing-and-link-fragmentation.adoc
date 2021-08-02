@@ -1,3 +1,31 @@
 = Shaping, Policing and Link Fragmentation
 
-TODO
+- Policers: drop or re-mark incoming and outgoing traffic that goes beyond a desired traffic rate
+- Shapers: buffer and delay egress traffic rates that momentarily peak above the desired rate
+  until the egress traffic rate drops below the defined rate. 
+  If the egress traffic rate is below the desired rate, the traffic is sent immediately.
+
+image:real-traffic.png[] 
+image:policing-traffic.png[] 
+image:shaping-traffic.png[] 
+
+- placement
+* policers for incoming at the edge
+* policers for outgoing at the edge or core-facing interfaces
+* shapers for egress on service provider-facing interfaces
+
+== Token Bucket Algorithms
+
+- CIR: committed information rate
+  * traffic in bps defined in the traffic contract
+- Tc: committed time interval
+  * time interval im ms over which the committed burst (Bc) is sent.
+- Bc: committed burst size
+  * max size in bytes of the CIR token bucket, 
+  * or max amount of traffic that be sent within a Tc.
+
+  Bc= CIR x Tc
+
+
+
+

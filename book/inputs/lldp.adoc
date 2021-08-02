@@ -4,7 +4,7 @@ menu:Catalyst Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switche
 
 - IEEE 802.1AB link layer discovery protocol
 - Neighbor discovery protocol
-- Advertises TLV(type, length, value) for each attribute
+- Advertises TLV (type, length, value) for each attribute
 * Basic mandatory
   ** port description
   ** system name
@@ -12,8 +12,8 @@ menu:Catalyst Configuration Guides[ http://www.cisco.com/c/en/us/td/docs/switche
   ** system capabilities
   ** management address
 * Optional
-  ** port vlan ID for ieee 802.1
-  ** MAC/PHY configuration/status for ieee 802.3
+  ** port vlan ID for IEEE 802.1
+  ** MAC/PHY configuration/status for IEEE 802.3
 
 == LLDP Global State
 

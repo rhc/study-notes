@@ -457,3 +457,37 @@ Unknown unicast : Floods frame out all interfaces, except the interface on which
 Broadcast       : Floods frame identically to unknown unicasts
 Multicast       : Floods frame identically to unknown unicasts, unless multicast optimizations are configured
 :===
+
+
+== CAM table attacks
+
+- if cam table is full, all unknown entries are treated like broadcast 
+
+.mitigation
+
+- used  "null route" a MAC address
+  * configure the switch to silently 
+  * mac address-table static <mac-address> vlan <id> drop
+
+- configure port security
+  * limit the number of MAC that can be learned on a port
+  ** per domain (data/voice)
+  * limit the specific MAC address allowed on a port
+  ** allowed statically
+  ** dynamic learned mac address can become static via sticky configuration
+
+- port security violation options: when configured max addresses has been exceeded
+  * protect: drop traffic of the violating mac addresses
+  * restrict: drop traffic, generate snmp/syslog messages  
+  * shutdown: by default, err-disable state, generate snmp/syslog messages 
+
+- if port in err-disable,
+  * manually recoverd via shutdown/no shut
+  * automatically: interval
+
+
+
+
+
+
+

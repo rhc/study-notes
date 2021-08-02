@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg viewBox="0 0 896 248" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs_block">
+    <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
+      <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
+    </filter>
+  </defs>
+  <title>blockdiag</title>
+  <desc>diagram {
+  colwidth = 32
+  node_height = 32
+  default_node_color = lightyellow
+  default_fontsize = 12
+  * OSPF packet header (24 bytes) [len=32, style=dotted, color=white]
+  * Interface MTU [len=16]
+  * Options [len=8]
+  * Reserved [len=5]
+  * I [len=1]
+  * M [len=1]
+  * MS [len=1]
+  * DBD sequence number [len=32]
+  * LSA header (20 bytes) [len=32, stacked]
+}</desc>
+  <path d="M 64 48 L 64 80" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="64" y="42">0</text>
+  <path d="M 88 64 L 88 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 112 64 L 112 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 136 64 L 136 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 160 64 L 160 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 184 64 L 184 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 208 64 L 208 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 232 64 L 232 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 256 48 L 256 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 280 64 L 280 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 304 64 L 304 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 328 64 L 328 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 352 64 L 352 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 376 64 L 376 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 400 64 L 400 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 424 64 L 424 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 448 48 L 448 80" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="12" x="448" y="42">16</text>
+  <path d="M 472 64 L 472 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 496 64 L 496 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 520 64 L 520 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 544 64 L 544 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 568 64 L 568 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 592 64 L 592 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 616 64 L 616 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 640 48 L 640 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 664 64 L 664 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 688 64 L 688 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 712 64 L 712 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 736 64 L 736 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 760 64 L 760 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 784 64 L 784 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 808 64 L 808 80" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 832 48 L 832 80" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="12" x="832" y="42">32</text>
+  <rect fill="rgb(255,255,255)" height="32" stroke="rgb(255,255,255)" width="768" x="64" y="80" />
+  <path d="M 64 80 L 832 80" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="2" />
+  <path d="M 832 80 L 832 112" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="2" />
+  <path d="M 832 112 L 64 112" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="2" />
+  <path d="M 64 112 L 64 80" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="2" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="189" x="448" y="102">OSPF packet header (24 bytes)</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="384" x="64" y="112" />
+  <path d="M 64 112 L 448 112" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 448 112 L 448 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 448 144 L 64 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 64 144 L 64 112" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="85" x="256" y="134">Interface MTU</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="192" x="448" y="112" />
+  <path d="M 448 112 L 640 112" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 640 112 L 640 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 640 144 L 448 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 448 144 L 448 112" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="45" x="544" y="134">Options</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="120" x="640" y="112" />
+  <path d="M 640 112 L 760 112" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 760 112 L 760 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 760 144 L 640 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 640 144 L 640 112" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="52" x="700" y="134">Reserved</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="24" x="760" y="112" />
+  <path d="M 760 112 L 784 112" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 784 112 L 784 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 784 144 L 760 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 760 144 L 760 112" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="772" y="134">I</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="24" x="784" y="112" />
+  <path d="M 784 112 L 808 112" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 808 112 L 808 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 808 144 L 784 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 784 144 L 784 112" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="796" y="134">M</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="24" x="808" y="112" />
+  <path d="M 808 112 L 832 112" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 832 112 L 832 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 832 144 L 808 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 808 144 L 808 112" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="13" x="820" y="134">MS</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="768" x="64" y="144" />
+  <path d="M 64 144 L 832 144" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 832 144 L 832 176" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 832 176 L 64 176" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 64 176 L 64 144" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="124" x="448" y="166">DBD sequence number</text>
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="768" x="72" y="184" />
+  <path d="M 72 184 L 840 184" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 840 184 L 840 216" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 840 216 L 72 216" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 72 216 L 72 184" fill="none" stroke="rgb(0,0,0)" />
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="768" x="68" y="180" />
+  <path d="M 68 180 L 836 180" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 836 180 L 836 212" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 836 212 L 68 212" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 68 212 L 68 180" fill="none" stroke="rgb(0,0,0)" />
+  <rect fill="rgb(255,255,224)" height="32" stroke="rgb(255,255,224)" width="768" x="64" y="176" />
+  <path d="M 64 176 L 832 176" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 832 176 L 832 208" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 832 208 L 64 208" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 64 208 L 64 176" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="12" font-style="normal" font-weight="normal" text-anchor="middle" textLength="137" x="448" y="198">LSA header (20 bytes)</text>
+</svg>

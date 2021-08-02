@@ -493,8 +493,7 @@ the RP configured with this command prevails.
 == Auto-RP
 
 - Cisco proprietary feature
-- eliminates the need to manually configure the rendezvous point (RP) information in every router and multilayer switch in the
-network.
+- eliminates the need to manually configure the rendezvous point (RP) information in every router and multilayer switch in the network.
 - uses IP multicast to automate the distribution of group-to-RP mappings to all Cisco routers  in a PIM network.
 
 - Benefits
@@ -504,11 +503,11 @@ network.
   to the location of group participants.
 ** no inconsistent and  manual RP configurations on every router and multilayer switch
 
-
-
 === Candidate RP
 
-- Send multicast RP-announce messages to 224.0.1.39 every 60 seconds (default) with holdtime of 180 seconds (default)
+- Send multicast RP-announce messages to 224.0.1.39 
+  every 60 seconds (default) 
+  with holdtime of 180 seconds (default)
 
 
 .Task: Configure a Candidate RP for Local Groups.

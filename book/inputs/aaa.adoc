@@ -1,5 +1,120 @@
 = AAA
 
+- authentication
+- authorization
+- accounting
+
+== AAA Model
+
+- supplicant
+  * device requesting access
+  * speaks with the authenticator
+- authenticator
+  * device enforcing the authentication
+- authentication server
+  * device performing the authentication (NAD/NAS)
+  * connected to identity sources: username/password, PKI
+  * can be a proxy towards another authentication server
+  * ACS (access control system)
+    ** supports TACACS+ and RADIUS
+  * ISE (identity services engine)
+    ** supports RADIUS with CoA (change of authorization)
+    ** supports TACACS+
+    ** adds profiling, posture assessment
+    ** adds web portal, guest services, BYOD, CA server
+
+.task: start the AAA process
+----
+(config)# aaa new-model
+----
+
+.Task: configure the TACACS+ server (deprecated)
+----
+tacacs-server host <ip-address> key <shared-key>
+----
+
+.Task: configure the TACACS+ server
+----
+(config)# aaa group server tacacs+ default
+ (config-sg-tacacs)# server name <server-name>
+ (config)# tacacs server <name>
+ (config-server-tacacs)# address ipv4 <a.b.c.d>
+ (config-server-tacacs)# key <string>
+----
+
+.Task: define authentication list
+----
+(config)# aaa authentication login <list-name> <method>
+(config)# aaa authentication enable <list-name> <method>
+----
+
+.Task: apply authentication list to the desired line
+----
+(config)# line vty 0 4
+(config-line)# login authentication <list-name>
+----
+
+.Task: define authorization list
+----
+aaa authorization exec <list-name> <method>
+aaa authorization commands <privilege-level>  <list-name> <method>
+----
+
+.Task: enable authorization for config-mode
+----
+aaa authorization config-commands
+----
+
+.Task: enable authorization for console, otherwise it applies only to vty
+----
+aaa authorization console
+----
+
+.Task: apply authorization
+----
+----
+
+.Task: define accounting list, no fallback method
+----
+aaa accounting exec <list-name> <method>
+aaa accounting commands <privilege-level> <list-name> <method>
+----
+
+.Task: apply accounting list to desired line
+----
+line vty 0 4
+accounting exec <list-name>
+accounting commands <privilege-level> <list-name>
+----
+
+.Task: verify the tacacs+ server
+----
+sh tacacs
+sh aaa servers detailed
+----
+
+.Task: verify the AAA lists
+----
+sh aaa method-lists all
+----
+
+
+.Task: test authentication
+----
+test ????
+----
+
+.Task: define the source
+----
+ip tacacs source-interface <interface-type-id>
+----
+
+
+----
+sh aaa method-lists all
+----
+
+
 == Local AAA Server
 
 The Local AAA Server feature allows you to configure your router so that user authentication
@@ -25,7 +140,7 @@ and applied there whether or not user authorization is done locally.
 aaa authentication <process> [default|<name>] <methods>
 ----
 
-process:
+process::
 - local
 - local-case
 - line
@@ -37,10 +152,54 @@ process:
 Further Reading
 http://goo.gl/aaTqf5
 
+== AAA for device administration
+
+- controls access to a network device console, telnet session, ssh session
+
+[graphviz]
+----
+digraph da {
+  rankdir=LR
+  terminal [label="Terminal User"]
+  client [label="AAA client"]
+  server [label="AAA server"]
+
+  terminal -> client [label="telnet, ssh, serial", style=invis]
+  client -> server [label="AAA protocol"]
+
+  terminal -> client [label="Commands Entered"]
+  client -> server [label="Is this permitted?"]
+  server -> client [label="Yes or No"]
+  client -> terminal [label="Success or Failure"]
+
+}
+
+----
+
+== AAA for network access
 
 == PPP Security
 
 TODO
+xxxxx
+
+
+TODO
+terminal config for console access:
+9600 baud,
+8 data bits,
+1 stop bit
+no parity
+
+
+TODO
+
+password encryption levels
+
+- 0:  plain text
+- 7: service password-encryption
+- 5: md5, secret 5 
+- 4: sha-256, default ios 15+ 
 
 
 

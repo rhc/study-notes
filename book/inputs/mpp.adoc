@@ -1,6 +1,6 @@
 = Management Plane Protection
 
-- restrict the interfaces on which network management packets are allowed to enter a device.
+- restrict the (physical) interfaces on which network management packets are allowed to enter a device.
 - disabled by default
 - After MPP is enabled, no interfaces except designated management interfaces
   will accept network management traffic destined to the device.
@@ -29,7 +29,7 @@
 ----
 conf t
 control-plane
- management-interface <type slot/port> allows <protocols>
+ management-interface <type slot/port> allow <protocols>
 ----
 
 .Task: Displays information about the management interface such as type of interface, protocols enabled on the interface, and number of packets dropped and processed.

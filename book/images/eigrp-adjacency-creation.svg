@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg viewBox="0 0 582 608" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg viewBox="0 0 584 610" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs id="defs_block">
     <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
       <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
@@ -10,70 +10,70 @@
   <desc>diagram {
   autonumber = True;
   R1 -&gt; R2 [label = "Hello", note= "R2 puts R1 to Pending"]
-  R1 &lt;- R2 [label = "Hello", rightnote = "R1 puts R2 to Pending"];
+  R1 &lt;- R2 [label = "Hello", leftnote = "R1 puts R2 to Pending"];
   R1 &lt;- R2 [label = "Null Update\n with Init, Seq=x", leftnote="Init Received from R2"];
   R1 -&gt; R2 [label = "Null Update\n with Init, Seq=y, Ack=x", note="Init and Ack Received from R1\nR2 Puts R1 to Up"];
   R1 &lt;- R2 [label = "Acknowledgment, Ack=y", leftnote="Ack Received from R2\nR1 Puts R2 to Up"];
   R1 -&gt; R2 [label= "Database Synchronization\n using Updates and Acks"];
 }</desc>
-  <rect fill="rgb(0,0,0)" height="446" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="178" y="140" />
-  <rect fill="rgb(0,0,0)" height="64" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="370" y="140" />
-  <polygon fill="rgb(0,0,0)" points="390,132 520,132 528,140 528,148 390,148 390,132" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
-  <polygon fill="rgb(0,0,0)" points="390,196 520,196 528,204 528,212 390,212 390,196" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
-  <polygon fill="rgb(0,0,0)" points="33,293 158,293 166,301 166,307 33,307 33,293" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
-  <polygon fill="rgb(0,0,0)" points="390,366 561,366 569,374 569,394 390,394 390,366" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
-  <polygon fill="rgb(0,0,0)" points="27,432 158,432 166,440 166,460 27,460 27,432" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
-  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="118" y="46" />
-  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="310" y="46" />
-  <path d="M 179 80 L 179 596" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
-  <rect fill="moccasin" height="446" stroke="rgb(0,0,0)" width="8" x="175" y="134" />
-  <path d="M 371 80 L 371 596" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
-  <rect fill="moccasin" height="64" stroke="rgb(0,0,0)" width="8" x="367" y="134" />
-  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="115" y="40" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="14" x="179.0" y="65">R1</text>
-  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="307" y="40" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="14" x="371.0" y="65">R2</text>
-  <path d="M 187 134 L 363 134" fill="none" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(0,0,0)" points="355,130 363,134 355,138" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(255,182,193)" points="387,126 517,126 525,134 525,142 387,142 387,126" stroke="rgb(0,0,0)" />
-  <path d="M 517 126 L 517 134" fill="none" stroke="rgb(0,0,0)" />
-  <path d="M 517 134 L 525 134" fill="none" stroke="rgb(0,0,0)" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="114" x="452.0" y="140">R2 puts R1 to Pending</text>
-  <path d="M 187 198 L 363 198" fill="none" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(0,0,0)" points="195,194 187,198 195,202" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(255,182,193)" points="387,190 517,190 525,198 525,206 387,206 387,190" stroke="rgb(0,0,0)" />
-  <path d="M 517 190 L 517 198" fill="none" stroke="rgb(0,0,0)" />
-  <path d="M 517 198 L 525 198" fill="none" stroke="rgb(0,0,0)" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="114" x="452.0" y="204">R1 puts R2 to Pending</text>
-  <path d="M 187 294 L 363 294" fill="none" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(0,0,0)" points="195,290 187,294 195,298" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(255,182,193)" points="30,287 155,287 163,295 163,301 30,301 30,287" stroke="rgb(0,0,0)" />
-  <path d="M 155 287 L 155 295" fill="none" stroke="rgb(0,0,0)" />
-  <path d="M 155 295 L 163 295" fill="none" stroke="rgb(0,0,0)" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="109" x="92.5" y="299">Init Received from R2</text>
-  <path d="M 187 374 L 363 374" fill="none" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(0,0,0)" points="355,370 363,374 355,378" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(255,182,193)" points="387,360 558,360 566,368 566,388 387,388 387,360" stroke="rgb(0,0,0)" />
-  <path d="M 558 360 L 558 368" fill="none" stroke="rgb(0,0,0)" />
-  <path d="M 558 368 L 566 368" fill="none" stroke="rgb(0,0,0)" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="155" x="472.5" y="372">Init and Ack Received from R1</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="90" x="440.0" y="386">R2 Puts R1 to Up</text>
-  <path d="M 187 440 L 363 440" fill="none" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(0,0,0)" points="195,436 187,440 195,444" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(255,182,193)" points="24,426 155,426 163,434 163,454 24,454 24,426" stroke="rgb(0,0,0)" />
-  <path d="M 155 426 L 155 434" fill="none" stroke="rgb(0,0,0)" />
-  <path d="M 155 434 L 163 434" fill="none" stroke="rgb(0,0,0)" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="115" x="89.5" y="438">Ack Received from R2</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="90" x="77.0" y="452">R1 Puts R2 to Up</text>
-  <path d="M 187 534 L 363 534" fill="none" stroke="rgb(0,0,0)" />
-  <polygon fill="rgb(0,0,0)" points="355,530 363,534 355,538" stroke="rgb(0,0,0)" />
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="40" x="211.0" y="132">1. Hello</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="40" x="343.0" y="196">2. Hello</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="73" x="326.5" y="278">3. Null Update</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="79" x="323.5" y="292">with Init, Seq=x</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="73" x="227.5" y="358">4. Null Update</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="120" x="251.0" y="372">with Init, Seq=y, Ack=x</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="143" x="291.5" y="438">5. Acknowledgment, Ack=y</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="145" x="263.5" y="518">6. Database Synchronization</text>
-  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="122" x="252.0" y="532">using Updates and Acks</text>
+  <rect fill="rgb(0,0,0)" height="448" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="180" y="140" />
+  <rect fill="rgb(0,0,0)" height="64" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="372" y="140" />
+  <polygon fill="rgb(0,0,0)" points="392,132 525,132 533,140 533,148 392,148 392,132" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <polygon fill="rgb(0,0,0)" points="27,196 160,196 168,204 168,212 27,212 27,196" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <polygon fill="rgb(0,0,0)" points="34,293 160,293 168,301 168,307 34,307 34,293" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <polygon fill="rgb(0,0,0)" points="392,367 563,367 571,375 571,395 392,395 392,367" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <polygon fill="rgb(0,0,0)" points="31,434 160,434 168,442 168,462 31,462 31,434" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="120" y="46" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="312" y="46" />
+  <path d="M 181 80 L 181 598" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="moccasin" height="448" stroke="rgb(0,0,0)" width="8" x="177" y="134" />
+  <path d="M 373 80 L 373 598" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="moccasin" height="64" stroke="rgb(0,0,0)" width="8" x="369" y="134" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="117" y="40" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="14" x="181.0" y="65">R1</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="309" y="40" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="14" x="373.0" y="65">R2</text>
+  <path d="M 189 134 L 365 134" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="357,130 365,134 357,138" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(255,182,193)" points="389,126 522,126 530,134 530,142 389,142 389,126" stroke="rgb(0,0,0)" />
+  <path d="M 522 126 L 522 134" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 522 134 L 530 134" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="117" x="455.5" y="140">R2 puts R1 to Pending</text>
+  <path d="M 189 198 L 365 198" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="197,194 189,198 197,202" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(255,182,193)" points="24,190 157,190 165,198 165,206 24,206 24,190" stroke="rgb(0,0,0)" />
+  <path d="M 157 190 L 157 198" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 157 198 L 165 198" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="117" x="90.5" y="204">R1 puts R2 to Pending</text>
+  <path d="M 189 294 L 365 294" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="197,290 189,294 197,298" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(255,182,193)" points="31,287 157,287 165,295 165,301 31,301 31,287" stroke="rgb(0,0,0)" />
+  <path d="M 157 287 L 157 295" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 157 295 L 165 295" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="110" x="94.0" y="299">Init Received from R2</text>
+  <path d="M 189 375 L 365 375" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="357,371 365,375 357,379" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(255,182,193)" points="389,361 560,361 568,369 568,389 389,389 389,361" stroke="rgb(0,0,0)" />
+  <path d="M 560 361 L 560 369" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 560 369 L 568 369" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="155" x="474.5" y="373">Init and Ack Received from R1</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="89" x="441.5" y="387">R2 Puts R1 to Up</text>
+  <path d="M 189 442 L 365 442" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="197,438 189,442 197,446" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(255,182,193)" points="28,428 157,428 165,436 165,456 28,456 28,428" stroke="rgb(0,0,0)" />
+  <path d="M 157 428 L 157 436" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 157 436 L 165 436" fill="none" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="113" x="92.5" y="440">Ack Received from R2</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="89" x="80.5" y="454">R1 Puts R2 to Up</text>
+  <path d="M 189 536 L 365 536" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="357,532 365,536 357,540" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="40" x="213.0" y="132">1. Hello</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="40" x="345.0" y="196">2. Hello</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="75" x="327.5" y="278">3. Null Update</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="80" x="325.0" y="292">with Init, Seq=x</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="75" x="230.5" y="358">4. Null Update</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="117" x="251.5" y="373">with Init, Seq=y, Ack=x</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="141" x="294.5" y="440">5. Acknowledgment, Ack=y</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="148" x="267.0" y="520">6. Database Synchronization</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="124" x="255.0" y="534">using Updates and Acks</text>
 </svg>

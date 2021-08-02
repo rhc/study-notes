@@ -1,8 +1,155 @@
 = IPSEC
 
-== IPSec with pre-shared key
+- IP Security
+- framework with open standards
+  * RFC 2408 isakmp (internet security association and key mgmt protocol) - the framework
+  * RFC 2409 IKE (internet key exchange) - the implementation
+  * RFC 7296 IKEv2
+  * RFC 4301 security architecture for the Internet Protocol
+  * RFC 4302 IP authentication header
+  * RFC 4303 IP ESP (encapsulating security payload)
+
+- Security features
+* Origin authentication: Where did the packet come from?
+  ** PSK (Pre-Shared Key)
+  ** Digital certificates
+* Data integrity: Was it changed in the transit path?
+  ** MD5 _not recommended_
+  ** SHA-1
+* Data confidentiality: Can anyone read it in the transit path?
+  ** DES  _not recommended_
+  ** 3DES _not recommended_
+  ** AES
+* Anti-replay: Did I already receive this packet?
+  ** Marks every packet with a unique sequence number.
+  ** Does not accept a packet with a sequence number already processed
+* key management: IKE, DH
+	** ISAKMP framework for authentication and key exchange
+	** OAKLEY series of key exchanges
+	** SKEME techniques for key exchange
+
+- IKEv2 not backwards compatible with IKE
+  * Negotiation process is shorter and simpler
+  * More secure through anti-DOS function
+  * Sequenced and acknowledged messages
+  * Unifies multiple RFCs into a single one
+  * Additional features ( asymmetric auth and EAP support )
+
+TODO read RFC 7296 (4306, 4718, 5996)
 
 
+== IPSEC headers
+
+=== AH
+
+- Authentication header
+- IP protocol 51
+- Creates a digital signature to ensure that the packet has not been modified
+- Does not support encryption for data confidentiality
+- Does not support NAT-T (NAT traversal)
+- Not recommended unless authentication is all that is needed
+
+
+=== ESP
+
+- Encapsulating Security Payload
+- IP protocol 50
+
+TODO
+
+== Transport mode
+
+- Tunnel mode:
+  * encrypts the entire original packet
+  * adds a new set of IPsec headers to route the packet and provides overlay functions
+- Transport mode:
+  * encrypts and authenticates only the packet payload.
+  * does not provide overlay functions and routes based on the original IP headers
+
+image::ipsec-modes.png[]
+
+== Encryption methods
+
+- DES (Data Encryption Standard)
+  * 56-bit symmetric data encrytion algorithm
+  * very weak, to be avoided
+
+- 3DEs (Tripe DES)
+  * runs the DES algorithm 3 times with 3 different 56-bit keys
+  * obsolete
+
+- AES (Advanced Encryption Standard)
+  * symmetric encrytion algorithm
+  * based on Rijndael algorithm
+  * key length: 128, 192, 256 bits
+
+== Hashing methods
+
+- MD5 (Message Digest 5)
+  * one-way, 128-bit hash algorithm
+  * no more recommended
+- SHA (Secure Hash Algorithm)
+  * one-way, 160-biy hash algorithm
+
+== Keying methods
+
+- DH
+  * Diffie-Hellman
+  * asymmetric key exchange protocol that enables 2 peers to establish a shared secret key over an unsecure channel.
+  * key length or DH group: modulus size
+    ** group 1 uses 768 bits, group 2 uses 1024, group 5 uses 1536
+    ** Cisco recommends DH groups 14 and higher
+
+== Transform sets
+
+- combination of security protocols and algorithms
+
+- authentication header transform (only one allowed)
+  * ah-md5-hmac
+  * ah-sha-hmac
+  * ah-sha256-hmac
+  * ah-sha384-hmac
+  * ah-sha512-hmac
+
+- esp header encryption transform (only one allowed)
+  * esp-aes
+  * esp-gcm, esp-gmac
+  * esp-aes 192
+  * esp-aes 256
+  * esp-des, esp-3des
+  * es-null
+  * esp-seal: 160-bit SEAL algorithm
+
+- esp authentication transform (only one allowed)
+  * esp-md5-hmac
+  * esp-sha-hmac
+
+- IP compression transform
+  * comp-lzs
+
+// IKE section
+include::ike.adoc[leveloffset=+1]
+
+
+== IPsec VPN solution
+
+TODO: Rewrite this table
+// [cols="a,a,a,a,a,a"]
+// |====
+// | Features | Site-to-Site IPsec VPN | DMVPN | GET-VPN | FlexVPN | Remote Access VPN
+//
+// | Product interoperability | Multivendor 5+| Cisco only
+// | Key Exchange | IKEv1, IKEv2 | IKEv1, IKEv2 (both optional) | IKEv1, IKEv2 | IKEv2 | IKEv2, TLS/DTLS
+// | Scalability | low | Thousands for hub-and-spoke, hundreds for partially meshed spoke-to-spoke connections | Thousands | Thousands | Thousands
+// | Topology | hub-and-spoke, small-scale messhing | hub-and-spoke, on-demand spoke-to-spoke, partial mesh, spoke-to-spoke connections automatically terminated when no traffic present| hub-and-spoke, any-to-any | hub-and-spoke, any-to-any, remote access | remote access
+// | Routing | Not supported | Supported | Supported | Supported | Not Supported
+// | QoS | Supported | Supported | Supported | Native Support | Supported
+// | Multicast | Not supported | Tunneled | Native support accross MPLS and private IP networks | Tunneled | Not supported
+// | HA | Stateless failover | Routing | Routing | Routing IKEv2 dynamic route distribution and server clustering | Not supported
+// | Encapsulation | Tunneled IPsec | Tunneled IPsec | Tunnel-less IPsec | Tunneled IPsec | Tunneled IPsec/TLS
+// | Transport Network | Any | Any | Private WAN/MPLS | Any | Any
+// |====
+//
 === IPv4 site to IPv4 site
 
 - IPSec between two sites such as branch and a headquarter is known as site to site or LAN to
@@ -15,10 +162,8 @@ Main mode hides IKE/IPSec peer identities.
 .Router B
 ----
 crypto isakmp policy 2
-authentication pre-share
-
+  authentication pre-share
 crypto isakmp key cciein8weeks address 172.16.1.1
-!
 !
 !--- Configuration for IPsec policies.
 !--- Enables the crypto transform configuration mode,
@@ -32,29 +177,23 @@ crypto ipsec transform-set Router-IPSEC esp-des esp-sha-hmac
 !--- traffic specified by this crypto map entry.
 
 crypto map cciein8weeks 1 ipsec-isakmp
-description Tunnel to172.16.1.1
+  description Tunnel to172.16.1.1
+  !--- Sets the IP address of the remote end.
+  set peer 172.16.1.1
 
-!--- Sets the IP address of the remote end.
-
-set peer 172.16.1.1
-
-!--- Configures IPsec to use the transform-set
-!--- "Router-IPSEC" defined earlier in this configuration.
-set transform-set Router-IPSEC
-
-!--- Specifies the interesting traffic to be encrypted.
-
-match address 100
-!
+  !--- Configures IPsec to use the transform-set
+  !--- "Router-IPSEC" defined earlier in this configuration.
+  set transform-set Router-IPSEC
+  !--- Specifies the interesting traffic to be encrypted.
+  match address 100
+  !
 !--- Configures the interface to use the
 !--- crypto map " cciein8weeks" for IPsec.
-
-
 interface FastEthernet0
-ip address 172.17.1.1 255.255.255.0
-duplex auto
-speed auto
-crypto map cciein8weeks
+  ip address 172.17.1.1 255.255.255.0
+  duplex auto
+  speed auto
+  crypto map cciein8weeks
 ----
 
 IPSec(validate_transform_proposal): proxy identities not supported
@@ -64,9 +203,26 @@ ISAKMP (0:2): SA not acceptable!
 Above messages are indicative of the fact that access lists (as referenced in match address
 command inside a crypto map) for IPsec interesting traffic do not match between peers.
 
+.phase 1 verification
+----
+sh crypto isakmp sa
+sh crypto isakmp sa detail
+----
+
+.phase 2 verification
+----
+sh crypto ipsec sa
+sh crypto ipsec sa detail
+sh crypto map
+----
+
+.phase 1 and 2 verification
+----
+sh crypto session detail
+----
+
 Further Reading
 http://goo.gl/PmO6l4
-
 
 
 === IPv6 in IPv4 tunnels
@@ -93,7 +249,7 @@ Further Reading
 http://goo.gl/pqy0E8
 http://goo.gl/RhXJDZ
 
-=== VTI
+=== Site-to-Site VTI over IPsec
 
 Virtual Tunneling Interface
 
@@ -136,6 +292,7 @@ allows users to have solid control on the application of the features in the pre
 path.
 
 
+
 DVTIs can provide highly secure and scalable connectivity for remote-access VPNs. The DVTI
 technology replaces dynamic crypto maps and the dynamic hub-and-spoke method for
 establishing tunnels. Dynamic VTIs can be used for both the server and remote configuration.
@@ -154,66 +311,6 @@ http://goo.gl/0yHAkK
 
 
 
-==  GET VPN
 
-Group Encrypted Transport
-
-The IOS GETVPN is a tunnel-less (i.e. no overlay) VPN technology that provides end-to-end
-security for network traffic in a native mode and maintaining the fully meshed topology. It uses
-the core network's ability to route and replicate the packets between various sites within the
-enterprise. Cisco IOS GETVPN preserves the original source and destination IP addresses
-information in the header of the encrypted packet for optimal routing. Hence, it is largely suited
-for an enterprise running over a private Multiprotocol Label Switching (MPLS)/IP-based core
-network. It is also better suited to encrypt multicast traffic. Cisco IOS GET VPN uses Group
-Domain of Interpretation (GDOI) as the keying protocol and IPSec for encryption.
-A GETVPN deployment has primarily three components, Key Server (KS), Group Member
-(GM), and Group Domain of Interpretation (GDOI) protocol. GMs do encrypt/decrypt the traffic
-and KS distribute the encryption key to all the group members. The KS decides on one single
-data encryption key for a given lifetime. Since all GMs use the same key, any GM can decrypt
-the traffic encrypted by any other GM. GDOI protocol is used between the GM and KS for group
-key and group SA management. Minimum one KS is required for a GETVPN deployment.
-Unlike traditional IPSec encryption solutions, GET VPN uses the concept of group SA. All
-members in the GETVPN group can communicate with each other using a common encryption
-policy and a shared SA and therefore no need to negotiate IPSec between GMs on a peer to
-peer basis; thereby reducing the resource load on the GM routers.
-
-
-=== Group Member
-The group member registers with the key server to get the IPSec SA that is necessary to
-encrypt data traffic within the group. The group member provides the group ID to the key server
-to get the respective policy and keys for this group. These keys are refreshed periodically by
-KS, and before the current IPSec SAs expire, so that there is no loss of traffic.
-
-
-=== Key Server
-
-Key server is responsible for maintaining security policies, authenticating the GMs and providing
-the session key for encrypting traffic. KS authenticates the individual GMs at the time of
-registration. Only after successful registration the GMs can participate in group SA.
-A group member can register at any time and receive the most current policy and keys. When a
-GM registers with the key server, the key server verifies the group id number of the GM. If this id
-number is a valid and the GM has provided valid Internet Key Exchange (IKE) credentials, the
-key server sends the SA policy and the Keys to the group member.
-
-
-There are two types of keys that the GM will receive from the KS:
-- Key Encryption Key (KEK), for securing control plane
-- Traffic Encryption Key (TEK), for securing data plane
-The TEK becomes part of the IPSec SA with which the group members within the same group
-encrypt the data. KEK is used to secure rekey messages (i.e. control plane) between the key
-server and the group members.
-
-
-The Key Server sends out rekey messages either because of an impending IPSec SA expiration
-or because the security policy has changed on the key server. Keys can be distributed during
-rekey using either multicast or unicast transport. Multicast method is more scalable as keys
-need not be transmitted to each group member individually. Unlike in unicast, KS will not
-receive acknowledgement from GM about the success of the rekey reception in multicast rekey
-method. In unicast rekey method, KS will delete a GM from its database if three consecutive
-rekeys are not acknowledged by that particular GM.
-
-
-Further Reading
-http://goo.gl/mxG401
 
 

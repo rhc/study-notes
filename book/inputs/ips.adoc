@@ -1,0 +1,21 @@
+= IPS
+
+- Intrusion Prevention System: performs deep analysis of network traffic,
+  takes protective action when it found signs of suspicious or malicious
+  behavior.
+
+image::ips.png[]
+
+== traffic inspection
+
+- signature-based inspection:
+  * rule-based or pattern-based
+  * compares data in traffic against known attack signatures
+  * must be continually updated to remain effective
+- anomaly-based inspection:
+  * statistical anomaly detection:Observes network traffic over time and builds a statistical profile of normal traffic behavior based on communication patterns, traffic rate, mixture of protocols, and traffic volume. After a normal profile has been established, statistical anomaly detection systems detect or prevent activity that violates the normal profile
+  * protocol verification:Observes network traffic and compares network, transport, and application layer protocols that are used inside network traffic to protocol standards. If a deviation from standards-based protocol behavior is detected (such as a malformed IP packet), the system can take appropriate action.
+  * policy-based inspection:analyzes network traffic and takes action if it detects a network event outside a configured traffic policy.
+
+
+

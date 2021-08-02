@@ -1,0 +1,137 @@
+!! disable cdp on R2
+!R2
+conf t
+no cdp run
+end
+
+!! disable cdp on the connection between R6 and Cat2
+!R6
+conf t
+int g0/0
+  no cdp enable
+end
+
+!S2
+conf t
+cdp run
+int g1/2
+  no cdp enable
+end
+
+!! between cat1 and cat2
+! S1 - S2
+conf t
+int g3/0
+  no cdp enable
+int range g3/1 - 2
+  cdp enable
+  cdp timer 20
+  cdp holdtime 120
+end
+
+!! configure vlans
+!S1-2
+conf t
+vtp mode off
+vlan 101
+  name VLAN101
+  exit
+vlan 102
+  name VLAN102
+  exit
+vlan 103
+  name VLAN103
+  exit
+vlan 999
+  name VLAN999
+  exit
+end
+
+!! access mode 
+!S1-2
+conf t
+int g3/0 
+  swi access vlan 101
+  swi mode access
+end
+
+!! task 6
+!R2
+conf t
+int g0/0
+  ip add 10.1.0.2 255.255.255.0
+  no shut
+end
+
+
+!S1
+conf t
+int g0/2
+  no swi
+  ip add 10.1.0.1 255.255.255.0
+end
+
+!! task 8
+!S1-2
+conf t
+int g3/1
+  swi trunk enc isl
+  swi trunk allowed vlan 102,999
+  swi trunk native vlan 999
+  swi mode dynamic desirable
+end
+
+!! task 9
+! S1-2
+conf t
+int g3/2
+  swi trunk enc dot1q
+  swi trunk native vlan 103
+  swi trunk allowed vlan 103
+  swi mode trunk
+end
+
+!! 10
+!S1
+conf t
+int vlan 103
+  ip add 10.103.0.1 255.255.255.0
+  no shut
+end
+
+!S2
+conf t
+int vlan 101
+  ip add 10.101.0.2 255.255.255.0
+  no shut
+end
+
+!! task 11
+!R6
+conf t
+int g0/0.101 
+  enc dot1q 101
+  ip add 10.101.0.6 255.255.255.0
+  no shut
+int g0/0.103 
+  enc dot1q 103
+  ip add 10.103.0.6 255.255.255.0
+  no shut
+end
+
+!! task 12 
+!S1
+conf t
+no ip routing 
+ip default-gateway 10.103.0.6
+end
+
+
+!S2
+conf t
+no ip routing 
+ip default-gateway 10.101.0.6
+end
+
+
+

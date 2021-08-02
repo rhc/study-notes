@@ -1,0 +1,22 @@
+= VPN
+
+- secure, private tunnel over insecure, public network
+
+image::vpn-concept.png[]
+
+== Examples
+
+L2 vpns::
+- ethernet vlans
+- frame relay PVCs
+- atm PVCs
+- mpls l2vpns (AToM/VPLS)
+
+L3 vpns:
+- mpls l3vpn
+- gre tunneling
+- ip in ip tunneling
+- ipsec/ssl tunneling
+
+
+== 

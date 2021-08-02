@@ -7,12 +7,48 @@
 == Concepts
 
 - Type 1 : router LSA do not advertise prefixes.
+- Type 3 :
+- Type 8 :
 - Type 9 : intra-area-prefix LASA advertise prefixes.
 
 
-=== LS Type 
+TODO renamed LSA types
+Interarea prefix LSAs for ABRs (Type 3): Type 3 LSAs advertise internal
+networks to routers in other areas (interarea routes). Type 3 LSAs may
+represent a single network or a set of networks summarized into one
+advertisement. Only ABRs generate summary LSAs. In OSPF for IPv6, addresses for
+these LSAs are expressed as prefix/prefix length instead of address, and mask.
+The default route is expressed as a prefix with length 0.
 
-- 16 bits 
+Interarea router LSAs for ASBRs (Type 4): Type 4 LSAs advertise the location of
+an ASBR. An ABR originates an Inter-Area Router LSA into an area to advertise
+an ASBR that resides outside of the area. The ABR originates a separate
+Inter-Area Router LSA for each ASBR it advertises. Routers that are trying to
+reach an external network use these advertisements to determine the best path
+to the next hop.
+
+
+
+TODO new LSA types
+Link LSAs (Type 8): Type 8 LSAs have local-link flooding scope and are never
+flooded beyond the link with which they are associated. Link LSAs provide the
+link-local address of the router to all other routers that are attached to the
+link. They inform other routers that are attached to the link of a list of IPv6
+prefixes to associate with the link. In addition, they allow the router to
+assert a collection of option bits to associate with the network LSA that will
+be originated for the link.
+
+Intra-area prefix LSAs (Type 9): A router can originate multiple intra-area
+prefix LSAs for each router or transit network, each with a unique link-state
+ID. The link-state ID for each intra-area prefix LSA describes its association
+to either the router LSA or the network LSA. The link-state ID also contains
+prefixes for stub and transit networks.
+
+
+
+=== LS Type
+
+- 16 bits
 - indicates what type of LSA it is and how far the LSA should be flooded
 
   * U bit (understand )
@@ -21,20 +57,51 @@
     ** value 0 to flood the LSA only on the local link
     ** value 1 to store and flood the LSA as if the router understand the LSA type
 
-  * S2, S1 (second and third bit) 
+  * S2, S1 (second and third bit)
 
 
-[format="csv", options="header"]
+[format="csv"]
 |====
 S2 , S1 , scope
+
 0  , 0  , link-local
 0  , 1  , area-wide
 1  , 0  , aS- wide
 1  , 1  , reserved
 |====
-    
+
 
   * LSA type (last 13 bits)
+
+=== Compare ospfv2 and ospfv3
+
+Traditional ospfv2 for IPv4::
+- *router ospf <process-id>*
+- transported over ipv4
+
+Traditional ospfv3 for ipv6 only::
+- *ipv6 router ospf <process-id>*
+- transported over ipv6
+- peering over ipv6 link-local addresses
+
+New OSPFv3 for IPv4 and IPv6 address families
+- *router ospfv3 <process-id>*
+- single process for IPv4 and ipv6
+- transported over ipv6 (link-local addresses)
+- single db with LSAs carries IPv4 and IPv6 info
+- no peering with traditional ospfv2 routers
+- adjacencies established individually for each address family
+- IOS release 15.1(3)S and 15.2(1)T
+
+
+
+
+== ospfv3 address families
+
+- 
+
+
+
 
 
 

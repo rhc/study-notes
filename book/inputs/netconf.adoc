@@ -1,0 +1,64 @@
+= NETCONF
+
+- RFC 4741, 6241
+- Uses YANG data models to communicate with network devices
+- Runs over SSH, TLS, and SOAP
+- Stores informations and configurations in datastores
+- Uses RPC (Remote Procedure Call) messages in XML
+
+== Differences with SNMP
+
+|===
+| Feature                | SNMP | NETCONF
+
+| resources              | OIDs | Paths
+| Data models            | MIBs | YANG core models
+| Data modeling language | SMI  | YANG
+| Mgt operations         | SNMP | NETCONF
+| Encoding               | BER  | XML JSON
+| Transport stack        | UDP  | SSH/TCP
+|===
+
+
+TODO: relations between netconf and YANG
+- management information (definition) : CLI/YANG models
+- management information (instantied/payload): XML-encoded content
+- management services: NETCONF operations <edit-config> <get-config> <get>
+- remote operations: NETCONF RPC <rpc> <rpc-reply> <rpc-error>
+- Transport: TLS, SSH
+
+== Transactions
+
+- all or nothing
+- no order of operations or sequencing within a transaction
+  * no part of the configuration is done first
+  * the configuration is deployed all at the same time
+- processed in the same order every time on every device
+- run in a parallel state and have no impact on each other
+  * parallel transactions touching different areas of the configuration on a device do not interfere
+  * no impact if the same transaction is run against multiple devices
+
+== operations
+
+|===
+| NETCONF Operation | Description
+
+| <get>           | retrieve running configuration and state information of the device
+| <get-config>    | retrieve some or all of the configuration from a datastore
+| <edit-config>   | Edit  a configuration datastore
+| <copy-config>   | Replace an entire configuration data store with another
+| <delete-config> | Delete the configuration
+| <commit> | Copy the candidate data store to the running data store
+| <lock> / <unlock> | Lock or unlock the entire configuration data store system
+| <close-session> | Gracefully terminate the NETCONF session
+| <kill-session> | Forcibly terminate the NETCONF session
+|===
+
+
+== Configuration Data Store
+
+- running:
+- candidate: 
+- startup:
+
+NOTE: NETCONF runs on TCP port 830 in Cisco IOS-XE
